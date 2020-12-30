@@ -1,0 +1,6 @@
+-c requirements.lock
+
+
+Django
+djangorestframework
+django-trix-fork

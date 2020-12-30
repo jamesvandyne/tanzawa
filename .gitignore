@@ -1,0 +1,35 @@
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+
+htmlcov/
+.tox/
+.cache
+junit.xml
+
+# dotenv
+.env
+
+# virtualenv
+venv/
+venv*
+
+# vagrant
+.vagrant/
+
+.DS_Store
+*.orig
+*.rej
+*.swap
+
+*.log
+*.idea
+.idea/*
+
+.coverage
+*.sqlite3
+.dmypy.json
+
+logs
+**/staticfiles/**
+.var

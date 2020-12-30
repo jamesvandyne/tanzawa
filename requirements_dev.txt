@@ -1,0 +1,13 @@
+-r requirements.txt
+
+tox
+pytest
+pytest-django
+pytest-cov
+pytest-freezegun
+pytest-pythonpath
+model-bakery
+mypy
+isort
+flake8
+black
