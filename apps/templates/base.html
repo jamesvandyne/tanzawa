@@ -1,0 +1,43 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    {% if form %}{{ form.media.css }}{% endif %}
+    <title></title>
+</head>
+<body>
+    <div>
+        <header class="max-w mx-auto bg-gray-700 p-2">
+            <nav>
+                <h1 class="text-white">Web 2.0 In a Box</h1>
+            </nav>
+        </header>
+        <div class="h-screen flex">
+            <nav id="section-nav" class="w-1/12 h-screen bg-gray-200 p-2">
+                <ul class="">
+                    <li>Posts</li>
+                </ul>
+            </nav>
+            <div class="w-11/12 flex">
+                {% block content_before %}{% endblock %}
+                {% block content %}
+                    <main id="main" class="main w-7/12 p-2">
+                        <nav id="breadcrumbs" class="breadcrumbs p-2 mb-2">
+                        {% block breadcrumbs %}{% endblock %}
+                        </nav>
+                          {% block main %}{% endblock %}
+                    </main>
+                    <section id="meta" class="meta w-3/12 h-screen bg-gray-50 p-2">
+                        {% block meta %}{% endblock %}
+                    </section>
+                {% endblock  %}
+                {% block content_after %}{% endblock %}
+            </div>
+    </div>
+</body>
+</html>

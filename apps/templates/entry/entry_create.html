@@ -1,65 +1,42 @@
+{%  extends "base.html" %}
 {% load static %}
 
-<html>
-    <head>
-        <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-        {{ form.media.css }}
-        <style lang="css">
 
-        </style>
-    </head>
-<body>
-    <div>
-        <header class="max-w mx-auto bg-gray-700 p-2">
-            <nav>
-                <h1 class="text-white">Web 2.0 In a Box</h1>
-            </nav>
-        </header>
-        <div class="h-screen flex">
-            <nav id="section-nav" class="w-1/12 h-screen bg-gray-200 p-2">
-                <ul class="">
-                    <li>Posts</li>
-                </ul>
-            </nav>
-            <form action="{% url 'micropub' %}" method="POST" class="w-11/12 flex">
-                <main class="main w-7/12 p-2">
-                    <nav class="breadcrumbs p-2 mb-2">
-                        <a class="text-blue-500">All Post</a> > My Post Title > <span class="text-gray-500">Edit Post</span>
-                    </nav>
-                        {% csrf_token %}
-                        {{  form.h }}
-                        {{  form.action }}
-                        {{ form.name }}
-                        {{ form.content }}
-                        {{ form.hidden }}
-                        {{  form.media.js }}
-                </main>
-                <section class="meta w-3/12 h-screen bg-gray-50 p-2">
-                    <section class="mb-2">
-                        <div class="mb-1">
-                            <button class="rounded-sm text-white bg-blue-500 px-2 py-1 border border-blue-500">Publish</button>
-                            <button class="rounded-sm text-black bg-white px-2 py-1 border border-gray-400">Save Draft</button>
-                        </div>
-                        <small class="block">Draft saved: 2020/12/29 05:00</small>
-                    </section>
-                    <section class="mb-2">
-                        <h2>Details</h2>
-                        <select class="mb-1">
-                            <option>Draft</option>
-                        </select>
-                        <input type="datetime-local" placeholder="Published on..." class="mb-1 block"/>
-                        <input type="text" placeholder="Slug..." class="mb-1 block"/>
-                    </section>
-                    <section class="mb-2">
-                        <h2 class="mb-1">Meta</h2>
-                        <input type="text" placeholder="Slug..." class="mb-1"/>
-                        <select class="mb-1">
-                            <option>Select a trip...</option>
-                        </select>
-                    </section>
-                </section>
-            </div>
-        </form>
-    </div>
-</body>
-</html>
+{% block breadcrumbs %}
+    <a class="text-blue-500">All Post</a> > My Post Title > <span class="text-gray-500">Edit Post</span>
+{% endblock %}
+
+{% block content_before %}
+    <form action="{% url "entry_create" %}" method="POST" class="w-11/12 flex">
+{% endblock %}
+{% block main %}
+    {% csrf_token %}
+    {{ form.p_name }}
+    {{ form.e_content }}
+    {{  form.media.js }}
+{% endblock %}
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1">
+            <button class="rounded-sm text-white bg-blue-500 px-2 py-1 border border-blue-500">Publish</button>
+            <button class="rounded-sm text-black bg-white px-2 py-1 border border-gray-400">Save Draft</button>
+        </div>
+        <small class="block">Draft saved: 2020/12/29 05:00</small>
+    </section>
+    <section class="mb-2">
+        <h2>Details</h2>
+        {{ form.m_post_status }}
+        <input type="datetime-local" placeholder="Published on..." class="mb-1 block"/>
+        <input type="text" placeholder="Slug..." class="mb-1 block"/>
+    </section>
+    <section class="mb-2">
+        <h2 class="mb-1">Meta</h2>
+        <input type="text" placeholder="Slug..." class="mb-1"/>
+        <select class="mb-1">
+            <option>Select a trip...</option>
+        </select>
+    </section>
+{% endblock %}
+{% block content_after %}
+    </form>
+{% endblock %}

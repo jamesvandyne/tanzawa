@@ -1,29 +1,17 @@
 import logging
-from typing import Optional
 
 from django.db import transaction
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from post.models import TPost, MPostStatus, MPostKind
+from post.models import TPost, MPostStatus
 from entry.models import TEntry
-
+from post.utils import determine_post_kind
 
 from .serializers import CreateMicropubSerializer
-from . import constants
-
 
 logger = logging.getLogger(__name__)
-
-
-def determine_post_kind(data) -> Optional[str]:
-    try:
-        post_kind = MPostKind.objects.get(key=data.get("post-kind"))
-    except MPostStatus.DoesNotExist:
-        post_kind = None
-        logging.info(f"post-status: {data.get('post-kind')} doesn't exist")
-    return post_kind or MPostKind.objects.get(key=constants.MPostKinds.article)
 
 
 @api_view(["GET", "POST"])
@@ -42,13 +30,13 @@ def micropub(request):
             logging.info(f"post-status: {request.data.get('post-status')} doesn't exist")
             return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        post_kind = determine_post_kind()
+        post_kind = determine_post_kind(request.data)
         if not post_kind:
             return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         with transaction.atomic():
-            post = TPost.objects.create(post_status=post_status, post_kind=post_kind)
-            entry = TEntry(t_post=post_status, p_name=request.data.get('p-name'), e_content=request.data.get('e-content', ""))
+            post = TPost.objects.create(m_post_status=post_status, m_post_kind=post_kind)
+            entry = TEntry.objects.create(t_post=post, p_name=request.data.get('p-name', ""), e_content=request.data.get('e-content', ""))
 
     return Response(data=serializer.data)
 

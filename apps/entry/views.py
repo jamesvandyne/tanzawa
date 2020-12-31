@@ -5,7 +5,14 @@ from . import models
 
 
 def entry(request):
-    form = forms.CreateEntryForm()
+    form = forms.CreateArticleForm(request.POST or None)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.prepare_data()
+            entry = form.save()
+            # todo: add some turoframe jazz
+
     context = {
         'form': form
     }
