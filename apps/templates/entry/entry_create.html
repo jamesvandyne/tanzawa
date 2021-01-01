@@ -3,37 +3,27 @@
 
 
 {% block breadcrumbs %}
-    <a class="text-blue-500">All Post</a> > My Post Title > <span class="text-gray-500">Edit Post</span>
+    <span class="text-negroni-800">New Status</span>
 {% endblock %}
 
 {% block content_before %}
     <form action="{% url "entry_create" %}" method="POST" class="w-11/12 flex">
 {% endblock %}
 {% block main %}
+    <span class="font-serif">
     {% csrf_token %}
-    {{ form.p_name }}
     {{ form.e_content }}
     {{  form.media.js }}
+    </span>
 {% endblock %}
 {% block meta %}
     <section class="mb-2">
         <div class="mb-1">
-            <button class="rounded-sm text-white bg-blue-500 px-2 py-1 border border-blue-500">Publish</button>
-            <button class="rounded-sm text-black bg-white px-2 py-1 border border-gray-400">Save Draft</button>
+            <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border ">Post</button>
         </div>
-        <small class="block">Draft saved: 2020/12/29 05:00</small>
     </section>
     <section class="mb-2">
-        <h2>Details</h2>
         {{ form.m_post_status }}
-        <input type="text" placeholder="Slug..." class="mb-1 block"/>
-    </section>
-    <section class="mb-2">
-        <h2 class="mb-1">Meta</h2>
-        <input type="text" placeholder="Slug..." class="mb-1"/>
-        <select class="mb-1">
-            <option>Select a trip...</option>
-        </select>
     </section>
 {% endblock %}
 {% block content_after %}

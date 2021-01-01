@@ -11,34 +11,35 @@
     {% if form %}{{ form.media.css }}{% endif %}
     <title></title>
 </head>
-<body>
-    <div>
-        <header class="max-w mx-auto bg-gray-700 p-2">
+<body class="bg-bianca-500">
+    <div class="">
+        <header class="max-w mx-auto p-2">
             <nav>
-                <h1 class="text-white">Web 2.0 In a Box</h1>
+                <h1 class="text-negroni-900 text-2xl"><span class="mr-1">🏔</span>Tanzawa</h1>
             </nav>
         </header>
         <div class="h-screen flex">
-            <nav id="section-nav" class="w-1/12 h-screen bg-gray-200 p-2">
+            <nav id="section-nav" class="w-1/12 h-screen p-2">
                 <ul class="">
-                    <li>Posts</li>
+                    <li><span class="mr-1">💬</span><span>Status</span></li>
                 </ul>
             </nav>
             <div class="w-11/12 flex">
                 {% block content_before %}{% endblock %}
                 {% block content %}
                     <main id="main" class="main w-7/12 p-2">
-                        <nav id="breadcrumbs" class="breadcrumbs p-2 mb-2">
+                        <nav id="breadcrumbs" class="breadcrumbs px-2 pb-2 mb-2">
                         {% block breadcrumbs %}{% endblock %}
                         </nav>
                           {% block main %}{% endblock %}
                     </main>
-                    <section id="meta" class="meta w-3/12 h-screen bg-gray-50 p-2">
+                    <section id="meta" class="meta w-3/12 h-screen p-2">
                         {% block meta %}{% endblock %}
                     </section>
                 {% endblock  %}
                 {% block content_after %}{% endblock %}
             </div>
+        </div>
     </div>
 </body>
 </html>

@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.trix-button-group, .trix-content {
+    @apply bg-white;
+}
