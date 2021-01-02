@@ -18,7 +18,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('key', models.CharField(max_length=16)),
+                ('key', models.CharField(max_length=16, unique=True)),
+                ('name', models.CharField(max_length=16)),
             ],
             options={
                 'db_table': 'm_post_kind',
@@ -30,7 +31,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('key', models.CharField(max_length=12)),
+                ('key', models.CharField(max_length=16, unique=True)),
+                ('name', models.CharField(max_length=16)),
             ],
             options={
                 'db_table': 'm_post_status',
@@ -46,6 +48,7 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(blank=True, null=True)),
                 ('m_post_kind', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='post.mpostkind')),
                 ('m_post_status', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='post.mpoststatus')),
+                ('p_author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='auth.user')),
             ],
             options={
                 'db_table': 't_post',

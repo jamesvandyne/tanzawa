@@ -10,11 +10,12 @@ from indieweb.constants import MPostKinds, MPostStatuses
 from .models import TEntry
 
 
-class CreateArticleForm(forms.Form):
+class CreateStatusForm(forms.Form):
     e_content = forms.CharField(required=True, widget=TrixEditor)
     m_post_status = forms.ModelChoiceField(MPostStatus.objects.all(), to_field_name="key", required=True, empty_label=None, initial=MPostStatuses.draft)
 
     def __init__(self, *args, **kwargs):
+        self.p_author = kwargs.pop("p_author")
         super().__init__(*args, **kwargs)
         self.fields["m_post_status"].widget.attrs = {
             'class': 'mb-1',
@@ -30,7 +31,8 @@ class CreateArticleForm(forms.Form):
 
     def prepare_data(self):
         self.t_post = TPost(m_post_status=self.cleaned_data["m_post_status"],
-                            m_post_kind=self.cleaned_data["m_post_kind"])
+                            m_post_kind=self.cleaned_data["m_post_kind"],
+                            p_author=self.p_author)
         self.t_entry = TEntry(e_content=self.cleaned_data['e_content'])
 
     @transaction.atomic
@@ -41,7 +43,7 @@ class CreateArticleForm(forms.Form):
         return self.t_entry
 
 
-class UpdateArticleForm(forms.ModelForm):
+class UpdateStatusForm(forms.ModelForm):
     e_content = forms.CharField(required=True, widget=TrixEditor)
     m_post_status = forms.ModelChoiceField(MPostStatus.objects.all(), to_field_name="key", required=True, empty_label=None, initial=MPostStatuses.draft)
 

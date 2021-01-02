@@ -7,8 +7,8 @@ def register_default_post_statuses(apps, schema):
 
     MPostStatus = apps.get_model("post", "MPostStatus")
 
-    MPostStatus.objects.get_or_create(key="published")
-    MPostStatus.objects.get_or_create(key="draft")
+    MPostStatus.objects.get_or_create(key="published", name="Published")
+    MPostStatus.objects.get_or_create(key="draft", name="Draft")
 
 
 def register_default_post_kinds(apps, schema):
