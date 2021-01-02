@@ -25,9 +25,16 @@
     }
     75% {
         opacity: 0;
+        visibility: hidden;
     }
     100% {
         opacity: 0;
         visibility: hidden;
+        height: 0;
     }
+}
+
+
+main.content a, .trix-content a {
+    @apply underline;
 }

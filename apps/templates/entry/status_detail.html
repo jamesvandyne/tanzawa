@@ -1,0 +1,23 @@
+{%  extends "base.html" %}
+{% load static %}
+
+
+{% block breadcrumbs %}
+    <a href="{% url "status_list" %}" class="underline">All</a><span class="ml-2">> Detail</span>
+{% endblock %}
+
+{% block main %}
+    {% include "entry/status_item.html" with hide_footer=True %}
+{% endblock %}
+
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1 flex-col">
+            <a href="{% url 'status_edit' status.pk %}"  class="mb-2 inline-block"><span class="mr-0.5">✏️</span>edit️</a>
+            <a href="{% url 'status_detail' status.pk %}" class="mb-2 block"><span class="mr-0.5">🔗</span>permalink</a>
+        </div>
+    </section>
+    <section class="mt-8">
+        <a href="{% url 'status_delete' status.pk %}" class="rounded border-bianca-900 text-bianca-800 border px-3 py-1"><span class="mr-0.5">🗑</span>delete status</a>
+    </section>
+{% endblock %}
