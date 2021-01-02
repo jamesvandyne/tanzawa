@@ -1,0 +1,29 @@
+{%  extends "base.html" %}
+{% load static %}
+
+
+{% block breadcrumbs %}
+    <a href="{% url "status_list" %}" class="underline">All</a><span class="ml-2">> New Status</span>
+{% endblock %}
+
+{% block content_before %}
+    <form action="{% url "status_create" %}" method="POST" class="w-11/12 flex">
+{% endblock %}
+{% block main %}
+    <span class="font-serif">
+    {% csrf_token %}
+    {{ form.e_content }}
+    {{  form.media.js }}
+    </span>
+{% endblock %}
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1">
+            <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" value="published">Publish</button>
+            <button class="rounded border-negroni-900 text-negroni-800 border px-3 py-1" name="m_post_status" value="draft">Save Draft</button>
+        </div>
+    </section>
+{% endblock %}
+{% block content_after %}
+    </form>
+{% endblock %}

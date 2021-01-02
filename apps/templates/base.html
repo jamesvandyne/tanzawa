@@ -18,25 +18,37 @@
                 <h1 class="text-negroni-900 text-2xl"><span class="mr-1">🏔</span>Tanzawa</h1>
             </nav>
         </header>
-        <div class="h-screen flex">
-            <nav id="section-nav" class="w-1/12 h-screen p-2">
-                <ul class="">
-                    <li><span class="mr-1">💬</span><span>Status</span></li>
+        <div class="flex">
+            <nav id="section-nav" class="w-1/12 p-2 flex flex-col">
+                <ul class="mb-2">
+                    <li class="selected p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
+                    <li class="p-1 mb-2"><span class="mr-1">⚙️</span><span>Settings</span></li>
                 </ul>
             </nav>
-            <div class="w-11/12 flex">
+            <div class="w-11/12 flex flex-col ">
+                <div id="messages" class="animate-fade-out">
+                    {% if messages %}
+                    <ul class="messages mx-auto block p-2 w-6/12 bg-malachite-200 border border-2 border-malachite-700 rounded animate-fade-out">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
                 {% block content_before %}{% endblock %}
-                {% block content %}
-                    <main id="main" class="main w-7/12 p-2">
-                        <nav id="breadcrumbs" class="breadcrumbs px-2 pb-2 mb-2">
-                        {% block breadcrumbs %}{% endblock %}
-                        </nav>
-                          {% block main %}{% endblock %}
-                    </main>
-                    <section id="meta" class="meta w-3/12 h-screen p-2">
-                        {% block meta %}{% endblock %}
-                    </section>
-                {% endblock  %}
+                <div id="main-container" class="flex">
+                    {% block content %}
+                        <main id="main" class="main w-7/12 p-2">
+                            <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
+                            {% block breadcrumbs %}{% endblock %}
+                            </nav>
+                              {% block main %}{% endblock %}
+                        </main>
+                        <section id="meta" class="meta w-3/12 h-screen p-2">
+                            {% block meta %}{% endblock %}
+                        </section>
+                    {% endblock  %}
+                </div>
                 {% block content_after %}{% endblock %}
             </div>
         </div>

@@ -6,3 +6,28 @@
 .trix-button-group, .trix-content {
     @apply bg-white;
 }
+
+.selected {
+    @apply border-r-4 border-negroni-900;
+}
+
+
+.animate-fade-out {
+    animation: fade 1s linear 1 forwards;
+    animation-delay: 5s;
+
+}
+
+@keyframes fade {
+    0% {
+        opacity: 1;
+        height: auto;
+    }
+    75% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}

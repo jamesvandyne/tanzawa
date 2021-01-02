@@ -1,0 +1,40 @@
+{%  extends "base.html" %}
+{% load humanize %}
+{% block breadcrumbs %}
+    <a href="{% url "status_list" %}" class="underline">All</a><span class="ml-2">> New Status</span>
+{% endblock %}
+
+{% block main %}
+    {% now "d" as day %}
+    <ul>
+        {% for status in objects reversed %}
+            <li class="border-b-2 border-negroni-700 py-2 my-2">
+                <div class="flex-col">
+                    <header>
+                        {% ifequal status.create_at|date:"d" day %}
+                            {{ status.created_at|naturaltime }}
+                        {% else %}
+                            {{ status.created_at|date:"M n, Y" }}
+                        {% endifequal %}
+                    </header>
+                    <main>
+                        {{ status.e_content|safe }}
+                    </main>
+                    <footer class="">
+                        <a href="">🔗 permalink</a>
+                    </footer>
+                </div>
+
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1">
+            <a href="{% url "status_create" %}" class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" value="published">New</a>
+        </div>
+    </section>
+{% endblock %}
