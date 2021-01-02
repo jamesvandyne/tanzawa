@@ -13,7 +13,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "postcss css/**/*.css -d ../static/tailwind --watch"
+    "start": "postcss css/**/*.css -d ../static/tailwind --watch",
+    "build": "postcss css/**/*.css -o ../static/tailwind/style.css"
   },
   "author": "",
   "license": "ISC"
