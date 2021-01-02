@@ -10,6 +10,7 @@
     <form action="{% url "status_create" %}" method="POST" class="w-11/12 flex">
 {% endblock %}
 {% block main %}
+    {{ form.errors }}
     <span class="font-serif">
     {% csrf_token %}
     {{ form.e_content }}
