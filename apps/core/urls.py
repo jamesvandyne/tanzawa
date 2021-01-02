@@ -21,5 +21,6 @@ urlpatterns = [
     path('entry/', include('entry.urls')),
     path(r'trix/', include('trix.urls')),
     path('', include('indieweb.urls')),
+    path('', include('public.urls')),
     path('admin/', admin.site.urls),
 ]

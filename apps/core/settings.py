@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'trix',
     'post',
     'entry',
+    'public',
 ]
 
 MIDDLEWARE = [

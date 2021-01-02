@@ -6,38 +6,41 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <title>🏔Tanzawa</title>
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
-    {% if form %}{{ form.media.css }}{% endif %}
     <title></title>
 </head>
-<body>
-    <div>
-        <header class="max-w mx-auto bg-gray-700 p-2">
+<body class="bg-bianca-500">
+    <div class="">
+        <header class="max-w mx-auto p-2">
             <nav>
-                <h1 class="text-white">Web 2.0 In a Box</h1>
+                <h1 class="text-negroni-900 text-2xl"><span class="mr-1">🏔</span>Tanzawa</h1>
             </nav>
         </header>
-        <div class="h-screen flex">
-            <nav id="section-nav" class="w-1/12 h-screen bg-gray-200 p-2">
-                <ul class="">
-                    <li>Posts</li>
+        <div class="flex">
+            <nav id="section-nav" class="w-1/12 p-2 flex flex-col">
+                <ul class="mb-2">
+                    <li class="selected p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
                 </ul>
             </nav>
-            <div class="w-11/12 flex">
+            <div class="w-11/12 flex flex-col ">
                 {% block content_before %}{% endblock %}
-                {% block content %}
-                    <main id="main" class="main w-7/12 p-2">
-                        <nav id="breadcrumbs" class="breadcrumbs p-2 mb-2">
-                        {% block breadcrumbs %}{% endblock %}
-                        </nav>
-                          {% block main %}{% endblock %}
-                    </main>
-                    <section id="meta" class="meta w-3/12 h-screen bg-gray-50 p-2">
-                        {% block meta %}{% endblock %}
-                    </section>
-                {% endblock  %}
-                {% block content_after %}{% endblock %}
+                <div id="main-container" class="flex">
+                    {% block content %}
+                        <main id="main" class="main w-7/12 p-2">
+                            <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
+                            {% block breadcrumbs %}{% endblock %}
+                            </nav>
+                              {% block main %}{% endblock %}
+                        </main>
+                        <section id="meta" class="meta w-3/12 h-screen p-2">
+                            {% block meta %}{% endblock %}
+                        </section>
+                    {% endblock  %}
+                </div>
+                {% block content_after %}
+                    <span class="mx-auto text-sm">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
+                {% endblock %}
             </div>
         </div>
     </div>
