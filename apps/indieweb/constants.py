@@ -1,9 +1,9 @@
-
 class MPostStatuses:
     """
     Post Statuses from Micropub-extentions
     https://indieweb.org/Micropub-extensions#Post_Status
     """
+
     published = "published"
     draft = "draft"
 
@@ -31,7 +31,15 @@ class Microformats:
     RESUME = "resume"
 
     def __contains__(self, item):
-        return item in [self.CARD, self.CHECKIN, self.ENTRY, self.EVENT, self.GEO, self.REVIEW, self.REVIEW]
+        return item in [
+            self.CARD,
+            self.CHECKIN,
+            self.ENTRY,
+            self.EVENT,
+            self.GEO,
+            self.REVIEW,
+            self.REVIEW,
+        ]
 
 
 supported_microformats = Microformats()

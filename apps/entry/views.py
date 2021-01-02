@@ -1,9 +1,8 @@
-from django.shortcuts import render, get_object_or_404, redirect, resolve_url
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 
-from . import forms
-from . import models
+from . import forms, models
 
 
 @login_required
@@ -16,15 +15,13 @@ def status_create(request):
             entry = form.save()
             messages.success(request, "Saved Status")
             return redirect(resolve_url("status_edit", pk=entry.pk))
-    context = {
-        'form': form
-    }
+    context = {"form": form}
     return render(request, "entry/status_create.html", context=context)
 
 
 @login_required
 def status_edit(request, pk: int):
-    status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
+    status = get_object_or_404(models.TEntry.objects.select_related("t_post"), pk=pk)
 
     form = forms.UpdateStatusForm(request.POST or None, instance=status)
 
@@ -33,26 +30,20 @@ def status_edit(request, pk: int):
             form.prepare_data()
             form.save()
             messages.success(request, "Saved Status")
-    context = {
-        'form': form
-
-    }
+    context = {"form": form}
     return render(request, "entry/status_update.html", context=context)
 
 
 @login_required
 def status_detail(request, pk: int):
-    status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
-    context = {
-        'status': status
-
-    }
+    status = get_object_or_404(models.TEntry.objects.select_related("t_post"), pk=pk)
+    context = {"status": status}
     return render(request, "entry/status_detail.html", context=context)
 
 
 @login_required
 def status_delete(request, pk: int):
-    status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
+    status = get_object_or_404(models.TEntry.objects.select_related("t_post"), pk=pk)
     status.delete()
     messages.success(request, "Status Deleted")
     return redirect(resolve_url("status_list"))

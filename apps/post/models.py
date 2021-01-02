@@ -1,8 +1,6 @@
-from django.db import models
-
-from django.contrib.auth import get_user_model
-
 from core.models import TimestampModel
+from django.contrib.auth import get_user_model
+from django.db import models
 
 
 class MPostStatus(TimestampModel):

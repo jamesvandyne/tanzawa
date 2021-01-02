@@ -26,7 +26,7 @@ def register_default_post_kinds(apps, schema):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('post', '0001_initial'),
+        ("post", "0001_initial"),
     ]
 
     operations = [
