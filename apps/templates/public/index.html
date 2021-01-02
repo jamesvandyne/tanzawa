@@ -1,4 +1,15 @@
 {% extends "base_public.html" %}
 
+{% block breadcrumbs %}
+    Home
+{% endblock %}
+
 {% block main %}
+    <ul>
+    {% for entry in entries reversed %}
+        <li class="border-b-2 border-negroni-700 py-2 my-2">
+            {% include "entry/status_item.html" with status=entry hide_footer=True %}
+        </li>
+    {% endfor %}
+    </ul>
 {% endblock %}

@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect, resolve_url
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from . import forms
 from . import models
 
 
+@login_required
 def status_create(request):
     form = forms.CreateArticleForm(request.POST or None)
 
@@ -22,6 +24,7 @@ def status_create(request):
     return render(request, "entry/status_create.html", context=context)
 
 
+@login_required
 def status_edit(request, pk: int):
     status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
 
@@ -39,6 +42,7 @@ def status_edit(request, pk: int):
     return render(request, "entry/status_update.html", context=context)
 
 
+@login_required
 def status_detail(request, pk: int):
     status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
     context = {
@@ -48,6 +52,7 @@ def status_detail(request, pk: int):
     return render(request, "entry/status_detail.html", context=context)
 
 
+@login_required
 def status_delete(request, pk: int):
     status = get_object_or_404(models.TEntry.objects.select_related('t_post'), pk=pk)
     status.delete()
@@ -55,6 +60,7 @@ def status_delete(request, pk: int):
     return redirect(resolve_url("status_list"))
 
 
+@login_required
 def status_list(request):
     objects = models.TEntry.objects.all()
     return render(request, "entry/status_list.html", context={"objects": objects})
