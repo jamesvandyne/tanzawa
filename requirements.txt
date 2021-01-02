@@ -4,3 +4,4 @@
 Django
 djangorestframework
 django-trix-fork
+gunicorn
