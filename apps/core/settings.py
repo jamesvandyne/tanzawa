@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    "django.contrib.gis",
     "rest_framework",
     "indieweb",
     "trix",
     "post",
     "entry",
+    "files",
     "public",
 ]
 
@@ -143,3 +145,5 @@ REST_FRAMEWORK = {
 
 TRIX_EXTENSIONS = [".jpg", ".png"]
 TRIX_URI = "trix"
+
+SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
