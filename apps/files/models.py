@@ -3,9 +3,11 @@ from django.contrib.gis.db import models as geo_models
 
 from core.models import TimestampModel
 
+from .upload import upload_to
+
 
 class TFile(TimestampModel):
-    file = models.FileField()
+    file = models.FileField(upload_to=upload_to)
     filename = models.CharField(max_length=128)
     point = geo_models.PointField()
 
