@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import TFile, TFilePost
+
+
+admin.site.register(TFile)
+admin.site.register(TFilePost)

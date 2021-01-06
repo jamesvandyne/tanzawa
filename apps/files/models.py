@@ -9,12 +9,13 @@ from .upload import upload_to
 class TFile(TimestampModel):
     file = models.FileField(upload_to=upload_to)
     filename = models.CharField(max_length=128)
-    point = geo_models.PointField()
+    point = geo_models.PointField(blank=True, null=True)
 
     posts = models.ManyToManyField("post.TPost", through="TFilePost", through_fields=("t_file", "t_post"))
 
     class Meta:
         db_table = "t_file"
+        verbose_name = "File"
 
 
 class TFilePost(TimestampModel):
@@ -24,3 +25,4 @@ class TFilePost(TimestampModel):
 
     class Meta:
         db_table = "t_file_post"
+        verbose_name = "File-Post"
