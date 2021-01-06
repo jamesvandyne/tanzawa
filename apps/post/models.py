@@ -36,8 +36,9 @@ class TPost(TimestampModel):
     published = models.DateTimeField(blank=True, null=True)
     updated = models.DateTimeField(blank=True, null=True)
 
-    files = models.ManyToManyField("files.TFile", through="files.TFilePost",
-                                   through_fields=("t_post", "t_file"))
+    files = models.ManyToManyField(
+        "files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file")
+    )
 
     class Meta:
         db_table = "t_post"

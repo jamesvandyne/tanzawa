@@ -131,7 +131,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "../static/",
 ]
 STATIC_ROOT = BASE_DIR / "../staticfiles/"
-MEDIA_ROOT = BASE_DIR / "../media/"
+MEDIA_ROOT = BASE_DIR / "../micropub_media/"
 
 # import pdb; pdb.set_trace()
 
@@ -147,4 +147,4 @@ REST_FRAMEWORK = {
 TRIX_EXTENSIONS = [".jpg", ".png"]
 TRIX_URI = "trix"
 
-SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
+SPATIALITE_LIBRARY_PATH = "/usr/local/lib/mod_spatialite.dylib"
