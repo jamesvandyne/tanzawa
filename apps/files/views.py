@@ -17,7 +17,7 @@ def micropub_media(request):
         if form.is_valid():
             t_file = form.save()
             response = HttpResponse(status=201)
-            response["Location"] = t_file.get_absolute_url()
+            response["Location"] = request.build_absolute_uri(t_file.get_absolute_url())
             return response
         return JsonResponse(
             status=400,
