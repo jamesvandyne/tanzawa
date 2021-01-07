@@ -144,7 +144,5 @@ REST_FRAMEWORK = {
     ]
 }
 
-TRIX_EXTENSIONS = [".jpg", ".png"]
-TRIX_URI = "trix"
 
 SPATIALITE_LIBRARY_PATH = "/usr/local/lib/mod_spatialite.dylib"
