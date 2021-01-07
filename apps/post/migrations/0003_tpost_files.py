@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('files', '0001_initial'),
-        ('post', '0002_register_status_kinds'),
+        ("files", "0001_initial"),
+        ("post", "0002_register_status_kinds"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tpost',
-            name='files',
-            field=models.ManyToManyField(through='files.TFilePost', to='files.TFile'),
+            model_name="tpost",
+            name="files",
+            field=models.ManyToManyField(through="files.TFilePost", to="files.TFile"),
         ),
     ]

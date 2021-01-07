@@ -1,5 +1,7 @@
-from django.http import (HttpResponse, HttpResponseBadRequest,
-                         HttpResponseNotAllowed, JsonResponse)
+import mimetypes
+
+from django.http import (FileResponse, HttpResponse, HttpResponseNotAllowed,
+                         JsonResponse)
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
@@ -28,10 +30,6 @@ def micropub_media(request):
 
 def get_media(request, uuid):
     t_file: TFile = get_object_or_404(TFile, uuid=uuid)
-    url = t_file.get_absolute_url()
-    if not url:
-        return HttpResponseBadRequest()
-    response = HttpResponse()
-    response["external_url"] = url
-    response["X-Accel-Redirect"] = "/external_redirect/"
+    mime_type, _ = mimetypes.guess_type(t_file.filename)
+    response = FileResponse(t_file.file, mime_type, filename=t_file.filename)
     return response
