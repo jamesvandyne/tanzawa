@@ -31,5 +31,8 @@ def micropub_media(request):
 def get_media(request, uuid):
     t_file: TFile = get_object_or_404(TFile, uuid=uuid)
     mime_type, _ = mimetypes.guess_type(t_file.filename)
-    response = FileResponse(t_file.file, mime_type, filename=t_file.filename)
+    as_attachment = request.GET.get("content-disposition", "inline") == "attachment"
+    response = FileResponse(
+        t_file.file, mime_type, filename=t_file.filename, as_attachment=as_attachment
+    )
     return response
