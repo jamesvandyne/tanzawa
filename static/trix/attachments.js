@@ -32,7 +32,6 @@
 
         xhr.addEventListener("load", function(event) {
             if (xhr.status === 201) {
-                debugger;
                 const attributes = {
                     url: xhr.getResponseHeader("Location"),
                     href: xhr.getResponseHeader("Location") + "?content-disposition=attachment"
@@ -43,13 +42,6 @@
 
         xhr.send(formData)
     }
-
-    // function createStorageKey(file) {
-    //   var date = new Date();
-    //   var day = date.toISOString().slice(0,10);
-    //   var name = date.getTime() + "-" + file.name;
-    //   return [ "tmp", day, name ].join("/");
-    // }
 
     function createFormData(file) {
         const data = new FormData();
