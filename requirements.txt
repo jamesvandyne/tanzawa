@@ -4,3 +4,4 @@
 Django
 djangorestframework
 gunicorn
+beautifulsoup4
