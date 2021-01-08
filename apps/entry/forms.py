@@ -4,13 +4,13 @@ from django import forms
 from django.db import transaction
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import MPostKind, MPostStatus, TPost
-from trix.widgets import TrixEditor
+from trix.forms import TrixField
 
 from .models import TEntry
 
 
 class CreateStatusForm(forms.Form):
-    e_content = forms.CharField(required=True, widget=TrixEditor)
+    e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
@@ -53,7 +53,7 @@ class CreateStatusForm(forms.Form):
 
 
 class UpdateStatusForm(forms.ModelForm):
-    e_content = forms.CharField(required=True, widget=TrixEditor)
+    e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
