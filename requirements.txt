@@ -3,5 +3,5 @@
 
 Django
 djangorestframework
-django-trix-fork
 gunicorn
+beautifulsoup4

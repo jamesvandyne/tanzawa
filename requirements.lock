@@ -3,5 +3,5 @@ Django==3.1.4
 pytz==2020.5
 sqlparse==0.4.1
 djangorestframework==3.12.2
-django-trix-fork==0.3.2.0
+beautifulsoup4==4.9.3
 gunicorn==20.0.4

@@ -19,13 +19,13 @@
             </nav>
         </header>
         <div class="flex">
-            <nav id="section-nav" class="w-1/12 p-2 flex flex-col">
+            <nav id="section-nav" class="min-w-min p-2 flex">
                 <ul class="mb-2">
                     <li class="selected p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
                     <li class="p-1 mb-2"><span class="mr-1">⚙️</span><span>Settings</span></li>
                 </ul>
             </nav>
-            <div class="w-11/12 flex flex-col ">
+            <div class="w-11/12 flex flex-col">
                 <div id="messages" class="animate-fade-out">
                     {% if messages %}
                     <ul class="messages mx-auto block p-2 w-6/12 bg-malachite-200 border border-2 border-malachite-700 rounded animate-fade-out">
@@ -38,7 +38,7 @@
                 {% block content_before %}{% endblock %}
                 <div id="main-container" class="flex">
                     {% block content %}
-                        <main id="main" class="main w-9/12 p-2">
+                        <main id="main" class="main min-w-9/12 p-2">
                             <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
                             {% block breadcrumbs %}{% endblock %}
                             </nav>

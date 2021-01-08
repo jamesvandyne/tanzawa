@@ -1,16 +1,19 @@
-from typing import Optional
+from typing import List, Optional
 
 from django import forms
 from django.db import transaction
+from files.models import TFile
+from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import MPostKind, MPostStatus, TPost
-from trix.widgets import TrixEditor
+from trix.forms import TrixField
+from trix.utils import extract_attachment_urls
 
 from .models import TEntry
 
 
 class CreateStatusForm(forms.Form):
-    e_content = forms.CharField(required=True, widget=TrixEditor)
+    e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
@@ -27,6 +30,7 @@ class CreateStatusForm(forms.Form):
         }
         self.t_post: Optional[TPost] = None
         self.t_entry: Optional[TEntry] = None
+        self.file_attachment_uuids: List[str] = []
 
     def clean(self):
         try:
@@ -35,6 +39,9 @@ class CreateStatusForm(forms.Form):
             )
         except MPostKind.DoesNotExist:
             raise forms.ValidationError("m_post_kind: note does not exist")
+
+        urls = extract_attachment_urls(self.cleaned_data["e_content"])
+        self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
         self.t_post = TPost(
@@ -49,11 +56,12 @@ class CreateStatusForm(forms.Form):
         self.t_post.save()
         self.t_entry.t_post = self.t_post
         self.t_entry.save()
+        self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
         return self.t_entry
 
 
 class UpdateStatusForm(forms.ModelForm):
-    e_content = forms.CharField(required=True, widget=TrixEditor)
+    e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
@@ -69,6 +77,11 @@ class UpdateStatusForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.t_post: TPost = self.instance.t_post
+        self.file_attachment_uuids: List[str] = []
+
+    def clean(self):
+        urls = extract_attachment_urls(self.cleaned_data["e_content"])
+        self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
@@ -77,4 +90,5 @@ class UpdateStatusForm(forms.ModelForm):
     def save(self, commit: bool = True):
         super().save(commit=commit)
         self.t_post.save()
+        self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
         return self.instance
