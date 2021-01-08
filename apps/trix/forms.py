@@ -11,7 +11,6 @@ class TrixField(forms.CharField):
         value: str = super().to_python(value)
 
         soup = BeautifulSoup(value, "html.parser")
-        import pdb; pdb.set_trace()
         for img_tag in soup.find_all("img"):
             img_tag["loading"] = "lazy"
         return str(soup)
