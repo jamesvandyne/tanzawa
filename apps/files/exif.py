@@ -24,12 +24,11 @@ def dms_to_dd(degree, minute, second) -> float:
 
 
 def get_location(image) -> Optional[Point]:
-
-    with Image(image) as img:
-        if not img.has_exif:
-            return None
-        gps_latitude = img.gps_latitude
-        gps_longitude = img.gps_longitude
-        if gps_latitude and gps_longitude:
-            return Point(dms_to_dd(*gps_longitude), dms_to_dd(*gps_latitude))
+    img = Image(image)
+    if not img.has_exif:
+        return None
+    gps_latitude = img.get('gps_latitude')
+    gps_longitude = img.get('gps_longitude')
+    if gps_latitude and gps_longitude:
+        return Point(dms_to_dd(*gps_longitude), dms_to_dd(*gps_latitude))
     return None

@@ -19,4 +19,4 @@ class MediaUploadForm(forms.ModelForm):
 
     def clean(self):
         self.instance.uuid = uuid.uuid4()
-        self.instance.point = get_location(self.file)
+        self.instance.point = get_location(self.cleaned_data['file'])
