@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from django import forms
+from django.template.loader import render_to_string
 
 from .widgets import TrixEditor
 
@@ -11,6 +12,22 @@ class TrixField(forms.CharField):
         value: str = super().to_python(value)
 
         soup = BeautifulSoup(value, "html.parser")
-        for img_tag in soup.find_all("img"):
-            img_tag["loading"] = "lazy"
+
+        figures = soup.select('figure[data-trix-content-type^=image]')
+        # rewrite the image figures to use the picture tag and provide alternative / optimised urls
+        for figure in figures:
+            if figure.find("picture"):
+                # already has a picture, so let's not rewrite it
+                pass
+
+            img = figure.find("img")
+            if not img:
+                pass
+            context = {
+                "format": figure["data-trix-content-type"].split("/")[1],
+                "src": img["src"],
+                "width": img["width"],
+                "height": img["height"]
+            }
+            render_to_string('trix/picture.html', context)
         return str(soup)

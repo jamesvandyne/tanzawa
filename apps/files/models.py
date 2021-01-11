@@ -3,7 +3,7 @@ from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.urls import reverse
 
-from .upload import upload_to
+from .upload import upload_to, resized_upload_to
 
 
 class TFile(TimestampModel):
@@ -32,3 +32,16 @@ class TFilePost(TimestampModel):
     class Meta:
         db_table = "t_file_post"
         verbose_name = "File-Post"
+
+
+class TResizedImage(TimestampModel):
+
+    file = models.FileField(upload_to=resized_upload_to)
+    t_file = models.ForeignKey(TFile, on_delete=models.CASCADE)
+
+    width = models.IntegerField()
+    height = models.IntegerField()
+
+    class Meta:
+        db_table = "t_resized_image"
+        verbose_name = "ResizedImage"
