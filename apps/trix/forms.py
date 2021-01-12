@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from django import forms
 from django.template.loader import render_to_string
+from files.constants import PICTURE_FORMATS
 
 from .widgets import TrixEditor
 
@@ -24,10 +25,12 @@ class TrixField(forms.CharField):
             if not img:
                 pass
             context = {
-                "format": figure["data-trix-content-type"].split("/")[1],
+                "source_formats": PICTURE_FORMATS.get(figure["data-trix-content-type"], []),
                 "src": img["src"],
                 "width": img["width"],
                 "height": img["height"]
             }
-            render_to_string('trix/picture.html', context)
+            picture = BeautifulSoup(render_to_string('trix/picture.html', context))
+            img.insert_before(picture)
+            img.decompose()
         return str(soup)

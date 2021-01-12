@@ -3,13 +3,14 @@ from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.urls import reverse
 
-from .upload import upload_to, resized_upload_to
+from .upload import upload_to, resized_upload_to, format_upload_to
 
 
 class TFile(TimestampModel):
     file = models.FileField(upload_to=upload_to)
     uuid = models.UUIDField()
     filename = models.CharField(max_length=128)
+    mime_type = models.CharField(max_length=32)
     point = geo_models.PointField(blank=True, null=True)
 
     posts = models.ManyToManyField(
@@ -34,14 +35,16 @@ class TFilePost(TimestampModel):
         verbose_name = "File-Post"
 
 
-class TResizedImage(TimestampModel):
-
-    file = models.FileField(upload_to=resized_upload_to)
-    t_file = models.ForeignKey(TFile, on_delete=models.CASCADE)
+class TFormattedImage(TimestampModel):
+    file = models.FileField(upload_to=format_upload_to)
+    t_file = models.ForeignKey(TFile, on_delete=models.CASCADE, related_name="ref_t_formatted_image")
+    mime_type = models.CharField(max_length=32)
 
     width = models.IntegerField()
     height = models.IntegerField()
 
     class Meta:
-        db_table = "t_resized_image"
-        verbose_name = "ResizedImage"
+        db_table = "t_formatted_image"
+        verbose_name = "Formatted Image"
+        unique_together = ('t_file', 'mime_type')
+

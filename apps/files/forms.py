@@ -1,6 +1,5 @@
 from typing import Optional
 import uuid
-from exif import Image
 from django import forms
 from django.contrib.gis.geos import Point
 
