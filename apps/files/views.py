@@ -1,7 +1,7 @@
 import mimetypes
 
-from django.http import (FileResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden,
-                         JsonResponse)
+from django.http import (FileResponse, HttpResponse, HttpResponseForbidden,
+                         HttpResponseNotAllowed, JsonResponse)
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 

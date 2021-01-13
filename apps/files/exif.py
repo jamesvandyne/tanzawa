@@ -7,14 +7,15 @@ from exif import Image
 
 def extract_exif(image) -> Dict[str, Any]:
     img = Image(image)
-    if not img.has_exif:
-        return {}
     exif = {}
+    if not img.has_exif:
+        return exif
+
     for key in dir(img):
         value = img.get(key)
         if not value:
             continue
-        if hasattr(value, 'asdict'):
+        if hasattr(value, "asdict"):
             value = value.asdict()
         exif[key] = value
     return exif

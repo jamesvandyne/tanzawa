@@ -1,7 +1,7 @@
-import plum
 import uuid
 from typing import Optional
 
+import plum
 from django import forms
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -36,4 +36,3 @@ class MediaUploadForm(forms.ModelForm):
             self.cleaned_data["file"] = upload_file
         except plum._exceptions.UnpackError:
             pass
-

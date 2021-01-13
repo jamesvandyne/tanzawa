@@ -1,12 +1,11 @@
 import hashlib
-import uuid
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.utils.timezone import now
 
 if TYPE_CHECKING:
-    from .models import TFile, TFormatImage, TResizedImage
+    from .models import TFile, TFormatImage
 
 MAIN_DIRECTORY = Path("uploads/")
 DATE_DIRECTORY = "%Y/%m/%d"
@@ -29,12 +28,6 @@ def upload_to(instance: "TFile", filename: str) -> Path:
 
 
 def format_upload_to(instance: "TFormatImage", filename: str) -> Path:
-    file_directory = Path(instance.t_file.file.name).parent
-    file_name = _md5_sum_for_file(instance.file)
-    return file_directory / file_name
-
-
-def resized_upload_to(instance: "TResizedImage", filename: str) -> Path:
     file_directory = Path(instance.t_file.file.name).parent
     file_name = _md5_sum_for_file(instance.file)
     return file_directory / file_name

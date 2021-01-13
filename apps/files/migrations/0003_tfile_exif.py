@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('files', '0002_add_t_formatted_image'),
+        ("files", "0002_add_t_formatted_image"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tfile',
-            name='exif',
+            model_name="tfile",
+            name="exif",
             field=models.JSONField(default=dict),
         ),
     ]
