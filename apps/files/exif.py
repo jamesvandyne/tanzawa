@@ -1,7 +1,8 @@
-from typing import Optional
 from io import BytesIO
-from exif import Image
+from typing import Optional
+
 from django.contrib.gis.geos import Point
+from exif import Image
 
 
 def remove_gps_exif(image) -> Optional[BytesIO]:
@@ -27,8 +28,8 @@ def get_location(image) -> Optional[Point]:
     img = Image(image)
     if not img.has_exif:
         return None
-    gps_latitude = img.get('gps_latitude')
-    gps_longitude = img.get('gps_longitude')
+    gps_latitude = img.get("gps_latitude")
+    gps_longitude = img.get("gps_longitude")
     if gps_latitude and gps_longitude:
         return Point(dms_to_dd(*gps_longitude), dms_to_dd(*gps_latitude))
     return None

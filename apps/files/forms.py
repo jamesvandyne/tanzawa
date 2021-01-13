@@ -1,10 +1,11 @@
-from typing import Optional
 import uuid
+from typing import Optional
+
 from django import forms
 from django.contrib.gis.geos import Point
 
-from .models import TFile
 from .exif import get_location
+from .models import TFile
 
 
 class MediaUploadForm(forms.ModelForm):
@@ -18,4 +19,4 @@ class MediaUploadForm(forms.ModelForm):
 
     def clean(self):
         self.instance.uuid = uuid.uuid4()
-        self.instance.point = get_location(self.cleaned_data['file'])
+        self.instance.point = get_location(self.cleaned_data["file"])
