@@ -1,6 +1,6 @@
 import mimetypes
 
-from django.http import (FileResponse, HttpResponse, HttpResponseNotAllowed,
+from django.http import (FileResponse, HttpResponse, HttpResponseNotAllowed, HttpResponseForbidden,
                          JsonResponse)
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -16,6 +16,9 @@ def micropub_media(request):
     """
     Micropub Media Endpoint
     """
+    if not request.user.is_authenticated:
+        return HttpResponseForbidden()
+
     if request.method == "POST":
         form = MediaUploadForm(request.POST, request.FILES)
         if form.is_valid():
@@ -57,7 +60,6 @@ def get_media(request, uuid):
                 )
                 formatted_file.save()
                 return_file = formatted_file
-
 
     response = FileResponse(
         return_file.file,

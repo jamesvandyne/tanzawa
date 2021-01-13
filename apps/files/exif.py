@@ -1,21 +1,34 @@
 from io import BytesIO
-from typing import Optional
+from typing import Any, Dict, Optional, Tuple
 
 from django.contrib.gis.geos import Point
 from exif import Image
 
 
-def remove_gps_exif(image) -> Optional[BytesIO]:
-    with Image(image) as img:
-        if not img.has_exif:
-            return None
-        for key in dir(img):
-            if "gps" in key:
-                img.delete(key)
-        new_file = BytesIO()
-        new_file.write(img.get_file())
-        new_file.seek(0)
-        return new_file
+def extract_exif(image) -> Dict[str, Any]:
+    img = Image(image)
+    if not img.has_exif:
+        return {}
+    exif = {}
+    for key in dir(img):
+        value = img.get(key)
+        if not value:
+            continue
+        if key == 'flash':
+            value = value.asdict()
+        exif[key] = value
+    return exif
+
+
+def scrub_exif(image: Image) -> Optional[BytesIO]:
+    img = Image(image)
+    if not img.has_exif:
+        return None
+    img.delete_all()
+    new_file = BytesIO()
+    new_file.write(img.get_file())
+    new_file.seek(0)
+    return new_file
 
 
 def dms_to_dd(degree, minute, second) -> float:
@@ -24,12 +37,10 @@ def dms_to_dd(degree, minute, second) -> float:
     return sign * (int(degree) + float(minute) / 60 + float(second) / 3600)
 
 
-def get_location(image) -> Optional[Point]:
-    img = Image(image)
-    if not img.has_exif:
-        return None
-    gps_latitude = img.get("gps_latitude")
-    gps_longitude = img.get("gps_longitude")
+def get_location(exif_dict: Dict[str, Tuple[float, float, float]]) -> Optional[Point]:
+    """ Convert the gps degree/minute/second to a Point"""
+    gps_latitude = exif_dict.get("gps_latitude")
+    gps_longitude = exif_dict.get("gps_longitude")
     if gps_latitude and gps_longitude:
         return Point(dms_to_dd(*gps_longitude), dms_to_dd(*gps_latitude))
     return None

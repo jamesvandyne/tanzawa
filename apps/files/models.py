@@ -11,6 +11,7 @@ class TFile(TimestampModel):
     uuid = models.UUIDField()
     filename = models.CharField(max_length=128)
     mime_type = models.CharField(max_length=32)
+    exif = models.JSONField(default=dict)
     point = geo_models.PointField(blank=True, null=True)
 
     posts = models.ManyToManyField(
