@@ -5,3 +5,5 @@ Django
 djangorestframework
 gunicorn
 beautifulsoup4
+exif
+Pillow
