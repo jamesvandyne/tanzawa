@@ -14,7 +14,7 @@ def extract_exif(image) -> Dict[str, Any]:
         value = img.get(key)
         if not value:
             continue
-        if key == 'flash':
+        if hasattr(value, 'asdict'):
             value = value.asdict()
         exif[key] = value
     return exif
