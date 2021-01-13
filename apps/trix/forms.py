@@ -14,7 +14,7 @@ class TrixField(forms.CharField):
 
         soup = BeautifulSoup(value, "html.parser")
 
-        figures = soup.select('figure[data-trix-content-type^=image]')
+        figures = soup.select("figure[data-trix-content-type^=image]")
         # rewrite the image figures to use the picture tag and provide alternative / optimised urls
         for figure in figures:
             if figure.find("picture"):
@@ -25,12 +25,14 @@ class TrixField(forms.CharField):
             if not img:
                 pass
             context = {
-                "source_formats": PICTURE_FORMATS.get(figure["data-trix-content-type"], []),
+                "source_formats": PICTURE_FORMATS.get(
+                    figure["data-trix-content-type"], []
+                ),
                 "src": img["src"],
                 "width": img["width"],
-                "height": img["height"]
+                "height": img["height"],
             }
-            picture = BeautifulSoup(render_to_string('trix/picture.html', context))
+            picture = BeautifulSoup(render_to_string("trix/picture.html", context))
             img.insert_before(picture)
             img.decompose()
         return str(soup)

@@ -1,4 +1,3 @@
-
 GIF = "image/gif"
 APNG = "image/apng"
 PNG = "image/png"
@@ -17,5 +16,5 @@ PICTURE_FORMATS = {
     SVG: [SVG],
     BMP: [JPEG, WEBP],
     ICO: [JPEG, WEBP],
-    TIFF: [JPEG, WEBP]
+    TIFF: [JPEG, WEBP],
 }
