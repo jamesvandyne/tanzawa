@@ -36,9 +36,9 @@ def micropub_media(request):
 def get_media(request, uuid):
     t_file: TFile = get_object_or_404(TFile, uuid=uuid)
     return_file = t_file
-    mime_type, _ = mimetypes.guess_type(t_file.filename)
     as_attachment = request.GET.get("content-disposition", "inline") == "attachment"
     file_format = request.GET.get("f")
+
     if file_format in PICTURE_FORMATS.keys():
         formatted_file = t_file.ref_t_formatted_image.filter(
             mime_type=file_format
@@ -63,7 +63,7 @@ def get_media(request, uuid):
 
     response = FileResponse(
         return_file.file,
-        mime_type,
+        return_file.mime_type,
         filename=return_file.filename,
         as_attachment=as_attachment,
     )
