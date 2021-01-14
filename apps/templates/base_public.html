@@ -14,13 +14,13 @@
     <div class="">
         <header class="max-w mx-auto p-2">
             <nav>
-                <h1 class="text-negroni-900 text-2xl"><span class="mr-1">🏔</span>Tanzawa</h1>
+                <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             </nav>
         </header>
         <div class="flex">
             <nav id="section-nav" class="min-w-min p-2 flex flex-col">
                 <ul class="mb-2">
-                    <li class="selected p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
+                    <li class="selected p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
                 </ul>
             </nav>
             <div class="w-11/12 flex flex-col ">

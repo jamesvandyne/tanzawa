@@ -8,7 +8,7 @@
     <ul>
     {% for entry in entries reversed %}
         <li class="border-b-2 border-negroni-700 py-2 my-2">
-            {% include "entry/status_item.html" with status=entry hide_footer=True %}
+            {% include "public/entry/status_item.html" with status=entry t_post=entry.t_post %}
         </li>
     {% endfor %}
     </ul>

@@ -1,6 +1,9 @@
+import uuid
+
 from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 
 class MPostStatus(TimestampModel):
@@ -31,6 +34,7 @@ class TPost(TimestampModel):
 
     m_post_status = models.ForeignKey(MPostStatus, on_delete=models.CASCADE)
     m_post_kind = models.ForeignKey(MPostKind, on_delete=models.CASCADE)
+    uuid = models.UUIDField(default=uuid.uuid4)
 
     p_author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     published = models.DateTimeField(blank=True, null=True)
@@ -42,3 +46,6 @@ class TPost(TimestampModel):
 
     class Meta:
         db_table = "t_post"
+
+    def get_absolute_url(self):
+        return reverse("public:post_detail", args=[self.uuid])
