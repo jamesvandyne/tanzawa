@@ -2,19 +2,24 @@
 
 <div class="flex-col">
     <header>
-        {% ifequal status.create_at|date:"d" day %}
+        {% ifequal status.created_at|date:"d" now|date:"d" %}
             {{ status.created_at|naturaltime }}
         {% else %}
             {{ status.created_at|date:"M d, Y" }}
         {% endifequal %}
+        {% if detail %}
+            <span class="author">
+                by {{ t_post.p_author.get_full_name }}
+            </span>
+        {% endif %}
     </header>
     <main class="content mb-2">
         {{ status.e_content|safe }}
     </main>
-    {% if not hide_footer %}
     <footer class="">
-        <a href="{% url 'public:post_detail' status.t_post.uuid %}" class="mr-2"><span class="mr-0.5">🔗</span>permalink</a>
+        <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2" title="permalink"><span class="mr-0.5">🔗</span>permalink</a>
+        {% if user.is_authenticated %}
         <a href="{% url 'status_edit' status.pk %}"><span class="mr-0.5">✏️</span>edit️</a>
+        {% endif %}
     </footer>
-    {% endif %}
 </div>

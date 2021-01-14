@@ -36,7 +36,9 @@ class Migration(migrations.Migration):
                 (
                     "t_post",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="post.tpost"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ref_t_entry",
+                        to="post.tpost",
                     ),
                 ),
             ],

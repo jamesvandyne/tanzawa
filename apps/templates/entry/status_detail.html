@@ -14,7 +14,7 @@
     <section class="mb-2">
         <div class="mb-1 flex-col">
             <a href="{% url 'status_edit' status.pk %}"  class="mb-2 inline-block"><span class="mr-0.5">✏️</span>edit️</a>
-            <a href="{% url 'status_detail' status.pk %}" class="mb-2 block"><span class="mr-0.5">🔗</span>permalink</a>
+            <a href="{% url 'public:post_detail' status.t_post.uuid  %}" class="mb-2 block"><span class="mr-0.5">🔗</span>permalink</a>
         </div>
     </section>
     <section class="mt-8">

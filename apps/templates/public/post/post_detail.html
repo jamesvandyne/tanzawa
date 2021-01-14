@@ -1,0 +1,16 @@
+{%  extends "base_public.html" %}
+{% load static %}
+
+
+
+{% block main %}
+    {% include "public/entry/status_item.html" with detail=True %}
+{% endblock %}
+
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1 flex-col">
+            <a href="{% url 'public:post_detail' t_post.uuid %}" class="mb-2 block"><span class="mr-0.5">🔗</span>permalink</a>
+        </div>
+    </section>
+{% endblock %}
