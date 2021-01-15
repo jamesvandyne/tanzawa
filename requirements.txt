@@ -2,6 +2,7 @@
 
 
 Django
+django-environ
 djangorestframework
 gunicorn
 beautifulsoup4
