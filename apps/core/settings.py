@@ -12,20 +12,36 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+root = environ.Path(__file__) - 3
+env = environ.Env()
+
+if env("ENV_FILE", default=None):
+    env.read_env(env("ENV_FILE"))
+elif Path(root(".env")).is_file():
+    env.read_env(root(".env"))
+else:
+    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "kx2)+z+1^_2#3(xt_k0uii6_l9e3f^##1k3oxv@reg%%fo$*-m"
+SECRET_KEY = env.str("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE")
+
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
 
 
 # Application definition
@@ -81,12 +97,8 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": env.db("DATABASE_URL", engine=env.str("DATABASE_ENGINE", default=None))
 }
 
 
@@ -112,9 +124,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = env.str("LANGUAGE_CODE")
 
-TIME_ZONE = "UTC"
+TIME_ZONE = env.str("TIME_ZONE")
 
 USE_I18N = True
 
@@ -130,10 +142,9 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     BASE_DIR / "../static/",
 ]
-STATIC_ROOT = BASE_DIR / "../staticfiles/"
-MEDIA_ROOT = BASE_DIR / "../micropub_media/"
+STATIC_ROOT = env.path("STATIC_ROOT")
+MEDIA_ROOT = env.path("MEDIA_ROOT")
 
-# import pdb; pdb.set_trace()
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -144,5 +155,4 @@ REST_FRAMEWORK = {
     ]
 }
 
-
-SPATIALITE_LIBRARY_PATH = "/usr/local/lib/mod_spatialite.dylib"
+SPATIALITE_LIBRARY_PATH = env.str("SPATIALITE_LIBRARY_PATH", default=None)
