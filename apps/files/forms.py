@@ -28,11 +28,12 @@ class MediaUploadForm(forms.ModelForm):
             self.instance.point = get_location(exif)
             self.cleaned_data["file"].seek(0)
             scrubbed_image_data = scrub_exif(self.cleaned_data["file"].file)
-            upload_file = SimpleUploadedFile(
-                self.cleaned_data["file"].name,
-                scrubbed_image_data.read(),
-                self.cleaned_data["file"].content_type,
-            )
-            self.cleaned_data["file"] = upload_file
+            if scrubbed_image_data:
+                upload_file = SimpleUploadedFile(
+                    self.cleaned_data["file"].name,
+                    scrubbed_image_data.read(),
+                    self.cleaned_data["file"].content_type,
+                )
+                self.cleaned_data["file"] = upload_file
         except plum._exceptions.UnpackError:
             pass
