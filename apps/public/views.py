@@ -27,3 +27,13 @@ def status_detail(request, uuid):
         "now": now(),
     }
     return render(request, "public/post/post_detail.html", context=context)
+
+
+def author(request, username: str):
+    context = {
+        "entries": TEntry.objects.select_related("t_post", "t_post__p_author").filter(
+            t_post__m_post_status__key=MPostStatuses.published,
+            t_post__p_author__username__exact=username
+        )
+    }
+    return render(request, "public/index.html", context=context)
