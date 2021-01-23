@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+from bs4 import BeautifulSoup
 from django import forms
 from django.db import transaction
 from django.utils.timezone import now
@@ -55,7 +56,10 @@ class CreateStatusForm(forms.Form):
             else None,
             dt_updated=n,
         )
-        self.t_entry = TEntry(e_content=self.cleaned_data["e_content"])
+        soup = BeautifulSoup(self.cleaned_data["e_content"])[:255]
+        self.t_entry = TEntry(
+            e_content=self.cleaned_data["e_content"], p_summary=soup.text
+        )
 
     @transaction.atomic
     def save(self):
@@ -101,6 +105,8 @@ class UpdateStatusForm(forms.ModelForm):
         ):
             self.t_post.dt_published = n
         self.t_post.dt_updated = n
+        soup = BeautifulSoup(self.cleaned_data["e_content"])
+        self.instance.p_summary = soup.text[:255]
 
     @transaction.atomic
     def save(self, commit: bool = True):

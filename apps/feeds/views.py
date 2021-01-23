@@ -1,4 +1,3 @@
-from bs4 import BeautifulSoup
 from django.contrib.syndication.views import Feed
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed
@@ -38,11 +37,7 @@ class AllEntriesFeed(Feed):
         return item.ref_t_entry.all()[0].p_name
 
     def item_description(self, item: TPost):
-        t_entry = item.ref_t_entry.all()[0]
-        if t_entry.p_summary:
-            return t_entry.p_summary
-        soup = BeautifulSoup(t_entry.e_content)
-        return soup.text
+        return item.ref_t_entry.all()[0].p_summary
 
     def item_extra_kwargs(self, item: TPost):
         content_encoded = item.ref_t_entry.all()[0].e_content
