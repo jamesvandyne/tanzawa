@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils.timezone import now
 from entry.models import TEntry
 from indieweb.constants import MPostStatuses
@@ -30,10 +30,11 @@ def status_detail(request, uuid):
 
 
 def author(request, username: str):
-    context = {
-        "entries": TEntry.objects.select_related("t_post", "t_post__p_author").filter(
+    objs = get_list_or_404(
+        TEntry.objects.select_related("t_post", "t_post__p_author").filter(
             t_post__m_post_status__key=MPostStatuses.published,
-            t_post__p_author__username__exact=username
+            t_post__p_author__username__exact=username,
         )
-    }
+    )
+    context = {"entries": objs}
     return render(request, "public/index.html", context=context)

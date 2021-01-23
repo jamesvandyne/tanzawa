@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from django import forms
 from django.db import transaction
+from django.utils.timezone import now
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
@@ -44,10 +45,15 @@ class CreateStatusForm(forms.Form):
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
+        n = now()
         self.t_post = TPost(
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
+            dt_published=n
+            if self.cleaned_data["m_post_status"].key == MPostStatuses.published
+            else None,
+            dt_updated=n,
         )
         self.t_entry = TEntry(e_content=self.cleaned_data["e_content"])
 
@@ -77,6 +83,9 @@ class UpdateStatusForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.t_post: TPost = self.instance.t_post
+        self.already_published = (
+            self.t_post.m_post_status.key == MPostStatuses.published
+        )
         self.file_attachment_uuids: List[str] = []
 
     def clean(self):
@@ -84,7 +93,14 @@ class UpdateStatusForm(forms.ModelForm):
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
+        n = now()
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
+        if (
+            self.t_post.m_post_status.key == MPostStatuses.published
+            and not self.already_published
+        ):
+            self.t_post.dt_published = n
+        self.t_post.dt_updated = n
 
     @transaction.atomic
     def save(self, commit: bool = True):
