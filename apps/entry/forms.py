@@ -56,9 +56,9 @@ class CreateStatusForm(forms.Form):
             else None,
             dt_updated=n,
         )
-        soup = BeautifulSoup(self.cleaned_data["e_content"])[:255]
+        soup = BeautifulSoup(self.cleaned_data["e_content"])
         self.t_entry = TEntry(
-            e_content=self.cleaned_data["e_content"], p_summary=soup.text
+            e_content=self.cleaned_data["e_content"], p_summary=soup.text[:255]
         )
 
     @transaction.atomic
