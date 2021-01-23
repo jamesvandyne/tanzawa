@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.gis",
     "rest_framework",
+    "core",
     "indieweb",
     "trix",
     "post",

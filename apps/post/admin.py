@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import MPostKind, TPost
+
+admin.site.register(TPost)
+admin.site.register(MPostKind)

@@ -43,8 +43,9 @@ def status_detail(request, pk: int):
 
 @login_required
 def status_delete(request, pk: int):
-    status = get_object_or_404(models.TEntry.objects.select_related("t_post"), pk=pk)
+    status = get_object_or_404(models.TEntry.objects, pk=pk)
     status.delete()
+    # TODO: Should we also delete the t_post ?
     messages.success(request, "Status Deleted")
     return redirect(resolve_url("status_list"))
 

@@ -1,23 +1,23 @@
 {% load humanize %}
 
-<div class="flex-col">
+<div class="flex-col h-entry">
     <header>
-        {% ifequal status.created_at|date:"d" now|date:"d" %}
-            {{ status.created_at|naturaltime }}
+        <time class="dt-published" datetime="{{ status.dt_published.isoformat }}">
+        {% ifequal status.dt_published|date:"d" now|date:"d" %}
+            {{ status.dt_published|naturaltime }}
         {% else %}
-            {{ status.created_at|date:"M d, Y" }}
+            {{ status.dt_published|date:"M d, Y" }}
         {% endifequal %}
+        </time>
         {% if detail %}
-            <span class="author">
-                by {{ t_post.p_author.get_full_name }}
-            </span>
+            {% include 'author/byline.html' with p_author=t_post.p_author %}
         {% endif %}
     </header>
-    <main class="content mb-2">
+    <main class="e-content mb-2">
         {{ status.e_content|safe }}
     </main>
     <footer class="">
-        <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2" title="permalink"><span class="mr-0.5">🔗</span>permalink</a>
+        <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
         {% if user.is_authenticated %}
         <a href="{% url 'status_edit' status.pk %}"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}

@@ -1,0 +1,17 @@
+{% load gravatar %}
+<span
+    class="author p-author vcard hcard h-card" itemprop="author " itemscope=""
+    itemtype="http://schema.org/Person">
+    <img alt=""
+         src="{{ p_author.email|gravatar_url }}"
+         srcset="{{ p_author.email|retina_gravatar_url }}"
+         class="avatar avatar-40 photo u-photo hidden"
+         itemprop="image"
+         loading="lazy"
+         width="40"
+         height="40">
+    <a
+    class="url uid u-url u-uid fn p-name" href="{% url 'public:author' p_author.username %}"
+    title="View all posts by {{ p_author.first_name }}" rel="author" itemprop="url">
+        <span itemprop="name">{{ p_author.first_name }}</span></a>
+</span>
