@@ -2,11 +2,11 @@
 
 <div class="flex-col h-entry">
     <header>
-        <time class="dt-published" datetime="{{ status.dt_published.isoformat }}">
-        {% ifequal status.dt_published|date:"d" now|date:"d" %}
-            {{ status.dt_published|naturaltime }}
+        <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
+        {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
+            {{ t_post.dt_published|naturaltime }}
         {% else %}
-            {{ status.dt_published|date:"M d, Y" }}
+            {{ t_post.dt_published|date:"M d, Y" }}
         {% endifequal %}
         </time>
         {% if detail %}
