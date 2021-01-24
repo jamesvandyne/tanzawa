@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.gis",
     "rest_framework",
+    "webmention",
     "core",
     "indieweb",
     "trix",
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "webmention.middleware.webmention_middleware",
 ]
 
 ROOT_URLCONF = "core.urls"

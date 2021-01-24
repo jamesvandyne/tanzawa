@@ -3,6 +3,7 @@
 
 Django
 django-environ
+django-webmention
 djangorestframework
 gunicorn
 beautifulsoup4
