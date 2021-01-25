@@ -1,0 +1,12 @@
+<div class="h-entry">
+    <span class="p-author h-card">
+    {% if webmention.author %}
+        {% if webmention.author.url %}
+        <a href="{{ webmention.author.url }}" class="u-url"></a>
+        {% endif %}
+    {% endif %}
+    </span>
+    {% if webmention.content %}
+        <p>{{ webmention.content }}</p>
+    {% endif %}
+</div>

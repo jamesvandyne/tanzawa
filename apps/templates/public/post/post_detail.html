@@ -5,6 +5,19 @@
 
 {% block main %}
     {% include "public/entry/status_item.html" with detail=True %}
+    <details>
+        <summary>Interactions</summary>
+        <ul class="list-disc">
+            {% for kind in webmentions.values %}
+
+                {% for we in kind %}
+                <li class="pb-2">
+                    {% include "public/webmention/like.html" with webmention=we%}
+                </li>
+                    {% endfor %}
+            {% endfor %}
+        </ul>
+    </details>
 {% endblock %}
 
 {% block meta %}

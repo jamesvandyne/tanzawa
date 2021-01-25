@@ -4,6 +4,8 @@ from entry.models import TEntry
 from indieweb.constants import MPostStatuses
 from post.models import TPost
 
+from .webmention import get_webmentions
+
 
 def home(request):
     context = {
@@ -21,11 +23,15 @@ def status_detail(request, uuid):
         ),
         uuid=uuid,
     )
+
     context = {
         "t_post": t_post,
-        "status": t_post.ref_t_entry.first(),
+        "status": t_post.ref_t_entry.all()[0],
+        "webmentions": get_webmentions(t_post),
         "now": now(),
     }
+    # import pprint
+    # pprint.pprint(context["webmentions"])
     return render(request, "public/post/post_detail.html", context=context)
 
 

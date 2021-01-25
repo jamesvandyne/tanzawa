@@ -19,6 +19,8 @@ class MPostKinds:
     checkin = "checkin"
     reply = "reply"
     like = "like"
+    repost = "repost"
+    rsvp = "rsvp"
 
 
 class Microformats:
