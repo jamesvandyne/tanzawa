@@ -1,0 +1,28 @@
+{%  extends "base.html" %}
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block main %}
+    <h1>Webmentions</h1>
+    <table>
+        <tr>
+            <th>Reviewed</th>
+            <th>From</th>
+            <th>Details</th>
+        </tr>
+        {% for mention in webmentions %}
+            <tr>
+                <td>{{ mention.reviewed|yesno:"️👍,👉" }}</td>
+                <td>{{ mention.source }}</td>
+                <td><a href="{% url 'admin:webmention_webmentionresponse_change' mention.id %}" class="underline">review</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}
+
+
+{% block meta %}
+
+{% endblock %}

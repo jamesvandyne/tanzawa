@@ -45,7 +45,11 @@ module.exports = {
         '900': '#11722c'
       },
     },
-    extend: {},
+    extend: {
+      spacing: {
+        '99': '42rem',
+      },
+    },
   },
   variants: {
     extend: {},

@@ -9,20 +9,21 @@
 
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     {% if form %}{{ form.media.css }}{% endif %}
-    <title></title>
+    <title>{{ page_title }}🏔 Tanzawa</title>
 </head>
 <body class="bg-bianca-500">
     <div class="">
         <header class="max-w mx-auto p-2">
             <nav>
-                <h1 class="text-negroni-900 text-2xl"><span class="mr-1">🏔</span>Tanzawa</h1>
+                <h1 class="text-negroni-900 text-2xl"><a href="{% url 'public:home' %}"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             </nav>
         </header>
         <div class="flex">
             <nav id="section-nav" class="min-w-min p-2 flex">
                 <ul class="mb-2">
-                    <li class="selected w-28 p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
-                    <li class="w-28 p-1 mb-2"><span class="mr-1">⚙️</span><span>Settings</span></li>
+                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if nav == 'status' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "status_list" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
+                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2"><span class="mr-1">⚙️</span><span>Settings</span></li>
                 </ul>
             </nav>
             <div class="w-11/12 flex flex-col">
@@ -38,7 +39,7 @@
                 {% block content_before %}{% endblock %}
                 <div id="main-container" class="flex">
                     {% block content %}
-                        <main id="main" class="main  p-2">
+                        <main id="main" class="main p-2 md:w-99">
                             <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
                             {% block breadcrumbs %}{% endblock %}
                             </nav>

@@ -1,7 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
 
+from post.models import MPostKind
 from . import forms, models
 
 
@@ -50,7 +53,19 @@ def status_delete(request, pk: int):
     return redirect(resolve_url("status_list"))
 
 
-@login_required
-def status_list(request):
-    objects = models.TEntry.objects.all()
-    return render(request, "entry/status_list.html", context={"objects": objects})
+@method_decorator(login_required, name='dispatch')
+class TEntryListView(ListView):
+    template_name = "entry/status_list.html"
+    m_post_kind_key = None
+    m_post_kind = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.m_post_kind_key:
+            self.m_post_kind = get_object_or_404(MPostKind, key=self.m_post_kind_key)
+
+    def get_queryset(self):
+        qs = models.TEntry.objects.all()
+        if self.m_post_kind:
+            qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
+        return qs
