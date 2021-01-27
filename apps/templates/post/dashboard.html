@@ -1,24 +1,49 @@
 {%  extends "base.html" %}
+{% load utils %}
 
 {% block breadcrumbs %}
 {% endblock %}
 
 {% block main %}
     <h1>Webmentions</h1>
-    <table>
-        <tr>
-            <th>Reviewed</th>
-            <th>From</th>
-            <th>Details</th>
-        </tr>
+    <ul>
         {% for mention in webmentions %}
-            <tr>
-                <td>{{ mention.reviewed|yesno:"️👍,👉" }}</td>
-                <td>{{ mention.source }}</td>
-                <td><a href="{% url 'admin:webmention_webmentionresponse_change' mention.id %}" class="underline">review</a></td>
-            </tr>
+            {% if mention.author.name %}
+            <li class="pt-4">
+                <div class="h-card p-author flex items-center">
+                    {% if mention.author.photo %}
+                    <object data="{{ mention.author.photo|cut:"\'" }}" type="image">
+                        <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ mention.author.name }}">{{ mention.author.name|first }}</div>
+                    </object>
+                    {% endif %}
+                        <div class="p-2 flex flex-col">
+                            <a href="{{ mention.author.url }}">{{ mention.author.name }}</a>
+                            {% if mention.author.url %}<small>{{ mention.author.url|urlize }}</small>{% endif %}
+                        </div>
+                    </a>
+                </div>
+                <main class="content">
+                    <p>{{ mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize|truncatechars_html:140 }}</p>
+                </main>
+                <div class="flex text-sm pt-1">
+                    <span class="mr-2">
+                        {{ mention.reviewed|yesno:"️👍,👉" }}
+                        <a href="{% url 'admin:webmention_webmentionresponse_change' mention.id %}" class="underline">review</a>
+                    </span>
+                    <span class="mr-2">
+                        <a href="{{ mention.source }}" class="underline"> <span class="mr-0.5">🔗</span>source</a>
+                    </span>
+                    <div class="ml-auto">
+                    {% for type in mention.comment_type %}
+                        <span class="rounded-full mr-1 py-0.5 px-1 w-min small border-negroni-700 border border-2 text-negroni-700 font-bold">{{ type }}</span>
+                    {% endfor %}
+                    </div>
+                </div>
+            </li>
+            {% endif %}
         {% endfor %}
-    </table>
+
+    </ul>
 
 {% endblock %}
 

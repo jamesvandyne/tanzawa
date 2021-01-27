@@ -9,3 +9,5 @@ gunicorn
 beautifulsoup4
 exif
 Pillow
+mf2py
+mf2util
