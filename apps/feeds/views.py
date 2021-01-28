@@ -28,7 +28,12 @@ class AllEntriesFeed(Feed):
         return reverse("feeds:feed")
 
     def items(self):
-        return TPost.objects.published().prefetch_related("ref_t_entry").all().order_by("-dt_published")[:10]
+        return (
+            TPost.objects.published()
+            .prefetch_related("ref_t_entry")
+            .all()
+            .order_by("-dt_published")[:10]
+        )
 
     def item_link(self, item: TPost):
         return item.get_absolute_url()

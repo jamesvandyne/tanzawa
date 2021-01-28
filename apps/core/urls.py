@@ -22,6 +22,6 @@ urlpatterns = [
     path("a/", include("post.urls", namespace="post")),
     path("", include("public.urls", namespace="public")),
     path("", include("feeds.urls", namespace="feeds")),
-    path('webmention/', include('webmention.urls')),
+    path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
 ]

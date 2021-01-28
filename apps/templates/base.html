@@ -40,9 +40,11 @@
                 <div id="main-container" class="flex">
                     {% block content %}
                         <main id="main" class="main p-2 md:w-99">
+                            {% block breadcrumbs_block %}
                             <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
                             {% block breadcrumbs %}{% endblock %}
                             </nav>
+                            {% endblock %}
                               {% block main %}{% endblock %}
                         </main>
                         <section id="meta" class="meta w-64 h-screen p-2">
