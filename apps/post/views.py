@@ -1,26 +1,18 @@
-import mf2py
-import mf2util
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from webmention.models import WebMentionResponse
-
+from indieweb.models import TWebmention
 from .models import TPost
 
 
+@login_required
 def dashboard(request):
-    webmentions = WebMentionResponse.objects.all().order_by("id").reverse()[:5]
 
-    parsed_webmentions = []
-    for wm in webmentions:
-        parsed = mf2py.parse(doc=wm.response_body)
-        comment = mf2util.interpret_comment(parsed, wm.source, [wm.response_to])
-        comment.update({"reviewed": wm.reviewed, "id": wm.id, "source": wm.source})
-
-        parsed_webmentions.append(comment)
+    webmentions = TWebmention.objects.filter(approval_status=None).reverse()
 
     context = {
         "posts": TPost.objects.all(),
-        "webmentions": parsed_webmentions,
-        "unread_count": WebMentionResponse.objects.filter(reviewed=False).count(),
+        "webmentions": webmentions,
+        "unread_count": webmentions.count(),
         "nav": "dashboard",
     }
     return render(request, "post/dashboard.html", context)
