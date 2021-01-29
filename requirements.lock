@@ -11,3 +11,4 @@ Pillow==8.1.0
 django-environ==0.4.5
 mf2py==1.1.2
 mf2util==0.5.1
+django-picklefield==3.0.1
