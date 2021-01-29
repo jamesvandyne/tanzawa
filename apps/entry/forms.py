@@ -99,11 +99,11 @@ class UpdateStatusForm(forms.ModelForm):
     def prepare_data(self):
         n = now()
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
-        if (
-            self.t_post.m_post_status.key == MPostStatuses.published
-            and not self.already_published
-        ):
-            self.t_post.dt_published = n
+        if self.t_post.m_post_status.key == MPostStatuses.published:
+            if not self.already_published:
+                self.t_post.dt_published = n
+        else:  # draft
+            self.t_post.dt_published = None
         self.t_post.dt_updated = n
         soup = BeautifulSoup(self.cleaned_data["e_content"])
         self.instance.p_summary = soup.text[:255]

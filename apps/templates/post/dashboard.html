@@ -1,0 +1,28 @@
+{%  extends "base.html" %}
+
+{% block breadcrumbs_block %}
+{% endblock %}
+
+{% block main %}
+    <details open>
+        <summary open>
+            Webmentions
+            <div class="inline-block ml-1">
+            {% if unread_count %}
+                <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="{{ unread_count }} un-moderated webmention{{ unread_count|pluralize }}">{{ unread_count }}</div>
+            {% endif %}
+            </div>
+        </summary>
+        <ul>
+            {% for t_webmention in webmentions %}
+                {% include "indieweb/webmention/webmention.html" %}
+            {% endfor %}
+            <a href="{% url 'admin:webmention_webmentionresponse_changelist' %}" class="px-1 py-1 mt-2 inline-block text-sm" title="See more webmentions">View More</a>
+        </ul>
+    </details>
+{% endblock %}
+
+
+{% block meta %}
+    {% include "entry/buttons/create_status.html" %}
+{% endblock %}

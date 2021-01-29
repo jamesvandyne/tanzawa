@@ -1,6 +1,11 @@
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
 from entry.models import TEntry
 from post.models import MPostStatus, TPost
 from post.utils import determine_post_kind
@@ -8,6 +13,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .models import TWebmention
 from .serializers import CreateMicropubSerializer
 
 logger = logging.getLogger(__name__)
@@ -46,3 +52,37 @@ def micropub(request):
             )
 
     return Response(data=serializer.data)
+
+
+@login_required
+def review_webmention(request, pk: int, approval: bool):
+    t_web_mention: TWebmention = get_object_or_404(
+        TWebmention.objects.select_related(), pk=pk
+    )
+    t_webmention_response = t_web_mention.t_webmention_response
+
+    with transaction.atomic():
+        t_web_mention.approval_status = approval
+        t_webmention_response.reviewed = True
+
+        t_web_mention.save()
+        t_webmention_response.save()
+    # TODO: Once we have turbo enabled - add a ajax handler
+
+    return redirect(reverse("post:dashboard"))
+
+
+@method_decorator(login_required, name="dispatch")
+class TEntryListView(ListView):
+    template_name = "entry/status_list.html"
+
+    def get_queryset(self):
+        qs = TWebmention.objects.all()
+        if self.m_post_kind:
+            qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["nav"] = "status"
+        return context

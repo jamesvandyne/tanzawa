@@ -7,7 +7,7 @@
 {% block main %}
     {% now "d" as day %}
     <ul>
-        {% for status in objects reversed %}
+        {% for status in object_list reversed %}
             <li class="border-b-2 border-negroni-700 py-2 my-2">
                 {% include "entry/status_item.html" %}
             </li>
@@ -19,7 +19,7 @@
 {% block meta %}
     <section class="mb-2">
         <div class="mb-1">
-            <a href="{% url "status_create" %}" class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" value="published">New</a>
+            {% include "entry/buttons/create_status.html" %}
         </div>
     </section>
 {% endblock %}
