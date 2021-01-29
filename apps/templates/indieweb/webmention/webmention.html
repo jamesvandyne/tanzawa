@@ -5,10 +5,10 @@
         <div class="flex-col">
             <div class="h-card p-author flex items-center">
                 {% if mention.author.photo %}
-                <object data="{{ mention.author.photo|cut:"\'" }}" type="image">
+                <object data="{{ mention.author.photo }}" type="{{ mention.author.photo|mimetype }}" class="u-image rounded-full h-12 w-12">
                     <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ mention.author.name }}">{{ mention.author.name|default:"Unknown"|first }}</div>
                 </object>
-                {% else %}
+                 {% else %}
                     <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ mention.author.name }}">{{ mention.author.name|default:"Unknown"|first }}</div>
                 {% endif %}
                     <div class="p-2 flex flex-col">
