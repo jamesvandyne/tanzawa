@@ -12,3 +12,4 @@ django-environ==0.4.5
 mf2py==1.1.2
 mf2util==0.5.1
 django-picklefield==3.0.1
+ftfy==5.8

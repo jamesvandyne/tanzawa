@@ -21,10 +21,14 @@ def status_detail(request, uuid):
         ),
         uuid=uuid,
     )
+    webmentions = t_post.ref_t_webmention.filter(approval_status=True)
     context = {
         "t_post": t_post,
-        "status": t_post.ref_t_entry.first(),
+        "webmentions": webmentions,
+        "webmentions_count": webmentions.count(),
+        "status": t_post.ref_t_entry.all()[0],
         "now": now(),
+        "public": True,
     }
     return render(request, "public/post/post_detail.html", context=context)
 

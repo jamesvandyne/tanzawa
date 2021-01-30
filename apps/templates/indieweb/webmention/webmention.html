@@ -1,19 +1,20 @@
 {% load utils %}
 {% with t_webmention.microformat_data as mention %}
+    {% with mention.author.name as author_name %}
 <li class="pt-4">
     <div class="flex">
         <div class="flex-col">
             <div class="h-card p-author flex items-center">
                 {% if mention.author.photo %}
                 <object data="{{ mention.author.photo }}" type="{{ mention.author.photo|mimetype }}" class="u-image rounded-full h-12 w-12">
-                    <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ mention.author.name }}">{{ mention.author.name|default:"Unknown"|first }}</div>
+                    <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ author_name }}">{{ author_name|default:"Unknown"|first }}</div>
                 </object>
                  {% else %}
-                    <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ mention.author.name }}">{{ mention.author.name|default:"Unknown"|first }}</div>
+                    <div class="u-image rounded-full h-12 w-12 bg-negroni-700 flex items-center justify-center text-white" title="{{ author_name }}">{{ author_name|default:"Unknown"|first }}</div>
                 {% endif %}
                     <div class="p-2 flex flex-col">
                         {% if mention.author.url %}
-                            <a href="{{ mention.author.url }}">{{ mention.author.name|default:"Unknown" }}</a>
+                            <a href="{{ mention.author.url }}">{{ author_name|default:"Unknown" }}</a>
                          {% else %}
                             <span>Unknown</span>
                         {% endif %}
@@ -32,10 +33,13 @@
                 </div>
             </div>
         </div>
+        {% if not public  %}
         <span class="pl-4 inline-block flex-col ml-auto justify-between">
             <a href="{% url 'indieweb:webmention_approve' t_webmention.id %}" title="Approve webmention" class="text-4xl block">👍</a>
             <a href="{% url 'indieweb:webmention_disapprove' t_webmention.id %}" title="Disapprove webmention" class="text-4xl block mt-2">👎</a>
         </span>
+        {% endif %}
     </div>
 </li>
+    {% endwith %}
 {% endwith %}

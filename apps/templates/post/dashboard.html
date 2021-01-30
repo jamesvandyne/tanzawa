@@ -17,7 +17,6 @@
             {% for t_webmention in webmentions %}
                 {% include "indieweb/webmention/webmention.html" %}
             {% endfor %}
-            <a href="{% url 'admin:webmention_webmentionresponse_changelist' %}" class="px-1 py-1 mt-2 inline-block text-sm" title="See more webmentions">View More</a>
         </ul>
     </details>
 {% endblock %}

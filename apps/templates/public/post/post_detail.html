@@ -5,6 +5,23 @@
 
 {% block main %}
     {% include "public/entry/status_item.html" with detail=True %}
+    {% if webmentions_count %}
+        {# When turbo is working make webmentions load lazily #}
+        <details class="mt-2">
+            <summary>
+                Interactions
+                <div class="inline-block ml-1">
+                    <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="{{ webmentions_count}} interaction{{ webmentions_count|pluralize }}">{{ webmentions_count }}</div>
+                </div>
+            </summary>
+            <ul>
+                {% for t_webmention in webmentions %}
+                    {% include "indieweb/webmention/webmention.html" %}
+                {% endfor %}
+            </ul>
+        </details>
+    {% endif %}
+
 {% endblock %}
 
 {% block meta %}
