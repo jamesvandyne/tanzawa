@@ -1,1 +1,1 @@
-default_app_config = 'indieweb.apps.IndiewebConfig'
+default_app_config = "indieweb.apps.IndiewebConfig"

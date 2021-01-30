@@ -28,7 +28,7 @@ def status_detail(request, uuid):
         "webmentions_count": webmentions.count(),
         "status": t_post.ref_t_entry.all()[0],
         "now": now(),
-        "public": True
+        "public": True,
     }
     return render(request, "public/post/post_detail.html", context=context)
 

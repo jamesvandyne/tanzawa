@@ -1,8 +1,8 @@
+import mimetypes
 from typing import Any, Dict, Optional
 from urllib import parse
-import mimetypes
-import ftfy
 
+import ftfy
 from django import template
 
 register = template.Library()
@@ -37,4 +37,3 @@ def fix_text(obj: str) -> str:
     if not obj:
         return ""
     return ftfy.fix_text(ftfy.fixes.decode_escapes(obj))
-
