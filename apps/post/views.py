@@ -17,3 +17,5 @@ def dashboard(request):
         "nav": "dashboard",
     }
     return render(request, "post/dashboard.html", context)
+
+
