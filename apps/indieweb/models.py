@@ -1,4 +1,3 @@
-import ftfy
 import mf2py
 import mf2util
 from core.models import TimestampModel
@@ -29,9 +28,10 @@ class TWebmention(TimestampModel):
     ) -> "TWebmention":
         instance = cls(t_webmention_response=mention, t_post=t_post)
         # make sure that we encode emoji and such properly
-        cleaned_response = ftfy.fix_text(
-            ftfy.fixes.decode_escapes(mention.response_body)
-        )
+        if isinstance(mention.response_body, bytes):
+            cleaned_response = mention.response_body.decode()
+        else:
+            cleaned_response = mention.response_body
         parsed = mf2py.parse(doc=cleaned_response)
         mf_data = mf2util.interpret_comment(
             parsed, mention.source, [mention.response_to]
