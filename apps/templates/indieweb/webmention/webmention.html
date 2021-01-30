@@ -1,6 +1,6 @@
 {% load utils %}
 {% with t_webmention.microformat_data as mention %}
-    {% with mention.author.name|fix_text as author_name %}
+    {% with mention.author.name as author_name %}
 <li class="pt-4">
     <div class="flex">
         <div class="flex-col">
@@ -23,7 +23,7 @@
                 </a>
             </div>
             <main class="content">
-                <p>{{ mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize|truncatechars_html:140|fix_text }}</p>
+                <p>{{ mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize|truncatechars_html:140 }}</p>
             </main>
             <div class="flex text-sm pt-1">
                 <div class="mr-auto">
