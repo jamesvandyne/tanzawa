@@ -1,10 +1,11 @@
 import mf2py
-import mf2util
 from core.models import TimestampModel
 from django.db import models
 from picklefield import PickledObjectField
 from post.models import TPost
 from webmention.models import WebMentionResponse
+
+from .utils import interpret_comment
 
 
 class TWebmention(TimestampModel):
@@ -33,8 +34,6 @@ class TWebmention(TimestampModel):
         else:
             cleaned_response = mention.response_body
         parsed = mf2py.parse(doc=cleaned_response)
-        mf_data = mf2util.interpret_comment(
-            parsed, mention.source, [mention.response_to]
-        )
+        mf_data = interpret_comment(parsed, mention.source, [mention.response_to])
         instance.microformat_data = mf_data
         return instance

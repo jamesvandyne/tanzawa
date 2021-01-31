@@ -16,7 +16,7 @@
                         {% if mention.author.url %}
                             <a href="{{ mention.author.url }}">{{ author_name|default:"Unknown" }}</a>
                          {% else %}
-                            <span>Unknown</span>
+                            <span>{{ author_name|default:"Unknown" }}</span>
                         {% endif %}
                         <a href="{{ t_webmention.t_webmention_response.source }}" class="text-xs">{{ t_webmention.t_webmention_response.source|domain }}</a>
                     </div>
