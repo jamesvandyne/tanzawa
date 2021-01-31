@@ -18,8 +18,11 @@
     </main>
     <footer class="">
         <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
+        {% if status.interaction_count %}
+            <span>{{ status.interaction_count }}</span> interaction{{ status.interaction_count|pluralize }}
+        {% endif %}
         {% if user.is_authenticated %}
-        <a href="{% url 'status_edit' status.pk %}"><span class="mr-0.5">✏️</span>edit️</a>
+            <a href="{% url 'status_edit' status.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}
     </footer>
 </div>
