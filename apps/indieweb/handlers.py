@@ -22,3 +22,4 @@ def create_t_webmention(sender, instance, created, raw, using, update_fields, **
             t_webmention.save()
         except TPost.DoesNotExist:
             logger.info("Webmention received for invalid post %s", uuid)
+    # TODO: add update support

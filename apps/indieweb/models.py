@@ -37,3 +37,22 @@ class TWebmention(TimestampModel):
         mf_data = interpret_comment(parsed, mention.source, [mention.response_to])
         instance.microformat_data = mf_data
         return instance
+
+    def __str__(self):
+        return f"{self.t_post} {self.t_webmention_response}"
+
+
+class TWebmentionSend(TimestampModel):
+    t_post = models.ForeignKey(
+        "post.TPost", related_name="ref_t_webmention_send", on_delete=models.CASCADE
+    )
+    target = models.URLField()
+    dt_sent = models.DateTimeField()
+    success = models.BooleanField()
+
+    class Meta:
+        db_table = "t_webmention_send"
+        unique_together = ("target", "t_post")
+
+    def __str__(self):
+        return self.target
