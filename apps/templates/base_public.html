@@ -7,8 +7,11 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>🏔Tanzawa</title>
-    <link rel="alternate" type="application/rss+xml" title="🏔Tanzawa" href="{{ request.build_absolute_uri|slice:":-1" }}{% url 'feeds:feed' %}">
+    {% with request.build_absolute_uri|slice:":-1" as absolute_url %}
+    <link rel="alternate" type="application/rss+xml" title="🏔Tanzawa" href="{{ absolute_url }}{% url 'feeds:feed' %}">
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
+    <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
+    {% endwith %}
 </head>
 <body class="bg-bianca-500">
     <div class="">
