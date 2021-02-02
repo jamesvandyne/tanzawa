@@ -1,16 +1,21 @@
+from django.db.models import Count, Q
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils.timezone import now
 from entry.models import TEntry
 from indieweb.constants import MPostStatuses
 from post.models import TPost
 
-from django.db.models import Count, Q
 
 def home(request):
     context = {
-        "entries": TEntry.objects.select_related("t_post", "t_post__p_author").filter(
-            t_post__m_post_status__key=MPostStatuses.published
-        ).annotate(interaction_count=Count('t_post__ref_t_webmention', filter=Q(t_post__ref_t_webmention__approval_status=True)))
+        "entries": TEntry.objects.select_related("t_post", "t_post__p_author")
+        .filter(t_post__m_post_status__key=MPostStatuses.published)
+        .annotate(
+            interaction_count=Count(
+                "t_post__ref_t_webmention",
+                filter=Q(t_post__ref_t_webmention__approval_status=True),
+            )
+        )
     }
     return render(request, "public/index.html", context=context)
 

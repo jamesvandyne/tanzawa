@@ -105,7 +105,7 @@ class UpdateStatusForm(forms.ModelForm):
         else:  # draft
             self.t_post.dt_published = None
         self.t_post.dt_updated = n
-        soup = BeautifulSoup(self.cleaned_data["e_content"])
+        soup = BeautifulSoup(self.cleaned_data["e_content"], features="html5lib")
         self.instance.p_summary = soup.text[:255]
 
     @transaction.atomic

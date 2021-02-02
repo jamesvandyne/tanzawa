@@ -1,5 +1,3 @@
-import mimetypes
-
 from django.http import (FileResponse, HttpResponse, HttpResponseForbidden,
                          HttpResponseNotAllowed, JsonResponse)
 from django.shortcuts import get_object_or_404
