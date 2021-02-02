@@ -1,11 +1,14 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.html import mark_safe
 from django.views.generic import ListView
+from indieweb.constants import MPostStatuses
+from indieweb.webmentions import send_webmention
 from post.models import MPostKind
 
-from indieweb.webmentions import find_a_tags, send_webmention
 from . import forms, models
 
 
@@ -18,9 +21,14 @@ def status_create(request):
             form.prepare_data()
             entry = form.save()
 
-            a_tags = find_a_tags(entry.e_content)
+            if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+                send_webmention(request, entry.t_post, entry.e_content)
 
-            messages.success(request, f"Saved Status")
+            permalink_a_tag = render_to_string(
+                "fragments/view_post_link.html", {"t_post": entry.t_post}
+            )
+            messages.success(request, f"Saved Status. {mark_safe(permalink_a_tag)}")
+
             return redirect(resolve_url("status_edit", pk=entry.pk))
     context = {"form": form, "nav": "status"}
     return render(request, "entry/status_create.html", context=context)
@@ -28,19 +36,22 @@ def status_create(request):
 
 @login_required
 def status_edit(request, pk: int):
-    status = get_object_or_404(models.TEntry.objects.select_related("t_post"), pk=pk)
-    request_uri = request.build_absolute_uri(location="/")
+    status: models.TEntry = get_object_or_404(
+        models.TEntry.objects.select_related("t_post"), pk=pk
+    )
     form = forms.UpdateStatusForm(request.POST or None, instance=status)
 
     if request.method == "POST":
+        original_content = status.e_content
         if form.is_valid():
             form.prepare_data()
+            send_webmention(request, form.instance.t_post, original_content)
             form.save()
-            a_tags = [a for a in find_a_tags(form.instance.e_content) if not a.startswith(request_uri)]
-            for target in a_tags:
-                send_webmention(request, form.instance.t_post, target)
-
-            messages.success(request, "Saved Status")
+            send_webmention(request, form.instance.t_post, form.instance.e_content)
+            permalink_a_tag = render_to_string(
+                "fragments/view_post_link.html", {"t_post": form.instance.t_post}
+            )
+            messages.success(request, f"Saved Status. {mark_safe(permalink_a_tag)}")
     context = {"form": form, "nav": "status"}
     return render(request, "entry/status_update.html", context=context)
 
@@ -55,6 +66,7 @@ def status_detail(request, pk: int):
 @login_required
 def status_delete(request, pk: int):
     status = get_object_or_404(models.TEntry.objects, pk=pk)
+    send_webmention(request, status.t_post, status.e_content)
     status.delete()
     # TODO: Should we also delete the t_post ?
     messages.success(request, "Status Deleted")

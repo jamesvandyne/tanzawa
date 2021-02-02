@@ -35,6 +35,6 @@
 }
 
 
-main.content a, .trix-content a {
+main.content a, .trix-content a, #messages a {
     @apply underline;
 }

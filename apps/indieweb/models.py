@@ -28,15 +28,22 @@ class TWebmention(TimestampModel):
         cls, mention: WebMentionResponse, t_post: TPost
     ) -> "TWebmention":
         instance = cls(t_webmention_response=mention, t_post=t_post)
-        # make sure that we encode emoji and such properly
-        if isinstance(mention.response_body, bytes):
-            cleaned_response = mention.response_body.decode()
-        else:
-            cleaned_response = mention.response_body
-        parsed = mf2py.parse(doc=cleaned_response)
-        mf_data = interpret_comment(parsed, mention.source, [mention.response_to])
-        instance.microformat_data = mf_data
+        instance.update_microformat_data()
         return instance
+
+    def update_microformat_data(self):
+        # make sure that we encode emoji and such properly
+        if isinstance(self.t_webmention_response.response_body, bytes):
+            cleaned_response = self.t_webmention_response.response_body.decode()
+        else:
+            cleaned_response = self.t_webmention_response.response_body
+        parsed = mf2py.parse(doc=cleaned_response)
+        mf_data = interpret_comment(
+            parsed,
+            self.t_webmention_response.source,
+            [self.t_webmention_response.response_to],
+        )
+        self.microformat_data = mf_data
 
     def __str__(self):
         return f"{self.t_post} {self.t_webmention_response}"
