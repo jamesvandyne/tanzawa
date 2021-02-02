@@ -24,6 +24,7 @@ def create_t_webmention(sender, instance, created, raw, using, update_fields, **
         t_webmention = TWebmention.objects.get(
             t_webmention_response=instance, t_post=t_post
         )
+        t_webmention.approval_status = None
         t_webmention.update_microformat_data()
     except TWebmention.DoesNotExist:
         t_webmention = TWebmention.instance_from_webmentionresponse(instance, t_post)
