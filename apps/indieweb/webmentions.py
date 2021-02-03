@@ -37,10 +37,10 @@ def send_webmention(request, t_post: TPost, e_content: str) -> List[TWebmentionS
                     t_post=t_post, target=target, success=False
                 )
 
-            status_code = ronkyuu.sendWebmention(source_url, target, wm_url)
+            response = ronkyuu.sendWebmention(source_url, target, wm_url)
             t_webmention_send.dt_sent = now()
             t_webmention_send.save()
-            if status_code == requests.codes.ok:
+            if response and response.status_code == requests.codes.ok:
                 t_webmention_send.success = True
             else:
                 t_webmention_send.success = False
