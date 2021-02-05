@@ -160,4 +160,5 @@ REST_FRAMEWORK = {
 
 SPATIALITE_LIBRARY_PATH = env.str("SPATIALITE_LIBRARY_PATH", default=None)
 
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "post:dashboard"
