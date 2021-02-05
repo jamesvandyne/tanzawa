@@ -16,11 +16,14 @@
 <body class="bg-bianca-500">
     <div class="">
         <header class="max-w mx-auto p-2">
+            {% block header %}
             <nav>
                 <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             </nav>
+            {% endblock %}
         </header>
         <div class="flex">
+            {% block content_wrapper  %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col">
                 <ul class="mb-2">
                     <li class="selected w-28 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">💬</span><span>Status</span></a></li>
@@ -45,6 +48,7 @@
                     <span class="mx-auto text-sm">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
                 {% endblock %}
             </div>
+            {% endblock %}
         </div>
     </div>
 </body>
