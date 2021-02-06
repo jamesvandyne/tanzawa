@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.gis",
     "rest_framework",
+    "rest_framework.authtoken",
     "webmention",
     "core",
     "indieweb",
@@ -78,6 +79,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "core.urls"
+
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 TEMPLATES = [
     {

@@ -18,4 +18,9 @@ urlpatterns = [
         name="webmention_disapprove",
         kwargs={"approval": False},
     ),
+    path(
+        "indieauth/",
+        views.indieauth_authorize,
+        name="indieauth_authorize",
+    ),
 ]

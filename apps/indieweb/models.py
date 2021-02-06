@@ -5,6 +5,7 @@ from picklefield import PickledObjectField
 from post.models import TPost
 from webmention.models import WebMentionResponse
 
+from rest_framework.authtoken.models import Token
 from .utils import interpret_comment
 
 
@@ -63,3 +64,39 @@ class TWebmentionSend(TimestampModel):
 
     def __str__(self):
         return self.target
+
+
+class MMicropubScope(TimestampModel):
+
+    key = models.CharField(max_length=12, unique=True)
+    name = models.CharField(max_length=16)
+
+    class Meta:
+        db_table = "m_micropub_scope"
+
+    def __str__(self):
+        return self.name
+
+
+class TToken(TimestampModel):
+
+    token = models.ForeignKey(Token, on_delete=models.CASCADE)
+    client_id = models.URLField()
+
+    class Meta:
+        db_table = "t_token"
+
+    def __str__(self):
+        return f"{self.token}"
+
+
+class TTokenMicropubScope(TimestampModel):
+    t_token = models.ForeignKey(TToken, on_delete=models.CASCADE)
+    m_micropub_scope = models.ForeignKey(MMicropubScope, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "t_token_micropub_scope"
+        unique_together = ("t_token", "m_micropub_scope")
+
+    def __str__(self):
+        return f"{self.t_token}:{self.m_micropub_scope}"

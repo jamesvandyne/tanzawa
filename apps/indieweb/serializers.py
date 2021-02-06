@@ -18,3 +18,16 @@ class MicropubSerializer(serializers.Serializer):
 
 class CreateMicropubSerializer(MicropubSerializer):
     action = serializers.CharField(required=True)
+
+
+ResponseTypeChoices = [("id", "id"), ("code", "id+authorization")]
+
+
+class IndieAuthAuthorizationSerializer(serializers.Serializer):
+
+    me = serializers.URLField(required=True)
+    client_id = serializers.URLField(required=True)
+    redirect_uri = serializers.URLField(required=True)
+    state = serializers.CharField(required=True)
+    scope = serializers.CharField(required=True)
+    response_type = serializers.ChoiceField(choices=ResponseTypeChoices, required=False)
