@@ -1,3 +1,4 @@
+from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
 
 from . import constants
@@ -31,3 +32,13 @@ class IndieAuthAuthorizationSerializer(serializers.Serializer):
     state = serializers.CharField(required=True)
     scope = serializers.CharField(required=True)
     response_type = serializers.ChoiceField(choices=ResponseTypeChoices, required=False)
+
+    def validate(self, data):
+        if data["redirect_uri"]:
+            response = discoverAuthEndpoints(data["client_id"])
+            if data["redirect_uri"] not in response["redirect_uri"]:
+                raise serializers.ValidationError(
+                    "Redirect uri not found on client app"
+                )
+
+        return data

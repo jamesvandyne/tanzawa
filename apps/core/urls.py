@@ -25,5 +25,5 @@ urlpatterns = [
     path("", include("feeds.urls", namespace="feeds")),
     path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
-    path('auth/', include('django.contrib.auth.urls')),
+    path("auth/", include("django.contrib.auth.urls")),
 ]

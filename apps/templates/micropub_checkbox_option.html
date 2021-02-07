@@ -1,5 +1,6 @@
-<div>
-    YOYOYO
-    {% include "django/forms/widgets/multiple_input.html" %}
-    Hello
+<div class="pt-1">
+    {% include "django/forms/widgets/checkbox_option.html" %}
+    <p class="text-sm">
+        {{ option.value.instance.help_text }}
+    </p>
 </div>

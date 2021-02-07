@@ -4,17 +4,17 @@
 
 
 {% block content_wrapper %}
-    <div class="flex justify-center h-screen flex-grow">
+    <div class="flex justify-center h-screen flex-grow" xmlns="http://www.w3.org/1999/html">
         <div class="rounded border-negroni-700 border px-20 py-10 self-center shadow">
             <h1 class="text-negroni-900 text-4xl text-center"><a href="{% url "public:home" %}" class="block flex justify-center"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             <form method="post" class="flex-col pt-4">
                 {% csrf_token %}
-                <p class="w-prose">{{ client_id|urlize }} is requesting permission to access your website.</p>
+                <p class="w-prose"><span class="underline">{{ client_id|urlize }}</span> is requesting permission to access your website.</p>
                 <p class="w-prose">It has requested the following permissions. You can modify them below.</p>
                 <div class="mt-4">
                     {{ form.scope }}
                 </div>
-                <div class="text-center">
+                <div class="text-left">
                     <button class="green-button mt-4 shadow" type="submit">Approve</button>
                     <a href="{{ client_id }}" class="inline-block ml-4">Cancel</a>
                 </div>

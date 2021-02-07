@@ -2,6 +2,7 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -15,7 +16,8 @@ from rest_framework.response import Response
 
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
-from .serializers import CreateMicropubSerializer, IndieAuthAuthorizationSerializer
+from .serializers import (CreateMicropubSerializer,
+                          IndieAuthAuthorizationSerializer)
 
 logger = logging.getLogger(__name__)
 
@@ -94,14 +96,32 @@ def indieauth_authorize(request):
 
     if request.method == "GET":
         serializer = IndieAuthAuthorizationSerializer(data=request.GET)
-        form = None
-        if serializer.is_valid():
-            scopes = serializer.validated_data['scope'].split(",")
-            form = IndieAuthAuthorizationForm(initial={'scope': [scopes]})
+
+        if not serializer.is_valid():
+            return HttpResponseBadRequest(serializer.errors.values())
+
+        scopes = serializer.validated_data["scope"].split(",")
+        form = IndieAuthAuthorizationForm(
+            initial={
+                "scope": scopes,
+                "redirect_uri": serializer.validated_data["redirect_uri"],
+                "client_id": serializer["client_id"],
+                "state": serializer["state"],
+            }
+        )
         context = {
             "form": form,
             "client_id": serializer.validated_data.get("client_id"),
-
-
         }
+        return render(request, "indieweb/indieauth/authorization.html", context=context)
+
+    if request.method == "POST":
+        form = IndieAuthAuthorizationForm(request.POST)
+        if form.is_valid():
+            t_token = form.save()
+            redirect_uri = f"{form.cleaned_data['redirect_uri']}?code={t_token.token.key}&state={form.cleaned_data['state']}"
+            redirect(redirect_uri)
+
+        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
+
         return render(request, "indieweb/indieauth/authorization.html", context=context)

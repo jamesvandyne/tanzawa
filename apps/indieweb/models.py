@@ -3,9 +3,9 @@ from core.models import TimestampModel
 from django.db import models
 from picklefield import PickledObjectField
 from post.models import TPost
+from rest_framework.authtoken.models import Token
 from webmention.models import WebMentionResponse
 
-from rest_framework.authtoken.models import Token
 from .utils import interpret_comment
 
 
@@ -77,11 +77,22 @@ class MMicropubScope(TimestampModel):
     def __str__(self):
         return self.name
 
+    def help_text(self):
+        if self.key == "media":
+            return "Allows the application to upload media"
+        return f"Allows the application to {self.name.lower()} posts"
+
 
 class TToken(TimestampModel):
 
-    token = models.ForeignKey(Token, on_delete=models.CASCADE)
+    token = models.ForeignKey(Token, on_delete=models.CASCADE, related_name="t_token")
     client_id = models.URLField()
+
+    micropub_scope = models.ManyToManyField(
+        MMicropubScope,
+        through="TTokenMicropubScope",
+        through_fields=("t_token", "m_micropub_scope"),
+    )
 
     class Meta:
         db_table = "t_token"
