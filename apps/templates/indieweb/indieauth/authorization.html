@@ -9,6 +9,9 @@
             <h1 class="text-negroni-900 text-4xl text-center"><a href="{% url "public:home" %}" class="block flex justify-center"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             <form method="post" class="flex-col pt-4">
                 {% csrf_token %}
+                {{ form.client_id }}
+                {{ form.redirect_uri }}
+                {{ form.state }}
                 <p class="w-prose"><span class="underline">{{ client_id|urlize }}</span> is requesting permission to access your website.</p>
                 <p class="w-prose">It has requested the following permissions. You can modify them below.</p>
                 <div class="mt-4">

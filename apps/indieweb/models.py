@@ -1,9 +1,12 @@
+import binascii
+import os
+
 import mf2py
 from core.models import TimestampModel
+from django.contrib.auth import get_user_model
 from django.db import models
 from picklefield import PickledObjectField
 from post.models import TPost
-from rest_framework.authtoken.models import Token
 from webmention.models import WebMentionResponse
 
 from .utils import interpret_comment
@@ -84,8 +87,11 @@ class MMicropubScope(TimestampModel):
 
 
 class TToken(TimestampModel):
-
-    token = models.ForeignKey(Token, on_delete=models.CASCADE, related_name="t_token")
+    user = models.ForeignKey(
+        get_user_model(), related_name="ref_t_token", on_delete=models.CASCADE
+    )
+    auth_token = models.CharField(max_length=40, blank=True)
+    access_token = models.CharField(max_length=40, blank=True)
     client_id = models.URLField()
 
     micropub_scope = models.ManyToManyField(
@@ -94,11 +100,15 @@ class TToken(TimestampModel):
         through_fields=("t_token", "m_micropub_scope"),
     )
 
+    @classmethod
+    def generate_key(cls):
+        return binascii.hexlify(os.urandom(20)).decode()
+
     class Meta:
         db_table = "t_token"
 
     def __str__(self):
-        return f"{self.token}"
+        return f"{self.auth_token}::{self.access_token}"
 
 
 class TTokenMicropubScope(TimestampModel):

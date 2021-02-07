@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "django.contrib.gis",
     "rest_framework",
-    "rest_framework.authtoken",
     "webmention",
     "core",
     "indieweb",

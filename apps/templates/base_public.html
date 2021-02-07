@@ -9,6 +9,10 @@
     <title>🏔Tanzawa</title>
     {% with request.build_absolute_uri|slice:":-1" as absolute_url %}
     <link rel="alternate" type="application/rss+xml" title="🏔Tanzawa" href="{{ absolute_url }}{% url 'feeds:feed' %}">
+    <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint"/>
+    <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint"/>
+    <link href="{{ absolute_url }}{% url 'indieweb:micropub' %}" rel="micropub"/>
+    <link href="{{ absolute_url }}{% url 'micropub_media' %}" rel="micropub_media"/>
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}

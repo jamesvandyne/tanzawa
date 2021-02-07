@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .serializers import (CreateMicropubSerializer,
-                          IndieAuthAuthorizationSerializer)
+                          IndieAuthAuthorizationSerializer,
+                          IndieAuthTokenSerializer)
 
 logger = logging.getLogger(__name__)
 
@@ -100,13 +101,13 @@ def indieauth_authorize(request):
         if not serializer.is_valid():
             return HttpResponseBadRequest(serializer.errors.values())
 
-        scopes = serializer.validated_data["scope"].split(",")
+        scopes = serializer.validated_data["scope"].split(" ")
         form = IndieAuthAuthorizationForm(
             initial={
                 "scope": scopes,
                 "redirect_uri": serializer.validated_data["redirect_uri"],
-                "client_id": serializer["client_id"],
-                "state": serializer["state"],
+                "client_id": serializer.validated_data["client_id"],
+                "state": serializer.validated_data["state"],
             }
         )
         context = {
@@ -118,10 +119,18 @@ def indieauth_authorize(request):
     if request.method == "POST":
         form = IndieAuthAuthorizationForm(request.POST)
         if form.is_valid():
-            t_token = form.save()
-            redirect_uri = f"{form.cleaned_data['redirect_uri']}?code={t_token.token.key}&state={form.cleaned_data['state']}"
-            redirect(redirect_uri)
-
+            t_token = form.save(request.user)
+            redirect_uri = f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
+            return redirect(redirect_uri)
         context = {"form": form, "client_id": form.cleaned_data["client_id"]}
 
         return render(request, "indieweb/indieauth/authorization.html", context=context)
+
+
+@api_view(["POST"])
+def token_endpoint(request):
+    serializer = IndieAuthTokenSerializer(data=request.POST)
+    if serializer.is_valid():
+        serializer.save(request.user)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

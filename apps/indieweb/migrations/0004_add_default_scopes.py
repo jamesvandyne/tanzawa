@@ -17,7 +17,11 @@ def register_micropub_scopes(apps, schema):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("indieweb", "0003_mmicropubscope_ttoken_ttokenmicropubscope"),
+        ("indieweb", "0003_ttoken"),
     ]
 
-    operations = [migrations.RunPython(register_micropub_scopes)]
+    operations = [
+        migrations.RunPython(
+            register_micropub_scopes, reverse_code=migrations.RunPython.noop
+        )
+    ]
