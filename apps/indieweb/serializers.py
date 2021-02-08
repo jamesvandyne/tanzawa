@@ -90,5 +90,5 @@ class IndieAuthTokenSerializer(serializers.Serializer):
     def save(self, user):
         t_token = self.validated_data["t_token"]
         t_token.auth_token = ""
-        t_token.access_token = self.validated_data["access_token"]
+        t_token.key = self.validated_data["access_token"]
         t_token.save()

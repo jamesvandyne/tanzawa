@@ -63,7 +63,7 @@ class TestIndieAuthToken:
 
         t_token.refresh_from_db()
         assert t_token.auth_token == ""
-        assert t_token.access_token == data["access_token"]
+        assert t_token.key == data["access_token"]
 
     def test_used_token_invalid(self, target, client, ninka_mock, post_data):
         ninka_mock.return_value = {"redirect_uri": [post_data['redirect_uri']]}

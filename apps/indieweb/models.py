@@ -91,7 +91,7 @@ class TToken(TimestampModel):
         get_user_model(), related_name="ref_t_token", on_delete=models.CASCADE
     )
     auth_token = models.CharField(max_length=40, blank=True)
-    access_token = models.CharField(max_length=40, blank=True)
+    key = models.CharField(max_length=40, blank=True)
     client_id = models.URLField()
 
     micropub_scope = models.ManyToManyField(
@@ -108,7 +108,7 @@ class TToken(TimestampModel):
         db_table = "t_token"
 
     def __str__(self):
-        return f"{self.auth_token}::{self.access_token}"
+        return f"{self.auth_token}::{self.key}"
 
 
 class TTokenMicropubScope(TimestampModel):

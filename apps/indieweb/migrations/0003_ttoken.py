@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("auth_token", models.CharField(blank=True, max_length=40)),
-                ("access_token", models.CharField(blank=True, max_length=40)),
+                ("key", models.CharField(blank=True, max_length=40)),
                 ("client_id", models.URLField()),
             ],
             options={
