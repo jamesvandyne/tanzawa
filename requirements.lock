@@ -14,3 +14,4 @@ mf2util==0.5.1
 django-picklefield==3.0.1
 ftfy==5.8
 ronkyuu==0.7
+ninka==0.3.4
