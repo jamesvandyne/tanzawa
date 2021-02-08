@@ -61,6 +61,7 @@ class IndieAuthTokenSerializer(serializers.Serializer):
     redirect_uri = serializers.URLField(write_only=True)
     code = serializers.CharField(write_only=True)
     access_token = serializers.CharField(read_only=True)
+    scope = serializers.CharField(read_only=True)
 
     def validate(self, data):
         if data["redirect_uri"]:
@@ -77,11 +78,12 @@ class IndieAuthTokenSerializer(serializers.Serializer):
             t_token = TToken.objects.get(
                 auth_token=data["code"], client_id=data["client_id"]
             )
-            data["access_token"] = t_token.generate_key()
-            data["t_token"] = t_token
-
         except TToken.DoesNotExist:
             raise serializers.ValidationError("Token not found")
+        else:
+            data["access_token"] = t_token.generate_key()
+            data["t_token"] = t_token
+            data['scope'] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
 
     @transaction.atomic

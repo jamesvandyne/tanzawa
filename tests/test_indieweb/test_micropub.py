@@ -7,7 +7,6 @@ class TestMicropub:
     def target(self):
         return '/micropub/'
 
-
     def test_basic_get_request(self, target, client):
         response = client.get(target)
         assert response.status_code == 200
