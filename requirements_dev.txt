@@ -8,6 +8,5 @@ pytest-freezegun
 pytest-pythonpath
 model-bakery
 mypy
-isort
 flake8
 black

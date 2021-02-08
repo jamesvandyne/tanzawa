@@ -1,7 +1,12 @@
 from itertools import chain
 
-from mf2util import (_find_all_entries, classify_comment, get_plain_text,
-                     interpret_entry, parse_author)
+from mf2util import (
+    _find_all_entries,
+    classify_comment,
+    get_plain_text,
+    interpret_entry,
+    parse_author,
+)
 
 
 def find_entry(parsed, types, target_url):

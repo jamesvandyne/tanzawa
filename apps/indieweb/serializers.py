@@ -83,7 +83,9 @@ class IndieAuthTokenSerializer(serializers.Serializer):
         else:
             data["access_token"] = t_token.generate_key()
             data["t_token"] = t_token
-            data['scope'] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
+            data["scope"] = " ".join(
+                t_token.micropub_scope.values_list("key", flat=True)
+            )
         return data
 
     @transaction.atomic

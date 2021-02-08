@@ -14,16 +14,19 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
-from .serializers import (CreateMicropubSerializer,
-                          IndieAuthAuthorizationSerializer,
-                          IndieAuthTokenSerializer)
+from .serializers import (
+    CreateMicropubSerializer,
+    IndieAuthAuthorizationSerializer,
+    IndieAuthTokenSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
 
-@api_view(["GET", "POST"])
+@api_view(["GET", "POST"], authentication_classes=[IndieAuthentication])
 def micropub(request):
     if request.method == "GET":
         return Response(data={"hello": "world"})

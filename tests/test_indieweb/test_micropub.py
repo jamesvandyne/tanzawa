@@ -2,10 +2,9 @@ import pytest
 
 
 class TestMicropub:
-
     @pytest.fixture
     def target(self):
-        return '/micropub/'
+        return "/micropub/"
 
     def test_basic_get_request(self, target, client):
         response = client.get(target)
@@ -20,5 +19,3 @@ class TestMicropub:
         }
         response = client.post(target, data=data)
         assert response.status_code == 200
-
-
