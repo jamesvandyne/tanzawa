@@ -2,17 +2,19 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import HttpResponseBadRequest, HttpResponseNotAllowed
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from entry.models import TEntry
 from post.models import MPostStatus, TPost
 from post.utils import determine_post_kind
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
+from rest_framework.authentication import get_authorization_header
 
 from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
@@ -21,12 +23,14 @@ from .serializers import (
     CreateMicropubSerializer,
     IndieAuthAuthorizationSerializer,
     IndieAuthTokenSerializer,
+    IndieAuthTokenVerificationSerializer,
 )
 
 logger = logging.getLogger(__name__)
 
 
-@api_view(["GET", "POST"], authentication_classes=[IndieAuthentication])
+@api_view(["GET", "POST"])
+@authentication_classes([IndieAuthentication])
 def micropub(request):
     if request.method == "GET":
         return Response(data={"hello": "world"})
@@ -130,10 +134,32 @@ def indieauth_authorize(request):
         return render(request, "indieweb/indieauth/authorization.html", context=context)
 
 
-@api_view(["POST"])
+@api_view(["POST", "GET"])
 def token_endpoint(request):
-    serializer = IndieAuthTokenSerializer(data=request.POST)
-    if serializer.is_valid():
-        serializer.save(request.user)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
-    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == "GET":
+        auth = get_authorization_header(request)
+        try:
+            token = auth.split()[1]
+        except IndexError:
+            msg = _("Invalid token header. No credentials provided.")
+            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            data = {"token": token.decode()}
+        except UnicodeError:
+            msg = _(
+                "Invalid token header. Token string should not contain invalid characters."
+            )
+            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = IndieAuthTokenVerificationSerializer(data=data)
+        if serializer.is_valid():
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    else:
+        serializer = IndieAuthTokenSerializer(data=request.POST)
+        if serializer.is_valid():
+            serializer.save(request.user)
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

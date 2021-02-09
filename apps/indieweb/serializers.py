@@ -1,8 +1,10 @@
 from urllib.parse import urlparse
 
 from django.db import transaction
+from django.urls import reverse
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 
 from . import constants
 from .models import TToken
@@ -94,3 +96,23 @@ class IndieAuthTokenSerializer(serializers.Serializer):
         t_token.auth_token = ""
         t_token.key = self.validated_data["access_token"]
         t_token.save()
+
+
+class IndieAuthTokenVerificationSerializer(serializers.Serializer):
+    token = serializers.CharField(write_only=True)
+    me = serializers.URLField(read_only=True)
+    client_id = serializers.CharField(read_only=True)
+    scope = serializers.CharField(read_only=True)
+
+    def validate_token(self, value):
+        try:
+            return TToken.objects.get(key=value)
+        except TToken.DoesNotExist:
+            raise serializers.ValidationError("Token not found.")
+
+    def validate(self, data):
+        t_token = data['token']
+        data["me"] = reverse("public:author", args=[t_token.user.username])
+        data["client_id"] = t_token.client_id
+        data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
+        return data
