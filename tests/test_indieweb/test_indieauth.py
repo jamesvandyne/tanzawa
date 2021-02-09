@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 from model_bakery import baker
+from indieweb.models import TToken
 
 
 @pytest.fixture
@@ -133,5 +134,43 @@ class TestVerifyIndieAuthToken:
         client.credentials(HTTP_AUTHORIZATION="Bearer hogehoge")
         response = client.get(target)
         assert response.status_code == 400
-        assert response.json() == {'token': ['Token not found.']}
+        assert response.json() == {"token": ["Token not found."]}
 
+
+@pytest.mark.django_db
+class TestIndieAuthTokenRevoke:
+    @pytest.fixture
+    def target(self):
+        return "/a/indieauth/token"
+
+    @pytest.fixture
+    def post_data(self, auth_token, client_id):
+        return {
+            "action": "revoke",
+            "token": auth_token,
+        }
+
+    @pytest.fixture
+    def ninka_mock(self, monkeypatch):
+        from ninka.indieauth import discoverAuthEndpoints
+
+        m = mock.Mock(discoverAuthEndpoints, autospec=True)
+        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        return m
+
+    def test_valid(
+        self, target, client, ninka_mock, post_data, t_token_access, auth_token
+    ):
+        assert TToken.objects.filter(key=auth_token).exists() is True
+        response = client.post(target, data=post_data)
+        assert response.status_code == 200
+        assert TToken.objects.filter(key=auth_token).exists() is False
+
+    def test_requires_revoke(
+        self, target, client, ninka_mock, post_data, t_token_access, auth_token
+    ):
+        post_data["action"] = "hoge"
+        assert TToken.objects.filter(key=auth_token).exists() is True
+        response = client.post(target, data=post_data)
+        assert response.status_code == 400
+        assert TToken.objects.filter(key=auth_token).exists() is True

@@ -24,6 +24,7 @@ from .serializers import (
     IndieAuthAuthorizationSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
+    IndieAuthTokenRevokeSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -158,7 +159,10 @@ def token_endpoint(request):
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     else:
-        serializer = IndieAuthTokenSerializer(data=request.POST)
+        if request.POST.get("action", "") == "revoke":
+            serializer = IndieAuthTokenRevokeSerializer(data=request.POST)
+        else:
+            serializer = IndieAuthTokenSerializer(data=request.POST)
         if serializer.is_valid():
             serializer.save(request.user)
             return Response(data=serializer.data, status=status.HTTP_200_OK)

@@ -111,8 +111,23 @@ class IndieAuthTokenVerificationSerializer(serializers.Serializer):
             raise serializers.ValidationError("Token not found.")
 
     def validate(self, data):
-        t_token = data['token']
+        t_token = data["token"]
         data["me"] = reverse("public:author", args=[t_token.user.username])
         data["client_id"] = t_token.client_id
         data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
+
+
+class IndieAuthTokenRevokeSerializer(serializers.Serializer):
+    token = serializers.CharField(write_only=True)
+
+    def validate_token(self, value):
+        try:
+            return TToken.objects.get(key=value)
+        except TToken.DoesNotExist:
+            return None
+
+    def save(self, user):
+        t_token = self.validated_data["token"]
+        if t_token:
+            t_token.delete()
