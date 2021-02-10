@@ -32,13 +32,8 @@ class Microformats:
 
     def __contains__(self, item):
         return item in [
-            self.CARD,
-            self.CHECKIN,
             self.ENTRY,
-            self.EVENT,
-            self.GEO,
-            self.REVIEW,
-            self.REVIEW,
+            self.CHECKIN,
         ]
 
 

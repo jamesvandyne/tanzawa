@@ -12,8 +12,8 @@ from .models import TToken
 
 class MicropubSerializer(serializers.Serializer):
     h = serializers.CharField(required=True)
-    access_token = serializers.CharField(required=False)
-    action = serializers.CharField(required=False)
+    access_token = serializers.CharField(required=True)
+    action = serializers.CharField(required=False, initial="create")
     url = serializers.URLField(required=False)
 
     def validate_h(self, value):
@@ -21,6 +21,22 @@ class MicropubSerializer(serializers.Serializer):
         if v not in constants.supported_microformats:
             raise serializers.ValidationError(f" {value} is an unsupported h-type")
         return v
+
+    def validate_access_token(self, value):
+        try:
+            return TToken.objects.get(key=value)
+        except TToken.DoesNotExist:
+            raise serializers.ValidationError("Token not found.")
+
+    def validate(self, data):
+        action = data.get("action")
+        if action:
+            t_token: TToken = data["access_token"]
+            if not t_token.micropub_scope.filter(key__exact=action).exists():
+                raise serializers.ValidationError(
+                    f"Token does not have {action} permissions"
+                )
+        return data
 
 
 class CreateMicropubSerializer(MicropubSerializer):

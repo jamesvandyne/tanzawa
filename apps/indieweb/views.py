@@ -1,5 +1,5 @@
 import logging
-
+from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from entry.models import TEntry
+from entry.forms import CreateStatusForm
 from post.models import MPostStatus, TPost
 from post.utils import determine_post_kind
 from rest_framework import status
@@ -19,8 +20,10 @@ from rest_framework.authentication import get_authorization_header
 from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
+from .constants import MPostKinds, MPostStatuses
+from .webmentions import send_webmention
 from .serializers import (
-    CreateMicropubSerializer,
+    MicropubSerializer,
     IndieAuthAuthorizationSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
@@ -30,40 +33,122 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
+def form_to_mf2(request):
+    """"""
+    properties = {}
+    post = request.POST
+    for key in post.keys():
+        if key.endswith("[]"):
+            key = key[:-2]
+        if key == "access_token":
+            continue
+        properties[key] = post.getlist(key) + post.getlist(key + "[]")
+
+    type = []
+    if "h" in properties:
+        type = ["h-" + p for p in properties["h"]]
+        del properties["h"]
+    return {"type": type, "properties": properties}
+
+
 @api_view(["GET", "POST"])
-@authentication_classes([IndieAuthentication])
 def micropub(request):
-    if request.method == "GET":
-        return Response(data={"hello": "world"})
-    serializer = CreateMicropubSerializer(data=request.data)
+    normalize = {
+        "application/json": lambda r: r.json,
+        "application/x-www-form-urlencoded": form_to_mf2,
+        "multipart/form-data": form_to_mf2,
+    }
+
+    # authenticate
+    auth = get_authorization_header(request)
+    try:
+        token = auth.split()[1].decode()
+    except IndexError:
+        token = request.POST.get("access_token")
+    except UnicodeError:
+        msg = _(
+            "Invalid token header. Token string should not contain invalid characters."
+        )
+        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not token:
+        msg = _("Invalid request. No credentials provided.")
+        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+
+    request_data = request.data.copy()
+    if not request_data.get("access_token"):
+        request_data["access_token"] = token
+
+    serializer = MicropubSerializer(data=request_data)
+
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    body = normalize[request.content_type.split(";")[0]](request)
+    props = body["properties"]
+    post_kind = MPostKinds.note
+    if serializer.data["h"] != "entry":
+        post_kind = serializer.data["h"]
+
+    if props.get("name"):
+        post_kind = MPostKinds.article
+
+    form_data = {
+        "e_content": " \n".join(
+            c if isinstance(c, str) else c["html"] for c in props.get("content", [])
+        ),
+        "m_post_status": "".join(
+            props.get("post-status", []) or MPostStatuses.published
+        ),
+    }
+    form = CreateStatusForm(
+        data=form_data, p_author=serializer.validated_data["access_token"].user
+    )
+    if form.is_valid():
+        form.prepare_data()
+        entry = form.save()
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            send_webmention(request, entry.t_post, entry.e_content)
+
+        response = Response(status=status.HTTP_201_CREATED)
+        response["Location"] = request.build_absolute_uri(
+            entry.t_post.get_absolute_url()
+        )
+        return response
+    return Response(data=form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # if request.method == "GET":
+    #     return Response(data={"hello": "world"})
+    # serializer = CreateMicropubSerializer(data=request.data)
+    # if not serializer.is_valid():
+    #     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     # determine type
-    if request.data.get("action") == "create":
-        try:
-            post_status = MPostStatus.objects.get(key=request.data.get("post-status"))
-        except MPostStatus.DoesNotExist:
-            logging.info(
-                f"post-status: {request.data.get('post-status')} doesn't exist"
-            )
-            return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        post_kind = determine_post_kind(request.data)
-        if not post_kind:
-            return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        with transaction.atomic():
-            post = TPost.objects.create(
-                m_post_status=post_status, m_post_kind=post_kind
-            )
-            entry = TEntry.objects.create(
-                t_post=post,
-                p_name=request.data.get("p-name", ""),
-                e_content=request.data.get("e-content", ""),
-            )
-
-    return Response(data=serializer.data)
+    # if request.data.get("action") == "create":
+    #     try:
+    #         post_status = MPostStatus.objects.get(key=request.data.get("post-status"))
+    #     except MPostStatus.DoesNotExist:
+    #         logging.info(
+    #             f"post-status: {request.data.get('post-status')} doesn't exist"
+    #         )
+    #         return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #
+    #     post_kind = determine_post_kind(request.data)
+    #     if not post_kind:
+    #         return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    #
+    #     with transaction.atomic():
+    #         post = TPost.objects.create(
+    #             m_post_status=post_status, m_post_kind=post_kind
+    #         )
+    #         entry = TEntry.objects.create(
+    #             t_post=post,
+    #             p_name=request.data.get("p-name", ""),
+    #             e_content=request.data.get("e-content", ""),
+    #         )
+    #
+    # return Response(data=serializer.data)
 
 
 @login_required

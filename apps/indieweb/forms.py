@@ -26,6 +26,7 @@ class IndieAuthAuthorizationForm(forms.Form):
         t_token = TToken.objects.create(
             user=user,
             auth_token=TToken.generate_key(),
+            key="",
             client_id=self.cleaned_data["client_id"],
         )
         t_token.micropub_scope.set(self.cleaned_data["scope"])
