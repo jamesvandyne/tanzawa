@@ -65,8 +65,8 @@ def review_webmention(request, pk: int, approval: bool):
         t_web_mention.approval_status = approval
         t_webmention_response.reviewed = True
 
-        t_web_mention.save()
         t_webmention_response.save()
+        t_web_mention.save()
     # TODO: Once we have turbo enabled - add a ajax handler
 
     return redirect(reverse("post:dashboard"))
