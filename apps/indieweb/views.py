@@ -1,5 +1,7 @@
+import json
 import logging
 from bs4 import BeautifulSoup
+from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
@@ -16,6 +18,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
+from PIL import Image
+
+from files.forms import MediaUploadForm
 
 from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
@@ -84,6 +89,19 @@ def micropub(request):
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # Save any photo attachments so we can append them to the content
+    attachments = []
+    for key in request.FILES:
+        file_form = MediaUploadForm(files={"file": request.FILES[key]})
+        if file_form.is_valid():
+            t_file = file_form.save()
+            attachments.append(t_file)
+        else:
+            return Response(
+                data={"message": "Error uploading files"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
     body = normalize[request.content_type.split(";")[0]](request)
     props = body["properties"]
     post_kind = MPostKinds.note
@@ -101,6 +119,28 @@ def micropub(request):
             props.get("post-status", []) or MPostStatuses.published
         ),
     }
+
+    for attachment in attachments:
+        img = Image.open(attachment.file)
+        img_src = request.build_absolute_uri(attachment.get_absolute_url())
+        context = {
+            "mime": attachment.mime_type,
+            "src": img_src,
+            "width": img.width,
+            "height": img.height,
+            "trix_attachment_data": json.dumps({
+                'contentType': attachment.mime_type,
+                'filename': attachment.filename,
+                'filesize': attachment.file.size,
+                'height': img.height,
+                'href': f'{img_src}?content-disposition=attachment',
+                'url': img_src,
+                'width': img.width
+            })
+        }
+        tag = render_to_string("trix/figure.html", context)
+        form_data["e_content"] += tag
+
     form = CreateStatusForm(
         data=form_data, p_author=serializer.validated_data["access_token"].user
     )
