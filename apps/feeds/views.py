@@ -22,7 +22,7 @@ class ExtendedRSSFeed(Rss201rev2Feed):
 class AllEntriesFeed(Feed):
     title = "Tanzawa"
     feed_type = ExtendedRSSFeed
-    item_guid_is_permalink = True
+    item_guid_is_permalink = False
 
     def link(self):
         return reverse("feeds:feed")
@@ -35,11 +35,9 @@ class AllEntriesFeed(Feed):
             .order_by("-dt_published")[:10]
         )
 
-    def item_link(self, item: TPost):
-        return item.get_absolute_url()
-
     def item_title(self, item: TPost):
-        return item.ref_t_entry.all()[0].p_name
+        t_entry = item.ref_t_entry.all()[0]
+        return t_entry.p_name or t_entry.p_summary[:128]
 
     def item_description(self, item: TPost):
         return item.ref_t_entry.all()[0].p_summary
@@ -49,7 +47,7 @@ class AllEntriesFeed(Feed):
         return {"content_encoded": content_encoded}
 
     def item_guid(self, obj: TPost) -> str:
-        return obj.get_absolute_url()
+        return obj.uuid
 
     def item_author_name(self, item: TPost):
         return item.p_author.get_full_name()
