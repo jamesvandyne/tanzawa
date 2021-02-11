@@ -44,7 +44,8 @@ class AllEntriesFeed(Feed):
 
     def item_extra_kwargs(self, item: TPost):
         content_encoded = item.ref_t_entry.all()[0].e_content
-        return {"content_encoded": content_encoded}
+        no_div_wrapper_content = f"<p>{content_encoded[5:-6]}</p>"
+        return {"content_encoded": no_div_wrapper_content}
 
     def item_guid(self, obj: TPost) -> str:
         return obj.uuid
