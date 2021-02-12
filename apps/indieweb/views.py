@@ -21,12 +21,14 @@ from rest_framework.authentication import get_authorization_header
 from PIL import Image
 
 from files.forms import MediaUploadForm
+from files.images import bytes_as_upload_image
 
 from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .constants import MPostKinds, MPostStatuses
 from .webmentions import send_webmention
+from .utils import extract_base64_images
 from .serializers import (
     MicropubSerializer,
     IndieAuthAuthorizationSerializer,
@@ -120,6 +122,48 @@ def micropub(request):
         ),
     }
 
+    # save any encoded images
+    soup = BeautifulSoup(form_data["e_content"], "html.parser")
+
+    embedded_images = extract_base64_images(soup)
+    for image in embedded_images:
+        # convert base64 embeded image to a SimpleFileUpload object
+        upload_file, width, height = bytes_as_upload_image(
+            image.decode(), image.mime_type
+        )
+        if not upload_file:
+            continue
+        # Save to disk
+        file_form = MediaUploadForm(files={"file": upload_file})
+        if file_form.is_valid():
+            t_file = file_form.save()
+            img_src = request.build_absolute_uri(t_file.get_absolute_url())
+            context = {
+                "mime": image.mime_type,
+                "src": img_src,
+                "width": width,
+                "height": height,
+                "trix_attachment_data": json.dumps(
+                    {
+                        "contentType": image.mime_type,
+                        "filename": upload_file.filename,
+                        "filesize": t_file.file.size,
+                        "height": height,
+                        "href": f"{img_src}?content-disposition=attachment",
+                        "url": img_src,
+                        "width": width,
+                    }
+                ),
+            }
+            # Render as trix
+            tag = render_to_string("trix/figure.html", context)
+            # Replace in e_content
+            if image.tag.parent.name == "figure":
+                image.tag.parent.replace_with(tag)
+            else:
+                image.tag.replace_with(tag)
+    form_data["e_content"] = str(soup)
+
     for attachment in attachments:
         img = Image.open(attachment.file)
         img_src = request.build_absolute_uri(attachment.get_absolute_url())
@@ -128,15 +172,17 @@ def micropub(request):
             "src": img_src,
             "width": img.width,
             "height": img.height,
-            "trix_attachment_data": json.dumps({
-                'contentType': attachment.mime_type,
-                'filename': attachment.filename,
-                'filesize': attachment.file.size,
-                'height': img.height,
-                'href': f'{img_src}?content-disposition=attachment',
-                'url': img_src,
-                'width': img.width
-            })
+            "trix_attachment_data": json.dumps(
+                {
+                    "contentType": attachment.mime_type,
+                    "filename": attachment.filename,
+                    "filesize": attachment.file.size,
+                    "height": img.height,
+                    "href": f"{img_src}?content-disposition=attachment",
+                    "url": img_src,
+                    "width": img.width,
+                }
+            ),
         }
         tag = render_to_string("trix/figure.html", context)
         form_data["e_content"] += tag
@@ -157,38 +203,6 @@ def micropub(request):
         )
         return response
     return Response(data=form.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # if request.method == "GET":
-    #     return Response(data={"hello": "world"})
-    # serializer = CreateMicropubSerializer(data=request.data)
-    # if not serializer.is_valid():
-    #     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # determine type
-    # if request.data.get("action") == "create":
-    #     try:
-    #         post_status = MPostStatus.objects.get(key=request.data.get("post-status"))
-    #     except MPostStatus.DoesNotExist:
-    #         logging.info(
-    #             f"post-status: {request.data.get('post-status')} doesn't exist"
-    #         )
-    #         return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    #
-    #     post_kind = determine_post_kind(request.data)
-    #     if not post_kind:
-    #         return Response(data={}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    #
-    #     with transaction.atomic():
-    #         post = TPost.objects.create(
-    #             m_post_status=post_status, m_post_kind=post_kind
-    #         )
-    #         entry = TEntry.objects.create(
-    #             t_post=post,
-    #             p_name=request.data.get("p-name", ""),
-    #             e_content=request.data.get("e-content", ""),
-    #         )
-    #
-    # return Response(data=serializer.data)
 
 
 @login_required

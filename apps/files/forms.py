@@ -21,7 +21,7 @@ class MediaUploadForm(forms.ModelForm):
 
     def clean(self):
         self.instance.uuid = uuid.uuid4()
-        self.instance.mime_type = self.files['file'].content_type
+        self.instance.mime_type = self.files["file"].content_type
         try:
             exif = extract_exif(self.cleaned_data["file"].file)
 

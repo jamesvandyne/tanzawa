@@ -84,8 +84,18 @@ class TestMicropub:
             "non_field_errors": ["Token does not have delete permissions"]
         }
 
-    def test_handles_embeded_base64_images(self):
+    def test_handles_embeded_base64_images(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+    ):
         """A post made from the article poster on Quill"""
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+
         data = {
             "type": ["h-entry"],
             "properties": {
@@ -97,7 +107,24 @@ class TestMicropub:
                 ],
             },
         }
-        assert data
+        response = client.post(target, data=data, format="json")
+        import pdb
+
+        pdb.set_trace()
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post = t_entry.t_post
+
+        assert t_post.files.count() == 1
+
+        t_file = t_post.files.first()
+
+        assert t_file.mime_type == "image/png"
+        assert t_file.filename == "1px.png"
+
+        assert str(t_file.uuid) in t_entry.e_content
+        assert t_entry.p_summary == "Test with a photo"
 
     def test_handles_photo_attachments(
         self,

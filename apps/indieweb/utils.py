@@ -1,5 +1,10 @@
+import re
 from itertools import chain
-
+import logging
+from bs4.element import Tag
+from typing import List, Optional
+import base64
+from bs4 import BeautifulSoup
 from mf2util import (
     _find_all_entries,
     classify_comment,
@@ -7,6 +12,30 @@ from mf2util import (
     interpret_entry,
     parse_author,
 )
+
+from dataclasses import dataclass
+
+
+IMG_DATA_PATTERN = re.compile(
+    r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$"
+)
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DataImage:
+    image_data: str  # encoded data
+    mime_type: str  # image/png
+    encoding: str  # base64
+    tag: Tag  # original img tag
+
+    def decode(self) -> Optional[bytes]:
+        if self.encoding == "base64":
+            return base64.b64decode(self.image_data)
+        else:
+            logger.info("Unknown encoding. Unable decode image")
+        return None
 
 
 def find_entry(parsed, types, target_url):
@@ -59,3 +88,12 @@ def interpret_comment(
                 result["invitees"] = [parse_author(inv) for inv in invitees]
 
         return result
+
+
+def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
+    attachments = []
+    for img in soup.select("img[src^=data\:]"):
+        data = IMG_DATA_PATTERN.match(img["src"])
+        if data:
+            attachments.append(DataImage(tag=img, **data.groupdict()))
+    return attachments
