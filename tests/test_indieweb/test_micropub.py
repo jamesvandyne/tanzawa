@@ -1,6 +1,7 @@
 import pytest
 from entry.models import TEntry
 from unittest.mock import Mock
+from post.models import TPost
 
 
 @pytest.mark.django_db
@@ -113,6 +114,8 @@ class TestMicropub:
 
         t_entry = TEntry.objects.last()
         t_post = t_entry.t_post
+        assert t_post.m_post_kind.key == "note"
+        assert t_post.m_post_status.key == "published"
 
         assert t_post.files.count() == 1
 
@@ -123,6 +126,7 @@ class TestMicropub:
 
         assert str(t_file.uuid) in t_entry.e_content
         assert t_entry.p_summary.startswith("This is a neat title")
+        assert t_entry.p_name == "A neat title"
 
     def test_handles_photo_attachments(
         self,
@@ -144,7 +148,10 @@ class TestMicropub:
             assert response.status_code == 201
 
         t_entry = TEntry.objects.last()
-        t_post = t_entry.t_post
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "note"
+        assert t_post.m_post_status.key == "published"
 
         assert t_post.files.count() == 1
 

@@ -1,7 +1,5 @@
-import json
 import logging
 from bs4 import BeautifulSoup
-from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
@@ -10,25 +8,22 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
-from entry.models import TEntry
 from entry.forms import CreateStatusForm
-from post.models import MPostStatus, TPost
-from post.utils import determine_post_kind
 from rest_framework import status
-from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
-from PIL import Image
+
 
 from files.forms import MediaUploadForm
-from files.images import bytes_as_upload_image
+
 
 from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
-from .constants import MPostKinds, MPostStatuses
+from .constants import MPostStatuses
 from .webmentions import send_webmention
-from .utils import extract_base64_images
+from .utils import extract_base64_images, save_and_get_tag, render_attachment
 from .serializers import (
     MicropubSerializer,
     IndieAuthAuthorizationSerializer,
@@ -84,6 +79,8 @@ def micropub(request):
     if not body.get("access_token"):
         body["access_token"] = token
     body["type"] = body["type"][0]  # type is a list but needs to be a string
+    if not body.get("action"):
+        body["action"] = request.data.get("action", "create")
     serializer = MicropubSerializer(data=body)
 
     if not serializer.is_valid():
@@ -102,91 +99,41 @@ def micropub(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    # post_kind = MPostKinds.note
-    # if serializer.data["h"] != "entry":
-    #     post_kind = serializer.data["h"]
-    #
-    # if props.get("name"):
-    #     post_kind = MPostKinds.article
-
+    # Add support f or MPostKind
     form_data = {
-        "e_content": " \n".join(
-            c if isinstance(c, str) else c["html"] for c in props.get("content", [])
-        ),
+        "p_name": serializer.validated_data["properties"].get("name", ""),
+        "e_content": serializer.validated_data["properties"].get("content", ""),
         "m_post_status": "".join(
-            props.get("post-status", []) or MPostStatuses.published
+            props.get("post-status", [])
+            or MPostStatuses.published  # pull this data from serialier
         ),
     }
 
-    # save any encoded images
+    # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
 
     embedded_images = extract_base64_images(soup)
     for image in embedded_images:
-        # convert base64 embeded image to a SimpleFileUpload object
-        upload_file, width, height = bytes_as_upload_image(
-            image.decode(), image.mime_type
-        )
-        if not upload_file:
+        tag = save_and_get_tag(request, image)
+        if not tag:
             continue
-        # Save to disk
-        file_form = MediaUploadForm(files={"file": upload_file})
-        if file_form.is_valid():
-            t_file = file_form.save()
-            img_src = request.build_absolute_uri(t_file.get_absolute_url())
-            context = {
-                "mime": image.mime_type,
-                "src": img_src,
-                "width": width,
-                "height": height,
-                "trix_attachment_data": json.dumps(
-                    {
-                        "contentType": image.mime_type,
-                        "filename": upload_file.name,
-                        "filesize": t_file.file.size,
-                        "height": height,
-                        "href": f"{img_src}?content-disposition=attachment",
-                        "url": img_src,
-                        "width": width,
-                    }
-                ),
-            }
-            # Render as trix
-            tag = BeautifulSoup(render_to_string("trix/figure.html", context), 'html.parser')
-            # Replace in e_content
-            if image.tag.parent.name == "figure":
-                image.tag.parent.replace_with(tag)
-            else:
-                image.tag.replace_with(tag)
+        # Replace in e_content
+        if image.tag.parent.name == "figure":
+            image.tag.parent.replace_with(tag)
+        else:
+            image.tag.replace_with(tag)
 
     form_data["e_content"] = str(soup)
 
+    # Append any attachments
     for attachment in attachments:
-        img = Image.open(attachment.file)
-        img_src = request.build_absolute_uri(attachment.get_absolute_url())
-        context = {
-            "mime": attachment.mime_type,
-            "src": img_src,
-            "width": img.width,
-            "height": img.height,
-            "trix_attachment_data": json.dumps(
-                {
-                    "contentType": attachment.mime_type,
-                    "filename": attachment.filename,
-                    "filesize": attachment.file.size,
-                    "height": img.height,
-                    "href": f"{img_src}?content-disposition=attachment",
-                    "url": img_src,
-                    "width": img.width,
-                }
-            ),
-        }
-        tag = render_to_string("trix/figure.html", context)
+        tag = render_attachment(request, attachment)
         form_data["e_content"] += tag
 
     form = CreateStatusForm(
         data=form_data, p_author=serializer.validated_data["access_token"].user
     )
+
     if form.is_valid():
         form.prepare_data()
         entry = form.save()

@@ -15,6 +15,7 @@ from .models import TEntry
 
 
 class CreateStatusForm(forms.Form):
+    p_name = forms.CharField(required=False)
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
@@ -56,9 +57,11 @@ class CreateStatusForm(forms.Form):
             else None,
             dt_updated=n,
         )
-        soup = BeautifulSoup(self.cleaned_data["e_content"])
+        soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
         self.t_entry = TEntry(
-            e_content=self.cleaned_data["e_content"], p_summary=soup.text[:255].strip()
+            e_content=self.cleaned_data["e_content"],
+            p_summary=soup.text[:255].strip(),
+            p_name=self.cleaned_data.get("p_name", ""),
         )
 
     @transaction.atomic

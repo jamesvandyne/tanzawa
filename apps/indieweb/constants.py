@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class MPostStatuses:
     """
     Post Statuses from Micropub-extentions
@@ -21,7 +24,7 @@ class MPostKinds:
     like = "like"
 
 
-class Microformats:
+class Microformats(Enum):
     ENTRY = "h-entry"
     CHECKIN = "checkin"
     CARD = "card"
@@ -29,12 +32,3 @@ class Microformats:
     GEO = "geo"
     REVIEW = "review"
     RESUME = "resume"
-
-    def __contains__(self, item):
-        return item in [
-            self.ENTRY,
-            self.CHECKIN,
-        ]
-
-
-supported_microformats = Microformats()

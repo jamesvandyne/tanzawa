@@ -10,14 +10,36 @@ from . import constants
 from .models import TToken
 
 
+class ContentField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            return data
+        value = " \n".join(c if isinstance(c, str) else c["html"] for c in data)
+        return value
+
+
+class FlattenedStringField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            return data
+        value = "".join([v for v in data])
+        return value
+
+
 class EContentSerializer(serializers.Serializer):
     html = serializers.CharField(required=True)
 
 
-class MicroformatProperties(serializers.Serializer):
+class HEntryPropertiesSerializer(serializers.Serializer):
 
-    content = serializers.CharField(source="content", required=False)
-    e_content = serializers.Serializer(EContentSerializer, source="content", required=False)
+    name = FlattenedStringField(required=False)
+    content = ContentField(required=False)
 
 
 class MicropubSerializer(serializers.Serializer):
@@ -25,12 +47,14 @@ class MicropubSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=True)
     action = serializers.CharField(required=False, initial="create")
     url = serializers.URLField(required=False)
+    properties = HEntryPropertiesSerializer(required=True)
 
     def validate_type(self, value):
         v = value.lower()
-        if v not in constants.supported_microformats:
+        try:
+            return constants.Microformats(v)
+        except ValueError:
             raise serializers.ValidationError(f" {value} is an unsupported h-type")
-        return v
 
     def validate_access_token(self, value):
         try:
