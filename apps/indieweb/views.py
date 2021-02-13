@@ -18,7 +18,6 @@ from rest_framework.authentication import get_authorization_header
 from files.forms import MediaUploadForm
 
 
-from .authentication import IndieAuthentication
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .constants import MPostStatuses
@@ -99,7 +98,8 @@ def micropub(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    # Add support f or MPostKind
+    # TODO: Add support f or MPostKind
+    # Create entry form data
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
