@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TWebmention, TWebmentionSend
+from .models import MMicropubScope, TToken, TWebmention, TWebmentionSend
 
 
 class TWebmentionSendAdmin(admin.ModelAdmin):
@@ -9,3 +9,5 @@ class TWebmentionSendAdmin(admin.ModelAdmin):
 
 admin.site.register(TWebmention)
 admin.site.register(TWebmentionSend, TWebmentionSendAdmin)
+admin.site.register(TToken)
+admin.site.register(MMicropubScope)

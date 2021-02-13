@@ -9,8 +9,8 @@ from .widgets import TrixEditor
 class TrixField(forms.CharField):
     widget = TrixEditor
 
-    def to_python(self, value):
-        value: str = super().to_python(value)
+    def to_python(self, value: str):
+        value = super().to_python(value)
 
         soup = BeautifulSoup(value, "html.parser")
 
@@ -33,7 +33,7 @@ class TrixField(forms.CharField):
                 "height": img["height"],
             }
             picture = BeautifulSoup(
-                render_to_string("trix/picture.html", context), features="html5lib"
+                render_to_string("trix/picture.html", context), "html.parser"
             )
             img.insert_before(picture)
             img.decompose()

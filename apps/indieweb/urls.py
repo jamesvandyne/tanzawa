@@ -5,7 +5,7 @@ from . import views
 app_name = "indieweb"
 
 urlpatterns = [
-    # path("micropub/", views.micropub, name="micropub"),
+    path("micropub/", views.micropub, name="micropub"),
     path(
         "webmentions/<int:pk>/approve",
         views.review_webmention,
@@ -18,4 +18,10 @@ urlpatterns = [
         name="webmention_disapprove",
         kwargs={"approval": False},
     ),
+    path(
+        "indieauth/authorize",
+        views.indieauth_authorize,
+        name="indieauth_authorize",
+    ),
+    path("indieauth/token", views.token_endpoint, name="indieauth_token"),
 ]

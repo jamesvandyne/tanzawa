@@ -1,5 +1,9 @@
+import binascii
+import os
+
 import mf2py
 from core.models import TimestampModel
+from django.contrib.auth import get_user_model
 from django.db import models
 from picklefield import PickledObjectField
 from post.models import TPost
@@ -63,3 +67,57 @@ class TWebmentionSend(TimestampModel):
 
     def __str__(self):
         return self.target
+
+
+class MMicropubScope(TimestampModel):
+
+    key = models.CharField(max_length=12, unique=True)
+    name = models.CharField(max_length=16)
+
+    class Meta:
+        db_table = "m_micropub_scope"
+
+    def __str__(self):
+        return self.name
+
+    def help_text(self):
+        if self.key == "media":
+            return "Allows the application to upload media"
+        return f"Allows the application to {self.name.lower()} posts"
+
+
+class TToken(TimestampModel):
+    user = models.ForeignKey(
+        get_user_model(), related_name="ref_t_token", on_delete=models.CASCADE
+    )
+    auth_token = models.CharField(max_length=40, blank=True)
+    key = models.CharField(max_length=40, blank=True)
+    client_id = models.URLField()
+
+    micropub_scope = models.ManyToManyField(
+        MMicropubScope,
+        through="TTokenMicropubScope",
+        through_fields=("t_token", "m_micropub_scope"),
+    )
+
+    @classmethod
+    def generate_key(cls):
+        return binascii.hexlify(os.urandom(20)).decode()
+
+    class Meta:
+        db_table = "t_token"
+
+    def __str__(self):
+        return f"{self.auth_token}::{self.key}"
+
+
+class TTokenMicropubScope(TimestampModel):
+    t_token = models.ForeignKey(TToken, on_delete=models.CASCADE)
+    m_micropub_scope = models.ForeignKey(MMicropubScope, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = "t_token_micropub_scope"
+        unique_together = ("t_token", "m_micropub_scope")
+
+    def __str__(self):
+        return f"{self.t_token}:{self.m_micropub_scope}"

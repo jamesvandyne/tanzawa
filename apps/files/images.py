@@ -1,10 +1,11 @@
 import io
 import mimetypes
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from PIL import Image
+from django.utils.timezone import now
 
 from .models import TFile
 
@@ -28,3 +29,21 @@ def convert_image_format(
     upload_file = SimpleUploadedFile(new_filename, new_image_data.read(), target_mime)
 
     return upload_file, new_image.width, new_image.height
+
+
+def bytes_as_upload_image(
+    image_data: bytes, mime_type: str, filename: Optional[str] = None
+) -> Union[Tuple[SimpleUploadedFile, int, int], Tuple[None, None, None]]:
+    if not image_data:
+        return None, None, None
+    ext = mimetypes.guess_extension(mime_type)
+    if not ext:
+        # unknown mimetype, can't convert
+        return None, None, None
+    if not filename:
+        base_name = now().strftime("%Y-%m-%-dT%H:%M:%S")
+        filename = f"{base_name}{ext}"
+
+    image = Image.open(io.BytesIO(image_data))
+    upload_file = SimpleUploadedFile(filename, image_data, mime_type)
+    return upload_file, image.width, image.height

@@ -1,7 +1,46 @@
+import json
+import re
+from dataclasses import dataclass
 from itertools import chain
+import logging
+from PIL import Image
+from bs4.element import Tag
+from typing import List, Optional
+import base64
+from django.template.loader import render_to_string
+from bs4 import BeautifulSoup
+from mf2util import (
+    _find_all_entries,
+    classify_comment,
+    get_plain_text,
+    interpret_entry,
+    parse_author,
+)
+from files.forms import MediaUploadForm
+from files.models import TFile
+from files.images import bytes_as_upload_image
 
-from mf2util import (_find_all_entries, classify_comment, get_plain_text,
-                     interpret_entry, parse_author)
+
+IMG_DATA_PATTERN = re.compile(
+    r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$"
+)
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DataImage:
+    image_data: str  # encoded data
+    mime_type: str  # image/png
+    encoding: str  # base64
+    tag: Tag  # original img tag
+
+    def decode(self) -> Optional[bytes]:
+        if self.encoding == "base64":
+            return base64.b64decode(self.image_data)
+        else:
+            logger.info("Unknown encoding. Unable decode image")
+        return None
 
 
 def find_entry(parsed, types, target_url):
@@ -54,3 +93,70 @@ def interpret_comment(
                 result["invitees"] = [parse_author(inv) for inv in invitees]
 
         return result
+
+
+def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
+    attachments = []
+    for img in soup.select("img[src^=data\:]"):
+        data = IMG_DATA_PATTERN.match(img["src"])
+        if data:
+            attachments.append(DataImage(tag=img, **data.groupdict()))
+    return attachments
+
+
+def save_and_get_tag(request, image: DataImage) -> Optional[BeautifulSoup]:
+    # convert base64 embeded image to a SimpleFileUpload object
+    upload_file, width, height = bytes_as_upload_image(image.decode(), image.mime_type)
+    if not upload_file:
+        return None
+    # Save to disk
+    file_form = MediaUploadForm(files={"file": upload_file})
+    if file_form.is_valid():
+        t_file = file_form.save()
+        img_src = request.build_absolute_uri(t_file.get_absolute_url())
+        context = {
+            "mime": image.mime_type,
+            "src": img_src,
+            "width": width,
+            "height": height,
+            "trix_attachment_data": json.dumps(
+                {
+                    "contentType": image.mime_type,
+                    "filename": upload_file.name,
+                    "filesize": t_file.file.size,
+                    "height": height,
+                    "href": f"{img_src}?content-disposition=attachment",
+                    "url": img_src,
+                    "width": width,
+                }
+            ),
+        }
+        # Render as trix
+        return BeautifulSoup(
+            render_to_string("trix/figure.html", context), "html.parser"
+        )
+    logger.info("unable to save image: %s", file_form.errors)
+    return None
+
+
+def render_attachment(request, attachment: TFile) -> str:
+    img = Image.open(attachment.file)
+    img_src = request.build_absolute_uri(attachment.get_absolute_url())
+    context = {
+        "mime": attachment.mime_type,
+        "src": img_src,
+        "width": img.width,
+        "height": img.height,
+        "trix_attachment_data": json.dumps(
+            {
+                "contentType": attachment.mime_type,
+                "filename": attachment.filename,
+                "filesize": attachment.file.size,
+                "height": img.height,
+                "href": f"{img_src}?content-disposition=attachment",
+                "url": img_src,
+                "width": img.width,
+            }
+        ),
+    }
+    return render_to_string("trix/figure.html", context)

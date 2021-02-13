@@ -8,6 +8,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
+    {% with request.build_absolute_uri|slice:":-1" as absolute_url %}
+        <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint">
+        <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">
+    {% endwith %}
     {% if form %}{{ form.media.css }}{% endif %}
     <title>{{ page_title }}🏔 Tanzawa</title>
 </head>
