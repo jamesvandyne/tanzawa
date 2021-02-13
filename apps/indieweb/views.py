@@ -51,17 +51,13 @@ def form_to_mf2(request):
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
 
-    type = []
-    if "h" in properties:
-        type = ["h-" + p for p in properties["h"]]
-        del properties["h"]
-    return {"type": type, "properties": properties}
+    return {"type": [f'h-{post.get("h", "")}'], "properties": properties}
 
 
 @api_view(["GET", "POST"])
 def micropub(request):
     normalize = {
-        "application/json": lambda r: r.json,
+        "application/json": lambda r: r.data,
         "application/x-www-form-urlencoded": form_to_mf2,
         "multipart/form-data": form_to_mf2,
     }
@@ -82,11 +78,13 @@ def micropub(request):
         msg = _("Invalid request. No credentials provided.")
         return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
 
-    request_data = request.data.copy()
-    if not request_data.get("access_token"):
-        request_data["access_token"] = token
-
-    serializer = MicropubSerializer(data=request_data)
+    # normalize before sending to serializer
+    body = normalize[request.content_type.split(";")[0]](request)
+    props = body["properties"]
+    if not body.get("access_token"):
+        body["access_token"] = token
+    body["type"] = body["type"][0]  # type is a list but needs to be a string
+    serializer = MicropubSerializer(data=body)
 
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -104,14 +102,12 @@ def micropub(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    body = normalize[request.content_type.split(";")[0]](request)
-    props = body["properties"]
-    post_kind = MPostKinds.note
-    if serializer.data["h"] != "entry":
-        post_kind = serializer.data["h"]
-
-    if props.get("name"):
-        post_kind = MPostKinds.article
+    # post_kind = MPostKinds.note
+    # if serializer.data["h"] != "entry":
+    #     post_kind = serializer.data["h"]
+    #
+    # if props.get("name"):
+    #     post_kind = MPostKinds.article
 
     form_data = {
         "e_content": " \n".join(
@@ -146,7 +142,7 @@ def micropub(request):
                 "trix_attachment_data": json.dumps(
                     {
                         "contentType": image.mime_type,
-                        "filename": upload_file.filename,
+                        "filename": upload_file.name,
                         "filesize": t_file.file.size,
                         "height": height,
                         "href": f"{img_src}?content-disposition=attachment",
@@ -156,12 +152,13 @@ def micropub(request):
                 ),
             }
             # Render as trix
-            tag = render_to_string("trix/figure.html", context)
+            tag = BeautifulSoup(render_to_string("trix/figure.html", context), 'html.parser')
             # Replace in e_content
             if image.tag.parent.name == "figure":
                 image.tag.parent.replace_with(tag)
             else:
                 image.tag.replace_with(tag)
+
     form_data["e_content"] = str(soup)
 
     for attachment in attachments:

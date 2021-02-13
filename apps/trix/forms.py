@@ -33,7 +33,7 @@ class TrixField(forms.CharField):
                 "height": img["height"],
             }
             picture = BeautifulSoup(
-                render_to_string("trix/picture.html", context), features="html5lib"
+                render_to_string("trix/picture.html", context), 'html.parser'
             )
             img.insert_before(picture)
             img.decompose()

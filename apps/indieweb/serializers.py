@@ -10,13 +10,23 @@ from . import constants
 from .models import TToken
 
 
+class EContentSerializer(serializers.Serializer):
+    html = serializers.CharField(required=True)
+
+
+class MicroformatProperties(serializers.Serializer):
+
+    content = serializers.CharField(source="content", required=False)
+    e_content = serializers.Serializer(EContentSerializer, source="content", required=False)
+
+
 class MicropubSerializer(serializers.Serializer):
-    h = serializers.CharField(required=True)
+    type = serializers.CharField(required=True)
     access_token = serializers.CharField(required=True)
     action = serializers.CharField(required=False, initial="create")
     url = serializers.URLField(required=False)
 
-    def validate_h(self, value):
+    def validate_type(self, value):
         v = value.lower()
         if v not in constants.supported_microformats:
             raise serializers.ValidationError(f" {value} is an unsupported h-type")

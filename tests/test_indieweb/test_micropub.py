@@ -84,6 +84,7 @@ class TestMicropub:
             "non_field_errors": ["Token does not have delete permissions"]
         }
 
+    @pytest.mark.freeze_time("2021-02-13 12:30:59")
     def test_handles_embeded_base64_images(
         self,
         target,
@@ -108,9 +109,6 @@ class TestMicropub:
             },
         }
         response = client.post(target, data=data, format="json")
-        import pdb
-
-        pdb.set_trace()
         assert response.status_code == 201
 
         t_entry = TEntry.objects.last()
@@ -121,10 +119,10 @@ class TestMicropub:
         t_file = t_post.files.first()
 
         assert t_file.mime_type == "image/png"
-        assert t_file.filename == "1px.png"
+        assert t_file.filename == "2021-02-13T12:30:59.png"
 
         assert str(t_file.uuid) in t_entry.e_content
-        assert t_entry.p_summary == "Test with a photo"
+        assert t_entry.p_summary.startswith("This is a neat title")
 
     def test_handles_photo_attachments(
         self,

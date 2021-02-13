@@ -22,7 +22,7 @@ class MPostKinds:
 
 
 class Microformats:
-    ENTRY = "entry"
+    ENTRY = "h-entry"
     CHECKIN = "checkin"
     CARD = "card"
     EVENT = "event"

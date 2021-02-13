@@ -36,12 +36,13 @@ def bytes_as_upload_image(
 ) -> Union[Tuple[SimpleUploadedFile, int, int], Tuple[None, None, None]]:
     if not image_data:
         return None, None, None
-    if not filename:
-        filename = now().strftime("%Y-%m-%-dT%H:%M:%S")
     ext = mimetypes.guess_extension(mime_type)
     if not ext:
         # unknown mimetype, can't convert
         return None, None, None
+    if not filename:
+        base_name = now().strftime("%Y-%m-%-dT%H:%M:%S")
+        filename = f"{base_name}{ext}"
 
     image = Image.open(io.BytesIO(image_data))
     upload_file = SimpleUploadedFile(filename, image_data, mime_type)
