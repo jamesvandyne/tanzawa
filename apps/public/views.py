@@ -51,3 +51,24 @@ def author(request, username: str):
     )
     context = {"entries": objs}
     return render(request, "public/index.html", context=context)
+
+
+def stream(request, stream_slug: str):
+    stream = get_object_or_404(MStream.objects.visible(request.user), slug=stream_slug)
+    context = {
+        "entries": (
+            TEntry.objects.filter(t_post__in=stream.posts.published())
+            .select_related("t_post", "t_post__p_author")
+            .filter(t_post__m_post_status__key=MPostStatuses.published)
+            .annotate(
+                interaction_count=Count(
+                    "t_post__ref_t_webmention",
+                    filter=Q(t_post__ref_t_webmention__approval_status=True),
+                )
+            )
+        ),
+        "selected": stream.slug,
+        "streams": MStream.objects.visible(request.user),
+    }
+
+    return render(request, "public/index.html", context=context)
