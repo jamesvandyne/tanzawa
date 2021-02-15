@@ -54,6 +54,11 @@ class TPost(TimestampModel):
     files = models.ManyToManyField(
         "files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file")
     )
+    streams = models.ManyToManyField(
+        "streams.MStream",
+        through="streams.TStreamPost",
+        through_fields=("t_post", "m_stream"),
+    )
     objects = TPostManager()
 
     class Meta:

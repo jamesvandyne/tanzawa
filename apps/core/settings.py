@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "post",
     "entry",
     "files",
+    "streams",
     "public",
 ]
 

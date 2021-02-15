@@ -4,6 +4,7 @@ from django.utils.timezone import now
 from entry.models import TEntry
 from indieweb.constants import MPostStatuses
 from post.models import TPost
+from streams.models import MStream
 
 
 def home(request):
@@ -15,7 +16,9 @@ def home(request):
                 "t_post__ref_t_webmention",
                 filter=Q(t_post__ref_t_webmention__approval_status=True),
             )
-        )
+        ),
+        "selected": "status",
+        "streams": MStream.objects.visible(request.user),
     }
     return render(request, "public/index.html", context=context)
 
