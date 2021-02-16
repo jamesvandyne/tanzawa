@@ -37,6 +37,7 @@ def status_detail(request, uuid):
         "webmentions_count": webmentions.count(),
         "status": t_post.ref_t_entry.all()[0],
         "now": now(),
+        "streams": MStream.objects.visible(request.user),
         "public": True,
     }
     return render(request, "public/post/post_detail.html", context=context)
@@ -70,5 +71,4 @@ def stream(request, stream_slug: str):
         "selected": stream.slug,
         "streams": MStream.objects.visible(request.user),
     }
-
     return render(request, "public/index.html", context=context)

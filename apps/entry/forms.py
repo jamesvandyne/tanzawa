@@ -10,6 +10,8 @@ from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import MPostKind, MPostStatus, TPost
 from trix.forms import TrixField
 from trix.utils import extract_attachment_urls
+from streams.models import MStream
+from streams.forms import StreamModelMultipleChoiceField
 
 from .models import TEntry
 
@@ -23,6 +25,9 @@ class CreateStatusForm(forms.Form):
         required=True,
         empty_label=None,
         initial=MPostStatuses.draft,
+    )
+    streams = StreamModelMultipleChoiceField(
+        MStream.objects.all(), label="Which streams should this appear in?", required=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -70,6 +75,7 @@ class CreateStatusForm(forms.Form):
         self.t_entry.t_post = self.t_post
         self.t_entry.save()
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
+        self.t_post.streams.set(self.cleaned_data['streams'])
         return self.t_entry
 
 
@@ -82,6 +88,9 @@ class UpdateStatusForm(forms.ModelForm):
         empty_label=None,
         initial=MPostStatuses.draft,
     )
+    streams = StreamModelMultipleChoiceField(
+        MStream.objects.all(), label="Which streams should this appear in?", required=False
+    )
 
     class Meta:
         model = TEntry
@@ -93,6 +102,7 @@ class UpdateStatusForm(forms.ModelForm):
         self.already_published = (
             self.t_post.m_post_status.key == MPostStatuses.published
         )
+        self.fields['streams'].initial = self.t_post.streams.values_list('id', flat=True)
         self.file_attachment_uuids: List[str] = []
 
     def clean(self):
@@ -116,4 +126,5 @@ class UpdateStatusForm(forms.ModelForm):
         super().save(commit=commit)
         self.t_post.save()
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
+        self.t_post.streams.set(self.cleaned_data['streams'])
         return self.instance

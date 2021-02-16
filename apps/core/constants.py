@@ -8,7 +8,7 @@ class Visibility(IntEnum):
 
 
 VISIBILITY_CHOICES = [
-    (Visibility.PUBLIC.value, "Public"),
-    (Visibility.PRIVATE.value, "Private"),
-    (Visibility.UNLISTED.value, "Unlisted"),
+    (Visibility.PUBLIC.value, "Everyone"),
+    (Visibility.PRIVATE.value, "Only me"),
+    (Visibility.UNLISTED.value, "People who know the url"),
 ]
