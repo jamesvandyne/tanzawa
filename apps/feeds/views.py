@@ -1,7 +1,9 @@
 from django.contrib.syndication.views import Feed
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed
 from post.models import TPost
+from streams.models import MStream
 
 
 class ExtendedRSSFeed(Rss201rev2Feed):
@@ -59,3 +61,17 @@ class AllEntriesFeed(Feed):
 
     def item_updateddate(self, item: TPost):
         return item.dt_updated
+
+
+class StreamFeed(AllEntriesFeed):
+
+    def get_object(self, request, stream_slug: str):
+        return get_object_or_404(MStream, slug=stream_slug)
+
+    def items(self, obj):
+        return (
+            TPost.objects.published().filter(streams=obj)
+            .prefetch_related("ref_t_entry")
+            .all()
+            .order_by("-dt_published")[:10]
+        )
