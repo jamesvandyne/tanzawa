@@ -107,6 +107,7 @@ def micropub(request):
             props.get("post-status", [])
             or MPostStatuses.published  # pull this data from serialier
         ),
+        "streams": serializer.validated_data["properties"]["streams"].values_list('pk', flat=True)
     }
 
     # Save and replace any embedded images

@@ -21,9 +21,9 @@ urlpatterns = [
     path("a/", include("post.urls", namespace="post")),
     path("a/", include("indieweb.urls", namespace="indieweb")),
     path("files/", include("files.urls")),
-    path("", include("public.urls", namespace="public")),
     path("", include("feeds.urls", namespace="feeds")),
     path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
+    path("", include("public.urls", namespace="public")),
 ]

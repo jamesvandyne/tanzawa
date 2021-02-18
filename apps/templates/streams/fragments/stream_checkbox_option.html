@@ -1,0 +1,17 @@
+<div class="pt-1 pr-8 pb-4">
+    {% if widget.wrap_label %}
+        <label{% if widget.attrs.id %} for="{{ widget.attrs.id }}"{% endif %}>
+    {% endif %}
+        <span class="align-top">
+            {% include "django/forms/widgets/input.html" %}
+        </span>
+     {% if widget.wrap_label %}
+         <div class="inline-block">
+         {{ widget.label }}
+         <span class="text-xs block text-bianca-800">
+             {{option.value.instance.get_visibility_display|lower  }}
+         </span>
+         </div>
+         </label>
+    {% endif %}
+</div>

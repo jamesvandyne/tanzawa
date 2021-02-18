@@ -35,7 +35,7 @@ class MPostKind(TimestampModel):
 class TPostManager(models.Manager):
     def published(self):
         return (
-            super()
+            self
             .get_queryset()
             .filter(m_post_status__key=MPostStatuses.published, dt_published__lte=now())
         )
@@ -53,6 +53,11 @@ class TPost(TimestampModel):
 
     files = models.ManyToManyField(
         "files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file")
+    )
+    streams = models.ManyToManyField(
+        "streams.MStream",
+        through="streams.TStreamPost",
+        through_fields=("t_post", "m_stream"),
     )
     objects = TPostManager()
 

@@ -6,7 +6,7 @@ from .models import MMicropubScope, TToken
 
 class MMicropubCheckboxWidget(forms.CheckboxSelectMultiple):
 
-    option_template_name = "micropub_checkbox_option.html"
+    option_template_name = "indieweb/fragments/micropub_checkbox_option.html"
 
 
 class IndieAuthAuthorizationForm(forms.Form):
