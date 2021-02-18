@@ -4,7 +4,7 @@ from django.db import transaction
 from django.urls import reverse
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
-from django.utils.translation import gettext_lazy as _
+from streams.models import MStream
 
 from . import constants
 from .models import TToken
@@ -40,6 +40,15 @@ class HEntryPropertiesSerializer(serializers.Serializer):
 
     name = FlattenedStringField(required=False)
     content = ContentField(required=False)
+    category = serializers.ListSerializer(child=serializers.CharField(), required=False, write_only=True)
+    streams = serializers.ModelSerializer(MStream.objects, read_only=True, required=False)
+
+    def validate(self, data):
+        if 'category' in data:
+            data['streams'] = MStream.objects.filter(slug__in=data['category'])
+        else:
+            data["streams"] = MStream.objects.none()
+        return data
 
 
 class MicropubSerializer(serializers.Serializer):
