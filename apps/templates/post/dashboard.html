@@ -23,5 +23,12 @@
 
 
 {% block meta %}
-    {% include "entry/buttons/create_status.html" %}
+    <details>
+            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">✏️</span>New Article</a>
+            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">💬</span>New Status</a>
+        <summary>
+            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">💬</span>New Status</a>
+        </summary>
+    </details>
+
 {% endblock %}
