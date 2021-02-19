@@ -23,12 +23,12 @@
 
 
 {% block meta %}
-    <details>
-            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">✏️</span>New Article</a>
-            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">💬</span>New Status</a>
-        <summary>
-            <a href="{% url "status_create" %}" class="green-button"><span class="mr-1">💬</span>New Status</a>
+    <details class="button-summary w-42">
+        <summary class="focus:outline-none">
+            <a href="{% url "status_create" %}" class=""><span class="mr-1">💬</span>New Status</a>
         </summary>
+        <ul class="pl-5">
+          <li><a href="{% url "status_create" %}" class=""><span class="mr-1">✏️</span>New Article</a></li>
+        </ul>
     </details>
-
 {% endblock %}
