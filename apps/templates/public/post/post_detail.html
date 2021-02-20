@@ -4,7 +4,7 @@
 
 
 {% block main %}
-    {% include "public/entry/status_item.html" with detail=True %}
+    {% include detail_template with detail=True %}
     {% if webmentions_count %}
         {# When turbo is working make webmentions load lazily #}
         <details class="mt-2">

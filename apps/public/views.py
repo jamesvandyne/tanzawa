@@ -24,18 +24,20 @@ def home(request):
 
 
 def status_detail(request, uuid):
-    t_post = get_object_or_404(
+    t_post: TPost = get_object_or_404(
         TPost.objects.prefetch_related("ref_t_entry").filter(
             m_post_status__key=MPostStatuses.published
         ),
         uuid=uuid,
     )
     webmentions = t_post.ref_t_webmention.filter(approval_status=True)
+    detail_template = f"public/entry/{t_post.m_post_kind.key}_item.html"
     context = {
         "t_post": t_post,
+        "detail_template": detail_template,
         "webmentions": webmentions,
         "webmentions_count": webmentions.count(),
-        "status": t_post.ref_t_entry.all()[0],
+        "t_entry": t_post.ref_t_entry.all()[0],
         "now": now(),
         "streams": MStream.objects.visible(request.user),
         "public": True,

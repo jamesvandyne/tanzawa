@@ -2,8 +2,8 @@
 
 <div class="flex-col h-entry">
     <header>
-        {% if status.p_name%}
-            <h1 class="p-name text-2xl">{{ status.p_name }}</h1>
+        {% if t_entry.p_name%}
+            <h1 class="p-name text-2xl">{{ t_entry.p_name }}</h1>
         {% endif %}
         <div class="italic">
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
@@ -17,15 +17,15 @@
         </div>
     </header>
     <main class="e-content mb-2 pt-2 content w-prose">
-        {{ status.e_content|safe }}
+        {{ t_entry.e_content|safe }}
     </main>
     <footer class="mt-2 pt-2{% if detail %} border-t-2  border-bianca-600{% endif %}">
         <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
-        {% if status.interaction_count %}
-            <span>{{ status.interaction_count }}</span> interaction{{ status.interaction_count|pluralize }}
+        {% if t_entry.interaction_count %}
+            <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
         {% endif %}
         {% if user.is_authenticated %}
-            <a href="{% url 'status_edit' status.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+            <a href="{% url 'status_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}
     </footer>
 </div>

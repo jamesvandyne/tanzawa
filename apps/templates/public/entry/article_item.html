@@ -5,7 +5,7 @@
         {% if t_entry.p_name%}
             <h1 class="p-name text-2xl">{{ t_entry.p_name }}</h1>
         {% endif %}
-        <div class="italic">
+        <div>
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
             {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
                 {{ t_post.dt_published|naturaltime }}
