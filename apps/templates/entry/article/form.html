@@ -1,0 +1,40 @@
+{%  extends "base.html" %}
+{% load static %}
+
+
+{% block content_before %}
+    <form action="" method="POST" class="w-11/12 flex">
+{% endblock %}
+
+{% block main %}
+    {{ form.errors }}
+    <div class="pt-2">
+    {{ form.p_name }}
+    </div>
+    <div class="font-serif pt-2">
+    {% csrf_token %}
+    {{ form.e_content }}
+    {{  form.media.js }}
+    </div>
+    <div class="pt-2">
+        {{ form.streams.label }}
+        <div class="flex">
+            {{ form.streams }}
+        </div>
+    </div>
+{% endblock %}
+{% block meta %}
+    <section class="mb-2">
+        <div class="mb-1">
+            <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" value="published">Publish</button>
+            {%  if not form.instance.pk or not form.instance.t_post.dt_published %}
+                <button class="rounded border-negroni-900 text-negroni-800 border px-3 py-1" name="m_post_status" value="draft">Save Draft</button>
+            {% else %}
+                <button class="rounded border-negroni-900 text-negroni-800 border px-3 py-1" name="m_post_status" value="draft">Save & Unpublish</button>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+{% block content_after %}
+    </form>
+{% endblock %}

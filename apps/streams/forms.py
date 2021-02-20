@@ -7,9 +7,7 @@ class StreamCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
 
 
 class StreamModelMultipleChoiceField(forms.ModelMultipleChoiceField):
-    widget = StreamCheckboxSelectMultiple(attrs={
-        'class': 'inline-flex flex-wrap'
-    })
+    widget = StreamCheckboxSelectMultiple(attrs={"class": "inline-flex flex-wrap"})
 
     def label_from_instance(self, obj: MStream) -> str:
         return f"{obj.icon} {obj.name}"

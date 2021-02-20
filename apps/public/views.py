@@ -68,7 +68,7 @@ def stream(request, stream_slug: str):
                 )
             )
         ),
-        'stream': stream,
+        "stream": stream,
         "selected": stream.slug,
         "streams": MStream.objects.visible(request.user),
     }

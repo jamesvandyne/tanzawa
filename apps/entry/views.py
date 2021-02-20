@@ -94,3 +94,59 @@ class TEntryListView(ListView):
         context = super().get_context_data(*args, **kwargs)
         context["nav"] = "status"
         return context
+
+
+@login_required
+def article_create(request):
+    form = forms.CreateArticleForm(
+        request.POST or None, p_author=request.user, autofocus="p_name"
+    )
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.prepare_data()
+            entry = form.save()
+
+            if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+                send_webmention(request, entry.t_post, entry.e_content)
+
+            permalink_a_tag = render_to_string(
+                "fragments/view_post_link.html", {"t_post": entry.t_post}
+            )
+            messages.success(request, f"Saved Article. {mark_safe(permalink_a_tag)}")
+
+            return redirect(resolve_url("status_edit", pk=entry.pk))
+    context = {"form": form, "nav": "status"}
+    return render(request, "entry/article/create.html", context=context)
+
+
+@login_required
+def article_edit(request, pk: int):
+    status: models.TEntry = get_object_or_404(
+        models.TEntry.objects.select_related("t_post"), pk=pk
+    )
+    form = forms.UpdateArticleForm(request.POST or None, instance=status, autofocus='p_name')
+
+    if request.method == "POST":
+        original_content = status.e_content
+        if form.is_valid():
+            form.prepare_data()
+            send_webmention(request, form.instance.t_post, original_content)
+            form.save()
+            send_webmention(request, form.instance.t_post, form.instance.e_content)
+            permalink_a_tag = render_to_string(
+                "fragments/view_post_link.html", {"t_post": form.instance.t_post}
+            )
+            messages.success(request, f"Saved Status. {mark_safe(permalink_a_tag)}")
+    context = {"form": form, "nav": "status"}
+    return render(request, "entry/article/update.html", context=context)
+
+
+@login_required
+def article_delete(request, pk: int):
+    status = get_object_or_404(models.TEntry.objects, pk=pk)
+    send_webmention(request, status.t_post, status.e_content)
+    status.delete()
+    # TODO: Should we also delete the t_post ?
+    messages.success(request, "Article Deleted")
+    return redirect(resolve_url("status_list"))

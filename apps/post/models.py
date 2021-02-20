@@ -34,10 +34,8 @@ class MPostKind(TimestampModel):
 
 class TPostManager(models.Manager):
     def published(self):
-        return (
-            self
-            .get_queryset()
-            .filter(m_post_status__key=MPostStatuses.published, dt_published__lte=now())
+        return self.get_queryset().filter(
+            m_post_status__key=MPostStatuses.published, dt_published__lte=now()
         )
 
 

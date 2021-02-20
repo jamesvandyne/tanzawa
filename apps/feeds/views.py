@@ -64,13 +64,15 @@ class AllEntriesFeed(Feed):
 
 
 class StreamFeed(AllEntriesFeed):
-
     def get_object(self, request, stream_slug: str):
-        return get_object_or_404(MStream.objects.visible(request.user), slug=stream_slug)
+        return get_object_or_404(
+            MStream.objects.visible(request.user), slug=stream_slug
+        )
 
     def items(self, obj):
         return (
-            TPost.objects.published().filter(streams=obj)
+            TPost.objects.published()
+            .filter(streams=obj)
             .prefetch_related("ref_t_entry")
             .all()
             .order_by("-dt_published")[:10]
