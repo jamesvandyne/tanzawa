@@ -116,7 +116,7 @@ class TestMicropub:
 
         t_entry = TEntry.objects.last()
         t_post: TPost = t_entry.t_post
-        assert t_post.m_post_kind.key == "note"
+        assert t_post.m_post_kind.key == "article"
         assert t_post.m_post_status.key == "published"
 
         assert t_post.files.count() == 1
