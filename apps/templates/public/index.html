@@ -7,7 +7,7 @@
 {% block main %}
     <ul>
     {% for entry in entries reversed %}
-        <li class="border-b-2 border-negroni-700 py-2 my-2">
+        <li class="border-b-2 border-bianca-600 py-2 my-2">
             {% if entry.t_post.m_post_kind.key == 'article' %}
                 {% include "public/entry/article_item.html" with t_entry=entry t_post=entry.t_post %}
             {% elif entry.t_post.m_post_kind.key == 'note' %}
