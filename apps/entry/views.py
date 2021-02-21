@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
-from django.views.generic import ListView, CreateView
-from indieweb.constants import MPostStatuses
+from django.views.generic import ListView, CreateView, UpdateView
+from indieweb.constants import MPostStatuses, MPostKinds
 from indieweb.webmentions import send_webmention
 from post.models import MPostKind
 
@@ -13,15 +13,12 @@ from . import forms, models
 
 
 @method_decorator(login_required, name="dispatch")
-class AuthorCreateEntryView(CreateView):
+class CreateEntryView(CreateView):
     autofocus = None
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'p_author': self.request.user,
-            'autofocus': self.autofocus
-        })
+        kwargs.update({"p_author": self.request.user, "autofocus": self.autofocus})
         return kwargs
 
     def form_valid(self, form):
@@ -34,7 +31,10 @@ class AuthorCreateEntryView(CreateView):
         permalink_a_tag = render_to_string(
             "fragments/view_post_link.html", {"t_post": entry.t_post}
         )
-        messages.success(self.request, f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}")
+        messages.success(
+            self.request,
+            f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
+        )
         return redirect(resolve_url("status_edit", pk=entry.pk))
 
     def form_invalid(self, form):
@@ -42,38 +42,69 @@ class AuthorCreateEntryView(CreateView):
         return render(self.request, self.template_name, context=context)
 
 
-class CreateStatusView(AuthorCreateEntryView):
+@method_decorator(login_required, name="dispatch")
+class UpdateEntryView(UpdateView):
+    m_post_kind = None
+    original_content = ""
+
+    def get_queryset(self):
+        return models.TEntry.objects.select_related("t_post").filter(
+            t_post__m_post_kind__key=self.m_post_kind
+        )
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        self.original_content = obj.e_content
+        return obj
+
+    def form_valid(self, form):
+        form.prepare_data()
+        send_webmention(self.request, form.instance.t_post, self.original_content)
+        form.save()
+        send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+        permalink_a_tag = render_to_string(
+            "fragments/view_post_link.html", {"t_post": form.instance.t_post}
+        )
+        messages.success(
+            self.request,
+            f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
+        )
+        context = {"form": form, "nav": "status"}
+        return render(self.request, self.template_name, context=context)
+
+    def form_invalid(self, form):
+        context = {"form": form, "nav": "status"}
+        return render(self.request, self.template_name, context=context)
+
+
+# Note CRUD views
+
+
+class CreateStatusView(CreateEntryView):
     form_class = forms.CreateStatusForm
-    template_name = "entry/status_create.html"
+    template_name = "entry/note/create.html"
 
 
-class CreateArticleView(AuthorCreateEntryView):
+class UpdateStatusView(UpdateEntryView):
+    form_class = forms.UpdateStatusForm
+    template_name = "entry/note/update.html"
+    m_post_kind = MPostKinds.note
+
+
+# Article CRUD views
+
+
+class CreateArticleView(CreateEntryView):
     form_class = forms.CreateArticleForm
     template_name = "entry/article/create.html"
-    autofocus = 'p_name'
+    autofocus = "p_name"
 
 
-
-@login_required
-def status_edit(request, pk: int):
-    status: models.TEntry = get_object_or_404(
-        models.TEntry.objects.select_related("t_post"), pk=pk
-    )
-    form = forms.UpdateStatusForm(request.POST or None, instance=status)
-
-    if request.method == "POST":
-        original_content = status.e_content
-        if form.is_valid():
-            form.prepare_data()
-            send_webmention(request, form.instance.t_post, original_content)
-            form.save()
-            send_webmention(request, form.instance.t_post, form.instance.e_content)
-            permalink_a_tag = render_to_string(
-                "fragments/view_post_link.html", {"t_post": form.instance.t_post}
-            )
-            messages.success(request, f"Saved Status. {mark_safe(permalink_a_tag)}")
-    context = {"form": form, "nav": "status"}
-    return render(request, "entry/status_update.html", context=context)
+class UpdateArticleView(UpdateEntryView):
+    form_class = forms.UpdateArticleForm
+    template_name = "entry/article/update.html"
+    m_post_kind = MPostKinds.article
+    autofocus = "p_name"
 
 
 @login_required
@@ -114,28 +145,6 @@ class TEntryListView(ListView):
         context = super().get_context_data(*args, **kwargs)
         context["nav"] = "status"
         return context
-
-
-@login_required
-def article_edit(request, pk: int):
-    status: models.TEntry = get_object_or_404(
-        models.TEntry.objects.select_related("t_post"), pk=pk
-    )
-    form = forms.UpdateArticleForm(request.POST or None, instance=status, autofocus='p_name')
-
-    if request.method == "POST":
-        original_content = status.e_content
-        if form.is_valid():
-            form.prepare_data()
-            send_webmention(request, form.instance.t_post, original_content)
-            form.save()
-            send_webmention(request, form.instance.t_post, form.instance.e_content)
-            permalink_a_tag = render_to_string(
-                "fragments/view_post_link.html", {"t_post": form.instance.t_post}
-            )
-            messages.success(request, f"Saved Status. {mark_safe(permalink_a_tag)}")
-    context = {"form": form, "nav": "status"}
-    return render(request, "entry/article/update.html", context=context)
 
 
 @login_required

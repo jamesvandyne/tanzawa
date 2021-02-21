@@ -44,7 +44,7 @@ class CreateStatusForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.p_author = kwargs.pop("p_author")
-        autofocus = kwargs.pop("autofocus", 'e_content')
+        autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
         self.fields["m_post_status"].widget.attrs = {
             "class": "mb-1",
@@ -128,7 +128,7 @@ class UpdateStatusForm(forms.ModelForm):
         fields = ("e_content",)
 
     def __init__(self, *args, **kwargs):
-        autofocus = kwargs.pop("autofocus", 'e_content')
+        autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
         self.t_post: TPost = self.instance.t_post
         self.already_published = (
@@ -169,7 +169,6 @@ class UpdateStatusForm(forms.ModelForm):
 
 
 class UpdateArticleForm(UpdateStatusForm):
-
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
