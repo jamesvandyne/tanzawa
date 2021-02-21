@@ -1,0 +1,10 @@
+<div data-controller="hover-toggle">
+    <details class="button-summary inline-block" data-hover-toggle-target="detail">
+        <summary class="focus:outline-none">
+            <a href="{% url "status_create" %}"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
+        </summary>
+        <ul class="pl-5">
+          <li class="py-1"><a href="{% url "article_create" %}"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a></li>
+        </ul>
+    </details>
+</div>

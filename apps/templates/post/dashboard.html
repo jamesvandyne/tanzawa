@@ -23,12 +23,5 @@
 
 
 {% block meta %}
-    <details class="button-summary inline-block">
-        <summary class="focus:outline-none">
-            <a href="{% url "status_create" %}" class=""><span class="mr-1">💬</span>New Status</a>
-        </summary>
-        <ul class="pl-5">
-          <li class="py-1"><a href="{% url "article_create" %}"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a></li>
-        </ul>
-    </details>
+    {% include "fragments/create_post_menu.html" %}
 {% endblock %}

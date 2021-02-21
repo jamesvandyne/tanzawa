@@ -5,16 +5,22 @@
   "main": "postcss.config.js",
   "dependencies": {
     "autoprefixer": "^10.1.0",
+    "stimulus": "^2.0.0",
     "tailwindcss": "^2.0.2"
   },
   "devDependencies": {
+    "@stimulus/webpack-helpers": "^2.0.0",
+    "eslint": "^7.20.0",
     "postcss": "^8.2.2",
-    "postcss-cli": "^8.3.1"
+    "postcss-cli": "^8.3.1",
+    "webpack": "^5.23.0",
+    "webpack-cli": "^4.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "postcss css/**/*.css -d ../static/tailwind --watch",
-    "build": "NODE_ENV=production postcss css/**/*.css -o ../static/tailwind/style.css"
+    "build": "NODE_ENV=production postcss css/**/*.css -o ../static/tailwind/style.css",
+    "wp": "webpack --mode=development"
   },
   "author": "",
   "license": "ISC"
