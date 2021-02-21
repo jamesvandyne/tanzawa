@@ -20,7 +20,7 @@ class TCharField(forms.CharField):
     widget = forms.TextInput(attrs={"class": "input-field"})
 
 
-class CreateStatusForm(forms.Form):
+class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
@@ -37,6 +37,10 @@ class CreateStatusForm(forms.Form):
     )
 
     m_post_kind = MPostKinds.note
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
 
     def __init__(self, *args, **kwargs):
         self.p_author = kwargs.pop("p_author")
@@ -79,20 +83,20 @@ class CreateStatusForm(forms.Form):
             dt_updated=n,
         )
         soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
-        self.t_entry = TEntry(
+        self.instance = TEntry(
             e_content=self.cleaned_data["e_content"],
             p_summary=soup.text[:255].strip(),
             p_name=self.cleaned_data.get("p_name", ""),
         )
 
     @transaction.atomic
-    def save(self):
+    def save(self, commit=True):
         self.t_post.save()
-        self.t_entry.t_post = self.t_post
-        self.t_entry.save()
+        self.instance.t_post = self.t_post
+        entry = super().save(commit)
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
         self.t_post.streams.set(self.cleaned_data["streams"])
-        return self.t_entry
+        return entry
 
 
 class CreateArticleForm(CreateStatusForm):
