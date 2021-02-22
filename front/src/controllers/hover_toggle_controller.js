@@ -1,10 +1,7 @@
 import { Controller } from "stimulus"
 
 export default class extends Controller {
-//    targets = ["details"]
-
     static get targets() {
-        console.log("targets");
         return ["detail"]
     }
 

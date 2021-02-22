@@ -177,7 +177,7 @@ def review_webmention(request, pk: int, approval: bool):
 
 @method_decorator(login_required, name="dispatch")
 class TEntryListView(ListView):
-    template_name = "entry/status_list.html"
+    template_name = "entry/posts.html"
 
     def get_queryset(self):
         qs = TWebmention.objects.all()

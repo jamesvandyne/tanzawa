@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
-from indieweb.constants import MPostStatuses
+from indieweb.constants import MPostStatuses, MPostKinds
 
 
 class MPostStatus(TimestampModel):
@@ -30,6 +30,17 @@ class MPostKind(TimestampModel):
 
     def __str__(self):
         return self.name
+
+    def icon(self):
+        lookup = {
+            MPostKinds.note: "💬",
+            MPostKinds.article: "✏️",
+            MPostKinds.bookmark: "🔖",
+            MPostKinds.reply: "📤",
+            MPostKinds.like: "👍",
+            MPostKinds.checkin: "🗺"
+        }
+        return lookup.get(self.key, "❓")
 
 
 class TPostManager(models.Manager):

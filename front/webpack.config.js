@@ -5,6 +5,5 @@ module.exports = {
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, '../static/js/'),
-      // path: '.../static/js/'
   },
 };
