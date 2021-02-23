@@ -16,8 +16,12 @@ from streams.forms import StreamModelMultipleChoiceField
 from .models import TEntry
 
 
-class CreateStatusForm(forms.Form):
-    p_name = forms.CharField(required=False)
+class TCharField(forms.CharField):
+    widget = forms.TextInput(attrs={"class": "input-field"})
+
+
+class CreateStatusForm(forms.ModelForm):
+    p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
@@ -27,15 +31,29 @@ class CreateStatusForm(forms.Form):
         initial=MPostStatuses.draft,
     )
     streams = StreamModelMultipleChoiceField(
-        MStream.objects.all(), label="Which streams should this appear in?", required=False
+        MStream.objects.all(),
+        label="Which streams should this appear in?",
+        required=False,
     )
+
+    m_post_kind = MPostKinds.note
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
 
     def __init__(self, *args, **kwargs):
         self.p_author = kwargs.pop("p_author")
+        autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
         self.fields["m_post_status"].widget.attrs = {
             "class": "mb-1",
         }
+        self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
+
+        if autofocus:
+            self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
+
         self.t_post: Optional[TPost] = None
         self.t_entry: Optional[TEntry] = None
         self.file_attachment_uuids: List[str] = []
@@ -43,10 +61,12 @@ class CreateStatusForm(forms.Form):
     def clean(self):
         try:
             self.cleaned_data["m_post_kind"] = MPostKind.objects.get(
-                key=MPostKinds.note
+                key=self.m_post_kind
             )
         except MPostKind.DoesNotExist:
-            raise forms.ValidationError("m_post_kind: note does not exist")
+            raise forms.ValidationError(
+                f"m_post_kind: {self.m_post_kind} does not exist"
+            )
 
         urls = extract_attachment_urls(self.cleaned_data["e_content"])
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
@@ -63,23 +83,32 @@ class CreateStatusForm(forms.Form):
             dt_updated=n,
         )
         soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
-        self.t_entry = TEntry(
+        self.instance = TEntry(
             e_content=self.cleaned_data["e_content"],
             p_summary=soup.text[:255].strip(),
             p_name=self.cleaned_data.get("p_name", ""),
         )
 
     @transaction.atomic
-    def save(self):
+    def save(self, commit=True):
         self.t_post.save()
-        self.t_entry.t_post = self.t_post
-        self.t_entry.save()
+        self.instance.t_post = self.t_post
+        entry = super().save(commit)
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-        self.t_post.streams.set(self.cleaned_data['streams'])
-        return self.t_entry
+        self.t_post.streams.set(self.cleaned_data["streams"])
+        return entry
+
+
+class CreateArticleForm(CreateStatusForm):
+    m_post_kind = MPostKinds.article
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
 
 
 class UpdateStatusForm(forms.ModelForm):
+    p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
@@ -89,7 +118,9 @@ class UpdateStatusForm(forms.ModelForm):
         initial=MPostStatuses.draft,
     )
     streams = StreamModelMultipleChoiceField(
-        MStream.objects.all(), label="Which streams should this appear in?", required=False
+        MStream.objects.all(),
+        label="Which streams should this appear in?",
+        required=False,
     )
 
     class Meta:
@@ -97,12 +128,19 @@ class UpdateStatusForm(forms.ModelForm):
         fields = ("e_content",)
 
     def __init__(self, *args, **kwargs):
+        autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
         self.t_post: TPost = self.instance.t_post
         self.already_published = (
             self.t_post.m_post_status.key == MPostStatuses.published
         )
-        self.fields['streams'].initial = self.t_post.streams.values_list('id', flat=True)
+        self.fields["streams"].initial = self.t_post.streams.values_list(
+            "id", flat=True
+        )
+        self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
+
+        if autofocus:
+            self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
         self.file_attachment_uuids: List[str] = []
 
     def clean(self):
@@ -126,5 +164,11 @@ class UpdateStatusForm(forms.ModelForm):
         super().save(commit=commit)
         self.t_post.save()
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-        self.t_post.streams.set(self.cleaned_data['streams'])
+        self.t_post.streams.set(self.cleaned_data["streams"])
         return self.instance
+
+
+class UpdateArticleForm(UpdateStatusForm):
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")

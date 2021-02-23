@@ -4,8 +4,8 @@
 {% endblock %}
 
 {% block main %}
-    <details open>
-        <summary open>
+    <details {% if unread_count <= 3 %}open{% endif %}>
+        <summary>
             Webmentions
             <div class="inline-block ml-1">
             {% if unread_count %}
@@ -19,9 +19,18 @@
             {% endfor %}
         </ul>
     </details>
+    <details open>
+        <summary>Drafts</summary>
+        {% include "entry/fragments/posts.html" with object_list=drafts %}
+    </details>
+    <details open>
+        <summary>Recent Posts</summary>
+        {% include "entry/fragments/posts.html" with object_list=recent_posts %}
+    </details>
+
 {% endblock %}
 
 
 {% block meta %}
-    {% include "entry/buttons/create_status.html" %}
+    {% include "fragments/create_post_menu.html" %}
 {% endblock %}

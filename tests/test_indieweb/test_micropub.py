@@ -107,7 +107,7 @@ class TestMicropub:
                         "html": '<p>This is a neat title</p>\n<h2>\n  Subtitle\n  <br />\n</h2>\n<p><b>Hello</b></p>\n<figure>\n  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAFBlWElmTU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADr/7PgAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWP4/f39fwAJswPh+tQCZAAAAABJRU5ErkJggg==" alt="" />\n</figure>'
                     }
                 ],
-                "category": ["photos", "checkins", "fake"]
+                "category": ["photos", "checkins", "fake"],
             },
         }
         response = client.post(target, data=data, format="json")
@@ -116,7 +116,7 @@ class TestMicropub:
 
         t_entry = TEntry.objects.last()
         t_post: TPost = t_entry.t_post
-        assert t_post.m_post_kind.key == "note"
+        assert t_post.m_post_kind.key == "article"
         assert t_post.m_post_status.key == "published"
 
         assert t_post.files.count() == 1

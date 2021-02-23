@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
-from indieweb.constants import MPostStatuses
+from indieweb.constants import MPostStatuses, MPostKinds
 
 
 class MPostStatus(TimestampModel):
@@ -31,13 +31,27 @@ class MPostKind(TimestampModel):
     def __str__(self):
         return self.name
 
+    def icon(self):
+        lookup = {
+            MPostKinds.note: "💬",
+            MPostKinds.article: "✏️",
+            MPostKinds.bookmark: "🔖",
+            MPostKinds.reply: "📤",
+            MPostKinds.like: "👍",
+            MPostKinds.checkin: "🗺",
+        }
+        return lookup.get(self.key, "❓")
+
 
 class TPostManager(models.Manager):
     def published(self):
-        return (
-            self
-            .get_queryset()
-            .filter(m_post_status__key=MPostStatuses.published, dt_published__lte=now())
+        return self.get_queryset().filter(
+            m_post_status__key=MPostStatuses.published, dt_published__lte=now()
+        )
+
+    def drafts(self):
+        return self.get_queryset().filter(
+            m_post_status__key=MPostStatuses.draft,
         )
 
 
@@ -66,3 +80,7 @@ class TPost(TimestampModel):
 
     def get_absolute_url(self):
         return reverse("public:post_detail", args=[self.uuid])
+
+    @property
+    def is_draft(self):
+        return self.m_post_status.key == MPostStatuses.draft

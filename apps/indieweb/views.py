@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
-from entry.forms import CreateStatusForm
+from entry.forms import CreateStatusForm, CreateArticleForm
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -107,7 +107,9 @@ def micropub(request):
             props.get("post-status", [])
             or MPostStatuses.published  # pull this data from serialier
         ),
-        "streams": serializer.validated_data["properties"]["streams"].values_list('pk', flat=True)
+        "streams": serializer.validated_data["properties"]["streams"].values_list(
+            "pk", flat=True
+        ),
     }
 
     # Save and replace any embedded images
@@ -131,7 +133,12 @@ def micropub(request):
         tag = render_attachment(request, attachment)
         form_data["e_content"] += tag
 
-    form = CreateStatusForm(
+    if form_data["p_name"]:
+        form_class = CreateArticleForm
+    else:
+        form_class = CreateStatusForm
+
+    form = form_class(
         data=form_data, p_author=serializer.validated_data["access_token"].user
     )
 
@@ -170,7 +177,7 @@ def review_webmention(request, pk: int, approval: bool):
 
 @method_decorator(login_required, name="dispatch")
 class TEntryListView(ListView):
-    template_name = "entry/status_list.html"
+    template_name = "entry/posts.html"
 
     def get_queryset(self):
         qs = TWebmention.objects.all()

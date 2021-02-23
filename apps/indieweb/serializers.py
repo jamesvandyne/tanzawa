@@ -40,12 +40,16 @@ class HEntryPropertiesSerializer(serializers.Serializer):
 
     name = FlattenedStringField(required=False)
     content = ContentField(required=False)
-    category = serializers.ListSerializer(child=serializers.CharField(), required=False, write_only=True)
-    streams = serializers.ModelSerializer(MStream.objects, read_only=True, required=False)
+    category = serializers.ListSerializer(
+        child=serializers.CharField(), required=False, write_only=True
+    )
+    streams = serializers.ModelSerializer(
+        MStream.objects, read_only=True, required=False
+    )
 
     def validate(self, data):
-        if 'category' in data:
-            data['streams'] = MStream.objects.filter(slug__in=data['category'])
+        if "category" in data:
+            data["streams"] = MStream.objects.filter(slug__in=data["category"])
         else:
             data["streams"] = MStream.objects.none()
         return data
