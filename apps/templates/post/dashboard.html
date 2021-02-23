@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block main %}
-    <details {% if unread_count <= 3 %}open{% endif %}>
+    <details {% if unread_count and unread_count <= 3 %}open{% endif %}>
         <summary>
             Webmentions
             <div class="inline-block ml-1">
@@ -19,7 +19,7 @@
             {% endfor %}
         </ul>
     </details>
-    <details open>
+    <details {% if drafts %}open{% endif %}>
         <summary>Drafts</summary>
         {% include "entry/fragments/posts.html" with object_list=drafts %}
     </details>
