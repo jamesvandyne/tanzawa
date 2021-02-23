@@ -49,6 +49,11 @@ class TPostManager(models.Manager):
             m_post_status__key=MPostStatuses.published, dt_published__lte=now()
         )
 
+    def drafts(self):
+        return self.get_queryset().filter(
+            m_post_status__key=MPostStatuses.draft,
+        )
+
 
 class TPost(TimestampModel):
 
@@ -75,3 +80,7 @@ class TPost(TimestampModel):
 
     def get_absolute_url(self):
         return reverse("public:post_detail", args=[self.uuid])
+
+    @property
+    def is_draft(self):
+        return self.m_post_status.key == MPostStatuses.draft

@@ -2,16 +2,20 @@
 
 <div class="flex-col">
     <div class="flex">
-        <div class="inline-block text-2xl h-auto">{{ t_entry.t_post.m_post_kind.icon }}</div>
+        <div class="inline-block text-2xl h-auto{% if t_entry.t_post.is_draft %} opacity-50{% endif %}">{{ t_entry.t_post.m_post_kind.icon }}</div>
         <div class="ml-4 flex-grow">
             <header>
                 {% if t_entry.p_name %}<h1 class="text-xl">{{ t_entry.p_name }}</h1>{% endif %}
                 <span class="text-sm">
-                {% ifequal t_entry.create_at|date:"d" day %}
-                    {{ t_entry.created_at|naturaltime }}
+                {% if t_entry.t_post.is_draft %}
+                    Draft: {{ t_entry.updated_at|date:"M d, Y H:m" }}
                 {% else %}
-                    {{ t_entry.created_at|date:"M d, Y" }}
-                {% endifequal %}
+                    {% ifequal t_entry.t_post.dt_published|date:"d" day %}
+                        {{ t_entry.created_at|naturaltime }}
+                    {% else %}
+                        {{ t_entry.t_post.dt_published|date:"M d, Y" }}
+                    {% endifequal %}
+                {% endif %}
                 </span>
             </header>
             <main class="content mt-2">
@@ -23,5 +27,4 @@
             </footer>
         </div>
     </div>
-
 </div>
