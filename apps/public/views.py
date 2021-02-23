@@ -32,13 +32,15 @@ def status_detail(request, uuid):
     )
     webmentions = t_post.ref_t_webmention.filter(approval_status=True)
     detail_template = f"public/entry/{t_post.m_post_kind.key}_item.html"
+    t_entry = t_post.ref_t_entry.all()[0]
     context = {
         "t_post": t_post,
         "detail_template": detail_template,
         "webmentions": webmentions,
         "webmentions_count": webmentions.count(),
-        "t_entry": t_post.ref_t_entry.all()[0],
+        "t_entry": t_entry,
         "now": now(),
+        "title": t_entry.p_name if t_entry.p_name else t_entry.p_summary[:140],
         "streams": MStream.objects.visible(request.user),
         "public": True,
     }
