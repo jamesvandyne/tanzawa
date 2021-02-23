@@ -38,7 +38,7 @@ class MPostKind(TimestampModel):
             MPostKinds.bookmark: "🔖",
             MPostKinds.reply: "📤",
             MPostKinds.like: "👍",
-            MPostKinds.checkin: "🗺"
+            MPostKinds.checkin: "🗺",
         }
         return lookup.get(self.key, "❓")
 

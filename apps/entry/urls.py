@@ -19,5 +19,4 @@ urlpatterns = [
         name="posts",
     ),
     path("posts/<int:pk>", views.edit_post, name="post_edit"),
-
 ]

@@ -61,7 +61,7 @@ class UpdateEntryView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['nav'] = "posts"
+        context_data["nav"] = "posts"
         return context_data
 
     def form_valid(self, form):
@@ -97,6 +97,7 @@ class UpdateStatusView(UpdateEntryView):
     template_name = "entry/note/update.html"
     m_post_kind = MPostKinds.note
     redirect_url = "article_edit"
+
 
 # Article CRUD views
 
@@ -146,7 +147,7 @@ class TEntryListView(ListView):
         qs = models.TEntry.objects.all()
         if self.m_post_kind:
             qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
-        return qs.order_by('-created_at')
+        return qs.order_by("-created_at")
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -166,7 +167,9 @@ def article_delete(request, pk: int):
 
 @login_required
 def edit_post(request, pk: int):
-    t_entry = get_object_or_404(models.TEntry.objects.select_related("t_post", "t_post__m_post_kind"), pk=pk)
+    t_entry = get_object_or_404(
+        models.TEntry.objects.select_related("t_post", "t_post__m_post_kind"), pk=pk
+    )
     if t_entry.t_post.m_post_kind.key == MPostKinds.article:
         return redirect(reverse("article_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.note:

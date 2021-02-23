@@ -10,8 +10,12 @@ from entry.models import TEntry
 def dashboard(request):
 
     webmentions = TWebmention.objects.filter(approval_status=None).reverse()
-    recent_post_ids = TPost.objects.published().order_by('-dt_published').values_list('pk', flat=True)[:5]
-    draft_post_ids = TPost.objects.drafts().values_list('pk', flat=True)
+    recent_post_ids = (
+        TPost.objects.published()
+        .order_by("-dt_published")
+        .values_list("pk", flat=True)[:5]
+    )
+    draft_post_ids = TPost.objects.drafts().values_list("pk", flat=True)
     context = {
         "recent_posts": TEntry.objects.filter(t_post__id__in=recent_post_ids),
         "drafts": TEntry.objects.filter(t_post__id__in=draft_post_ids),
