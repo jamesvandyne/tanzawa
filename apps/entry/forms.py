@@ -107,6 +107,29 @@ class CreateArticleForm(CreateStatusForm):
         fields = ("p_name", "e_content")
 
 
+class CreateReplyForm(CreateStatusForm):
+    m_post_kind = MPostKinds.reply
+
+    u_in_reply_to = forms.URLField()
+    author = forms.CharField()
+    summary = forms.CharField()
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
+
+
+class ExtractMetaForm(forms.Form):
+    url = forms.URLField(required=True, label="What's the URL you are replying to?")
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('instance', None)
+        kwargs.pop('p_author', None)
+        kwargs.pop('autofocus', None)
+        super().__init__(*args, **kwargs)
+        self.fields['url'].widget.attrs = {'data-url-submit-target': 'field', 'autofocus': 'autofocus', 'class': 'input-field', 'placeholder': 'https://tanzawa.blog'}
+
+
 class UpdateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)

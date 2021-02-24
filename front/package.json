@@ -4,6 +4,7 @@
   "description": "",
   "main": "postcss.config.js",
   "dependencies": {
+    "@hotwired/turbo": "^7.0.0-beta.4",
     "autoprefixer": "^10.1.0",
     "stimulus": "^2.0.0",
     "tailwindcss": "^2.0.2"

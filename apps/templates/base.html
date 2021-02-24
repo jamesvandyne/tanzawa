@@ -14,6 +14,8 @@
     {% endwith %}
     {% if form %}{{ form.media.css }}{% endif %}
     <title>{{ page_title }}🏔 Tanzawa</title>
+    <script src="{% static 'trix/trix.js' %}"></script>
+    <script src="{% static 'trix/attachments.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
 </head>
 <body class="bg-bianca-500">

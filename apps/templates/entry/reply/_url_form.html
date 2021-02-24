@@ -1,0 +1,9 @@
+<turbo-frame id="reply-form">
+    <div data-controller="url-submit">
+        <form action="{% url 'reply_meta' %}" method="post">
+            {% csrf_token %}
+            {{ form.url.label }}
+            {{ form.url }}
+        </form>
+    </div>
+</turbo-frame>
