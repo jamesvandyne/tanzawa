@@ -13,8 +13,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.authentication import get_authorization_header
-
-
 from files.forms import MediaUploadForm
 
 
@@ -98,7 +96,6 @@ def micropub(request):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-    # TODO: Add support f or MPostKind
     # Create entry form data
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
@@ -173,22 +170,6 @@ def review_webmention(request, pk: int, approval: bool):
     # TODO: Once we have turbo enabled - add a ajax handler
 
     return redirect(reverse("post:dashboard"))
-
-
-@method_decorator(login_required, name="dispatch")
-class TEntryListView(ListView):
-    template_name = "entry/posts.html"
-
-    def get_queryset(self):
-        qs = TWebmention.objects.all()
-        if self.m_post_kind:
-            qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
-        return qs
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context["nav"] = "status"
-        return context
 
 
 @login_required

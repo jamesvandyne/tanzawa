@@ -25,4 +25,3 @@ class TrixEditor(forms.Textarea):
 
     class Media:
         css = {"all": ("trix/trix.css",)}
-        # js = ("trix/trix.js", "trix/attachments.js")

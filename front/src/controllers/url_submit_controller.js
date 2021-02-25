@@ -2,15 +2,23 @@ import { Controller } from "stimulus"
 
 export default class extends Controller {
     static get targets() {
-        return ["field"]
+        return ["field", "form"]
     }
-
     connect() {
-        this.fieldTarget.addEventListener("blur", this.fetchMeta);
+        this.timer = 0;
     }
 
-    fetchMeta(event) {
-        console.log("BLUR");
+    input() {
+        if(this.timer) {
+            clearTimeout(this.timer);
+        }
+        if(this.fieldTarget.validity.valid) {
+            console.log(this.formTarget);
+            this.timer = setTimeout(() => {
+                this.formTarget.requestSubmit();
+            }, 400);
+        }
+
     }
 
 }

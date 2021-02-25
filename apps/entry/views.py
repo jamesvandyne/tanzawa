@@ -6,12 +6,13 @@ from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, FormView
-import extruct
-import requests
 from indieweb.constants import MPostStatuses, MPostKinds
 from indieweb.webmentions import send_webmention
+from indieweb.extract import extract_reply_details_from_url
 from post.models import MPostKind
 from turbo_response import TurboFrame
+from turbo_response import TurboStreamResponse, TurboStream
+
 
 from . import forms, models
 
@@ -104,6 +105,7 @@ class UpdateStatusView(UpdateEntryView):
 
 # Article CRUD views
 
+
 class CreateArticleView(CreateEntryView):
     form_class = forms.CreateArticleForm
     template_name = "entry/article/create.html"
@@ -119,11 +121,15 @@ class UpdateArticleView(UpdateEntryView):
 
 # Reply CRUD views
 
+
 class CreateReplyView(CreateEntryView):
     template_name = "entry/reply/create.html"
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(nav="posts", **kwargs)
+
     def get_form_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return forms.ExtractMetaForm
         return forms.CreateReplyForm
 
@@ -132,16 +138,34 @@ class CreateReplyView(CreateEntryView):
 class ExtractReplyMetaView(FormView):
     form_class = forms.ExtractMetaForm
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(nav="posts", **kwargs)
+
     def form_valid(self, form):
-        data = requests.get(form.cleaned_data["url"])
-        context = super().get_context_data(data=data, form=forms.CreateReplyForm(p_author=self.request.user))
-        return TurboFrame("reply-form").template(
-            "entry/reply/form.html",
-            context
-        ).response(self.request)
+        linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
+        initial = {
+            "u_in_reply_to": linked_page.url,
+            "author": linked_page.author.name,
+            "summary": linked_page.description,
+        }
+        context = self.get_context_data(
+            linked_page=linked_page,
+            form=forms.CreateReplyForm(initial=initial, p_author=self.request.user),
+        )
+
+        return (
+            TurboFrame("reply-form")
+            .template("entry/reply/form.html", context)
+            .response(self.request)
+        )
 
     def form_invalid(self, form):
-        return render(self.request, "entry/reply/_url_form.html", context=super().get_context_data(), status=422)
+        return render(
+            self.request,
+            "entry/reply/_url_form.html",
+            context=self.get_context_data(),
+            status=422,
+        )
 
 
 @login_required

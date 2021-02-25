@@ -140,6 +140,9 @@ def save_and_get_tag(request, image: DataImage) -> Optional[BeautifulSoup]:
 
 
 def render_attachment(request, attachment: TFile) -> str:
+    """
+    Render an attachment to be inserted into a trix editor
+    """
     img = Image.open(attachment.file)
     img_src = request.build_absolute_uri(attachment.get_absolute_url())
     context = {

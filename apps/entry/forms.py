@@ -110,24 +110,37 @@ class CreateArticleForm(CreateStatusForm):
 class CreateReplyForm(CreateStatusForm):
     m_post_kind = MPostKinds.reply
 
-    u_in_reply_to = forms.URLField()
-    author = forms.CharField()
-    summary = forms.CharField()
+    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
+    author = forms.CharField(label='Author', widget=forms.HiddenInput)
+    title = forms.CharField(label='Title')
+    summary = forms.CharField(widget=forms.Textarea, label='Summary',
+                              help_text='This will appear above your reply as a quote for context.')
 
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["summary"].widget.attrs = {"class": "input-field"}
+        self.fields["e_content"].label = "My Response"
+
 
 class ExtractMetaForm(forms.Form):
-    url = forms.URLField(required=True, label="What's the URL you are replying to?")
+    url = forms.URLField(required=True, label="What's the URL you're replying to?")
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop('instance', None)
-        kwargs.pop('p_author', None)
-        kwargs.pop('autofocus', None)
+        kwargs.pop("instance", None)
+        kwargs.pop("p_author", None)
+        kwargs.pop("autofocus", None)
         super().__init__(*args, **kwargs)
-        self.fields['url'].widget.attrs = {'data-url-submit-target': 'field', 'autofocus': 'autofocus', 'class': 'input-field', 'placeholder': 'https://tanzawa.blog'}
+        self.fields["url"].widget.attrs = {
+            "data-url-submit-target": "field",
+            "data-action": "url-submit#input",
+            "autofocus": "autofocus",
+            "class": "input-field",
+            "placeholder": "https://tanzawa.blog",
+        }
 
 
 class UpdateStatusForm(forms.ModelForm):

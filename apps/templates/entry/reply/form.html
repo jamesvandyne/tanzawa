@@ -1,15 +1,26 @@
 {% load static %}
 
-
-<form action="" method="POST" class="w-11/12 flex">
-    {{ data }}
+<form id="reply" action="" method="POST" class="flex-col">
     {{ form.errors }}
-    <div class="pt-2">
-    {{ form.p_name }}
-    </div>
-    <div class="font-serif pt-2">
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
     {% csrf_token %}
-    {{ form.e_content }}
+    <div>
+        <span>Responding to "{{ linked_page.title }}"</span>
+        <span class="block text-xs">{{ linked_page.url|urlize }}</span>
+    </div>
+    <div class="pt-2">
+        {{ form.summary.label }}
+        <span class="block text-xs">{{ form.summary.help_text }}</span>
+        {{ form.summary }}
+    </div>
+    <div class="pt-2">
+        {{ form.e_content.label }}
+        <span class="font-serif">
+        {{ form.e_content }}
+        </span>
+        {{ form.media.css }}
     </div>
     <div class="pt-2">
         {{ form.streams.label }}

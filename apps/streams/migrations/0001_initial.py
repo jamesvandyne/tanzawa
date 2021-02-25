@@ -34,7 +34,11 @@ class Migration(migrations.Migration):
                 (
                     "visibility",
                     models.SmallIntegerField(
-                        choices=[(1, 'Everyone'), (2, 'Only me'), (3, 'People who know the url')],
+                        choices=[
+                            (1, "Everyone"),
+                            (2, "Only me"),
+                            (3, "People who know the url"),
+                        ],
                         default=core.constants.Visibility["PUBLIC"],
                     ),
                 ),

@@ -54,8 +54,10 @@
                             {% endblock %}
                               {% block main %}{% endblock %}
                         </main>
-                        <section id="meta" class="meta w-64 h-screen p-2">
-                            {% block meta %}{% endblock %}
+                        <section class="meta w-64 h-screen p-2">
+                            {% block meta %}
+                                <turbo-frame id="meta"></turbo-frame>
+                            {% endblock %}
                         </section>
                     {% endblock  %}
                 </div>
