@@ -1,7 +1,8 @@
 import extruct
 import requests
-from typing import Optional
-
+from bs4 import BeautifulSoup
+from typing import Optional, List, Dict, Any
+import mf2util
 from dataclasses import dataclass
 
 
@@ -38,4 +39,19 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
             )
             if "author" in schema
             else None,
+        )
+
+    if data["microformat"]:
+        entry = mf2util.interpret_entry({"items": data["microformat"]}, source_url=url)
+        soup = BeautifulSoup(entry.get("content", ""), "html.parser")
+        description = soup.text[:255].strip()
+        return LinkedPage(
+            url=entry.get("url", ""),
+            title=entry.get("name") or description[:128].strip(),
+            description=description,
+            author=LinkedPageAuthor(
+                name=entry["author"].get("name", ""),
+                url=entry["author"].get("url", ""),
+                photo=entry["author"].get("image"),
+            )
         )

@@ -1,14 +1,14 @@
 {% load static %}
 
-<form id="reply" action="" method="POST" class="flex-col">
+<form id="reply" action="" method="POST" class="flex-col" data-turbo-frame="messages">
     {{ form.errors }}
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
     {% csrf_token %}
     <div>
-        <span>Responding to "{{ form.title.value|default:form.t_reply.title }}"</span>
-        <span class="block text-xs">{{ form.u_in_reply_to.value|default:form.t_reply.u_in_reply_to|urlize }}</span>
+        <span>Responding to "{{ form.title.value }}"</span>
+        <span class="block text-xs">{{ form.u_in_reply_to.value|urlize }}</span>
     </div>
     <div class="pt-2">
         {{ form.summary.label }}

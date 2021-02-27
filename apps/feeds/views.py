@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed
 from post.models import TPost
 from streams.models import MStream
+from indieweb.constants import MPostKinds
 
 
 class ExtendedRSSFeed(Rss201rev2Feed):
@@ -32,20 +33,28 @@ class AllEntriesFeed(Feed):
     def items(self):
         return (
             TPost.objects.published()
-            .prefetch_related("ref_t_entry")
+            .select_related("m_post_kind")
+            .prefetch_related("ref_t_entry", "ref_t_entry__t_reply")
             .all()
             .order_by("-dt_published")[:10]
         )
 
     def item_title(self, item: TPost):
         t_entry = item.ref_t_entry.all()[0]
-        return t_entry.p_name or t_entry.p_summary[:128]
+        title = t_entry.p_name or t_entry.p_summary[:128]
+        if item.m_post_kind.key == MPostKinds.reply:
+            title = f"Response to {t_entry.t_reply.title}"
+        return title
 
     def item_description(self, item: TPost):
         return item.ref_t_entry.all()[0].p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        return {"content_encoded": item.ref_t_entry.all()[0].e_content}
+        t_entry = item.ref_t_entry.all()[0]
+        e_content = t_entry.e_content
+        if item.m_post_kind.key == MPostKinds.reply:
+            e_content = f"<blockquote>{t_entry.t_reply.quote}</blockquote>{e_content}"
+        return {"content_encoded": e_content}
 
     def item_guid(self, obj: TPost) -> str:
         return obj.uuid

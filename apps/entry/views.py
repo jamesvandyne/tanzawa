@@ -70,9 +70,15 @@ class UpdateEntryView(UpdateView):
 
     def form_valid(self, form):
         form.prepare_data()
-        send_webmention(self.request, form.instance.t_post, self.original_content)
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            send_webmention(self.request, form.instance.t_post, self.original_content)
+
         form.save()
-        send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+
         permalink_a_tag = render_to_string(
             "fragments/view_post_link.html", {"t_post": form.instance.t_post}
         )
@@ -81,6 +87,9 @@ class UpdateEntryView(UpdateView):
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
         context = self.get_context_data(form=form)
+        return self.get_response(context)
+
+    def get_response(self, context):
         return render(self.request, self.template_name, context=context)
 
     def form_invalid(self, form):
@@ -183,6 +192,13 @@ class UpdateReplyView(UpdateEntryView):
     m_post_kind = MPostKinds.reply
     autofocus = "e_content"
 
+    def get_response(self, context):
+        return (
+            TurboFrame("messages")
+                .template("fragments/messages.html", context)
+                .response(self.request)
+        )
+
 
 @login_required
 def status_detail(request, pk: int):
@@ -243,5 +259,7 @@ def edit_post(request, pk: int):
         return redirect(reverse("article_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.note:
         return redirect(reverse("status_edit", args=[pk]))
+    elif t_entry.t_post.m_post_kind.key == MPostKinds.reply:
+        return redirect(reverse("reply_edit", args=[pk]))
     messages.error(request, "Unknown post type")
     return redirect(resolve_url("posts"))

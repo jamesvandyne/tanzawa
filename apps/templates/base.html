@@ -34,15 +34,11 @@
                 </ul>
             </nav>
             <div class="w-11/12 flex flex-col">
-                <div id="messages" class="animate-fade-out">
+                <turbo-frame id="messages">
                     {% if messages %}
-                    <ul class="messages mx-auto block p-2 w-6/12 bg-malachite-200 border border-2 border-malachite-700 rounded animate-fade-out">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-                        {% endfor %}
-                    </ul>
+                        {% include "fragments/messages.html" %}
                     {% endif %}
-                </div>
+                </turbo-frame>
                 {% block content_before %}{% endblock %}
                 <div id="main-container" class="flex">
                     {% block content %}
