@@ -1,11 +1,15 @@
 {% load humanize %}
-
+{% with t_entry.t_reply as t_reply %}
 <div class="flex-col h-entry">
-    <header>
-        {% if t_entry.p_name%}
-            <h1 class="p-name text-2xl">{{ t_entry.p_name }}</h1>
+    <header class="u-in-reply-to">
+        {% if t_reply%}
+            <h1 class="p-name text-xl">
+                <div>
+                    <span class="p-name">Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block  border-b u-url" title="{{ t_reply.title }}">{{ t_reply.title }}</a></span>
+                </div>
+            </h1>
         {% endif %}
-        <div class="italic">
+        <div>
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
             {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
                 {{ t_post.dt_published|naturaltime }}
@@ -16,6 +20,9 @@
             {% include 'author/byline.html' with p_author=t_post.p_author %}
         </div>
     </header>
+    <blockquote class="e-summary border-l-2 border-bianca-600 mt-4 mb-4 pl-2 max-w-prose">
+        {{ t_reply.quote }}
+    </blockquote>
     <main class="e-content mb-2 pt-2 content max-w-prose">
         {{ t_entry.e_content|safe }}
     </main>
@@ -25,7 +32,8 @@
             <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
         {% endif %}
         {% if user.is_authenticated %}
-            <a href="{% url 'status_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+            <a href="{% url 'article_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}
     </footer>
 </div>
+{% endwith %}

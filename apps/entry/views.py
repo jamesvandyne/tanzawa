@@ -45,7 +45,7 @@ class CreateEntryView(CreateView):
 
     def form_invalid(self, form):
         context = {"form": form, "nav": "posts"}
-        return render(self.request, self.template_name, context=context)
+        return render(self.request, self.template_name, context=context, status=422)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -100,7 +100,6 @@ class UpdateStatusView(UpdateEntryView):
     form_class = forms.UpdateStatusForm
     template_name = "entry/note/update.html"
     m_post_kind = MPostKinds.note
-    redirect_url = "article_edit"
 
 
 # Article CRUD views
@@ -110,6 +109,7 @@ class CreateArticleView(CreateEntryView):
     form_class = forms.CreateArticleForm
     template_name = "entry/article/create.html"
     autofocus = "p_name"
+    redirect_url = "article_edit"
 
 
 class UpdateArticleView(UpdateEntryView):
@@ -124,6 +124,7 @@ class UpdateArticleView(UpdateEntryView):
 
 class CreateReplyView(CreateEntryView):
     template_name = "entry/reply/create.html"
+    redirect_url = "reply_edit"
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(nav="posts", **kwargs)
@@ -132,6 +133,14 @@ class CreateReplyView(CreateEntryView):
         if self.request.method == "GET":
             return forms.ExtractMetaForm
         return forms.CreateReplyForm
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return (
+            TurboFrame("reply-form")
+            .template("entry/reply/form.html", context)
+            .response(self.request)
+        )
 
 
 @method_decorator(login_required, name="dispatch")
@@ -145,11 +154,11 @@ class ExtractReplyMetaView(FormView):
         linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
         initial = {
             "u_in_reply_to": linked_page.url,
+            "title": linked_page.title,
             "author": linked_page.author.name,
             "summary": linked_page.description,
         }
         context = self.get_context_data(
-            linked_page=linked_page,
             form=forms.CreateReplyForm(initial=initial, p_author=self.request.user),
         )
 
@@ -166,6 +175,13 @@ class ExtractReplyMetaView(FormView):
             context=self.get_context_data(),
             status=422,
         )
+
+
+class UpdateReplyView(UpdateEntryView):
+    form_class = forms.UpdateReplyForm
+    template_name = "entry/reply/update.html"
+    m_post_kind = MPostKinds.reply
+    autofocus = "e_content"
 
 
 @login_required

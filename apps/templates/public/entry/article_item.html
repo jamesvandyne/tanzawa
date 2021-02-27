@@ -16,7 +16,7 @@
             {% include 'author/byline.html' with p_author=t_post.p_author %}
         </div>
     </header>
-    <main class="e-content mb-2 pt-2 content w-prose">
+    <main class="e-content mb-2 pt-2 content max-w-prose">
         {{ t_entry.e_content|safe }}
     </main>
     <footer class="mt-2 pt-2{% if detail %} border-t-2  border-bianca-600{% endif %}">
