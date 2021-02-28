@@ -1,21 +1,5 @@
 {%  extends "base.html" %}
-{% load humanize %}
-{% block breadcrumbs %}
-    <a href="{% url "posts" %}" class="underline">Posts</a>
-{% endblock %}
 
-{% block main %}
-    {% now "d" as day %}
-    <ul>
-        {% for t_entry in object_list %}
-            <li class="py-2 my-2">
-                {% include "entry/post_item.html" %}
-            </li>
-        {% endfor %}
-    </ul>
-{% endblock %}
-
-
-{% block meta %}
-    {% include "fragments/create_post_menu.html" %}
+{% block content %}
+    {% include "entry/fragments/posts.html" %}
 {% endblock %}

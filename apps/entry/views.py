@@ -1,3 +1,4 @@
+from typing import Dict, Any
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
@@ -12,6 +13,7 @@ from indieweb.extract import extract_reply_details_from_url
 from post.models import MPostKind
 from turbo_response import TurboFrame
 from turbo_response import TurboStreamResponse, TurboStream
+from turbo_response.views import TurboFrameTemplateView
 
 
 from . import forms, models
@@ -70,7 +72,6 @@ class UpdateEntryView(UpdateView):
 
     def form_valid(self, form):
         form.prepare_data()
-
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             send_webmention(self.request, form.instance.t_post, self.original_content)
 
@@ -220,6 +221,7 @@ def status_delete(request, pk: int):
 @method_decorator(login_required, name="dispatch")
 class TEntryListView(ListView):
     template_name = "entry/posts.html"
+
     m_post_kind_key = None
     m_post_kind = None
 
@@ -227,6 +229,11 @@ class TEntryListView(ListView):
         super().__init__(*args, **kwargs)
         if self.m_post_kind_key:
             self.m_post_kind = get_object_or_404(MPostKind, key=self.m_post_kind_key)
+
+    def get_template_names(self):
+        if self.request.turbo.frame:
+            return "entry/fragments/posts.html"
+        return "entry/posts.html"
 
     def get_queryset(self):
         qs = models.TEntry.objects.all()
@@ -238,6 +245,14 @@ class TEntryListView(ListView):
         context = super().get_context_data(*args, **kwargs)
         context["nav"] = "posts"
         return context
+
+    def render_to_response(
+        self, context: Dict[str, Any], **response_kwargs
+    ):
+        if self.request.turbo.frame:
+            return TurboFrame(self.request.turbo.frame).template("entry/fragments/posts.html",
+                                                            context).response(self.request)
+        return super().render_to_response(context, **response_kwargs)
 
 
 @login_required

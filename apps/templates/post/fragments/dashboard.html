@@ -1,0 +1,31 @@
+{% extends "fragments/content.html" %}
+
+{% block main %}
+    <details {% if unread_count and unread_count <= 3 %}open{% endif %}>
+        <summary>
+            Webmentions
+            <div class="inline-block ml-1">
+            {% if unread_count %}
+                <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="{{ unread_count }} un-moderated webmention{{ unread_count|pluralize }}">{{ unread_count }}</div>
+            {% endif %}
+            </div>
+        </summary>
+        <ul>
+            {% for t_webmention in webmentions %}
+                {% include "indieweb/webmention/webmention.html" %}
+            {% endfor %}
+        </ul>
+    </details>
+    <details {% if drafts %}open{% endif %}>
+        <summary>Drafts</summary>
+        {% include "entry/fragments/post_list.html" with object_list=drafts %}
+    </details>
+    <details open>
+        <summary>Recent Posts</summary>
+        {% include "entry/fragments/post_list.html" with object_list=recent_posts %}
+    </details>
+{% endblock %}
+
+{% block meta %}
+    {% include "fragments/create_post_menu.html" %}
+{% endblock %}

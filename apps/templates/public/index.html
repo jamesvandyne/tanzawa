@@ -12,7 +12,9 @@
                 {% include "public/entry/article_item.html" with t_post=t_entry.t_post %}
             {% elif t_entry.t_post.m_post_kind.key == 'note' %}
                 {% include "public/entry/note_item.html" with t_post=t_entry.t_post %}
-            {% endif %}
+            {% elif t_entry.t_post.m_post_kind.key == 'reply' %}
+                {% include "public/entry/reply_item.html" with t_post=t_entry.t_post t_reply=t_entry.t_reply %}
+            {%endif  %}
         </li>
     {% endfor %}
     </ul>
