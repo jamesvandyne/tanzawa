@@ -28,17 +28,17 @@
         </header>
         <div class="flex">
             <nav id="section-nav" class="min-w-min p-2 flex">
-                <ul class="mb-2">
-                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}" data-turbo-frame="content"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "posts" %}" data-turbo-frame="content"><span class="mr-1">✏️</span><span>Posts</span></a></li>
-                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
+                <ul class="mb-2" data-controller="select" data-select-selected-class="selected">
+                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "post:dashboard" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "posts" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✏️</span><span>Posts</span></a></li>
+                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
-            <turbo-frame id="content" class="w-11/12 flex flex-col">
+            <div id="content" class="w-11/12 flex flex-col">
                 {% block content %}
                 {% include "fragments/content.html" %}
                 {% endblock %}
-            </turbo-frame>
+            </div>
         </div>
     </div>
 </body>

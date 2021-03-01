@@ -1,5 +1,5 @@
-{% extends "entry/article/form.html" %}
+{% extends "base.html" %}
 
-{% block breadcrumbs %}
-    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">>New Article</span>
+{% block content %}
+    {% include "entry/article/_create.html" %}
 {% endblock %}

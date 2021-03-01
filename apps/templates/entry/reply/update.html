@@ -1,14 +1,5 @@
 {% extends "base.html" %}
 
-{% block breadcrumbs %}
-    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">>Edit Reply</span>
-{% endblock %}
-
-
-{% block main %}
-    {% include "entry/reply/form.html" %}
-{% endblock %}
-
-{% block meta %}
-    {% include "entry/reply/_meta.html" %}
+{% block content %}
+    {% include "entry/reply/_update.html" %}
 {% endblock %}

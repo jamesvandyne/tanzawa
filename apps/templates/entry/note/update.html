@@ -1,5 +1,6 @@
-{% extends "entry/status_form.html" %}
+{% extends "base.html" %}
 
-{% block breadcrumbs %}
-    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">> Edit Status</span>
+{% block content %}
+    {% include "entry/note/_update.html" %}
 {% endblock %}
+

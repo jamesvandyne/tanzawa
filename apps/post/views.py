@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from indieweb.models import TWebmention
-from turbo_response import TurboFrame
 
 from .models import TPost
 from entry.models import TEntry
@@ -26,6 +25,4 @@ def dashboard(request):
         "unread_count": webmentions.count(),
         "nav": "dashboard",
     }
-    if request.turbo.frame:
-        return TurboFrame(request.turbo.frame).template("post/fragments/dashboard.html", context).response(request)
     return render(request, "post/dashboard.html", context)

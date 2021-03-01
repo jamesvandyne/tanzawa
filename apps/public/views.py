@@ -25,7 +25,7 @@ def home(request):
 
 def status_detail(request, uuid):
     t_post: TPost = get_object_or_404(
-        TPost.objects.prefetch_related("ref_t_entry").filter(
+        TPost.objects.prefetch_related("ref_t_entry", "ref_t_entry__t_reply").filter(
             m_post_status__key=MPostStatuses.published
         ),
         uuid=uuid,

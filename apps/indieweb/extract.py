@@ -53,5 +53,5 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
                 name=entry["author"].get("name", ""),
                 url=entry["author"].get("url", ""),
                 photo=entry["author"].get("image"),
-            )
+            ),
         )

@@ -1,0 +1,12 @@
+{% load humanize %}
+ <span class="text-sm">
+{% if t_entry.t_post.is_draft %}
+    Draft: {{ t_entry.updated_at|date:"M d, Y H:m" }}
+{% else %}
+    {% ifequal t_entry.t_post.dt_published|date:"d" day %}
+        {{ t_entry.created_at|naturaltime }}
+    {% else %}
+        {{ t_entry.t_post.dt_published|date:"M d, Y" }}
+    {% endifequal %}
+{% endif %}
+</span>

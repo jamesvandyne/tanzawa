@@ -1,0 +1,8 @@
+ <header class="u-in-reply-to">
+    {% if t_reply %}
+        <h1 class="p-name text-xl">
+            Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block  hover:border-b u-url" title="{{ t_reply.title }}">{{ t_reply.title }}</a>
+        </h1>
+    {% endif %}
+    {% include "entry/fragments/list_timestamp.html" %}
+</header>
