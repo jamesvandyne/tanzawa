@@ -1,0 +1,8 @@
+{% now "d" as day %}
+<ul>
+    {% for t_entry in object_list %}
+        <li class="py-2 my-2">
+            {% include "entry/post_item.html" %}
+        </li>
+    {% endfor %}
+</ul>

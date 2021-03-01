@@ -1,0 +1,7 @@
+<div class="animate-fade-out">
+    <ul class="messages mx-auto block p-2 w-6/12 bg-malachite-200 border border-2 border-malachite-700 rounded animate-fade-out">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
+        {% endfor %}
+    </ul>
+</div>

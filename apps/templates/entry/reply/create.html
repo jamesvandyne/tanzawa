@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block breadcrumbs %}
+    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">>New Reply</span>
+{% endblock %}
+
+
+{% block main %}
+    {% include "entry/reply/_url_form.html" %}
+{% endblock %}

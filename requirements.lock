@@ -15,3 +15,5 @@ django-picklefield==3.0.1
 ftfy==5.8
 ronkyuu==0.7
 ninka==0.3.4
+extruct==0.12.0
+django-turbo-response==0.0.35

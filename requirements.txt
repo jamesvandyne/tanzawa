@@ -15,3 +15,5 @@ django-picklefield
 ftfy
 ronkyuu
 ninka
+extruct
+django-turbo-response

@@ -8,12 +8,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
+    <link href="{% static 'trix/trix.css' %}" rel="stylesheet">
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint">
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">
     {% endwith %}
     {% if form %}{{ form.media.css }}{% endif %}
     <title>{{ page_title }}🏔 Tanzawa</title>
+    <script src="{% static 'trix/trix.js' %}"></script>
+    <script src="{% static 'trix/attachments.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
 </head>
 <body class="bg-bianca-500">
@@ -26,39 +29,16 @@
         <div class="flex">
             <nav id="section-nav" class="min-w-min p-2 flex">
                 <ul class="mb-2">
-                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "posts" %}"><span class="mr-1">✏️</span><span>Posts</span></a></li>
+                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}" data-turbo-frame="content"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "posts" %}" data-turbo-frame="content"><span class="mr-1">✏️</span><span>Posts</span></a></li>
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
-            <div class="w-11/12 flex flex-col">
-                <div id="messages" class="animate-fade-out">
-                    {% if messages %}
-                    <ul class="messages mx-auto block p-2 w-6/12 bg-malachite-200 border border-2 border-malachite-700 rounded animate-fade-out">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|safe }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% block content_before %}{% endblock %}
-                <div id="main-container" class="flex">
-                    {% block content %}
-                        <main id="main" class="main p-2 md:w-99">
-                            {% block breadcrumbs_block %}
-                            <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
-                            {% block breadcrumbs %}{% endblock %}
-                            </nav>
-                            {% endblock %}
-                              {% block main %}{% endblock %}
-                        </main>
-                        <section id="meta" class="meta w-64 h-screen p-2">
-                            {% block meta %}{% endblock %}
-                        </section>
-                    {% endblock  %}
-                </div>
-                {% block content_after %}{% endblock %}
-            </div>
+            <turbo-frame id="content" class="w-11/12 flex flex-col">
+                {% block content %}
+                {% include "fragments/content.html" %}
+                {% endblock %}
+            </turbo-frame>
         </div>
     </div>
 </body>

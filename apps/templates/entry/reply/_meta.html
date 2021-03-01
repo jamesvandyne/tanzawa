@@ -1,0 +1,10 @@
+<section class="mb-2">
+    <div class="mb-1">
+        <button type="submit" class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" value="published" form="reply">Publish</button>
+        {%  if not form.instance.pk or not form.instance.t_post.dt_published %}
+            <button type="submit" class="rounded border-negroni-900 text-negroni-800 border px-3 py-1" name="m_post_status" value="draft" form="reply">Save Draft</button>
+        {% else %}
+            <button type="submit" class="rounded border-negroni-900 text-negroni-800 border px-3 py-1" name="m_post_status" value="draft" form="reply">Save & Unpublish</button>
+        {% endif %}
+    </div>
+</section>

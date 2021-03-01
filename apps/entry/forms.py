@@ -13,7 +13,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry
+from .models import TEntry, TReply
 
 
 class TCharField(forms.CharField):
@@ -90,7 +90,7 @@ class CreateStatusForm(forms.ModelForm):
         )
 
     @transaction.atomic
-    def save(self, commit=True):
+    def save(self, commit=True) -> TEntry:
         self.t_post.save()
         self.instance.t_post = self.t_post
         entry = super().save(commit)
@@ -105,6 +105,68 @@ class CreateArticleForm(CreateStatusForm):
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
+
+
+class CreateReplyForm(CreateStatusForm):
+    m_post_kind = MPostKinds.reply
+
+    u_in_reply_to = forms.URLField(
+        label="What's the URL you're replying to?", widget=forms.HiddenInput
+    )
+    author = forms.CharField(label="Author", widget=forms.HiddenInput, required=False)
+    author_url = forms.URLField(widget=forms.HiddenInput, required=False)
+    author_photo_url = forms.URLField(widget=forms.HiddenInput, required=False)
+    title = forms.CharField(label="Title", widget=forms.HiddenInput)
+    summary = forms.CharField(
+        widget=forms.Textarea,
+        label="Summary",
+        help_text="This will appear above your reply as a quote for context.",
+    )
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["summary"].widget.attrs = {"class": "input-field"}
+        self.fields["e_content"].label = "My Response"
+        self.t_reply: Optional[TReply] = None
+
+    def prepare_data(self):
+        super().prepare_data()
+        self.t_reply = TReply(
+            u_in_reply_to=self.cleaned_data["u_in_reply_to"],
+            title=self.cleaned_data["title"],
+            quote=self.cleaned_data["summary"],
+            author=self.cleaned_data["author"],
+            author_url=self.cleaned_data["author_url"],
+            author_photo=self.cleaned_data["author_photo_url"],
+        )
+
+    def save(self, commit=True) -> TEntry:
+        t_entry = super().save()
+        if self.t_reply:
+            self.t_reply.t_entry = t_entry
+            self.t_reply.save()
+        return t_entry
+
+
+class ExtractMetaForm(forms.Form):
+    url = forms.URLField(required=True, label="What's the URL you're replying to?")
+
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("instance", None)
+        kwargs.pop("p_author", None)
+        kwargs.pop("autofocus", None)
+        super().__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs = {
+            "data-url-submit-target": "field",
+            "data-action": "url-submit#input",
+            "autofocus": "autofocus",
+            "class": "input-field",
+            "placeholder": "https://tanzawa.blog",
+        }
 
 
 class UpdateStatusForm(forms.ModelForm):
@@ -172,3 +234,33 @@ class UpdateArticleForm(UpdateStatusForm):
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
+
+
+class UpdateReplyForm(UpdateStatusForm):
+    u_in_reply_to = forms.URLField(
+        label="What's the URL you're replying to?", widget=forms.HiddenInput
+    )
+    title = forms.CharField(label="Title", widget=forms.HiddenInput)
+    summary = forms.CharField(
+        widget=forms.Textarea,
+        label="Summary",
+        help_text="This will appear above your reply as a quote for context.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["summary"].widget.attrs = {"class": "input-field"}
+        self.fields["e_content"].label = "My Response"
+        self.t_reply: TReply = self.instance.t_reply
+        self.fields["summary"].initial = self.t_reply.quote
+        self.fields["title"].initial = self.t_reply.title
+        self.fields["u_in_reply_to"].initial = self.t_reply.u_in_reply_to
+
+    def prepare_data(self):
+        super().prepare_data()
+        self.t_reply.quote = self.cleaned_data["summary"]
+
+    def save(self, commit=True) -> TEntry:
+        t_entry = super().save()
+        self.t_reply.save()
+        return t_entry

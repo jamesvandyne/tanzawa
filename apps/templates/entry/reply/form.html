@@ -1,0 +1,31 @@
+{% load static %}
+
+<form id="reply" action="" method="POST" class="flex-col">
+    {{ form.errors }}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    {% csrf_token %}
+    <div>
+        <span>Responding to "{{ form.title.value }}"</span>
+        <span class="block text-xs">{{ form.u_in_reply_to.value|urlize }}</span>
+    </div>
+    <div class="pt-2">
+        {{ form.summary.label }}
+        <span class="block text-xs">{{ form.summary.help_text }}</span>
+        {{ form.summary }}
+    </div>
+    <div class="pt-2">
+        {{ form.e_content.label }}
+        <span class="font-serif">
+        {{ form.e_content }}
+        </span>
+        {{ form.media.css }}
+    </div>
+    <div class="pt-2">
+        {{ form.streams.label }}
+        <div class="flex">
+            {{ form.streams }}
+        </div>
+    </div>
+</form>

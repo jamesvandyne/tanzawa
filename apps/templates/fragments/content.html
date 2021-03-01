@@ -1,0 +1,23 @@
+<turbo-frame id="messages">
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+</turbo-frame>
+{% block content_before %}{% endblock %}
+<turbo-frame id="main-container" class="flex">
+    {% block content %}
+        <turbo-frame id="main" class="main p-2 md:w-99">
+            {% block breadcrumbs_block %}
+            <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
+            {% block breadcrumbs %}{% endblock %}
+            </nav>
+            {% endblock %}
+            {% block main %}{% endblock %}
+        </turbo-frame>
+        <turbo-frame id="meta" class="meta w-64 h-screen p-2">
+            {% block meta %}
+            {% endblock %}
+        </turbo-frame>
+    {% endblock  %}
+</turbo-frame>
+{% block content_after %}{% endblock %}

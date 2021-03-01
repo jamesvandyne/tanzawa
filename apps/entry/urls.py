@@ -1,5 +1,4 @@
 from django.urls import path
-from indieweb.constants import MPostKinds
 
 from . import views
 
@@ -13,6 +12,11 @@ urlpatterns = [
     path("status/<int:pk>/", views.status_detail, name="status_detail"),
     path("status/<int:pk>/edit/", views.UpdateStatusView.as_view(), name="status_edit"),
     path("status/<int:pk>/delete/", views.status_delete, name="status_delete"),
+    path("reply/create/", views.CreateReplyView.as_view(), name="reply_create"),
+    path(
+        "reply/<int:pk>/edit/", views.UpdateReplyView.as_view(), name="reply_edit"
+    ),
+    path("reply/meta_info/", views.ExtractReplyMetaView.as_view(), name="reply_meta"),
     path(
         "posts/",
         views.TEntryListView.as_view(),
