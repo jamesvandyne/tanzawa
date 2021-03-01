@@ -22,7 +22,9 @@ class TEntry(TimestampModel):
 
 class TReply(TimestampModel):
 
-    t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_reply")
+    t_entry = models.OneToOneField(
+        TEntry, on_delete=models.CASCADE, related_name="t_reply"
+    )
     u_in_reply_to = models.URLField()
     title = models.CharField(max_length=128, blank=True, default="")
     quote = models.TextField(blank=True, default="")

@@ -132,6 +132,11 @@ class CreateReplyForm(CreateStatusForm):
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
         self.t_reply: Optional[TReply] = None
+        for key, val in self.initial.items():
+            if not val:
+                self.fields[key].widget = forms.TextInput(
+                    attrs={"class": "input-field"}
+                )
 
     def prepare_data(self):
         super().prepare_data()

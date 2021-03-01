@@ -11,10 +11,7 @@ from indieweb.constants import MPostStatuses, MPostKinds
 from indieweb.webmentions import send_webmention
 from indieweb.extract import extract_reply_details_from_url
 from post.models import MPostKind
-from turbo_response import TurboFrame
-from turbo_response import TurboStreamResponse, TurboStream
-from turbo_response.views import TurboFrameTemplateView
-
+from turbo_response import TurboFrame, redirect_303
 
 from . import forms, models
 
@@ -43,10 +40,13 @@ class CreateEntryView(CreateView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect(resolve_url(self.redirect_url, pk=entry.pk))
+        return redirect_303(resolve_url(self.redirect_url, pk=entry.pk))
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(nav="posts")
 
     def form_invalid(self, form):
-        context = {"form": form, "nav": "posts"}
+        context = super().get_context_data()
         return render(self.request, self.template_name, context=context, status=422)
 
 
@@ -104,12 +104,14 @@ class UpdateEntryView(UpdateView):
 class CreateStatusView(CreateEntryView):
     form_class = forms.CreateStatusForm
     template_name = "entry/note/create.html"
+    turbo_template_name = "entry/note/_create.html"
 
 
 class UpdateStatusView(UpdateEntryView):
     form_class = forms.UpdateStatusForm
     template_name = "entry/note/update.html"
     m_post_kind = MPostKinds.note
+    turbo_template_name = "entry/note/_update.html"
 
 
 # Article CRUD views
@@ -148,7 +150,7 @@ class CreateReplyView(CreateEntryView):
         context = self.get_context_data(form=form)
         return (
             TurboFrame("reply-form")
-            .template("entry/reply/form.html", context)
+            .template("entry/reply/_form.html", context)
             .response(self.request)
         )
 
@@ -163,18 +165,27 @@ class ExtractReplyMetaView(FormView):
     def form_valid(self, form):
         linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
         initial = {
-            "u_in_reply_to": linked_page.url,
-            "title": linked_page.title,
-            "author": linked_page.author.name,
-            "summary": linked_page.description,
+            "u_in_reply_to": form.cleaned_data["url"],
+            "title": form.cleaned_data["url"],
+            "author": "",
+            "summary": "",
         }
+        if linked_page:
+            initial.update(
+                {
+                    "u_in_reply_to": linked_page.url,
+                    "title": linked_page.title,
+                    "author": linked_page.author.name,
+                    "summary": linked_page.description,
+                }
+            )
         context = self.get_context_data(
             form=forms.CreateReplyForm(initial=initial, p_author=self.request.user),
         )
 
         return (
             TurboFrame("reply-form")
-            .template("entry/reply/form.html", context)
+            .template("entry/reply/_form.html", context)
             .response(self.request)
         )
 
@@ -192,13 +203,6 @@ class UpdateReplyView(UpdateEntryView):
     template_name = "entry/reply/update.html"
     m_post_kind = MPostKinds.reply
     autofocus = "e_content"
-
-    def get_response(self, context):
-        return (
-            TurboFrame("messages")
-                .template("fragments/messages.html", context)
-                .response(self.request)
-        )
 
 
 @login_required
@@ -246,12 +250,13 @@ class TEntryListView(ListView):
         context["nav"] = "posts"
         return context
 
-    def render_to_response(
-        self, context: Dict[str, Any], **response_kwargs
-    ):
+    def render_to_response(self, context: Dict[str, Any], **response_kwargs):
         if self.request.turbo.frame:
-            return TurboFrame(self.request.turbo.frame).template("entry/fragments/posts.html",
-                                                            context).response(self.request)
+            return (
+                TurboFrame(self.request.turbo.frame)
+                .template("entry/fragments/posts.html", context)
+                .response(self.request)
+            )
         return super().render_to_response(context, **response_kwargs)
 
 

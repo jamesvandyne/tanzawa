@@ -1,0 +1,13 @@
+<form  id="note" method="POST" class="flex-col" data-turbo="false">
+    {{ form.errors }}
+    <span class="font-serif">
+    {% csrf_token %}
+    {{ form.e_content }}
+    </span>
+    <div class="pt-2">
+        {{ form.streams.label }}
+        <div class="flex">
+            {{ form.streams }}
+        </div>
+    </div>
+</form>

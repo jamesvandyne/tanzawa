@@ -34,7 +34,9 @@ class Migration(migrations.Migration):
                 (
                     "t_entry",
                     models.OneToOneField(
-                        on_delete=django.db.models.deletion.CASCADE, to="entry.tentry", related_name="t_reply"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="entry.tentry",
+                        related_name="t_reply",
                     ),
                 ),
             ],

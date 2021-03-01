@@ -1,6 +1,6 @@
 {% load static %}
 
-<form id="reply" action="" method="POST" class="flex-col">
+<form id="reply" action="" method="POST" class="flex-col" data-turbo="false" data-turbo-frame="_top">
     {{ form.errors }}
     {% for hidden in form.hidden_fields %}
         {{ hidden }}

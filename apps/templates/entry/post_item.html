@@ -1,23 +1,15 @@
-{% load humanize %}
-
 <div class="flex-col">
     <div class="flex">
         <div class="inline-block text-2xl h-auto{% if t_entry.t_post.is_draft %} opacity-50{% endif %}">{{ t_entry.t_post.m_post_kind.icon }}</div>
         <div class="ml-4 flex-grow">
+            {% if t_entry.t_post.m_post_kind.key == "reply" %}
+                {% include "entry/fragments/reply_header.html" with t_reply=t_entry.t_reply %}
+            {%  else %}
             <header>
                 {% if t_entry.p_name %}<h1 class="text-xl">{{ t_entry.p_name }}</h1>{% endif %}
-                <span class="text-sm">
-                {% if t_entry.t_post.is_draft %}
-                    Draft: {{ t_entry.updated_at|date:"M d, Y H:m" }}
-                {% else %}
-                    {% ifequal t_entry.t_post.dt_published|date:"d" day %}
-                        {{ t_entry.created_at|naturaltime }}
-                    {% else %}
-                        {{ t_entry.t_post.dt_published|date:"M d, Y" }}
-                    {% endifequal %}
-                {% endif %}
-                </span>
+                {% include "entry/fragments/list_timestamp.html" %}
             </header>
+            {% endif %}
             <main class="content mt-2">
                 {{ t_entry.p_summary|truncatechars:"140" }}
             </main>

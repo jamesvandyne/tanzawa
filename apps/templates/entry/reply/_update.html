@@ -1,0 +1,14 @@
+{% extends "fragments/content.html" %}
+
+{% block breadcrumbs %}
+    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">>Edit Reply</span>
+{% endblock %}
+
+{% block main %}
+    {% include "entry/reply/_form.html" %}
+{% endblock %}
+
+{% block meta %}
+    {% include "entry/fragments/submit.html" with form_id="reply" %}
+{% endblock %}
+
