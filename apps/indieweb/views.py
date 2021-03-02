@@ -1,3 +1,4 @@
+from typing import Dict, Any
 import logging
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
@@ -5,10 +6,8 @@ from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView
-from entry.forms import CreateStatusForm, CreateArticleForm
+from entry.forms import CreateStatusForm, CreateArticleForm, CreateReplyForm
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -43,13 +42,22 @@ def form_to_mf2(request):
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
 
-    return {"type": [f'h-{post.get("h", "")}'], "properties": properties}
+    mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
+    return normalize_properties_to_underscore(mf)
+
+
+def normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
+    """convert microformat2 property keys that use a hyphen to an underscore so DRF can serialize them"""
+    properties = {}
+    for key, value in data.get("properties", {}).items():
+        properties[key.replace("-", "_")] = value
+    return {"type": data["type"], "properties": properties}
 
 
 @api_view(["GET", "POST"])
 def micropub(request):
     normalize = {
-        "application/json": lambda r: r.data,
+        "application/json": lambda r: normalize_properties_to_underscore(r.data),
         "application/x-www-form-urlencoded": form_to_mf2,
         "multipart/form-data": form_to_mf2,
     }
@@ -69,15 +77,22 @@ def micropub(request):
     if not token:
         msg = _("Invalid request. No credentials provided.")
         return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
-
     # normalize before sending to serializer
-    body = normalize[request.content_type.split(";")[0]](request)
+    try:
+        body = normalize[request.content_type.split(";")[0]](request)
+    except KeyError:
+        return Response(
+            data={"message": f"Invalid content-type: {request.content_type}"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     props = body["properties"]
     if not body.get("access_token"):
         body["access_token"] = token
     body["type"] = body["type"][0]  # type is a list but needs to be a string
     if not body.get("action"):
         body["action"] = request.data.get("action", "create")
+
     serializer = MicropubSerializer(data=body)
 
     if not serializer.is_valid():
@@ -108,6 +123,10 @@ def micropub(request):
             "pk", flat=True
         ),
     }
+    if serializer.validated_data["properties"].get("in_reply_to"):
+        linked_page = serializer.validated_data["properties"].get("in_reply_to")
+        # adds u_in_reply_to, title, author, summary fields
+        form_data.update(linked_page)
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -130,10 +149,11 @@ def micropub(request):
         tag = render_attachment(request, attachment)
         form_data["e_content"] += tag
 
+    form_class = CreateStatusForm
     if form_data["p_name"]:
         form_class = CreateArticleForm
-    else:
-        form_class = CreateStatusForm
+    if form_data.get("u_in_reply_to"):
+        form_class = CreateReplyForm
 
     form = form_class(
         data=form_data, p_author=serializer.validated_data["access_token"].user

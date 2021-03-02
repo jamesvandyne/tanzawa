@@ -1,13 +1,15 @@
 from urllib.parse import urlparse
-
+from typing import Optional, Dict
 from django.db import transaction
 from django.urls import reverse
+from django.core.validators import URLValidator
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
 from streams.models import MStream
 
 from . import constants
 from .models import TToken
+from .extract import extract_reply_details_from_url
 
 
 class ContentField(serializers.Field):
@@ -46,6 +48,28 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     streams = serializers.ModelSerializer(
         MStream.objects, read_only=True, required=False
     )
+    in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
+
+    def validate_in_reply_to(self, value: str) -> Optional[Dict[str, str]]:
+        if value:
+            linked_page = extract_reply_details_from_url(value)
+            reply = {
+                "u_in_reply_to": value,
+                "title": value,
+                "author": "",
+                "summary": "",
+            }
+            if linked_page:
+                reply.update(
+                    {
+                        "u_in_reply_to": linked_page.url,
+                        "title": linked_page.title,
+                        "author": linked_page.author.name,
+                        "summary": linked_page.description,
+                    }
+                )
+            return reply
+        return None
 
     def validate(self, data):
         if "category" in data:
