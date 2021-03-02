@@ -1,5 +1,5 @@
 import pytest
-from entry.models import TEntry
+from entry.models import TEntry, TReply
 from unittest.mock import Mock
 from post.models import TPost
 
@@ -168,3 +168,115 @@ class TestMicropub:
 
         assert str(t_file.uuid) in t_entry.e_content
         assert t_entry.p_summary == "Test with a photo"
+
+    @pytest.fixture
+    def parsed_linked_page(self):
+        from indieweb.extract import LinkedPage, LinkedPageAuthor
+
+        return LinkedPage(
+            url="https://jamesvandyne.com/2021/03/02/2021-09.html",
+            title="The Week #34",
+            description="I forget what I was searching for but I found this fantastic blog",
+            author=LinkedPageAuthor(
+                name="James",
+                url="https://jamesvandyne.com/author/jamesvandyne",
+                photo=None,
+            ),
+        )
+
+    @pytest.fixture
+    def mock_extract_reply(self, monkeypatch, parsed_linked_page):
+        from indieweb.extract import extract_reply_details_from_url
+
+        m = Mock(extract_reply_details_from_url, autospec=True)
+        m.return_value = parsed_linked_page
+        monkeypatch.setattr("indieweb.serializers.extract_reply_details_from_url", m)
+        return m
+
+    def test_post_replies_mf2(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        mock_extract_reply,
+    ):
+        data = {
+            "type": ["h-entry"],
+            "properties": {
+                "h": ["entry"],
+                "content": [
+                    "This is a test reply from quill so I can add replies to micropub!"
+                ],
+                "in-reply-to": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
+                "category": ["replies"],
+            },
+        }
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+        response = client.post(target, data=data, format="json")
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "reply"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary.startswith(data["properties"]["content"][0])
+
+        t_reply: TReply = t_entry.t_reply
+
+        assert t_reply.u_in_reply_to == data["properties"]["in-reply-to"][0]
+        assert t_reply.author == "James"
+        assert t_reply.title == "The Week #34"
+        assert (
+            t_reply.quote
+            == "I forget what I was searching for but I found this fantastic blog"
+        )
+
+        mock_extract_reply.assert_called_once()
+
+    def test_post_replies_form(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        mock_extract_reply,
+    ):
+        data = {
+            "h": ["entry"],
+            "access_token": [auth_token],
+            "content": [
+                "This is a test reply from quill so I can add replies to micropub!"
+            ],
+            "in-reply-to": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
+            "category": ["replies"],
+        }
+
+        response = client.post(target, data=data)
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "reply"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary.startswith(data["content"][0])
+
+        t_reply: TReply = t_entry.t_reply
+
+        assert t_reply.u_in_reply_to == data["in-reply-to"][0]
+        assert t_reply.author == "James"
+        assert t_reply.title == "The Week #34"
+        assert (
+            t_reply.quote
+            == "I forget what I was searching for but I found this fantastic blog"
+        )
+
+        mock_extract_reply.assert_called_once()
