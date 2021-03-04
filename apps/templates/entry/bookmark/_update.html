@@ -1,0 +1,14 @@
+{% extends "fragments/content.html" %}
+
+{% block breadcrumbs %}
+    <a href="{% url "posts" %}" class="underline">All</a><span class="ml-2">>Edit Bookmark</span>
+{% endblock %}
+
+{% block main %}
+    {% include "entry/bookmark/_form.html" %}
+{% endblock %}
+
+{% block meta %}
+    {% include "entry/fragments/submit.html" with form_id="bookmark" %}
+{% endblock %}
+

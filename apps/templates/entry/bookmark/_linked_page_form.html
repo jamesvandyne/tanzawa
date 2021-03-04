@@ -1,0 +1,9 @@
+<turbo-frame id="bookmark-form">
+    <div data-controller="url-submit">
+        <form id="reply" action="{% url 'bookmark_meta' %}" method="post" data-url-submit-target="form">
+            {% csrf_token %}
+            {{ form.url.label }}
+            {{ form.url }}
+        </form>
+    </div>
+</turbo-frame>

@@ -16,6 +16,19 @@ urlpatterns = [
     path("reply/<int:pk>/edit/", views.UpdateReplyView.as_view(), name="reply_edit"),
     path("reply/meta_info/", views.ExtractReplyMetaView.as_view(), name="reply_meta"),
     path(
+        "bookmark/create/", views.CreateBookmarkView.as_view(), name="bookmark_create"
+    ),
+    path(
+        "bookmark/<int:pk>/edit/",
+        views.UpdateBookmarkView.as_view(),
+        name="bookmark_edit",
+    ),
+    path(
+        "bookmark/meta_info/",
+        views.ExtractBookmarkMetaView.as_view(),
+        name="bookmark_meta",
+    ),
+    path(
         "posts/",
         views.TEntryListView.as_view(),
         name="posts",

@@ -13,7 +13,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply
+from .models import TEntry, TReply, TBookmark
 
 
 class TCharField(forms.CharField):
@@ -164,7 +164,10 @@ class ExtractMetaForm(forms.Form):
         kwargs.pop("instance", None)
         kwargs.pop("p_author", None)
         kwargs.pop("autofocus", None)
+        label = kwargs.pop("label", None)
         super().__init__(*args, **kwargs)
+        if label:
+            self.fields["url"].label = label
         self.fields["url"].widget.attrs = {
             "data-url-submit-target": "field",
             "data-action": "url-submit#input",
@@ -268,4 +271,86 @@ class UpdateReplyForm(UpdateStatusForm):
     def save(self, commit=True) -> TEntry:
         t_entry = super().save()
         self.t_reply.save()
+        return t_entry
+
+
+class CreateBookmarkForm(CreateStatusForm):
+    m_post_kind = MPostKinds.bookmark
+
+    u_bookmark_of = forms.URLField(
+        label="What's the URL you're bookmarking?", widget=forms.HiddenInput
+    )
+    author = forms.CharField(label="Author", widget=forms.HiddenInput, required=False)
+    author_url = forms.URLField(widget=forms.HiddenInput, required=False)
+    author_photo_url = forms.URLField(widget=forms.HiddenInput, required=False)
+    title = forms.CharField(label="Title", widget=forms.HiddenInput)
+    summary = forms.CharField(
+        widget=forms.Textarea,
+        label="Quote (Optional)",
+        help_text="This is will appear above your comment for context.",
+        required=False,
+    )
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["summary"].widget.attrs = {"class": "input-field"}
+        self.fields["e_content"].label = "Comment"
+        self.t_bookmark: Optional[TBookmark] = None
+        for key, val in self.initial.items():
+            if not val:
+                self.fields[key].widget = forms.TextInput(
+                    attrs={"class": "input-field"}
+                )
+
+    def prepare_data(self):
+        super().prepare_data()
+        self.t_bookmark = TBookmark(
+            u_bookmark_of=self.cleaned_data["u_bookmark_of"],
+            title=self.cleaned_data["title"],
+            quote=self.cleaned_data["quote"],
+            author=self.cleaned_data["author"],
+            author_url=self.cleaned_data["author_url"],
+            author_photo=self.cleaned_data["author_photo_url"],
+        )
+
+    def save(self, commit=True) -> TEntry:
+        t_entry = super().save()
+        if self.t_bookmark:
+            self.t_bookmark.t_entry = t_entry
+            self.t_bookmark.save()
+        return t_entry
+
+
+class UpdateBookmarkForm(UpdateStatusForm):
+    u_bookmark_of = forms.URLField(
+        label="What's the URL you're replying to?", widget=forms.HiddenInput
+    )
+    title = forms.CharField(label="Title", widget=forms.HiddenInput)
+    summary = forms.CharField(
+        widget=forms.Textarea,
+        label="Quote (Optional)",
+        help_text="This is will appear above your comment for context.",
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["summary"].widget.attrs = {"class": "input-field"}
+        self.fields["e_content"].label = "My Response"
+        self.t_bookmark: TBookmark = self.instance.t_bookmark
+        self.fields["quote"].initial = self.t_bookmark.quote
+        self.fields["title"].initial = self.t_bookmark.title
+        self.fields["u_bookmark_of"].initial = self.t_bookmark.u_bookmark_of
+
+    def prepare_data(self):
+        super().prepare_data()
+        self.t_bookmark.quote = self.cleaned_data["summary"]
+
+    def save(self, commit=True) -> TEntry:
+        t_entry = super().save()
+        self.t_bookmark.save()
         return t_entry
