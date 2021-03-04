@@ -311,7 +311,7 @@ class CreateBookmarkForm(CreateStatusForm):
         self.t_bookmark = TBookmark(
             u_bookmark_of=self.cleaned_data["u_bookmark_of"],
             title=self.cleaned_data["title"],
-            quote=self.cleaned_data["quote"],
+            quote=self.cleaned_data["summary"],
             author=self.cleaned_data["author"],
             author_url=self.cleaned_data["author_url"],
             author_photo=self.cleaned_data["author_photo_url"],
@@ -342,7 +342,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
         self.t_bookmark: TBookmark = self.instance.t_bookmark
-        self.fields["quote"].initial = self.t_bookmark.quote
+        self.fields["summary"].initial = self.t_bookmark.quote
         self.fields["title"].initial = self.t_bookmark.title
         self.fields["u_bookmark_of"].initial = self.t_bookmark.u_bookmark_of
 
