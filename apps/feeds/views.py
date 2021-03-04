@@ -44,6 +44,9 @@ class AllEntriesFeed(Feed):
         title = t_entry.p_name or t_entry.p_summary[:128]
         if item.m_post_kind.key == MPostKinds.reply:
             title = f"Response to {t_entry.t_reply.title}"
+        elif item.m_post_kind.key == MPostKinds.bookmark:
+            t_bookmark = t_entry.t_bookmark
+            title = f"Bookmark of {t_bookmark.title or t_bookmark.u_bookmark_of}"
         return title
 
     def item_description(self, item: TPost):
@@ -54,6 +57,9 @@ class AllEntriesFeed(Feed):
         e_content = t_entry.e_content
         if item.m_post_kind.key == MPostKinds.reply:
             e_content = f"<blockquote>{t_entry.t_reply.quote}</blockquote>{e_content}"
+        elif item.m_post_kind.key == MPostKinds.bookmark:
+            t_bookmark = t_entry.t_bookmark
+            e_content = f'Bookmark: <a href="{t_bookmark.u_bookmark_of}">{t_bookmark.title or t_bookmark.u_bookmark_of}</a><blockquote>{t_bookmark.quote}</blockquote>{e_content}'
         return {"content_encoded": e_content}
 
     def item_guid(self, obj: TPost) -> str:
