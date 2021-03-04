@@ -37,3 +37,8 @@ def fix_text(obj: str) -> str:
     if not obj:
         return ""
     return ftfy.fix_text(ftfy.fixes.decode_escapes(obj))
+
+
+@register.filter
+def absolute_uri(obj: str, request) -> str:
+    return request.build_absolute_uri(obj)

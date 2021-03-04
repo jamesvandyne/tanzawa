@@ -46,11 +46,10 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
     soup = BeautifulSoup(response.text, "html.parser")
     linked_page = LinkedPage(
         url=url,
-        title=extract_title(soup),
+        title=extract_title(soup) or url,
         description=extract_description(soup),
         author=LinkedPageAuthor(name="", url="", photo=""),
     )
-
     for schema in data["json-ld"]:
         linked_page.title = (
             next(schema[key] for key in title_keys if key in schema)

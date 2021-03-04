@@ -1,9 +1,12 @@
 {% load humanize utils %}
 {% url 'public:post_detail' t_post.uuid as permalink %}
+{% with t_entry.t_bookmark as t_bookmark %}
 <div class="flex-col h-entry">
     <header>
-        {% if t_entry.p_name%}
-            <h1 class="p-name text-2xl">{{ t_entry.p_name }}</h1>
+        {% if t_bookmark %}
+            <h1 class="p-name text-xl">
+                Bookmark of <a href="{{ t_bookmark.u_bookmark_of }}" class="u-bookmark-of {% if t_bookmark.u_bookmark_of != t_bookmark.title %}h-cite{% endif %} inline-block  hover:border-b" title="{{ t_bookmark.title }}">{{ t_bookmark.title }}</a>
+            </h1>
         {% endif %}
         <div>
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
@@ -16,6 +19,9 @@
             {% include 'author/byline.html' with p_author=t_post.p_author %}
         </div>
     </header>
+    <blockquote class="border-l-2 border-bianca-600 mt-4 mb-4 pl-2 max-w-prose">
+        {{ t_bookmark.quote }}
+    </blockquote>
     <main class="e-content mb-2 pt-2 content max-w-prose">
         {{ t_entry.e_content|safe }}
     </main>
@@ -25,7 +31,8 @@
             <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
         {% endif %}
         {% if user.is_authenticated %}
-            <a href="{% url 'article_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+            <a href="{% url 'reply_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}
     </footer>
 </div>
+{% endwith %}

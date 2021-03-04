@@ -1,4 +1,5 @@
-{% load gravatar %}
+{% load gravatar utils %}
+{% url 'public:author' p_author.username as author_url %}
 <span
     class="author p-author vcard hcard h-card" itemprop="author " itemscope=""
     itemtype="http://schema.org/Person">
@@ -10,7 +11,7 @@
          width="40"
          height="40">
     <a
-    class="url uid u-url u-uid fn p-name" href="{% url 'public:author' p_author.username %}"
+    class="url uid u-url u-uid p-name" href="{{ author_url|absolute_uri:request }}"
     title="View all posts by {{ p_author.first_name }}" rel="author" itemprop="url">
         <span itemprop="name">{{ p_author.first_name }}</span></a>
 </span>

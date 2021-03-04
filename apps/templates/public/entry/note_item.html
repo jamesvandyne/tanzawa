@@ -1,5 +1,5 @@
-{% load humanize %}
-
+{% load humanize utils %}
+{% url 'public:post_detail' t_post.uuid as permalink %}
 <div class="flex-col h-entry">
     <header>
         {% if t_entry.p_name%}
@@ -20,7 +20,7 @@
         {{ t_entry.e_content|safe }}
     </main>
     <footer class="mt-2 pt-2{% if detail %} border-t-2  border-bianca-600{% endif %}">
-        <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
+        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
         {% if t_entry.interaction_count %}
             <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
         {% endif %}
