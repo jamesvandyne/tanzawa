@@ -98,6 +98,53 @@ class UpdateEntryView(UpdateView):
         return render(self.request, self.template_name, context=context)
 
 
+@method_decorator(login_required, name="dispatch")
+class ExtractLinkedPageMetaView(FormView):
+    form_class = forms.ExtractMetaForm
+    success_form = forms.CreateReplyForm
+    invalidate_template = None
+    validate_template = None
+    turbo_frame = ""
+    url_key = ""
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(nav="posts", **kwargs)
+
+    def form_valid(self, form):
+        linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
+        initial = {
+            self.url_key: form.cleaned_data["url"],
+            "title": form.cleaned_data["url"],
+            "author": "",
+            "summary": "",
+        }
+        if linked_page:
+            initial.update(
+                {
+                    self.url_key: linked_page.url,
+                    "title": linked_page.title,
+                    "author": linked_page.author.name,
+                    "summary": linked_page.description,
+                }
+            )
+        context = self.get_context_data(
+            form=self.success_form(initial=initial, p_author=self.request.user),
+        )
+        return (
+            TurboFrame(self.turbo_frame)
+            .template(self.validate_template, context)
+            .response(self.request)
+        )
+
+    def form_invalid(self, form):
+        return render(
+            self.request,
+            self.invalidate_template,
+            context=self.get_context_data(),
+            status=422,
+        )
+
+
 # Note CRUD views
 
 
@@ -156,52 +203,70 @@ class CreateReplyView(CreateEntryView):
 
 
 @method_decorator(login_required, name="dispatch")
-class ExtractReplyMetaView(FormView):
+class ExtractReplyMetaView(ExtractLinkedPageMetaView):
     form_class = forms.ExtractMetaForm
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(nav="posts", **kwargs)
-
-    def form_valid(self, form):
-        linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
-        initial = {
-            "u_in_reply_to": form.cleaned_data["url"],
-            "title": form.cleaned_data["url"],
-            "author": "",
-            "summary": "",
-        }
-        if linked_page:
-            initial.update(
-                {
-                    "u_in_reply_to": linked_page.url,
-                    "title": linked_page.title,
-                    "author": linked_page.author.name,
-                    "summary": linked_page.description,
-                }
-            )
-        context = self.get_context_data(
-            form=forms.CreateReplyForm(initial=initial, p_author=self.request.user),
-        )
-
-        return (
-            TurboFrame("reply-form")
-            .template("entry/reply/_form.html", context)
-            .response(self.request)
-        )
-
-    def form_invalid(self, form):
-        return render(
-            self.request,
-            "entry/reply/_url_form.html",
-            context=self.get_context_data(),
-            status=422,
-        )
+    invalidate_template = "entry/reply/_linked_page_form.html"
+    validate_template = "entry/reply/_form.html"
+    url_key = "u_in_reply_to"
+    turbo_frame = "reply-form"
 
 
 class UpdateReplyView(UpdateEntryView):
     form_class = forms.UpdateReplyForm
     template_name = "entry/reply/update.html"
     m_post_kind = MPostKinds.reply
+    autofocus = "e_content"
+
+
+# Bookmarks
+
+
+class CreateBookmarkView(CreateEntryView):
+    template_name = "entry/bookmark/create.html"
+    redirect_url = "bookmark_edit"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(nav="posts", **kwargs)
+
+    def get_form_class(self):
+        if self.request.method == "GET":
+            return forms.ExtractMetaForm
+        return forms.CreateBookmarkForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method == "GET":
+            kwargs["label"] = "What's the URL you're bookmarking?"
+        return kwargs
+
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return (
+            TurboFrame("bookmark-form")
+            .template("entry/bookmark/_form.html", context)
+            .response(self.request)
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class ExtractBookmarkMetaView(ExtractLinkedPageMetaView):
+    form_class = forms.ExtractMetaForm
+    success_form = forms.CreateBookmarkForm
+    invalidate_template = "entry/bookmark/_linked_page_form.html"
+    validate_template = "entry/bookmark/_form.html"
+    url_key = "u_bookmark_of"
+    turbo_frame = "bookmark-form"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["label"] = "What's the URL you're bookmarking?"
+        return kwargs
+
+
+class UpdateBookmarkView(UpdateEntryView):
+    form_class = forms.UpdateBookmarkForm
+    template_name = "entry/bookmark/update.html"
+    m_post_kind = MPostKinds.bookmark
     autofocus = "e_content"
 
 
@@ -281,5 +346,7 @@ def edit_post(request, pk: int):
         return redirect(reverse("status_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.reply:
         return redirect(reverse("reply_edit", args=[pk]))
+    elif t_entry.t_post.m_post_kind.key == MPostKinds.bookmark:
+        return redirect(reverse("bookmark_edit", args=[pk]))
     messages.error(request, "Unknown post type")
     return redirect(resolve_url("posts"))

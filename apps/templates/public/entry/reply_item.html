@@ -1,10 +1,11 @@
-{% load humanize %}
+{% load humanize utils %}
+{% url 'public:post_detail' t_post.uuid as permalink %}
 {% with t_entry.t_reply as t_reply %}
 <div class="flex-col h-entry">
-    <header class="u-in-reply-to">
+    <header>
         {% if t_reply %}
             <h1 class="p-name text-xl">
-                Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block  hover:border-b u-url" title="{{ t_reply.title }}">{{ t_reply.title }}</a>
+                Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block  hover:border-b u-in-reply-to" title="{{ t_reply.title }}">{{ t_reply.title }}</a>
             </h1>
         {% endif %}
         <div>
@@ -25,7 +26,7 @@
         {{ t_entry.e_content|safe }}
     </main>
     <footer class="mt-2 pt-2{% if detail %} border-t-2  border-bianca-600{% endif %}">
-        <a href="{% url 'public:post_detail' t_post.uuid %}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
+        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
         {% if t_entry.interaction_count %}
             <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
         {% endif %}

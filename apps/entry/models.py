@@ -49,3 +49,34 @@ class TReply(TimestampModel):
                 name=self.author, url=self.author_url, photo=self.author_photo
             ),
         )
+
+
+class TBookmark(TimestampModel):
+
+    t_entry = models.OneToOneField(
+        TEntry, on_delete=models.CASCADE, related_name="t_bookmark"
+    )
+    u_bookmark_of = models.URLField()
+    title = models.CharField(max_length=128, blank=True, default="")
+    quote = models.TextField(blank=True, default="")
+
+    author = models.CharField(max_length=64, blank=True, default="")
+    author_url = models.URLField(blank=True, default="")
+    author_photo = models.URLField(blank=True, default="")
+
+    class Meta:
+        db_table = "t_bookmark"
+
+    def __str__(self):
+        return f"{self.t_entry} : {self.u_bookmark_of}"
+
+    @property
+    def linked_page(self) -> LinkedPage:
+        return LinkedPage(
+            url=self.u_bookmark_of,
+            title=self.title,
+            description=self.quote,
+            author=LinkedPageAuthor(
+                name=self.author, url=self.author_url, photo=self.author_photo
+            ),
+        )
