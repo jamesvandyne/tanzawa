@@ -1,5 +1,5 @@
 import pytest
-from entry.models import TEntry, TReply
+from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
 from unittest.mock import Mock
 from post.models import TPost
 
@@ -276,6 +276,49 @@ class TestMicropub:
         assert t_reply.title == "The Week #34"
         assert (
             t_reply.quote
+            == "I forget what I was searching for but I found this fantastic blog"
+        )
+
+        mock_extract_reply.assert_called_once()
+
+    def test_post_bookmark_form(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        mock_extract_reply,
+    ):
+        data = {
+            "h": ["entry"],
+            "access_token": [auth_token],
+            "content": [
+                "This is a test a book from quill so I can add replies to micropub!"
+            ],
+            "bookmark-of": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
+            "category": ["bookmarks"],
+        }
+
+        response = client.post(target, data=data)
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "bookmark"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary.startswith(data["content"][0])
+
+        t_bookmark: TBookmark = t_entry.t_bookmark
+
+        assert t_bookmark.u_bookmark_of == data["bookmark-of"][0]
+        assert t_bookmark.author == "James"
+        assert t_bookmark.title == "The Week #34"
+        assert (
+            t_bookmark.quote
             == "I forget what I was searching for but I found this fantastic blog"
         )
 

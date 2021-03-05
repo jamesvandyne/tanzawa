@@ -7,7 +7,12 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from entry.forms import CreateStatusForm, CreateArticleForm, CreateReplyForm
+from entry.forms import (
+    CreateStatusForm,
+    CreateArticleForm,
+    CreateReplyForm,
+    CreateBookmarkForm,
+)
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -128,6 +133,10 @@ def micropub(request):
         linked_page = serializer.validated_data["properties"].get("in_reply_to")
         # adds u_in_reply_to, title, author, summary fields
         form_data.update(linked_page)
+    elif serializer.validated_data["properties"].get("bookmark_of"):
+        linked_page = serializer.validated_data["properties"].get("bookmark_of")
+        # adds u_in_reply_to, title, author, summary fields
+        form_data.update(linked_page)
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -155,6 +164,8 @@ def micropub(request):
         form_class = CreateArticleForm
     if form_data.get("u_in_reply_to"):
         form_class = CreateReplyForm
+    if form_data.get("u_bookmark_of"):
+        form_class = CreateBookmarkForm
 
     form = form_class(
         data=form_data, p_author=serializer.validated_data["access_token"].user

@@ -9,7 +9,7 @@ from streams.models import MStream
 
 from . import constants
 from .models import TToken
-from .extract import extract_reply_details_from_url
+from .extract import extract_reply_details_from_url, LinkedPage
 
 
 class ContentField(serializers.Field):
@@ -49,26 +49,35 @@ class HEntryPropertiesSerializer(serializers.Serializer):
         MStream.objects, read_only=True, required=False
     )
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
+    bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
+
+    def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
+        linked_page = extract_reply_details_from_url(url)
+        link_dict = {
+            url_key: url,
+            "title": url,
+            "author": "",
+            "summary": "",
+        }
+        if linked_page:
+            link_dict.update(
+                {
+                    url_key: linked_page.url,
+                    "title": linked_page.title,
+                    "author": linked_page.author.name,
+                    "summary": linked_page.description,
+                }
+            )
+        return link_dict
 
     def validate_in_reply_to(self, value: str) -> Optional[Dict[str, str]]:
         if value:
-            linked_page = extract_reply_details_from_url(value)
-            reply = {
-                "u_in_reply_to": value,
-                "title": value,
-                "author": "",
-                "summary": "",
-            }
-            if linked_page:
-                reply.update(
-                    {
-                        "u_in_reply_to": linked_page.url,
-                        "title": linked_page.title,
-                        "author": linked_page.author.name,
-                        "summary": linked_page.description,
-                    }
-                )
-            return reply
+            return self._get_linked_page(value, "u_in_reply_to")
+        return None
+
+    def validate_bookmark_of(self, value: str) -> Optional[Dict[str, str]]:
+        if value:
+            return self._get_linked_page(value, "u_bookmark_of")
         return None
 
     def validate(self, data):

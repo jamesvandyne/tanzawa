@@ -101,7 +101,9 @@ class TCheckin(TimestampModel):
     t_entry = models.OneToOneField(
         TEntry, on_delete=models.CASCADE, related_name="t_checkin"
     )
-    t_location = models.OneToOneField(TLocation, on_delete=models.CASCADE, related_name="t_checkin")
+    t_location = models.OneToOneField(
+        TLocation, on_delete=models.CASCADE, related_name="t_checkin"
+    )
     name = models.CharField(max_length=255)
     url = models.URLField(blank=True, null=True)
 
