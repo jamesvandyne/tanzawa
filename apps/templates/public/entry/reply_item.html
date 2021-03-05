@@ -5,7 +5,7 @@
     <header>
         {% if t_reply %}
             <h1 class="p-name text-xl">
-                Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block  hover:border-b u-in-reply-to" title="{{ t_reply.title }}">{{ t_reply.title }}</a>
+                Response to <a href="{{ t_reply.u_in_reply_to }}" class="inline-block hover:underline u-in-reply-to" title="{{ t_reply.title }}">{{ t_reply.title }}</a>
             </h1>
         {% endif %}
         <div>

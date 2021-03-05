@@ -5,7 +5,7 @@
     <header>
         {% if t_bookmark %}
             <h1 class="p-name text-xl">
-                Bookmark of <a href="{{ t_bookmark.u_bookmark_of }}" class="u-bookmark-of {% if t_bookmark.u_bookmark_of != t_bookmark.title %}h-cite{% endif %} inline-block  hover:border-b" title="{{ t_bookmark.title }}">{{ t_bookmark.title }}</a>
+                Bookmark of <a href="{{ t_bookmark.u_bookmark_of }}" class="u-bookmark-of {% if t_bookmark.u_bookmark_of != t_bookmark.title %}h-cite{% endif %} inline-block hover:underline" title="{{ t_bookmark.title }}">{{ t_bookmark.title }}</a>
             </h1>
         {% endif %}
         <div>
