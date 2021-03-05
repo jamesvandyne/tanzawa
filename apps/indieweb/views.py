@@ -110,6 +110,7 @@ def micropub(request):
                 data={"message": "Error uploading files"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+    # TODO: Download any 'photo' urls
 
     # Create entry form data
     form_data = {
