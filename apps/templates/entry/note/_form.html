@@ -1,5 +1,8 @@
 <form  id="note" method="POST" class="flex-col" data-turbo="false">
     {{ form.errors }}
+    {% for named_form in named_forms %}
+        {{ named_form.errors }}
+    {% endfor %}
     <span class="font-serif">
     {% csrf_token %}
     {{ form.e_content }}
@@ -10,39 +13,40 @@
             {{ form.streams }}
         </div>
     </div>
+    {% with named_forms.location as location %}
     <div class="pt-2">
         <details open>
             <summary>Location</summary>
-                    {{ location.media }}
-            {% for loc in location %}
+            {{ location.media }}
+            <div class="flex-col">
                 <div class="flex-col">
+                    {{ location.street_address.label_tag }}
+                    {{ location.street_address }}
+                </div>
+                <div class="flex mt-2">
                     <div class="flex-col">
-                        {{ loc.street_address.label_tag }}
-                        {{ loc.street_address }}
+                        {{ location.locality.label_tag }}
+                        {{ location.locality }}
                     </div>
-                    <div class="flex mt-2">
-                        <div class="flex-col">
-                            {{ loc.locality.label_tag }}
-                            {{ loc.locality }}
-                        </div>
-                        <div class="flex-col mx-4">
-                            {{ loc.region.label_tag }}
-                            {{ loc.region }}
-                        </div>
-                        <div class="flex-col">
-                            {{ loc.country_name.label_tag }}
-                            {{ loc.country_name }}
-                        </div>
+                    <div class="flex-col mx-4">
+                        {{ location.region.label_tag }}
+                        {{ location.region }}
                     </div>
-                    <div class="flex-col w-40 mt-2">
-                            {{ loc.postal_code.label_tag }}
-                            {{ loc.postal_code }}
-                    </div>
-                    <div class="mt-2">
-                        {{ loc.point }}
+                    <div class="flex-col">
+                        {{ location.country_name.label_tag }}
+                        {{ location.country_name }}
                     </div>
                 </div>
-            {% endfor %}
+                <div class="flex-col w-40 mt-2">
+                        {{ location.postal_code.label_tag }}
+                        {{ location.postal_code }}
+                </div>
+                <div class="mt-2">
+                    {{ location.point }}
+                </div>
+            </div>
+          
         </details>
     </div>
+    {% endwith %}
 </form>

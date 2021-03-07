@@ -3,7 +3,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from django import forms
 from django.db import transaction
-from django.contrib.gis.forms import OSMWidget
+from django.contrib.gis.forms import OSMWidget, PointField
 from django.utils.timezone import now
 from files.models import TFile
 from files.utils import extract_uuid_from_url
@@ -363,17 +363,23 @@ class TLocationModelForm(forms.ModelForm):
     region = TCharField(required=False, label="State/Prefecture")
     country_name = TCharField(required=False, label="Country")
     postal_code = TCharField(required=False)
+    point = PointField(widget=OSMWidget(attrs={"default_zoom": 8, "default_lat": 35.45416667, "default_lon": 139.16333333}), required=False)
 
     class Meta:
         model = TLocation
         exclude = ("created_at", "updated_at", "t_entry")
 
-    def __init__(self, *args, t_entry: TEntry, **kwargs):
-        self.t_entry = t_entry
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["point"].widget = OSMWidget(attrs={"default_zoom": 8, "default_lat": 35.45416667, "default_lon": 139.16333333})
 
+    def prepare_data(self, t_entry: TEntry):
+        self.instance.t_entry = t_entry
+
+    def save(self, commit=True):
+        if self.cleaned_data['point']:
+            super().save(commit=commit)
+        return self.instance
 
 TLocationFormSet = forms.modelformset_factory(
-    TLocation, form=TLocationModelForm, min_num=1, extra=0
+    TLocation, form=TLocationModelForm, min_num=1, max_num=1, extra=0
 )

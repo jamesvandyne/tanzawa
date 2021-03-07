@@ -1,9 +1,11 @@
 from typing import Dict, Any
+from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, FormView
@@ -26,9 +28,20 @@ class CreateEntryView(CreateView):
         kwargs.update({"p_author": self.request.user, "autofocus": self.autofocus})
         return kwargs
 
-    def form_valid(self, form):
+    def get_named_forms(self):
+        return {
+            'location': forms.TLocationModelForm(self.request.POST or None, prefix='location')
+        }
+
+    def form_valid(self, form, named_forms=None):
         form.prepare_data()
-        entry = form.save()
+
+        with transaction.atomic():
+            entry = form.save()
+
+            for named_form in named_forms.values():
+                named_form.prepare_data(entry)
+                named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             send_webmention(self.request, entry.t_post, entry.e_content)
@@ -43,14 +56,32 @@ class CreateEntryView(CreateView):
         return redirect_303(resolve_url(self.redirect_url, pk=entry.pk))
 
     def get_context_data(self, **kwargs):
-        location_formset = forms.TLocationFormSet(
-            form_kwargs={"t_entry": None}
-        )
-        return super().get_context_data(nav="posts", location=location_formset)
+        context = super().get_context_data(nav="posts", **kwargs)
+        if 'named_forms' not in context:
+            context['named_forms'] = self.get_named_forms()
+        return context
 
-    def form_invalid(self, form):
-        context = super().get_context_data()
+    def form_invalid(self, form, named_forms=None):
+        context = self.get_context_data(form=form, named_forms=named_forms)
         return render(self.request, self.template_name, context=context, status=422)
+
+    def get(self, request, *args, **kwargs):
+        self.object = None
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        self.object = None
+        form = self.get_form()
+        named_forms = self.get_named_forms()
+
+        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+            return self.form_valid(form, named_forms)
+        else:
+            return self.form_invalid(form, named_forms)
 
 
 @method_decorator(login_required, name="dispatch")
