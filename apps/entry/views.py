@@ -43,7 +43,10 @@ class CreateEntryView(CreateView):
         return redirect_303(resolve_url(self.redirect_url, pk=entry.pk))
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(nav="posts")
+        location_formset = forms.TLocationFormSet(
+            form_kwargs={"t_entry": None}
+        )
+        return super().get_context_data(nav="posts", location=location_formset)
 
     def form_invalid(self, form):
         context = super().get_context_data()

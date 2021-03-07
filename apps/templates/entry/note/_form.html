@@ -10,4 +10,39 @@
             {{ form.streams }}
         </div>
     </div>
+    <div class="pt-2">
+        <details open>
+            <summary>Location</summary>
+                    {{ location.media }}
+            {% for loc in location %}
+                <div class="flex-col">
+                    <div class="flex-col">
+                        {{ loc.street_address.label_tag }}
+                        {{ loc.street_address }}
+                    </div>
+                    <div class="flex mt-2">
+                        <div class="flex-col">
+                            {{ loc.locality.label_tag }}
+                            {{ loc.locality }}
+                        </div>
+                        <div class="flex-col mx-4">
+                            {{ loc.region.label_tag }}
+                            {{ loc.region }}
+                        </div>
+                        <div class="flex-col">
+                            {{ loc.country_name.label_tag }}
+                            {{ loc.country_name }}
+                        </div>
+                    </div>
+                    <div class="flex-col w-40 mt-2">
+                            {{ loc.postal_code.label_tag }}
+                            {{ loc.postal_code }}
+                    </div>
+                    <div class="mt-2">
+                        {{ loc.point }}
+                    </div>
+                </div>
+            {% endfor %}
+        </details>
+    </div>
 </form>

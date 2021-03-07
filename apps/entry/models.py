@@ -91,7 +91,8 @@ class TLocation(TimestampModel):
     locality = models.CharField(max_length=128, blank=True, default="")
     region = models.CharField(max_length=64, blank=True, default="")
     country_name = models.CharField(max_length=64, blank=True, default="")
-    point = geo_models.PointField()
+    postal_code = models.CharField(max_length=16, blank=True, default="")
+    point = geo_models.PointField(geography=True)
 
     class Meta:
         db_table = "t_location"

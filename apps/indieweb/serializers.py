@@ -10,6 +10,7 @@ from streams.models import MStream
 from . import constants
 from .models import TToken
 from .extract import extract_reply_details_from_url, LinkedPage
+from .location import get_location
 
 
 class ContentField(serializers.Field):
@@ -21,6 +22,20 @@ class ContentField(serializers.Field):
             return data
         value = " \n".join(c if isinstance(c, str) else c["html"] for c in data)
         return value
+
+
+class LocationField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        location = None
+        if isinstance(data, list):
+            if isinstance(data[0], str):
+                location = get_location({"properties": {"geo": data}})
+        else:
+            location = get_location(data)
+        return location
 
 
 class FlattenedStringField(serializers.Field):
@@ -38,6 +53,16 @@ class EContentSerializer(serializers.Serializer):
     html = serializers.CharField(required=True)
 
 
+class LocationSerializer(serializers.Serializer):
+    street_address = serializers.CharField(max_length=128, required=False)
+    locality = serializers.CharField(max_length=128, required=False, default="")
+    region = serializers.CharField(max_length=64, required=False, default="")
+    country_name = serializers.CharField(max_length=64, required=False, default="")
+    postal_code = serializers.CharField(max_length=16, required=False, default="")
+    longitude = serializers.FloatField(required=False)
+    latitude = serializers.FloatField(required=False)
+
+
 class HEntryPropertiesSerializer(serializers.Serializer):
 
     name = FlattenedStringField(required=False)
@@ -50,6 +75,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     )
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
     bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
+    location = LocationField(required=False)
 
     def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
         linked_page = extract_reply_details_from_url(url)

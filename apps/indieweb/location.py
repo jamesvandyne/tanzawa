@@ -1,3 +1,5 @@
+import json
+from typing import Dict, Any
 from mf2util import string_type, LOCATION_PROPERTIES
 
 
@@ -9,7 +11,6 @@ def get_location(hentry):
     result = {}
     props = hentry["properties"]
     location_stack = [props]
-
     for prop in "location", "adr":
         vals = props.get(prop)
         if vals:
@@ -38,5 +39,18 @@ def get_location(hentry):
     for prop in LOCATION_PROPERTIES:
         for obj in location_stack:
             if obj and obj.get(prop) and not (obj == props and prop == "name"):
-                result.setdefault("location", {})[prop] = obj[prop][0]
+                # normalize to use underscores, rather than - between words
+                result.setdefault("location", {})[prop.replace("-", "_")] = obj[prop][0]
     return result
+
+
+def location_to_pointfield_input(location: Dict[str, Any]) -> str:
+    return json.dumps(
+        {
+            "type": "Point",
+            "coordinates": [
+                location["location"]["longitude"],
+                location["location"]["latitude"],
+            ],
+        }
+    )

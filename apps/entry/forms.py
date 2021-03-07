@@ -3,6 +3,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from django import forms
 from django.db import transaction
+from django.contrib.gis.forms import OSMWidget
 from django.utils.timezone import now
 from files.models import TFile
 from files.utils import extract_uuid_from_url
@@ -13,7 +14,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply, TBookmark
+from .models import TEntry, TReply, TBookmark, TLocation
 
 
 class TCharField(forms.CharField):
@@ -354,3 +355,25 @@ class UpdateBookmarkForm(UpdateStatusForm):
         t_entry = super().save()
         self.t_bookmark.save()
         return t_entry
+
+
+class TLocationModelForm(forms.ModelForm):
+    street_address = TCharField(required=False, label="Address")
+    locality = TCharField(required=False, label="City")
+    region = TCharField(required=False, label="State/Prefecture")
+    country_name = TCharField(required=False, label="Country")
+    postal_code = TCharField(required=False)
+
+    class Meta:
+        model = TLocation
+        exclude = ("created_at", "updated_at", "t_entry")
+
+    def __init__(self, *args, t_entry: TEntry, **kwargs):
+        self.t_entry = t_entry
+        super().__init__(*args, **kwargs)
+        self.fields["point"].widget = OSMWidget(attrs={"default_zoom": 8, "default_lat": 35.45416667, "default_lon": 139.16333333})
+
+
+TLocationFormSet = forms.modelformset_factory(
+    TLocation, form=TLocationModelForm, min_num=1, extra=0
+)

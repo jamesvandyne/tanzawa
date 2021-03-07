@@ -23,6 +23,7 @@ from files.forms import MediaUploadForm
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .constants import MPostStatuses
+from .location import get_location
 from .webmentions import send_webmention
 from .utils import extract_base64_images, save_and_get_tag, render_attachment
 from .serializers import (
@@ -46,8 +47,8 @@ def form_to_mf2(request):
         if key == "access_token":
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
-
     mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
+    # location = get_location(mf)
     return normalize_properties_to_underscore(mf)
 
 
@@ -59,10 +60,15 @@ def normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
     return {"type": data["type"], "properties": properties}
 
 
+def normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
+    h_entry = normalize_properties_to_underscore(data)
+    return h_entry
+
+
 @api_view(["GET", "POST"])
 def micropub(request):
     normalize = {
-        "application/json": lambda r: normalize_properties_to_underscore(r.data),
+        "application/json": lambda r: normalize_properties(r.data),
         "application/x-www-form-urlencoded": form_to_mf2,
         "multipart/form-data": form_to_mf2,
     }
