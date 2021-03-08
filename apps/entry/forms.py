@@ -357,13 +357,20 @@ class UpdateBookmarkForm(UpdateStatusForm):
         return t_entry
 
 
+class LeafletWidget(OSMWidget):
+    template_name = "gis/leaflet.html"
+    default_zoom = 8
+    default_lat = 35.45416667
+    default_lon = 139.16333333
+
+
 class TLocationModelForm(forms.ModelForm):
     street_address = TCharField(required=False, label="Address")
     locality = TCharField(required=False, label="City")
     region = TCharField(required=False, label="State/Prefecture")
     country_name = TCharField(required=False, label="Country")
     postal_code = TCharField(required=False)
-    point = PointField(widget=OSMWidget(attrs={"default_zoom": 8, "default_lat": 35.45416667, "default_lon": 139.16333333}), required=False)
+    point = PointField(widget=LeafletWidget, required=False)
 
     class Meta:
         model = TLocation
@@ -378,7 +385,11 @@ class TLocationModelForm(forms.ModelForm):
     def save(self, commit=True):
         if self.cleaned_data['point']:
             super().save(commit=commit)
+        elif self.instance.pk:
+            # TLocation.point is non-nullable, so must be deleted if a user unsets the location
+            self.instance.delete()
         return self.instance
+
 
 TLocationFormSet = forms.modelformset_factory(
     TLocation, form=TLocationModelForm, min_num=1, max_num=1, extra=0

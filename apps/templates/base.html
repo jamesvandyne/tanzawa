@@ -9,6 +9,7 @@
 
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link href="{% static 'trix/trix.css' %}" rel="stylesheet">
+    <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint">
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">
@@ -17,6 +18,7 @@
     <title>{{ page_title }}🏔 Tanzawa</title>
     <script src="{% static 'trix/trix.js' %}"></script>
     <script src="{% static 'trix/attachments.js' %}"></script>
+    <script src="{% static 'leaflet/leaflet.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
 </head>
 <body class="bg-bianca-500">
