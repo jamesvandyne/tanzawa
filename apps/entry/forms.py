@@ -359,7 +359,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
 
 class LeafletWidget(OSMWidget):
     template_name = "gis/leaflet.html"
-    default_zoom = 8
+    default_zoom = 12
     default_lat = 35.45416667
     default_lon = 139.16333333
 

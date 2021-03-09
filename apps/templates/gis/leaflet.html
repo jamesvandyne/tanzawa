@@ -8,5 +8,5 @@
          data-default-zoom="{{ default_zoom|unlocalize }}"></div>
     {% if not disabled %}<span class="clear_features"><a href="javascript:{{ module }}.clearFeatures()">{% translate "Delete all Features" %}</a></span>{% endif %}
     {% if display_raw %}<p>{% translate "Debugging window (serialized value)" %}</p>{% endif %}
-    <textarea id="{{ id }}" class="vSerializedField required" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
+    <textarea data-leaflet-target="serialize" id="{{ id }}" class="vSerializedField required hidden" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
 </div>
