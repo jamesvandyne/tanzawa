@@ -18,7 +18,7 @@
         <details open>
             <summary>Location</summary>
             {{ location.media }}
-            <div class="flex-col" data-controller="location">
+            <div id="location" class="flex-col" data-controller="leaflet">
                 <div class="flex-col">
                     {{ location.street_address.label_tag }}
                     {{ location.street_address }}

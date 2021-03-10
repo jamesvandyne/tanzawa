@@ -378,6 +378,21 @@ class TLocationModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["street_address"].widget.attrs.update({
+            "data-leaflet-target": "streetAddress"
+        })
+        self.fields["locality"].widget.attrs.update({
+            "data-leaflet-target": "locality"
+        })
+        self.fields["region"].widget.attrs.update({
+            "data-leaflet-target": "region"
+        })
+        self.fields["country_name"].widget.attrs.update({
+            "data-leaflet-target": "country"
+        })
+        self.fields["postal_code"].widget.attrs.update({
+            "data-leaflet-target": "postalCode"
+        })
 
     def prepare_data(self, t_entry: TEntry):
         self.instance.t_entry = t_entry

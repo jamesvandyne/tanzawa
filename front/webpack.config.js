@@ -6,4 +6,7 @@ module.exports = {
     filename: 'app.js',
     path: path.resolve(__dirname, '../static/js/'),
   },
+  optimization: {
+    minimize: false,
+  }
 };

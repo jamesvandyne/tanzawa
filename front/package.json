@@ -7,6 +7,8 @@
     "@hotwired/turbo": "^7.0.0-beta.4",
     "autoprefixer": "^10.1.0",
     "form-request-submit-polyfill": "^2.0.0",
+    "leaflet": "^1.7.1",
+    "leaflet-geosearch": "^3.2.1",
     "stimulus": "^2.0.0",
     "tailwindcss": "^2.0.2"
   },
