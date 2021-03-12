@@ -1,6 +1,6 @@
 const path = require('path');
 
-module.exports = {
+const adminConfig = {
   entry: ['./src/application.js', '@hotwired/turbo', 'form-request-submit-polyfill'],
   output: {
     filename: 'app.js',
@@ -10,3 +10,16 @@ module.exports = {
     minimize: false,
   }
 };
+
+const publicConfig = {
+  entry: ['./src/public.js'],
+  output: {
+    filename: 'public.js',
+    path: path.resolve(__dirname, '../static/js/'),
+  },
+  optimization: {
+    minimize: false,
+  }
+};
+
+module.exports = [adminConfig, publicConfig];

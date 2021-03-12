@@ -12,7 +12,7 @@ export default class extends Controller {
         const defaultLat = this.mapTarget.dataset.defaultLat;
         const defaultLon = this.mapTarget.dataset.defaultLon;
         const defaultZoom = this.mapTarget.dataset.defaultZoom;
-        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {minZoom: 0, maxZoom: 12});
+        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {minZoom: 0, maxZoom: 18});
         this.provider = new OpenStreetMapProvider({
             params: {
                 addressdetails: 1

@@ -19,6 +19,7 @@
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
+    {% block head %}{% endblock %}
 </head>
 <body class="bg-bianca-500">
     <div class="">
