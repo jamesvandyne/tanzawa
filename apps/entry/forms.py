@@ -359,40 +359,27 @@ class UpdateBookmarkForm(UpdateStatusForm):
 
 class LeafletWidget(OSMWidget):
     template_name = "gis/leaflet.html"
-    default_zoom = 12
+    default_zoom = 5
     default_lat = 35.45416667
     default_lon = 139.16333333
 
 
 class TLocationModelForm(forms.ModelForm):
-    street_address = TCharField(required=False, label="Address")
-    locality = TCharField(required=False, label="City")
-    region = TCharField(required=False, label="State/Prefecture")
-    country_name = TCharField(required=False, label="Country")
-    postal_code = TCharField(required=False)
     point = PointField(widget=LeafletWidget, required=False)
 
     class Meta:
         model = TLocation
         exclude = ("created_at", "updated_at", "t_entry")
+        widgets = {
+            'street_address': forms.HiddenInput({"data-leaflet-target": "streetAddress"}),
+            'locality': forms.HiddenInput({"data-leaflet-target": "locality"}),
+            'region': forms.HiddenInput({"data-leaflet-target": "region"}),
+            'country_name': forms.HiddenInput({"data-leaflet-target": "country"}),
+            'postal_code': forms.HiddenInput({"data-leaflet-target": "postalCode"}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["street_address"].widget.attrs.update({
-            "data-leaflet-target": "streetAddress"
-        })
-        self.fields["locality"].widget.attrs.update({
-            "data-leaflet-target": "locality"
-        })
-        self.fields["region"].widget.attrs.update({
-            "data-leaflet-target": "region"
-        })
-        self.fields["country_name"].widget.attrs.update({
-            "data-leaflet-target": "country"
-        })
-        self.fields["postal_code"].widget.attrs.update({
-            "data-leaflet-target": "postalCode"
-        })
 
     def prepare_data(self, t_entry: TEntry):
         self.instance.t_entry = t_entry

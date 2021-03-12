@@ -19,28 +19,9 @@
             <summary>Location</summary>
             {{ location.media }}
             <div id="location" class="flex-col" data-controller="leaflet">
-                <div class="flex-col">
-                    {{ location.street_address.label_tag }}
-                    {{ location.street_address }}
-                </div>
-                <div class="flex mt-2">
-                    <div class="flex-col">
-                        {{ location.locality.label_tag }}
-                        {{ location.locality }}
-                    </div>
-                    <div class="flex-col mx-4">
-                        {{ location.region.label_tag }}
-                        {{ location.region }}
-                    </div>
-                    <div class="flex-col">
-                        {{ location.country_name.label_tag }}
-                        {{ location.country_name }}
-                    </div>
-                </div>
-                <div class="flex-col w-40 mt-2">
-                        {{ location.postal_code.label_tag }}
-                        {{ location.postal_code }}
-                </div>
+                {% for hidden in location.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
                 <div class="mt-2">
                     {{ location.point }}
                 </div>
