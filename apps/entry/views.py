@@ -29,7 +29,9 @@ class CreateEntryView(CreateView):
 
     def get_named_forms(self):
         return {
-            'location': forms.TLocationModelForm(self.request.POST or None, prefix='location')
+            "location": forms.TLocationModelForm(
+                self.request.POST or None, prefix="location"
+            )
         }
 
     def form_valid(self, form, named_forms=None):
@@ -56,8 +58,8 @@ class CreateEntryView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(nav="posts", **kwargs)
-        if 'named_forms' not in context:
-            context['named_forms'] = self.get_named_forms()
+        if "named_forms" not in context:
+            context["named_forms"] = self.get_named_forms()
         return context
 
     def form_invalid(self, form, named_forms=None):
@@ -77,7 +79,9 @@ class CreateEntryView(CreateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(
+            (named_form.is_valid() for named_form in named_forms.values())
+        ):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
@@ -100,8 +104,8 @@ class UpdateEntryView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(nav="posts", **kwargs)
-        if 'named_forms' not in context:
-            context['named_forms'] = self.get_named_forms()
+        if "named_forms" not in context:
+            context["named_forms"] = self.get_named_forms()
         return context
 
     def get_named_forms(self):
@@ -110,7 +114,9 @@ class UpdateEntryView(UpdateView):
         except models.TLocation.DoesNotExist:
             t_location = None
         return {
-            'location': forms.TLocationModelForm(self.request.POST or None, instance=t_location, prefix='location')
+            "location": forms.TLocationModelForm(
+                self.request.POST or None, instance=t_location, prefix="location"
+            )
         }
 
     def form_valid(self, form, named_forms=None):
@@ -158,11 +164,12 @@ class UpdateEntryView(UpdateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(
+            (named_form.is_valid() for named_form in named_forms.values())
+        ):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
-
 
 
 @method_decorator(login_required, name="dispatch")

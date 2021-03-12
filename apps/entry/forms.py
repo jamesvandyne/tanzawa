@@ -371,11 +371,13 @@ class TLocationModelForm(forms.ModelForm):
         model = TLocation
         exclude = ("created_at", "updated_at", "t_entry")
         widgets = {
-            'street_address': forms.HiddenInput({"data-leaflet-target": "streetAddress"}),
-            'locality': forms.HiddenInput({"data-leaflet-target": "locality"}),
-            'region': forms.HiddenInput({"data-leaflet-target": "region"}),
-            'country_name': forms.HiddenInput({"data-leaflet-target": "country"}),
-            'postal_code': forms.HiddenInput({"data-leaflet-target": "postalCode"}),
+            "street_address": forms.HiddenInput(
+                {"data-leaflet-target": "streetAddress"}
+            ),
+            "locality": forms.HiddenInput({"data-leaflet-target": "locality"}),
+            "region": forms.HiddenInput({"data-leaflet-target": "region"}),
+            "country_name": forms.HiddenInput({"data-leaflet-target": "country"}),
+            "postal_code": forms.HiddenInput({"data-leaflet-target": "postalCode"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -385,7 +387,7 @@ class TLocationModelForm(forms.ModelForm):
         self.instance.t_entry = t_entry
 
     def save(self, commit=True):
-        if self.cleaned_data['point']:
+        if self.cleaned_data["point"]:
             super().save(commit=commit)
         elif self.instance.pk:
             # TLocation.point is non-nullable, so must be deleted if a user unsets the location
