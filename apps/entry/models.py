@@ -97,6 +97,10 @@ class TLocation(TimestampModel):
     class Meta:
         db_table = "t_location"
 
+    @property
+    def summary(self):
+        return ", ".join(filter(None, [self.locality, self.region, self.country_name]))
+
 
 class TCheckin(TimestampModel):
     t_entry = models.OneToOneField(

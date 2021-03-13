@@ -32,10 +32,6 @@ export default class extends Controller {
             'region': this.mapTarget.dataset.region,
             'country': this.mapTarget.dataset.country,
         };
-        this.updateSummaryText();
-        // setup base layer
-        osm.addTo(this.map);
-
         this.marker = null;
         this.zoomIndex = null;
         this.nearCenter = false;
@@ -54,7 +50,7 @@ export default class extends Controller {
                     color: this.color,
                     fillColor: this.fillColor,
                     fillOpacity: 0.5,
-                    radius: 15}),
+                    radius: 20}),
                 zoom: 8
             },
             {
@@ -62,11 +58,16 @@ export default class extends Controller {
                     color: this.color,
                     fillColor: this.fillColor,
                     fillOpacity: 0.5,
-                    radius: 20}),
+                    radius: 30}),
                 zoom: 14
             },
         ];
+
+        this.updateSummaryText();
+        // setup base layer
+        osm.addTo(this.map);
         this.changeZoom(0);
+
         // setup event handlers
         this.map.on('click', event => this.mapClicked(event));
         this.mapTarget.addEventListener('mouseenter', event => this.mapEntered(event));
@@ -76,10 +77,6 @@ export default class extends Controller {
     }
 
     changeZoom(zoomIndex) {
-        console.log("changing zoom " + zoomIndex);
-        if(zoomIndex === 2) {
-            // debugger;
-        }
         if(zoomIndex === this.zoomIndex) {
             return;
         }
@@ -103,33 +100,28 @@ export default class extends Controller {
             return;
         }
         this.inMap = true;
-        console.log("Map entered");
-        this.changeZoom(1);
+        setTimeout(() => {this.changeZoom(1)}, 200);
     }
 
     mapExited(event) {
         event.preventDefault();
-        console.log("Leaving");
         this.inMap = false;
         this.nearCenter = false;
-        this.changeZoom(0);
+        setTimeout(() => {this.changeZoom(0)}, 200);
     }
 
     mouseOverMarker(event) {
-        // event.stopPropagation();
         if(this.nearCenter) {
             return;
         }
         this.nearCenter = true;
-        console.log(`OVER: ${this.zoomIndex}`);
-        this.changeZoom(2);
+        setTimeout(() => {this.changeZoom(2)}, 200);
     }
 
     leaveCenter(event) {
         this.nearCenter = false;
-        this.changeZoom(1);
+        setTimeout(() => {this.changeZoom(1)}, 200);
     }
-
 
     async mapClicked(e) {
         this.changeZoom(this.zoomIndex + 1);
@@ -139,14 +131,6 @@ export default class extends Controller {
         this.summaryTarget.innerText = [this.address.locality,
                                    this.address.region,
                                    this.address.country].filter(val => val).join(", ");
-    }
-
-
-    serializePoint(latlng) {
-        this.serializeTarget.value = JSON.stringify({
-            type: "Point",
-            coordinates: [latlng.lat, latlng.lng]
-        });
     }
 
     get color() {
