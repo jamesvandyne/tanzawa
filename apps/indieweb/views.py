@@ -1,4 +1,3 @@
-import json
 from typing import Dict, Any
 import logging
 from bs4 import BeautifulSoup
@@ -25,7 +24,7 @@ from files.forms import MediaUploadForm
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .constants import MPostStatuses
-from .location import get_location
+from .location import location_to_pointfield_input
 from .webmentions import send_webmention
 from .utils import extract_base64_images, save_and_get_tag, render_attachment
 from .serializers import (
@@ -155,15 +154,7 @@ def micropub(request):
             "region": location["location"].get("region", ""),
             "country_name": location["location"].get("country_name", ""),
             "postal_code": location["location"].get("postal_code", ""),
-            "point": json.dumps(
-                {
-                    "type": "Point",
-                    "coordinates": [
-                        float(location["location"]["latitude"]),
-                        float(location["location"]["longitude"]),
-                    ],
-                }
-            ),
+            "point": location_to_pointfield_input(location),
         }
         named_forms["location"] = TLocationModelForm(data=location_form_data)
 

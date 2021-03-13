@@ -393,8 +393,3 @@ class TLocationModelForm(forms.ModelForm):
             # TLocation.point is non-nullable, so must be deleted if a user unsets the location
             self.instance.delete()
         return self.instance
-
-
-TLocationFormSet = forms.modelformset_factory(
-    TLocation, form=TLocationModelForm, min_num=1, max_num=1, extra=0
-)

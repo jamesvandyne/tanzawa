@@ -9,7 +9,7 @@ from streams.models import MStream
 
 from . import constants
 from .models import TToken
-from .extract import extract_reply_details_from_url, LinkedPage
+from .extract import extract_reply_details_from_url
 from .location import get_location
 
 

@@ -49,8 +49,8 @@ def location_to_pointfield_input(location: Dict[str, Any]) -> str:
         {
             "type": "Point",
             "coordinates": [
-                location["location"]["longitude"],
-                location["location"]["latitude"],
+                float(location["location"]["latitude"]),
+                float(location["location"]["longitude"]),
             ],
         }
     )

@@ -1,10 +1,9 @@
 from typing import Dict, Any
 
 import pytest
-from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
+from entry.models import TEntry, TReply, TBookmark, TLocation
 from unittest.mock import Mock
 from post.models import TPost
-from django.contrib.gis.geos import Point
 
 
 @pytest.mark.django_db
@@ -51,6 +50,7 @@ class TestMicropub:
     ):
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
         response = client.post(target, data=quill_note)
+        import pdb; pdb.set_trace()
         assert response.status_code == 201
         assert TEntry.objects.count() == 1
         assert mock_send_webmention.called
@@ -416,10 +416,3 @@ class TestMicropub:
         assert t_location.locality == "Fujisawa"
         assert t_location.point.x == 35.31593281000502
         assert t_location.point.y == 139.4700015160363
-        # "latitude": [35.31593281000502],
-        # "longitude": [139.4700015160363],
-        # "street-address": ["\u9d60\u6cbc\u6d77\u5cb8"],
-        # "locality": ["Fujisawa"],
-        # "region": ["Kanagawa"],
-        # "country-name": ["Japan"],
-        # "postal-code": ["251-0037"],

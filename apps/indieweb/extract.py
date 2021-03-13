@@ -1,7 +1,7 @@
 import extruct
 import requests
 from bs4 import BeautifulSoup
-from typing import Optional, List, Dict, Any
+from typing import Optional
 import mf2util
 from dataclasses import dataclass
 
