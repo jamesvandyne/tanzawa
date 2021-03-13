@@ -9,7 +9,9 @@ from streams.models import MStream
 
 def home(request):
     context = {
-        "entries": TEntry.objects.select_related("t_post", "t_post__p_author", "t_location", "t_bookmark", "t_reply")
+        "entries": TEntry.objects.select_related(
+            "t_post", "t_post__p_author", "t_location", "t_bookmark", "t_reply"
+        )
         .filter(t_post__m_post_status__key=MPostStatuses.published)
         .annotate(
             interaction_count=Count(
@@ -25,9 +27,12 @@ def home(request):
 
 def status_detail(request, uuid):
     t_post: TPost = get_object_or_404(
-        TPost.objects.prefetch_related("ref_t_entry", "ref_t_entry__t_reply", "ref_t_entry__t_location", "ref_t_entry__t_bookmark").filter(
-            m_post_status__key=MPostStatuses.published
-        ),
+        TPost.objects.prefetch_related(
+            "ref_t_entry",
+            "ref_t_entry__t_reply",
+            "ref_t_entry__t_location",
+            "ref_t_entry__t_bookmark",
+        ).filter(m_post_status__key=MPostStatuses.published),
         uuid=uuid,
     )
     webmentions = t_post.ref_t_webmention.filter(approval_status=True)
@@ -40,7 +45,7 @@ def status_detail(request, uuid):
         "webmentions_count": webmentions.count(),
         "t_entry": t_entry,
         "now": now(),
-        "selected": t_post.streams.values_list('slug', flat=True),
+        "selected": t_post.streams.values_list("slug", flat=True),
         "title": t_entry.p_name if t_entry.p_name else t_entry.p_summary[:140],
         "streams": MStream.objects.visible(request.user),
         "public": True,

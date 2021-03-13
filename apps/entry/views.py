@@ -209,7 +209,8 @@ class ExtractLinkedPageMetaView(FormView):
                 }
             )
         context = self.get_context_data(
-            form=self.success_form(initial=initial, p_author=self.request.user), named_forms=self.get_named_forms(),
+            form=self.success_form(initial=initial, p_author=self.request.user),
+            named_forms=self.get_named_forms(),
         )
         return (
             TurboFrame(self.turbo_frame)
