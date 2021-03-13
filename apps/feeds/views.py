@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed
 from post.models import TPost
 from streams.models import MStream
+from entry.models import TLocation
 from indieweb.constants import MPostKinds
 
 
@@ -34,7 +35,7 @@ class AllEntriesFeed(Feed):
         return (
             TPost.objects.published()
             .select_related("m_post_kind")
-            .prefetch_related("ref_t_entry", "ref_t_entry__t_reply")
+            .prefetch_related("ref_t_entry", "ref_t_entry__t_reply", "ref_t_entry__t_location")
             .all()
             .order_by("-dt_published")[:10]
         )
@@ -60,6 +61,10 @@ class AllEntriesFeed(Feed):
         elif item.m_post_kind.key == MPostKinds.bookmark:
             t_bookmark = t_entry.t_bookmark
             e_content = f'Bookmark: <a href="{t_bookmark.u_bookmark_of}">{t_bookmark.title or t_bookmark.u_bookmark_of}</a><blockquote>{t_bookmark.quote}</blockquote>{e_content}'
+        try:
+            e_content = f"{e_content}<br/>Location: {t_entry.t_location.summary}"
+        except TLocation.DoesNotExist:
+            pass
         return {"content_encoded": e_content}
 
     def item_guid(self, obj: TPost) -> str:

@@ -60,10 +60,10 @@ export default class extends Controller {
             if(mapLocation.length) {
                 this.updateAddressForm(mapLocation[0].raw.address);
             } else {
-                this.resetAddressForm();
+                this.updateAddressForm({});
             }
         } catch (e) {
-            this.resetAddressForm();
+            this.updateAddressForm({});
         }
     }
 
