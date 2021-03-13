@@ -50,7 +50,6 @@ class TestMicropub:
     ):
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
         response = client.post(target, data=quill_note)
-        import pdb; pdb.set_trace()
         assert response.status_code == 201
         assert TEntry.objects.count() == 1
         assert mock_send_webmention.called
