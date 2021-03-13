@@ -1,0 +1,15 @@
+<div data-controller="meta-map" style="width: 300px" class="inline-block ml-auto">
+    <div id="map"
+         class="h-32"
+         data-meta-map-target="map"
+         data-default-lon="{{ t_location.point.y}}"
+         data-default-lat="{{ t_location.point.x}}"
+         data-default-zoom="4"
+         data-region="{{ t_location.region }}"
+         data-country="{{ t_location.country_name }}"
+         data-locality="{{ t_location.locality }}"
+    ></div>
+    <div class="flex mt-2">
+        <span data-meta-map-target="summary" class="help-text ml-auto"></span>
+    </div>
+</div>

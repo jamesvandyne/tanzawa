@@ -1,5 +1,7 @@
 {% load humanize utils %}
 {% url 'public:post_detail' t_post.uuid as permalink %}
+{% url 'status_edit' t_entry.pk as edit_link %}
+
 <div class="flex-col h-entry">
     <header>
         {% if t_entry.p_name%}
@@ -22,35 +24,5 @@
     <main class="e-content mb-2 pt-2 content">
         {{ t_entry.e_content|safe }}
     </main>
-    <footer class="mt-2 pt-2 flex{% if detail %} border-t-2  border-bianca-600{% endif %}">
-            <div class="">
-        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
-        {% if t_entry.interaction_count %}
-            <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
-        {% endif %}
-        {% if user.is_authenticated %}
-            <a href="{% url 'status_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
-        {% endif %}
-        </div>
-        {% if t_entry.t_location %}
-                <div data-controller="meta-map" style="width: 300px" class="inline-block ml-auto">
-                    <div id="map"
-                         class="h-32"
-                         data-meta-map-target="map"
-                         data-default-lon="{{ t_entry.t_location.point.y}}"
-                         data-default-lat="{{ t_entry.t_location.point.x}}"
-                         data-default-zoom="4"
-                         data-region="{{ t_entry.t_location.region }}"
-                         data-country="{{ t_entry.t_location.country_name }}"
-                         data-locality="{{ t_entry.t_location.locality }}"
-                    ></div>
-                    <div class="flex mt-2">
-                        <span data-meta-map-target="summary" class="help-text ml-auto"></span>
-                    </div>
-                    <!-- TODO: Add a small map with the location here. -->
-                    <!-- TODO: split admin map into it's own template -->
-                    <!-- TODO: Add tests for micropub and make sure location article / status. -->
-                </div>
-            {% endif %}
-    </footer>
+    {% include "public/fragments/post_footer.html" %}
 </div>
