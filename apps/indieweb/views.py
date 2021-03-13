@@ -13,7 +13,7 @@ from entry.forms import (
     CreateArticleForm,
     CreateReplyForm,
     CreateBookmarkForm,
-    TLocationModelForm
+    TLocationModelForm,
 )
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -200,7 +200,9 @@ def micropub(request):
         data=form_data, p_author=serializer.validated_data["access_token"].user
     )
 
-    if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
+    if form.is_valid() and all(
+        named_form.is_valid() for named_form in named_forms.values()
+    ):
         form.prepare_data()
 
         with transaction.atomic():

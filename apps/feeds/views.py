@@ -35,7 +35,9 @@ class AllEntriesFeed(Feed):
         return (
             TPost.objects.published()
             .select_related("m_post_kind")
-            .prefetch_related("ref_t_entry", "ref_t_entry__t_reply", "ref_t_entry__t_location")
+            .prefetch_related(
+                "ref_t_entry", "ref_t_entry__t_reply", "ref_t_entry__t_location"
+            )
             .all()
             .order_by("-dt_published")[:10]
         )
