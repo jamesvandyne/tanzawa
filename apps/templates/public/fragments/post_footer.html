@@ -1,0 +1,17 @@
+{% load utils %}
+<footer class="mt-2 pt-2 flex{% if detail %} border-t-2  border-bianca-600{% endif %}">
+    <div>
+        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
+        {% if t_entry.interaction_count %}
+            <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
+        {% endif %}
+        {% if user.is_authenticated %}
+            <a href="{{ edit_link }}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+        {% endif %}
+    </div>
+    {% if detail %}
+        {% if t_entry.t_location %}
+            {% include "public/fragments/meta_map.html" with t_location=t_entry.t_location %}
+        {% endif %}
+    {% endif %}
+</footer>

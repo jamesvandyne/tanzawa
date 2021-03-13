@@ -1,5 +1,6 @@
 from core.models import TimestampModel
 from django.db import models
+from django.contrib.gis.db import models as geo_models
 from indieweb.extract import LinkedPage, LinkedPageAuthor
 
 
@@ -80,3 +81,39 @@ class TBookmark(TimestampModel):
                 name=self.author, url=self.author_url, photo=self.author_photo
             ),
         )
+
+
+class TLocation(TimestampModel):
+    t_entry = models.OneToOneField(
+        TEntry, on_delete=models.CASCADE, related_name="t_location"
+    )
+    street_address = models.CharField(max_length=128, blank=True, default="")
+    locality = models.CharField(max_length=128, blank=True, default="")
+    region = models.CharField(max_length=64, blank=True, default="")
+    country_name = models.CharField(max_length=64, blank=True, default="")
+    postal_code = models.CharField(max_length=16, blank=True, default="")
+    point = geo_models.PointField(geography=True, srid=3857)
+
+    class Meta:
+        db_table = "t_location"
+
+    @property
+    def summary(self):
+        return (
+            ", ".join(filter(None, [self.locality, self.region, self.country_name]))
+            or f"{self.point.x},{self.point.y}"
+        )
+
+
+class TCheckin(TimestampModel):
+    t_entry = models.OneToOneField(
+        TEntry, on_delete=models.CASCADE, related_name="t_checkin"
+    )
+    t_location = models.OneToOneField(
+        TLocation, on_delete=models.CASCADE, related_name="t_checkin"
+    )
+    name = models.CharField(max_length=255)
+    url = models.URLField(blank=True, null=True)
+
+    class Meta:
+        db_table = "t_checkin"

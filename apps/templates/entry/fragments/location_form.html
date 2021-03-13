@@ -1,0 +1,15 @@
+{% with named_forms.location as location %}
+<div class="pt-2">
+    <details open>
+        <summary>Location</summary>
+        <div id="location" class="flex-col" data-controller="leaflet">
+            {% for hidden in location.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <div class="mt-2">
+                {{ location.point }}
+            </div>
+        </div>
+    </details>
+</div>
+{% endwith %}

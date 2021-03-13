@@ -1,6 +1,8 @@
 {% load humanize utils %}
 {% url 'public:post_detail' t_post.uuid as permalink %}
+{% url 'bookmark_edit' t_entry.pk as edit_link %}
 {% with t_entry.t_bookmark as t_bookmark %}
+
 <div class="flex-col h-entry">
     <header>
         {% if t_bookmark %}
@@ -17,6 +19,9 @@
             {% endifequal %}
             </time>
             {% include 'author/byline.html' with p_author=t_post.p_author %}
+            {% if t_entry.t_location %}
+                <span>in {{ t_entry.t_location.summary  }}</span>
+            {% endif %}
         </div>
     </header>
     <blockquote class="border-l-2 border-bianca-600 mt-4 mb-4 pl-2 max-w-prose">
@@ -25,14 +30,6 @@
     <main class="e-content mb-2 pt-2 content max-w-prose">
         {{ t_entry.e_content|safe }}
     </main>
-    <footer class="mt-2 pt-2{% if detail %} border-t-2  border-bianca-600{% endif %}">
-        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
-        {% if t_entry.interaction_count %}
-            <span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}
-        {% endif %}
-        {% if user.is_authenticated %}
-            <a href="{% url 'reply_edit' t_entry.pk %}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
-        {% endif %}
-    </footer>
+    {% include "public/fragments/post_footer.html" %}
 </div>
 {% endwith %}

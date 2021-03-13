@@ -1,0 +1,17 @@
+{% load i18n l10n %}
+<div id="{{ id }}_div_map">
+    <div id="{{ id }}_map"
+         class="h-80"
+         data-leaflet-target="map"
+         data-default-lon="{{ default_lon|unlocalize }}"
+         data-default-lat="{{ default_lat|unlocalize }}"
+         data-default-zoom="{{ default_zoom|unlocalize }}"></div>
+
+    <div class="flex mt-2">
+        {% if not disabled %}<button class="hidden outline-button text-xs" data-leaflet-target="reset" data-action="click->leaflet#reset">{% translate "Reset" %}</button>{% endif %}
+        {% if not disabled %}<button class="hidden px-3 py-1 text-negroni-800 text-xs mr-2" data-leaflet-target="remove" data-action="click->leaflet#removeLocation">{% translate "Remove Location" %}</button>{% endif %}
+        <span data-leaflet-target="summary" class="help-text ml-auto"></span>
+    </div>
+    {% if display_raw %}<p>{% translate "Debugging window (serialized value)" %}</p>{% endif %}
+    <textarea data-leaflet-target="serialize" id="{{ id }}" class="vSerializedField required hidden" cols="150" rows="10" name="{{ name }}">{{ serialized }}</textarea>
+</div>

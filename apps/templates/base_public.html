@@ -19,47 +19,52 @@
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
+    {% block head %}{% endblock %}
 </head>
 <body class="bg-bianca-500">
-    <div class="">
-        <header class="max-w mx-auto p-2">
+    <div class="min-h-screen flex flex-col">
+        <header class="p-2">
             {% block header %}
             <nav>
                 <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             </nav>
             {% endblock %}
         </header>
-        <div class="flex">
+        <div class="flex flex-grow">
             {% block content_wrapper  %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col">
                 <ul class="mb-2">
+                    <li class="{% if 'home' in selected %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     {% for stream in streams %}
-                        <li class="{% if stream.slug == selected %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                        <li class="{% if stream.slug in selected %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
                     {% endfor %}
-                    <!--<li class="selected w-28 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">💬</span><span>Status</span></a></li>-->
                 </ul>
             </nav>
-            <div class="w-11/12 flex flex-col ">
+            <div class="w-11/12 flex flex-col">
                 {% block content_before %}{% endblock %}
                 <div id="main-container" class="flex">
                     {% block content %}
-                        <main id="main" class="main w-9/12 p-2">
-                            <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
-                            {% block breadcrumbs %}{% endblock %}
-                            </nav>
-                              {% block main %}{% endblock %}
+                        <main id="main" class="main w-9/12 max-w-prose p-2">
+                            {% block breadcrumbs_block %}
+                                <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
+                                    {% block breadcrumbs %}{% endblock %}
+                                </nav>
+                            {% endblock %}
+                            {% block main %}{% endblock %}
                         </main>
-                        <section id="meta" class="meta w-3/12 h-screen p-2">
+                        <section id="meta" class="meta w-3/12 p-2">
                             {% block meta %}{% endblock %}
                         </section>
                     {% endblock  %}
                 </div>
                 {% block content_after %}
-                    <span class="mx-auto text-sm">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
                 {% endblock %}
             </div>
             {% endblock %}
         </div>
+        <footer class="w-full text-center">
+            <span class="help-text">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
+        </footer>
     </div>
 </body>
 </html>

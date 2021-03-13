@@ -81,16 +81,6 @@ class TestVerifyIndieAuthToken:
             "scope": "create update",
         }
 
-    def test_valid(self, target, client, t_token_access, auth_token, client_id):
-        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
-        response = client.get(target)
-        assert response.status_code == 200
-        assert response.json() == {
-            "me": f"/author/{t_token_access.user.username}/",
-            "client_id": client_id,
-            "scope": "create update",
-        }
-
     def test_no_header(self, target, client):
         response = client.get(target)
         assert response.status_code == 400

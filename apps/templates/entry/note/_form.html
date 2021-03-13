@@ -1,5 +1,8 @@
 <form  id="note" method="POST" class="flex-col" data-turbo="false">
     {{ form.errors }}
+    {% for named_form in named_forms %}
+        {{ named_form.errors }}
+    {% endfor %}
     <span class="font-serif">
     {% csrf_token %}
     {{ form.e_content }}
@@ -10,4 +13,5 @@
             {{ form.streams }}
         </div>
     </div>
+    {% include "entry/fragments/location_form.html" %}
 </form>

@@ -12,7 +12,7 @@
     </div>
     <div class="pt-2">
         {{ form.summary.label }}
-        <span class="block text-xs text-bianca-800">{{ form.summary.help_text }}</span>
+        <span class="block help-text">{{ form.summary.help_text }}</span>
         {{ form.summary }}
     </div>
     <div class="pt-2">
@@ -28,4 +28,5 @@
             {{ form.streams }}
         </div>
     </div>
+    {% include "entry/fragments/location_form.html" %}
 </form>

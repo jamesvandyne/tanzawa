@@ -3,6 +3,7 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from django import forms
 from django.db import transaction
+from django.contrib.gis.forms import OSMWidget, PointField
 from django.utils.timezone import now
 from files.models import TFile
 from files.utils import extract_uuid_from_url
@@ -13,7 +14,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply, TBookmark
+from .models import TEntry, TReply, TBookmark, TLocation
 
 
 class TCharField(forms.CharField):
@@ -354,3 +355,41 @@ class UpdateBookmarkForm(UpdateStatusForm):
         t_entry = super().save()
         self.t_bookmark.save()
         return t_entry
+
+
+class LeafletWidget(OSMWidget):
+    template_name = "gis/leaflet.html"
+    default_zoom = 5
+    default_lat = 35.45416667
+    default_lon = 139.16333333
+
+
+class TLocationModelForm(forms.ModelForm):
+    point = PointField(widget=LeafletWidget, required=False)
+
+    class Meta:
+        model = TLocation
+        exclude = ("created_at", "updated_at", "t_entry")
+        widgets = {
+            "street_address": forms.HiddenInput(
+                {"data-leaflet-target": "streetAddress"}
+            ),
+            "locality": forms.HiddenInput({"data-leaflet-target": "locality"}),
+            "region": forms.HiddenInput({"data-leaflet-target": "region"}),
+            "country_name": forms.HiddenInput({"data-leaflet-target": "country"}),
+            "postal_code": forms.HiddenInput({"data-leaflet-target": "postalCode"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def prepare_data(self, t_entry: TEntry):
+        self.instance.t_entry = t_entry
+
+    def save(self, commit=True):
+        if self.cleaned_data["point"]:
+            super().save(commit=commit)
+        elif self.instance.pk:
+            # TLocation.point is non-nullable, so must be deleted if a user unsets the location
+            self.instance.delete()
+        return self.instance

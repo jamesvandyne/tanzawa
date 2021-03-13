@@ -43,6 +43,10 @@ main.content a, .trix-content a, #messages a {
     @apply rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border;
 }
 
+.outline-button {
+    @apply rounded border-negroni-900 text-negroni-800 border px-3 py-1;
+}
+
 .input-field {
     @apply appearance-none border border-bianca-800 w-full py-2 px-3 leading-tight focus:outline-none focus:ring-0;
     border-radius: 3px;
@@ -50,6 +54,10 @@ main.content a, .trix-content a, #messages a {
 
 .trix-content {
     @apply focus:ring-0 focus:outline-none;
+}
+
+.help-text {
+    @apply text-xs text-bianca-800;
 }
 
 details.button-summary {

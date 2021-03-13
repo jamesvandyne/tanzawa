@@ -1,5 +1,7 @@
+from typing import Dict, Any
+
 import pytest
-from entry.models import TEntry, TReply
+from entry.models import TEntry, TReply, TBookmark, TLocation
 from unittest.mock import Mock
 from post.models import TPost
 
@@ -280,3 +282,136 @@ class TestMicropub:
         )
 
         mock_extract_reply.assert_called_once()
+
+    def test_post_bookmark_form(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        mock_extract_reply,
+    ):
+        data = {
+            "h": ["entry"],
+            "access_token": [auth_token],
+            "content": [
+                "This is a test a book from quill so I can add replies to micropub!"
+            ],
+            "bookmark-of": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
+            "category": ["bookmarks"],
+        }
+
+        response = client.post(target, data=data)
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "bookmark"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary.startswith(data["content"][0])
+
+        t_bookmark: TBookmark = t_entry.t_bookmark
+
+        assert t_bookmark.u_bookmark_of == data["bookmark-of"][0]
+        assert t_bookmark.author == "James"
+        assert t_bookmark.title == "The Week #34"
+        assert (
+            t_bookmark.quote
+            == "I forget what I was searching for but I found this fantastic blog"
+        )
+
+        mock_extract_reply.assert_called_once()
+
+    @pytest.fixture
+    def entry_with_location(self) -> Dict[str, Any]:
+        return {
+            "type": ["h-entry"],
+            "properties": {
+                "published": ["2021-01-02T13:57:54+09:00"],
+                "syndication": [
+                    "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
+                ],
+                "content": ["\u98fd\u304d\u306a\u3044\u306a\u3041\u30fc"],
+                "photo": [
+                    "https://fastly.4sqi.net/img/general/original/89277993_vrz-_zxqAWoYCNJFnaaDWHpyAD7cJUPojCwRzTDJewE.jpg"
+                ],
+                "category": ["check-in"],
+                "location": [
+                    {
+                        "type": ["h-adr"],
+                        "properties": {
+                            "latitude": [35.31593281000502],
+                            "longitude": [139.4700015160363],
+                            "street-address": ["\u9d60\u6cbc\u6d77\u5cb8"],
+                            "locality": ["Fujisawa"],
+                            "region": ["Kanagawa"],
+                            "country-name": ["Japan"],
+                            "postal-code": ["251-0037"],
+                        },
+                    }
+                ],
+            },
+        }
+
+    @pytest.fixture
+    def checkin_entry(self, entry_with_location):
+        entry_with_location.update(
+            {
+                "checkin": [
+                    {
+                        "type": ["h-card"],
+                        "properties": {
+                            "name": ["Kugenuma Beach (\u9d60\u6cbc\u6d77\u5cb8)"],
+                            "url": [
+                                "https://foursquare.com/v/4bf726e25ec320a1e18a86d3"
+                            ],
+                            "latitude": [35.31593281000502],
+                            "longitude": [139.4700015160363],
+                            "street-address": ["\u9d60\u6cbc\u6d77\u5cb8"],
+                            "locality": ["Fujisawa"],
+                            "region": ["Kanagawa"],
+                            "country-name": ["Japan"],
+                            "postal-code": ["251-0037"],
+                        },
+                        "value": "https://foursquare.com/v/4bf726e25ec320a1e18a86d3",
+                    }
+                ]
+            }
+        )
+        return entry_with_location
+
+    def test_post_with_location(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        entry_with_location,
+    ):
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+        response = client.post(target, data=entry_with_location, format="json")
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "note"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary.startswith(
+            entry_with_location["properties"]["content"][0]
+        )
+
+        t_location: TLocation = t_entry.t_location
+        assert t_location.street_address == "鵠沼海岸"
+        assert t_location.country_name == "Japan"
+        assert t_location.postal_code == "251-0037"
+        assert t_location.locality == "Fujisawa"
+        assert t_location.point.x == 35.31593281000502
+        assert t_location.point.y == 139.4700015160363

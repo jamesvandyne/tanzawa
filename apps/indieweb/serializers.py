@@ -10,6 +10,7 @@ from streams.models import MStream
 from . import constants
 from .models import TToken
 from .extract import extract_reply_details_from_url
+from .location import get_location
 
 
 class ContentField(serializers.Field):
@@ -21,6 +22,23 @@ class ContentField(serializers.Field):
             return data
         value = " \n".join(c if isinstance(c, str) else c["html"] for c in data)
         return value
+
+
+class LocationField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        if isinstance(data, list):
+            if isinstance(data[0], str):
+                # lat/long only form data
+                location = get_location({"properties": {"geo": data}})
+            else:
+                # already microformatted
+                location = get_location(data[0])
+        else:
+            location = get_location(data)
+        return location
 
 
 class FlattenedStringField(serializers.Field):
@@ -38,6 +56,21 @@ class EContentSerializer(serializers.Serializer):
     html = serializers.CharField(required=True)
 
 
+class LocationSerializer(serializers.Serializer):
+    street_address = serializers.CharField(max_length=128, required=False)
+    locality = serializers.CharField(max_length=128, required=False, default="")
+    region = serializers.CharField(max_length=64, required=False, default="")
+    country_name = serializers.CharField(max_length=64, required=False, default="")
+    postal_code = serializers.CharField(max_length=16, required=False, default="")
+    longitude = serializers.FloatField(required=False)
+    latitude = serializers.FloatField(required=False)
+
+    def validate(self, data):
+        if "longitude" in data and "latitude" in data:
+            pass
+        return data
+
+
 class HEntryPropertiesSerializer(serializers.Serializer):
 
     name = FlattenedStringField(required=False)
@@ -49,26 +82,36 @@ class HEntryPropertiesSerializer(serializers.Serializer):
         MStream.objects, read_only=True, required=False
     )
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
+    bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
+    location = LocationField(required=False)
+
+    def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
+        linked_page = extract_reply_details_from_url(url)
+        link_dict = {
+            url_key: url,
+            "title": url,
+            "author": "",
+            "summary": "",
+        }
+        if linked_page:
+            link_dict.update(
+                {
+                    url_key: linked_page.url,
+                    "title": linked_page.title,
+                    "author": linked_page.author.name,
+                    "summary": linked_page.description,
+                }
+            )
+        return link_dict
 
     def validate_in_reply_to(self, value: str) -> Optional[Dict[str, str]]:
         if value:
-            linked_page = extract_reply_details_from_url(value)
-            reply = {
-                "u_in_reply_to": value,
-                "title": value,
-                "author": "",
-                "summary": "",
-            }
-            if linked_page:
-                reply.update(
-                    {
-                        "u_in_reply_to": linked_page.url,
-                        "title": linked_page.title,
-                        "author": linked_page.author.name,
-                        "summary": linked_page.description,
-                    }
-                )
-            return reply
+            return self._get_linked_page(value, "u_in_reply_to")
+        return None
+
+    def validate_bookmark_of(self, value: str) -> Optional[Dict[str, str]]:
+        if value:
+            return self._get_linked_page(value, "u_bookmark_of")
         return None
 
     def validate(self, data):

@@ -9,6 +9,11 @@
 
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link href="{% static 'trix/trix.css' %}" rel="stylesheet">
+    <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"
+    />
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint">
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">

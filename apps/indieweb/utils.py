@@ -97,7 +97,7 @@ def interpret_comment(
 
 def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
     attachments = []
-    for img in soup.select("img[src^=data\:]"):
+    for img in soup.select(r"img[src^=data\:]"):
         data = IMG_DATA_PATTERN.match(img["src"])
         if data:
             attachments.append(DataImage(tag=img, **data.groupdict()))
