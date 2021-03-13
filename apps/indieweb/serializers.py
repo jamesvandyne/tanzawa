@@ -29,10 +29,13 @@ class LocationField(serializers.Field):
         return value
 
     def to_internal_value(self, data):
-        location = None
         if isinstance(data, list):
             if isinstance(data[0], str):
+                # lat/long only form data
                 location = get_location({"properties": {"geo": data}})
+            else:
+                # already microformatted
+                location = get_location(data[0])
         else:
             location = get_location(data)
         return location
@@ -61,6 +64,11 @@ class LocationSerializer(serializers.Serializer):
     postal_code = serializers.CharField(max_length=16, required=False, default="")
     longitude = serializers.FloatField(required=False)
     latitude = serializers.FloatField(required=False)
+
+    def validate(self, data):
+        if "longitude" in data and "latitude" in data:
+            pass
+        return data
 
 
 class HEntryPropertiesSerializer(serializers.Serializer):

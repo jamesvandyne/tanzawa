@@ -1,3 +1,4 @@
+import json
 from typing import Dict, Any
 import logging
 from bs4 import BeautifulSoup
@@ -12,6 +13,7 @@ from entry.forms import (
     CreateArticleForm,
     CreateReplyForm,
     CreateBookmarkForm,
+    TLocationModelForm
 )
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -124,6 +126,7 @@ def micropub(request):
     # TODO: Download any 'photo' urls
 
     # Create entry form data
+    named_forms = {}
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
@@ -143,6 +146,26 @@ def micropub(request):
         linked_page = serializer.validated_data["properties"].get("bookmark_of")
         # adds u_in_reply_to, title, author, summary fields
         form_data.update(linked_page)
+
+    if serializer.validated_data["properties"].get("location"):
+        location = serializer.validated_data["properties"]["location"]
+        location_form_data = {
+            "street_address": location["location"].get("street_address", ""),
+            "locality": location["location"].get("locality", ""),
+            "region": location["location"].get("region", ""),
+            "country_name": location["location"].get("country_name", ""),
+            "postal_code": location["location"].get("postal_code", ""),
+            "point": json.dumps(
+                {
+                    "type": "Point",
+                    "coordinates": [
+                        float(location["location"]["latitude"]),
+                        float(location["location"]["longitude"]),
+                    ],
+                }
+            ),
+        }
+        named_forms["location"] = TLocationModelForm(data=location_form_data)
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -177,9 +200,15 @@ def micropub(request):
         data=form_data, p_author=serializer.validated_data["access_token"].user
     )
 
-    if form.is_valid():
+    if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
-        entry = form.save()
+
+        with transaction.atomic():
+            entry = form.save()
+
+            for named_form in named_forms.values():
+                named_form.prepare_data(entry)
+                named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             send_webmention(request, entry.t_post, entry.e_content)
@@ -189,7 +218,9 @@ def micropub(request):
             entry.t_post.get_absolute_url()
         )
         return response
-    return Response(data=form.errors, status=status.HTTP_400_BAD_REQUEST)
+    named_forms["entry"] = form
+    response = {key: value.errors.as_json() for key, value in named_forms.items()}
+    return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
 
 
 @login_required

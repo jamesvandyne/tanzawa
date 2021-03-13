@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import pytest
 from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
 from unittest.mock import Mock
@@ -326,7 +328,7 @@ class TestMicropub:
         mock_extract_reply.assert_called_once()
 
     @pytest.fixture
-    def entry_with_location(self):
+    def entry_with_location(self) -> Dict[str, Any]:
         return {
             "type": ["h-entry"],
             "properties": {
@@ -412,7 +414,8 @@ class TestMicropub:
         assert t_location.country_name == "Japan"
         assert t_location.postal_code == "251-0037"
         assert t_location.locality == "Fujisawa"
-        assert t_location.point == Point(139.4700015160363, 35.31593281000502)
+        assert t_location.point.x == 35.31593281000502
+        assert t_location.point.y == 139.4700015160363
         # "latitude": [35.31593281000502],
         # "longitude": [139.4700015160363],
         # "street-address": ["\u9d60\u6cbc\u6d77\u5cb8"],
