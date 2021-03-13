@@ -184,6 +184,13 @@ class ExtractLinkedPageMetaView(FormView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(nav="posts", **kwargs)
 
+    def get_named_forms(self):
+        return {
+            "location": forms.TLocationModelForm(
+                self.request.POST or None, prefix="location"
+            )
+        }
+
     def form_valid(self, form):
         linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
         initial = {
@@ -202,7 +209,7 @@ class ExtractLinkedPageMetaView(FormView):
                 }
             )
         context = self.get_context_data(
-            form=self.success_form(initial=initial, p_author=self.request.user),
+            form=self.success_form(initial=initial, p_author=self.request.user), named_forms=self.get_named_forms(),
         )
         return (
             TurboFrame(self.turbo_frame)
@@ -259,9 +266,6 @@ class CreateReplyView(CreateEntryView):
     template_name = "entry/reply/create.html"
     redirect_url = "reply_edit"
 
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(nav="posts", **kwargs)
-
     def get_form_class(self):
         if self.request.method == "GET":
             return forms.ExtractMetaForm
@@ -298,9 +302,6 @@ class UpdateReplyView(UpdateEntryView):
 class CreateBookmarkView(CreateEntryView):
     template_name = "entry/bookmark/create.html"
     redirect_url = "bookmark_edit"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(nav="posts", **kwargs)
 
     def get_form_class(self):
         if self.request.method == "GET":
