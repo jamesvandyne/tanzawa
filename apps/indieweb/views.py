@@ -124,7 +124,6 @@ def micropub(request):
                 data={"message": "Error uploading files"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-    # TODO: Download any 'photo' urls
 
     # Create entry form data
     named_forms = {}
@@ -169,9 +168,14 @@ def micropub(request):
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
 
     embedded_images = extract_base64_images(soup)
-    for image in embedded_images:
+    photo_fields = serializer.validated_data["properties"].get("photo", [])
+    for image in embedded_images + photo_fields:
         tag = save_and_get_tag(request, image)
         if not tag:
+            continue
+        # photo attachment
+        if not image.tag:
+            soup.append(tag)
             continue
         # Replace in e_content
         if image.tag.parent.name == "figure":

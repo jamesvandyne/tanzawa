@@ -1,11 +1,12 @@
 import json
 import re
+import requests
 from dataclasses import dataclass
 from itertools import chain
 import logging
 from PIL import Image
 from bs4.element import Tag
-from typing import List, Optional
+from typing import List, Optional, Union
 import base64
 from django.template.loader import render_to_string
 from bs4 import BeautifulSoup
@@ -30,14 +31,16 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DataImage:
-    image_data: str  # encoded data
+    image_data: Union[str, bytes]  # encoded data
     mime_type: str  # image/png
     encoding: str  # base64
-    tag: Tag  # original img tag
+    tag: Optional[Tag]  # original img tag
 
     def decode(self) -> Optional[bytes]:
         if self.encoding == "base64":
             return base64.b64decode(self.image_data)
+        elif self.encoding == "none":
+            return self.image_data
         else:
             logger.info("Unknown encoding. Unable decode image")
         return None
@@ -102,6 +105,18 @@ def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
         if data:
             attachments.append(DataImage(tag=img, **data.groupdict()))
     return attachments
+
+
+def download_image(url: str) -> Optional[DataImage]:
+    response = requests.get(url)
+    if response.status_code == 200:
+        return DataImage(
+            image_data=response.content,
+            mime_type=response.headers["Content-Type"],
+            encoding="none",
+            tag=None
+        )
+    return None
 
 
 def save_and_get_tag(request, image: DataImage) -> Optional[BeautifulSoup]:

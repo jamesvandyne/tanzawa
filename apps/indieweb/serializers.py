@@ -11,6 +11,7 @@ from . import constants
 from .models import TToken
 from .extract import extract_reply_details_from_url
 from .location import get_location
+from .utils import download_image, DataImage
 
 
 class ContentField(serializers.Field):
@@ -66,6 +67,17 @@ class FlattenedStringField(serializers.Field):
         return value
 
 
+class PhotoField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data: str) -> DataImage:
+        image = download_image(data)
+        if not image:
+            raise serializers.ValidationError("Unable to download photo at %s", data)
+        return image
+
+
 class EContentSerializer(serializers.Serializer):
     html = serializers.CharField(required=True)
 
@@ -77,6 +89,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     category = serializers.ListSerializer(
         child=serializers.CharField(), required=False, write_only=True
     )
+    photo = serializers.ListSerializer(child=PhotoField(required=False), required=False)
     streams = serializers.ModelSerializer(
         MStream.objects, read_only=True, required=False
     )
