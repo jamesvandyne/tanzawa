@@ -1,0 +1,27 @@
+{% load humanize utils %}
+{% url 'public:post_detail' t_post.uuid as permalink %}
+{% url 'article_edit' t_entry.pk as edit_link %}
+{% with t_entry.t_checkin as t_checkin %}
+<div class="flex-col h-entry">
+    <header>
+        <h1 class="p-name text-2xl"><a href="{{ permalink }}">Checkin to {{ t_checkin.name }}</a></h1>
+        <div>
+            <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
+            {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
+                {{ t_post.dt_published|naturaltime }}
+            {% else %}
+                {{ t_post.dt_published|date:"M d, Y" }}
+            {% endifequal %}
+            </time>
+            {% include 'author/byline.html' with p_author=t_post.p_author %}
+            {% if t_entry.t_location %}
+                <span>in {{ t_entry.t_location.summary  }}</span>
+            {% endif %}
+        </div>
+    </header>
+    <main class="e-content mb-2 pt-2 content max-w-prose">
+        {{ t_entry.e_content|safe }}
+    </main>
+    {% include "public/fragments/post_footer.html" %}
+</div>
+{% endwith %}
