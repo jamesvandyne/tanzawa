@@ -8,10 +8,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from entry.forms import (
-    CreateStatusForm,
     CreateArticleForm,
-    CreateReplyForm,
     CreateBookmarkForm,
+    CreateCheckinForm,
+    CreateReplyForm,
+    CreateStatusForm,
+    TCheckinModelForm,
     TLocationModelForm,
 )
 from rest_framework import status
@@ -146,6 +148,7 @@ def micropub(request):
         # adds u_in_reply_to, title, author, summary fields
         form_data.update(linked_page)
 
+    # Process related content
     if serializer.validated_data["properties"].get("location"):
         location = serializer.validated_data["properties"]["location"]
         location_form_data = {
@@ -157,6 +160,10 @@ def micropub(request):
             "point": location_to_pointfield_input(location),
         }
         named_forms["location"] = TLocationModelForm(data=location_form_data)
+    if serializer.validated_data["properties"].get("checkin"):
+        named_forms["checkin"] = TCheckinModelForm(
+            data=serializer.validated_data["properties"].get("checkin")
+        )
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -186,6 +193,8 @@ def micropub(request):
         form_class = CreateReplyForm
     if form_data.get("u_bookmark_of"):
         form_class = CreateBookmarkForm
+    if named_forms.get("checkin"):
+        form_class = CreateCheckinForm
 
     form = form_class(
         data=form_data, p_author=serializer.validated_data["access_token"].user

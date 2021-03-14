@@ -1,7 +1,7 @@
 from typing import Dict, Any
 
 import pytest
-from entry.models import TEntry, TReply, TBookmark, TLocation
+from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
 from unittest.mock import Mock
 from post.models import TPost
 
@@ -359,7 +359,7 @@ class TestMicropub:
 
     @pytest.fixture
     def checkin_entry(self, entry_with_location):
-        entry_with_location.update(
+        entry_with_location["properties"].update(
             {
                 "checkin": [
                     {
@@ -404,9 +404,8 @@ class TestMicropub:
         assert t_post.m_post_kind.key == "note"
         assert t_post.m_post_status.key == "published"
 
-        assert t_entry.p_summary.startswith(
-            entry_with_location["properties"]["content"][0]
-        )
+        assert t_entry.p_summary == "飽きないなぁー"
+        assert t_entry.e_content == "飽きないなぁー"
 
         t_location: TLocation = t_entry.t_location
         assert t_location.street_address == "鵠沼海岸"
@@ -415,3 +414,40 @@ class TestMicropub:
         assert t_location.locality == "Fujisawa"
         assert t_location.point.x == 35.31593281000502
         assert t_location.point.y == 139.4700015160363
+
+    def test_post_with_checkin(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        checkin_entry,
+    ):
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+        response = client.post(target, data=checkin_entry, format="json")
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "checkin"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary == "飽きないなぁー"
+        assert t_entry.e_content == "飽きないなぁー"
+
+        t_location: TLocation = t_entry.t_location
+        assert t_location.street_address == "鵠沼海岸"
+        assert t_location.country_name == "Japan"
+        assert t_location.postal_code == "251-0037"
+        assert t_location.locality == "Fujisawa"
+        assert t_location.point.x == 35.31593281000502
+        assert t_location.point.y == 139.4700015160363
+
+        t_checkin: TCheckin = t_entry.t_checkin
+
+        assert t_checkin.t_location == t_location
+        assert t_checkin.url == "https://foursquare.com/v/4bf726e25ec320a1e18a86d3"
+        assert t_checkin.name == "Kugenuma Beach (鵠沼海岸)"

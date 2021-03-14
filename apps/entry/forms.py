@@ -14,7 +14,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply, TBookmark, TLocation
+from .models import TEntry, TReply, TBookmark, TLocation, TCheckin
 
 
 class TCharField(forms.CharField):
@@ -102,6 +102,14 @@ class CreateStatusForm(forms.ModelForm):
 
 class CreateArticleForm(CreateStatusForm):
     m_post_kind = MPostKinds.article
+
+    class Meta:
+        model = TEntry
+        fields = ("p_name", "e_content")
+
+
+class CreateCheckinForm(CreateStatusForm):
+    m_post_kind = MPostKinds.checkin
 
     class Meta:
         model = TEntry
@@ -393,3 +401,13 @@ class TLocationModelForm(forms.ModelForm):
             # TLocation.point is non-nullable, so must be deleted if a user unsets the location
             self.instance.delete()
         return self.instance
+
+
+class TCheckinModelForm(forms.ModelForm):
+    class Meta:
+        model = TCheckin
+        fields = ("url", "name")
+
+    def prepare_data(self, t_entry: TEntry):
+        self.instance.t_entry = t_entry
+        self.instance.t_location = t_entry.t_location
