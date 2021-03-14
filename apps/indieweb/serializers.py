@@ -11,6 +11,7 @@ from . import constants
 from .models import TToken
 from .extract import extract_reply_details_from_url
 from .location import get_location
+from .utils import download_image, DataImage
 
 
 class ContentField(serializers.Field):
@@ -41,6 +42,20 @@ class LocationField(serializers.Field):
         return location
 
 
+class CheckinField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data):
+        if isinstance(data, list):
+            return {
+                "name": data[0].get("properties", {}).get("name", [""])[0],
+                "url": data[0].get("properties", {}).get("url", [""])[0],
+                "location": data[0].get("location"),
+            }
+        return data
+
+
 class FlattenedStringField(serializers.Field):
     def to_representation(self, value):
         return value
@@ -52,23 +67,19 @@ class FlattenedStringField(serializers.Field):
         return value
 
 
+class PhotoField(serializers.Field):
+    def to_representation(self, value):
+        return value
+
+    def to_internal_value(self, data: str) -> DataImage:
+        image = download_image(data)
+        if not image:
+            raise serializers.ValidationError("Unable to download photo at %s", data)
+        return image
+
+
 class EContentSerializer(serializers.Serializer):
     html = serializers.CharField(required=True)
-
-
-class LocationSerializer(serializers.Serializer):
-    street_address = serializers.CharField(max_length=128, required=False)
-    locality = serializers.CharField(max_length=128, required=False, default="")
-    region = serializers.CharField(max_length=64, required=False, default="")
-    country_name = serializers.CharField(max_length=64, required=False, default="")
-    postal_code = serializers.CharField(max_length=16, required=False, default="")
-    longitude = serializers.FloatField(required=False)
-    latitude = serializers.FloatField(required=False)
-
-    def validate(self, data):
-        if "longitude" in data and "latitude" in data:
-            pass
-        return data
 
 
 class HEntryPropertiesSerializer(serializers.Serializer):
@@ -78,12 +89,14 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     category = serializers.ListSerializer(
         child=serializers.CharField(), required=False, write_only=True
     )
+    photo = serializers.ListSerializer(child=PhotoField(required=False), required=False)
     streams = serializers.ModelSerializer(
         MStream.objects, read_only=True, required=False
     )
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
     bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
     location = LocationField(required=False)
+    checkin = CheckinField(required=False)
 
     def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
         linked_page = extract_reply_details_from_url(url)

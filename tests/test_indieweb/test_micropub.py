@@ -1,7 +1,8 @@
 from typing import Dict, Any
+from unittest.mock import Mock
 
 import pytest
-from entry.models import TEntry, TReply, TBookmark, TLocation
+from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
 from unittest.mock import Mock
 from post.models import TPost
 
@@ -359,7 +360,7 @@ class TestMicropub:
 
     @pytest.fixture
     def checkin_entry(self, entry_with_location):
-        entry_with_location.update(
+        entry_with_location["properties"].update(
             {
                 "checkin": [
                     {
@@ -393,6 +394,7 @@ class TestMicropub:
         client_id,
         mock_send_webmention,
         entry_with_location,
+        download_image_mock,
     ):
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
         response = client.post(target, data=entry_with_location, format="json")
@@ -404,9 +406,9 @@ class TestMicropub:
         assert t_post.m_post_kind.key == "note"
         assert t_post.m_post_status.key == "published"
 
-        assert t_entry.p_summary.startswith(
-            entry_with_location["properties"]["content"][0]
-        )
+        assert t_entry.p_summary == "飽きないなぁー"
+        assert "飽きないなぁー" in t_entry.e_content
+        assert "<figure" in t_entry.e_content
 
         t_location: TLocation = t_entry.t_location
         assert t_location.street_address == "鵠沼海岸"
@@ -415,3 +417,62 @@ class TestMicropub:
         assert t_location.locality == "Fujisawa"
         assert t_location.point.x == 35.31593281000502
         assert t_location.point.y == 139.4700015160363
+
+        download_image_mock.assert_called_with(entry_with_location["properties"]["photo"][0])
+
+    @pytest.fixture
+    def download_image_mock(self, monkeypatch):
+        from indieweb.utils import download_image, DataImage
+        m = Mock(download_image, autospec=True)
+        with open("tests/fixtures/1px.png", "rb") as photo:
+            m.return_value = DataImage(
+                image_data=photo.read(),
+                mime_type="image/png",
+                encoding="none",
+                tag=None
+            )
+        monkeypatch.setattr("indieweb.serializers.download_image", m)
+        return m
+
+    def test_post_with_checkin(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        mock_send_webmention,
+        checkin_entry,
+        download_image_mock,
+    ):
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+        response = client.post(target, data=checkin_entry, format="json")
+        assert response.status_code == 201
+
+        t_entry = TEntry.objects.last()
+        t_post: TPost = t_entry.t_post
+
+        assert t_post.m_post_kind.key == "checkin"
+        assert t_post.m_post_status.key == "published"
+
+        assert t_entry.p_summary == "飽きないなぁー"
+        assert "飽きないなぁー" in t_entry.e_content
+        assert "<figure" in t_entry.e_content
+
+        t_location: TLocation = t_entry.t_location
+        assert t_location.street_address == "鵠沼海岸"
+        assert t_location.country_name == "Japan"
+        assert t_location.postal_code == "251-0037"
+        assert t_location.locality == "Fujisawa"
+        assert t_location.point.x == 35.31593281000502
+        assert t_location.point.y == 139.4700015160363
+
+        t_checkin: TCheckin = t_entry.t_checkin
+
+        assert t_checkin.t_location == t_location
+        assert t_checkin.url == "https://foursquare.com/v/4bf726e25ec320a1e18a86d3"
+        assert t_checkin.name == "Kugenuma Beach (鵠沼海岸)"
+
+        assert t_post.files.count() == 1
+
+        download_image_mock.assert_called_with(checkin_entry["properties"]["photo"][0])

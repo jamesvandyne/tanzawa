@@ -16,6 +16,8 @@
                 {% include "public/entry/reply_item.html" with t_post=t_entry.t_post t_reply=t_entry.t_reply %}
             {% elif t_entry.t_post.m_post_kind.key == 'bookmark' %}
                 {% include "public/entry/bookmark_item.html" with t_post=t_entry.t_post t_bookmark=t_entry.t_bookmark %}
+            {% elif t_entry.t_post.m_post_kind.key == 'checkin' %}
+                {% include "public/entry/checkin_item.html" with t_post=t_entry.t_post t_checkin=t_entry.t_checkin %}
             {%endif  %}
         </li>
     {% endfor %}
