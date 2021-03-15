@@ -36,6 +36,7 @@ class CreateStatusForm(forms.ModelForm):
         label="Which streams should this appear in?",
         required=False,
     )
+    dt_published = forms.DateTimeField(required=False, widget=forms.HiddenInput)
 
     m_post_kind = MPostKinds.note
 
@@ -78,7 +79,7 @@ class CreateStatusForm(forms.ModelForm):
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
-            dt_published=n
+            dt_published=self.cleaned_data.get("dt_published", n)
             if self.cleaned_data["m_post_status"].key == MPostStatuses.published
             else None,
             dt_updated=n,

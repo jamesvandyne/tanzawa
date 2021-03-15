@@ -114,7 +114,7 @@ def download_image(url: str) -> Optional[DataImage]:
             image_data=response.content,
             mime_type=response.headers["Content-Type"],
             encoding="none",
-            tag=None
+            tag=None,
         )
     return None
 

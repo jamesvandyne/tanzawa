@@ -127,6 +127,7 @@ def micropub(request):
 
     # Create entry form data
     named_forms = {}
+    dt_published = serializer.validated_data["properties"].get("published", None)
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
@@ -134,6 +135,7 @@ def micropub(request):
             props.get("post-status", [])
             or MPostStatuses.published  # pull this data from serialier
         ),
+        "dt_published": dt_published[0].isoformat() if dt_published else None,
         "streams": serializer.validated_data["properties"]["streams"].values_list(
             "pk", flat=True
         ),
