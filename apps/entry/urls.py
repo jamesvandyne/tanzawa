@@ -29,6 +29,9 @@ urlpatterns = [
         name="bookmark_meta",
     ),
     path(
+        "checkin/<int:pk>/edit/", views.UpdateCheckinView.as_view(), name="checkin_edit"
+    ),
+    path(
         "posts/",
         views.TEntryListView.as_view(),
         name="posts",

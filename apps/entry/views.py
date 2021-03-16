@@ -260,6 +260,29 @@ class UpdateArticleView(UpdateEntryView):
     autofocus = "p_name"
 
 
+# Checkin CRUD views
+
+# Checkin Create is done via micropub
+
+
+class UpdateCheckinView(UpdateEntryView):
+    form_class = forms.UpdateCheckinForm
+    template_name = "entry/checkin/update.html"
+    m_post_kind = MPostKinds.checkin
+    autofocus = "p_name"
+
+    def get_named_forms(self):
+        named_forms = super().get_named_forms()
+        try:
+            t_checkin = self.object.t_checkin
+        except models.TCheckin.DoesNotExist:
+            t_checkin = None
+        named_forms["checkin"] = forms.TCheckinModelForm(
+            self.request.POST or None, instance=t_checkin, prefix="checkin"
+        )
+        return named_forms
+
+
 # Reply CRUD views
 
 
@@ -424,5 +447,7 @@ def edit_post(request, pk: int):
         return redirect(reverse("reply_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.bookmark:
         return redirect(reverse("bookmark_edit", args=[pk]))
+    elif t_entry.t_post.m_post_kind.key == MPostKinds.checkin:
+        return redirect(reverse("checkin_edit", args=[pk]))
     messages.error(request, "Unknown post type")
     return redirect(resolve_url("posts"))

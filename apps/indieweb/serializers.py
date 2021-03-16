@@ -96,6 +96,9 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     published = serializers.ListSerializer(
         child=serializers.DateTimeField(), required=False
     )
+    syndication = serializers.ListSerializer(
+        child=serializers.URLField(), required=False
+    )
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
     bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
     location = LocationField(required=False)

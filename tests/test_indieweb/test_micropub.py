@@ -481,3 +481,12 @@ class TestMicropub:
         assert t_post.files.count() == 1
 
         download_image_mock.assert_called_with(checkin_entry["properties"]["photo"][0])
+
+        assert t_entry.t_syndication.count() == 1
+
+        t_syndication = t_entry.t_syndication.first()
+
+        assert (
+            t_syndication.url
+            == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
+        )

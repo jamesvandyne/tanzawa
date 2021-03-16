@@ -117,3 +117,14 @@ class TCheckin(TimestampModel):
 
     class Meta:
         db_table = "t_checkin"
+
+
+class TSyndication(TimestampModel):
+    t_entry = models.ForeignKey(
+        TEntry, on_delete=models.CASCADE, related_name="t_syndication"
+    )
+    url = models.URLField()
+
+    class Meta:
+        db_table = "t_syndication"
+        unique_together = ["t_entry", "url"]

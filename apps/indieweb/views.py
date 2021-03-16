@@ -15,6 +15,7 @@ from entry.forms import (
     CreateStatusForm,
     TCheckinModelForm,
     TLocationModelForm,
+    TSyndicationModelForm,
 )
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -51,7 +52,6 @@ def form_to_mf2(request):
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
     mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
-    # location = get_location(mf)
     return normalize_properties_to_underscore(mf)
 
 
@@ -165,6 +165,13 @@ def micropub(request):
         named_forms["checkin"] = TCheckinModelForm(
             data=serializer.validated_data["properties"].get("checkin")
         )
+    if serializer.validated_data["properties"].get("syndication"):
+        for idx, syndication_url in enumerate(
+            serializer.validated_data["properties"]["syndication"]
+        ):
+            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
+                data={"url": syndication_url}
+            )
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")

@@ -14,7 +14,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply, TBookmark, TLocation, TCheckin
+from .models import TEntry, TReply, TBookmark, TLocation, TCheckin, TSyndication
 
 
 class TCharField(forms.CharField):
@@ -103,14 +103,6 @@ class CreateStatusForm(forms.ModelForm):
 
 class CreateArticleForm(CreateStatusForm):
     m_post_kind = MPostKinds.article
-
-    class Meta:
-        model = TEntry
-        fields = ("p_name", "e_content")
-
-
-class CreateCheckinForm(CreateStatusForm):
-    m_post_kind = MPostKinds.checkin
 
     class Meta:
         model = TEntry
@@ -252,6 +244,12 @@ class UpdateArticleForm(UpdateStatusForm):
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
+
+
+class UpdateCheckinForm(UpdateStatusForm):
+    class Meta:
+        model = TEntry
+        fields = ("e_content",)
 
 
 class UpdateReplyForm(UpdateStatusForm):
@@ -405,10 +403,30 @@ class TLocationModelForm(forms.ModelForm):
 
 
 class TCheckinModelForm(forms.ModelForm):
+
+    name = TCharField(label="Where did you go?")
+    url = forms.URLField(
+        label="What's its url?",
+        help_text="This is usually the place's url in the app you used to checkin in with.",
+    )
+
     class Meta:
         model = TCheckin
-        fields = ("url", "name")
+        fields = ("name", "url")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs = {"class": "input-field"}
 
     def prepare_data(self, t_entry: TEntry):
         self.instance.t_entry = t_entry
         self.instance.t_location = t_entry.t_location
+
+
+class TSyndicationModelForm(forms.ModelForm):
+    class Meta:
+        model = TSyndication
+        fields = ("url",)
+
+    def prepare_data(self, t_entry: TEntry):
+        self.instance.t_entry = t_entry
