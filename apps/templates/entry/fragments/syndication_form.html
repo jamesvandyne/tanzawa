@@ -1,0 +1,29 @@
+{% with named_forms.syndication as syndication %}
+<div class="pt-2" data-controller="formset">
+    <details open>
+        <summary>Where was this post syndicated?</summary>
+            {{ syndication.management_form }}
+            <div class="mt-2" data-formset-target="forms">
+                {% for form in syndication.forms  %}
+                    <div class="flex">
+                        {{ form.url }}
+                        {{ form.DELETE }}
+                        <label for="{{ form.DELETE.id_for_label }}" class="px-3 py-3 w-10 cursor-pointer text-negroni-800 text-xs mr-2">Remove</label>
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="mt-2">
+                <button class="outline-button"
+                        data-action="formset#addForm" data-total-form-id="{{ syndication.management_form.TOTAL_FORMS.id_for_label }}">Add</button>
+                <div data-formset-target="emptyForm">
+                    <div class="flex">
+                    {{ syndication.empty_form }}
+                    </div>
+                </div>
+            </div>
+    </details>
+</div>
+{% endwith %}

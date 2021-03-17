@@ -2,6 +2,7 @@ from typing import Dict, Any
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django import forms as d_forms
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
@@ -31,7 +32,14 @@ class CreateEntryView(CreateView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
-            )
+            ),
+            "syndication": d_forms.inlineformset_factory(
+                models.TEntry,
+                models.TSyndication,
+                formset=forms.TSyndicationModelFormSet,
+                form=forms.TSyndicationModelForm,
+                extra=1,
+            ),
         }
 
     def form_valid(self, form, named_forms=None):

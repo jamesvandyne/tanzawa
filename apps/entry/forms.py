@@ -109,6 +109,14 @@ class CreateArticleForm(CreateStatusForm):
         fields = ("p_name", "e_content")
 
 
+class CreateCheckinForm(CreateStatusForm):
+    m_post_kind = MPostKinds.checkin
+
+    class Meta:
+        model = TEntry
+        fields = ("e_content",)
+
+
 class CreateReplyForm(CreateStatusForm):
     m_post_kind = MPostKinds.reply
 
@@ -428,5 +436,21 @@ class TSyndicationModelForm(forms.ModelForm):
         model = TSyndication
         fields = ("url",)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs = {
+            "class": "input-field",
+            "placeholder": "https://twitter.com/jamesvandyne/status/...",
+        }
+        self.fields["url"].label = ""
+
     def prepare_data(self, t_entry: TEntry):
         self.instance.t_entry = t_entry
+
+
+class TSyndicationModelFormSet(forms.BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        form.fields["DELETE"].label = "Remove"
+        form.fields["DELETE"].widget.attrs = {"class": "hidden",
+                                              "data-action": "formset#toggleText"}
