@@ -9,8 +9,10 @@ export default class extends Controller {
     toggleText(event) {
         if(event.target.checked) {
             event.target.labels[0].innerText = "Undo";
+            event.target.previousElementSibling.setAttribute("readonly", "readonly")
         } else {
             event.target.labels[0].innerText = "Remove";
+            event.target.previousElementSibling.removeAttribute("readonly")
         }
     }
 

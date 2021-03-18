@@ -2,7 +2,6 @@ from typing import Dict, Any
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django import forms as d_forms
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
@@ -33,13 +32,7 @@ class CreateEntryView(CreateView):
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
             ),
-            "syndication": d_forms.inlineformset_factory(
-                models.TEntry,
-                models.TSyndication,
-                formset=forms.TSyndicationModelFormSet,
-                form=forms.TSyndicationModelForm,
-                extra=1,
-            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None, prefix="syndication")
         }
 
     def form_valid(self, form, named_forms=None):
@@ -47,7 +40,7 @@ class CreateEntryView(CreateView):
 
         with transaction.atomic():
             entry = form.save()
-
+            named_forms["syndication"].instance = entry
             for named_form in named_forms.values():
                 named_form.prepare_data(entry)
                 named_form.save()
@@ -124,7 +117,10 @@ class UpdateEntryView(UpdateView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, instance=t_location, prefix="location"
-            )
+            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None,
+                                                                prefix="syndication",
+                                                                instance=self.object)
         }
 
     def form_valid(self, form, named_forms=None):

@@ -1,6 +1,6 @@
 {% load humanize utils %}
 {% url 'public:post_detail' t_post.uuid as permalink %}
-{% url 'article_edit' t_entry.pk as edit_link %}
+{% url 'checkin_edit' t_entry.pk as edit_link %}
 {% with t_entry.t_checkin as t_checkin %}
 <div class="flex-col h-entry">
     <header>

@@ -439,7 +439,7 @@ class TSyndicationModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {
-            "class": "input-field",
+            "class": "input-field remove",
             "placeholder": "https://twitter.com/jamesvandyne/status/...",
         }
         self.fields["url"].label = ""
@@ -454,3 +454,16 @@ class TSyndicationModelFormSet(forms.BaseInlineFormSet):
         form.fields["DELETE"].label = "Remove"
         form.fields["DELETE"].widget.attrs = {"class": "hidden",
                                               "data-action": "formset#toggleText"}
+
+    def prepare_data(self, t_entry: TEntry):
+        for form in self.forms:
+            form.prepare_data(t_entry)
+
+
+TSyndicationModelInlineFormSet = forms.inlineformset_factory(
+                TEntry,
+                TSyndication,
+                formset=TSyndicationModelFormSet,
+                form=TSyndicationModelForm,
+                extra=1,
+            )
