@@ -2,6 +2,7 @@ import pytest
 from model_bakery import baker
 from indieweb.constants import MPostKinds, MPostStatuses
 import mf2py
+from django.contrib.gis.geos import Point
 
 
 @pytest.fixture
@@ -194,16 +195,55 @@ class TestArticleRendering:
             e_content="<h1>Content here</h1>",
         )
 
-    def test_microformats_data(self, client, t_entry, t_post):
+    @pytest.fixture
+    def t_syndication(self, t_entry):
+        return baker.make(
+            "entry.TSyndication",
+            t_entry=t_entry,
+            url="https://twitter.com/jamesvandyne/status/1372676240998428673",
+        )
+
+    @pytest.fixture
+    def t_location(self, t_entry):
+        return baker.make(
+            "entry.TLocation",
+            t_entry=t_entry,
+            locality="Fujisawa",
+            region="Kanagawa",
+            country_name="Japan",
+            point=Point(
+                35.31593281000502,
+                139.4700015160363,
+            ),
+        )
+
+    def test_microformats_data(
+        self, client, t_entry, t_post, t_syndication, t_location
+    ):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
         article = parsed["items"][0]
+
         assert article == {
             "type": ["h-entry"],
             "properties": {
                 "name": ["My Awesome Post"],
                 "published": ["2020-09-28T12:59:30+00:00"],
+                "syndication": [
+                    "https://twitter.com/jamesvandyne/status/1372676240998428673"
+                ],
+                "location": [
+                    {
+                        "type": ["h-adr"],
+                        "properties": {
+                            "latitude": ["35.31593281000502"],
+                            "longitude": ["139.4700015160363"],
+                            "label": ["Fujisawa, Kanagawa, Japan"],
+                        },
+                        "value": "35.31593281000502 139.4700015160363 Fujisawa, Kanagawa, Japan",
+                    }
+                ],
                 "author": [
                     {
                         "type": ["h-card"],

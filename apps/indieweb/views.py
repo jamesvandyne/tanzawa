@@ -15,6 +15,7 @@ from entry.forms import (
     CreateStatusForm,
     TCheckinModelForm,
     TLocationModelForm,
+    TSyndicationModelForm,
 )
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -51,7 +52,6 @@ def form_to_mf2(request):
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
     mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
-    # location = get_location(mf)
     return normalize_properties_to_underscore(mf)
 
 
@@ -127,6 +127,7 @@ def micropub(request):
 
     # Create entry form data
     named_forms = {}
+    dt_published = serializer.validated_data["properties"].get("published", None)
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
@@ -134,6 +135,7 @@ def micropub(request):
             props.get("post-status", [])
             or MPostStatuses.published  # pull this data from serialier
         ),
+        "dt_published": dt_published[0].isoformat() if dt_published else None,
         "streams": serializer.validated_data["properties"]["streams"].values_list(
             "pk", flat=True
         ),
@@ -163,6 +165,13 @@ def micropub(request):
         named_forms["checkin"] = TCheckinModelForm(
             data=serializer.validated_data["properties"].get("checkin")
         )
+    if serializer.validated_data["properties"].get("syndication"):
+        for idx, syndication_url in enumerate(
+            serializer.validated_data["properties"]["syndication"]
+        ):
+            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
+                data={"url": syndication_url}
+            )
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")

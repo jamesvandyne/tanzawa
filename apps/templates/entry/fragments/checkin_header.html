@@ -1,0 +1,9 @@
+{% load utils %}
+ <header class="u-checkin">
+    {% if t_checkin %}
+        <h1 class="p-name text-xl">
+            Checkin to <a href="{{ t_checkin.url }}" class="inline-block  hover:border-b u-url" title="{{ t_checkin.name }}">{{ t_checkin.name }}</a>
+        </h1>
+    {% endif %}
+    {% include "entry/fragments/list_timestamp.html" %}
+</header>

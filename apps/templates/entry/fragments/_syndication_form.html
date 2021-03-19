@@ -1,0 +1,8 @@
+<div class="flex mt-2">
+    {{ form.url }}
+    {{ form.DELETE }}
+    <label for="{{ form.DELETE.id_for_label }}" class="px-3 py-3 w-10 cursor-pointer text-negroni-800 text-xs mr-2">Remove</label>
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+</div>

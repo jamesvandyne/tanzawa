@@ -14,7 +14,7 @@ from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
-from .models import TEntry, TReply, TBookmark, TLocation, TCheckin
+from .models import TEntry, TReply, TBookmark, TLocation, TCheckin, TSyndication
 
 
 class TCharField(forms.CharField):
@@ -36,6 +36,7 @@ class CreateStatusForm(forms.ModelForm):
         label="Which streams should this appear in?",
         required=False,
     )
+    dt_published = forms.DateTimeField(required=False, widget=forms.HiddenInput)
 
     m_post_kind = MPostKinds.note
 
@@ -51,7 +52,6 @@ class CreateStatusForm(forms.ModelForm):
             "class": "mb-1",
         }
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
-
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
 
@@ -78,7 +78,7 @@ class CreateStatusForm(forms.ModelForm):
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
-            dt_published=n
+            dt_published=self.cleaned_data.get("dt_published") or n
             if self.cleaned_data["m_post_status"].key == MPostStatuses.published
             else None,
             dt_updated=n,
@@ -113,7 +113,7 @@ class CreateCheckinForm(CreateStatusForm):
 
     class Meta:
         model = TEntry
-        fields = ("p_name", "e_content")
+        fields = ("e_content",)
 
 
 class CreateReplyForm(CreateStatusForm):
@@ -230,7 +230,7 @@ class UpdateStatusForm(forms.ModelForm):
         n = now()
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
         if self.t_post.m_post_status.key == MPostStatuses.published:
-            if not self.already_published:
+            if not self.already_published or self.t_post.dt_published is None:
                 self.t_post.dt_published = n
         else:  # draft
             self.t_post.dt_published = None
@@ -251,6 +251,12 @@ class UpdateArticleForm(UpdateStatusForm):
     class Meta:
         model = TEntry
         fields = ("p_name", "e_content")
+
+
+class UpdateCheckinForm(UpdateStatusForm):
+    class Meta:
+        model = TEntry
+        fields = ("e_content",)
 
 
 class UpdateReplyForm(UpdateStatusForm):
@@ -404,10 +410,61 @@ class TLocationModelForm(forms.ModelForm):
 
 
 class TCheckinModelForm(forms.ModelForm):
+
+    name = TCharField(label="Where did you go?")
+    url = forms.URLField(
+        label="What's its url?",
+        help_text="This is usually the place's url in the app you used to checkin in with.",
+    )
+
     class Meta:
         model = TCheckin
-        fields = ("url", "name")
+        fields = ("name", "url")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs = {"class": "input-field"}
 
     def prepare_data(self, t_entry: TEntry):
         self.instance.t_entry = t_entry
         self.instance.t_location = t_entry.t_location
+
+
+class TSyndicationModelForm(forms.ModelForm):
+    class Meta:
+        model = TSyndication
+        fields = ("url",)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["url"].widget.attrs = {
+            "class": "input-field remove",
+            "placeholder": "https://twitter.com/jamesvandyne/status/...",
+        }
+        self.fields["url"].label = ""
+
+    def prepare_data(self, t_entry: TEntry):
+        self.instance.t_entry = t_entry
+
+
+class TSyndicationModelFormSet(forms.BaseInlineFormSet):
+    def add_fields(self, form, index):
+        super().add_fields(form, index)
+        form.fields["DELETE"].label = "Remove"
+        form.fields["DELETE"].widget.attrs = {
+            "class": "hidden",
+            "data-action": "formset#toggleText",
+        }
+
+    def prepare_data(self, t_entry: TEntry):
+        for form in self.forms:
+            form.prepare_data(t_entry)
+
+
+TSyndicationModelInlineFormSet = forms.inlineformset_factory(
+    TEntry,
+    TSyndication,
+    formset=TSyndicationModelFormSet,
+    form=TSyndicationModelForm,
+    extra=1,
+)

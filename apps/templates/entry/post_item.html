@@ -4,6 +4,8 @@
         <div class="ml-4 flex-grow">
             {% if t_entry.t_post.m_post_kind.key == "reply" %}
                 {% include "entry/fragments/reply_header.html" with t_reply=t_entry.t_reply %}
+            {% elif t_entry.t_post.m_post_kind.key == "checkin" %}
+                {% include "entry/fragments/checkin_header.html" with t_checkin=t_entry.t_checkin %}
             {%  else %}
             <header>
                 {% if t_entry.p_name %}<h1 class="text-xl">{{ t_entry.p_name }}</h1>{% endif %}

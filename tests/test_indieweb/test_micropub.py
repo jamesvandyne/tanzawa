@@ -405,6 +405,7 @@ class TestMicropub:
 
         assert t_post.m_post_kind.key == "note"
         assert t_post.m_post_status.key == "published"
+        assert t_post.dt_published.isoformat() == "2021-01-02T04:57:54+00:00"
 
         assert t_entry.p_summary == "飽きないなぁー"
         assert "飽きないなぁー" in t_entry.e_content
@@ -418,18 +419,21 @@ class TestMicropub:
         assert t_location.point.x == 35.31593281000502
         assert t_location.point.y == 139.4700015160363
 
-        download_image_mock.assert_called_with(entry_with_location["properties"]["photo"][0])
+        download_image_mock.assert_called_with(
+            entry_with_location["properties"]["photo"][0]
+        )
 
     @pytest.fixture
     def download_image_mock(self, monkeypatch):
         from indieweb.utils import download_image, DataImage
+
         m = Mock(download_image, autospec=True)
         with open("tests/fixtures/1px.png", "rb") as photo:
             m.return_value = DataImage(
                 image_data=photo.read(),
                 mime_type="image/png",
                 encoding="none",
-                tag=None
+                tag=None,
             )
         monkeypatch.setattr("indieweb.serializers.download_image", m)
         return m
@@ -454,6 +458,7 @@ class TestMicropub:
 
         assert t_post.m_post_kind.key == "checkin"
         assert t_post.m_post_status.key == "published"
+        assert t_post.dt_published.isoformat() == "2021-01-02T04:57:54+00:00"
 
         assert t_entry.p_summary == "飽きないなぁー"
         assert "飽きないなぁー" in t_entry.e_content
@@ -476,3 +481,12 @@ class TestMicropub:
         assert t_post.files.count() == 1
 
         download_image_mock.assert_called_with(checkin_entry["properties"]["photo"][0])
+
+        assert t_entry.t_syndication.count() == 1
+
+        t_syndication = t_entry.t_syndication.first()
+
+        assert (
+            t_syndication.url
+            == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
+        )

@@ -1,0 +1,28 @@
+<form  id="checkin" method="POST" class="flex-col" data-turbo="false">
+    {% csrf_token %}
+    {{ form.errors }}
+    {% for named_form in named_forms %}
+        {{ named_form.errors }}
+    {% endfor %}
+    <div class="pt-2">
+        {{ named_forms.checkin.name.label }}
+        {{ named_forms.checkin.name }}
+    </div>
+    <div class="pt-2">
+        {{ named_forms.checkin.url.label }}
+        <span class="help-text block">{{ named_forms.checkin.url.help_text }}</span>
+        {{ named_forms.checkin.url }}
+
+    </div>
+    <div class="font-serif pt-2">
+        {{ form.e_content }}
+    </div>
+    <div class="pt-2">
+        {{ form.streams.label }}
+        <div class="flex">
+            {{ form.streams }}
+        </div>
+    </div>
+    {% include "entry/fragments/location_form.html" %}
+    {% include "entry/fragments/syndication_form.html" %}
+</form>

@@ -31,7 +31,10 @@ class CreateEntryView(CreateView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
-            )
+            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(
+                self.request.POST or None, prefix="syndication"
+            ),
         }
 
     def form_valid(self, form, named_forms=None):
@@ -39,7 +42,7 @@ class CreateEntryView(CreateView):
 
         with transaction.atomic():
             entry = form.save()
-
+            named_forms["syndication"].instance = entry
             for named_form in named_forms.values():
                 named_form.prepare_data(entry)
                 named_form.save()
@@ -116,7 +119,10 @@ class UpdateEntryView(UpdateView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, instance=t_location, prefix="location"
-            )
+            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(
+                self.request.POST or None, prefix="syndication", instance=self.object
+            ),
         }
 
     def form_valid(self, form, named_forms=None):
@@ -141,8 +147,7 @@ class UpdateEntryView(UpdateView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        context = self.get_context_data(form=form)
-        return self.get_response(context)
+        return redirect_303(self.request.build_absolute_uri())
 
     def get_response(self, context):
         return render(self.request, self.template_name, context=context)
@@ -188,7 +193,8 @@ class ExtractLinkedPageMetaView(FormView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
-            )
+            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(prefix="syndication"),
         }
 
     def form_valid(self, form):
@@ -258,6 +264,29 @@ class UpdateArticleView(UpdateEntryView):
     template_name = "entry/article/update.html"
     m_post_kind = MPostKinds.article
     autofocus = "p_name"
+
+
+# Checkin CRUD views
+
+# Checkin Create is done via micropub
+
+
+class UpdateCheckinView(UpdateEntryView):
+    form_class = forms.UpdateCheckinForm
+    template_name = "entry/checkin/update.html"
+    m_post_kind = MPostKinds.checkin
+    autofocus = "p_name"
+
+    def get_named_forms(self):
+        named_forms = super().get_named_forms()
+        try:
+            t_checkin = self.object.t_checkin
+        except models.TCheckin.DoesNotExist:
+            t_checkin = None
+        named_forms["checkin"] = forms.TCheckinModelForm(
+            self.request.POST or None, instance=t_checkin, prefix="checkin"
+        )
+        return named_forms
 
 
 # Reply CRUD views
@@ -424,5 +453,7 @@ def edit_post(request, pk: int):
         return redirect(reverse("reply_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.bookmark:
         return redirect(reverse("bookmark_edit", args=[pk]))
+    elif t_entry.t_post.m_post_kind.key == MPostKinds.checkin:
+        return redirect(reverse("checkin_edit", args=[pk]))
     messages.error(request, "Unknown post type")
     return redirect(resolve_url("posts"))
