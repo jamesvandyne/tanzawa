@@ -10,7 +10,12 @@ from streams.models import MStream
 def home(request):
     context = {
         "entries": TEntry.objects.select_related(
-            "t_post", "t_post__p_author", "t_location", "t_bookmark", "t_reply", "t_checkin"
+            "t_post",
+            "t_post__p_author",
+            "t_location",
+            "t_bookmark",
+            "t_reply",
+            "t_checkin",
         )
         .filter(t_post__m_post_status__key=MPostStatuses.published)
         .annotate(
