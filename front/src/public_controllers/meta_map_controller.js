@@ -63,7 +63,6 @@ export default class extends Controller {
             },
         ];
 
-        this.updateSummaryText();
         // setup base layer
         osm.addTo(this.map);
         this.changeZoom(0);
@@ -125,12 +124,6 @@ export default class extends Controller {
 
     async mapClicked(e) {
         this.changeZoom(this.zoomIndex + 1);
-    }
-
-     updateSummaryText() {
-        this.summaryTarget.innerText = [this.address.locality,
-                                   this.address.region,
-                                   this.address.country].filter(val => val).join(", ");
     }
 
     get color() {

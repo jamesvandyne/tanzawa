@@ -9,7 +9,9 @@
          data-country="{{ t_location.country_name }}"
          data-locality="{{ t_location.locality }}"
     ></div>
-    <div class="flex mt-2">
-        <span data-meta-map-target="summary" class="help-text ml-auto"></span>
+    <div class="flex mt-2 p-location h-adr">
+        <span class="hidden p-latitude">{{ t_location.point.x }}</span>
+        <span class="hidden p-longitude">{{ t_location.point.y }}</span>
+        <span data-meta-map-target="summary" class="help-text ml-auto p-label">{{ t_location.summary }}</span>
     </div>
 </div>

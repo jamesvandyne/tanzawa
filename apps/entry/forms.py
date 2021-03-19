@@ -52,7 +52,6 @@ class CreateStatusForm(forms.ModelForm):
             "class": "mb-1",
         }
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
-
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
 
@@ -79,7 +78,7 @@ class CreateStatusForm(forms.ModelForm):
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
-            dt_published=self.cleaned_data.get("dt_published", n)
+            dt_published=self.cleaned_data.get("dt_published") or n
             if self.cleaned_data["m_post_status"].key == MPostStatuses.published
             else None,
             dt_updated=n,
@@ -231,7 +230,7 @@ class UpdateStatusForm(forms.ModelForm):
         n = now()
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
         if self.t_post.m_post_status.key == MPostStatuses.published:
-            if not self.already_published:
+            if not self.already_published or self.t_post.dt_published is None:
                 self.t_post.dt_published = n
         else:  # draft
             self.t_post.dt_published = None
@@ -452,8 +451,10 @@ class TSyndicationModelFormSet(forms.BaseInlineFormSet):
     def add_fields(self, form, index):
         super().add_fields(form, index)
         form.fields["DELETE"].label = "Remove"
-        form.fields["DELETE"].widget.attrs = {"class": "hidden",
-                                              "data-action": "formset#toggleText"}
+        form.fields["DELETE"].widget.attrs = {
+            "class": "hidden",
+            "data-action": "formset#toggleText",
+        }
 
     def prepare_data(self, t_entry: TEntry):
         for form in self.forms:
@@ -461,9 +462,9 @@ class TSyndicationModelFormSet(forms.BaseInlineFormSet):
 
 
 TSyndicationModelInlineFormSet = forms.inlineformset_factory(
-                TEntry,
-                TSyndication,
-                formset=TSyndicationModelFormSet,
-                form=TSyndicationModelForm,
-                extra=1,
-            )
+    TEntry,
+    TSyndication,
+    formset=TSyndicationModelFormSet,
+    form=TSyndicationModelForm,
+    extra=1,
+)

@@ -32,7 +32,9 @@ class CreateEntryView(CreateView):
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
             ),
-            "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None, prefix="syndication")
+            "syndication": forms.TSyndicationModelInlineFormSet(
+                self.request.POST or None, prefix="syndication"
+            ),
         }
 
     def form_valid(self, form, named_forms=None):
@@ -118,9 +120,9 @@ class UpdateEntryView(UpdateView):
             "location": forms.TLocationModelForm(
                 self.request.POST or None, instance=t_location, prefix="location"
             ),
-            "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None,
-                                                                prefix="syndication",
-                                                                instance=self.object)
+            "syndication": forms.TSyndicationModelInlineFormSet(
+                self.request.POST or None, prefix="syndication", instance=self.object
+            ),
         }
 
     def form_valid(self, form, named_forms=None):
@@ -145,8 +147,7 @@ class UpdateEntryView(UpdateView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        context = self.get_context_data(form=form)
-        return self.get_response(context)
+        return redirect_303(self.request.build_absolute_uri())
 
     def get_response(self, context):
         return render(self.request, self.template_name, context=context)
@@ -192,7 +193,8 @@ class ExtractLinkedPageMetaView(FormView):
         return {
             "location": forms.TLocationModelForm(
                 self.request.POST or None, prefix="location"
-            )
+            ),
+            "syndication": forms.TSyndicationModelInlineFormSet(prefix="syndication"),
         }
 
     def form_valid(self, form):
