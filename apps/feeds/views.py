@@ -36,7 +36,10 @@ class AllEntriesFeed(Feed):
             TPost.objects.published()
             .select_related("m_post_kind")
             .prefetch_related(
-                "ref_t_entry", "ref_t_entry__t_reply", "ref_t_entry__t_location"
+                "ref_t_entry",
+                "ref_t_entry__t_reply",
+                "ref_t_entry__t_location",
+                "ref_t_entry__t_checkin",
             )
             .all()
             .order_by("-dt_published")[:10]
@@ -50,6 +53,8 @@ class AllEntriesFeed(Feed):
         elif item.m_post_kind.key == MPostKinds.bookmark:
             t_bookmark = t_entry.t_bookmark
             title = f"Bookmark of {t_bookmark.title or t_bookmark.u_bookmark_of}"
+        elif item.m_post_kind.key == MPostKinds.checkin:
+            title = f"Checkin to {t_entry.t_checkin.name}"
         return title
 
     def item_description(self, item: TPost):
