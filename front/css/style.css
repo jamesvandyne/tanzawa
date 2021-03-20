@@ -60,6 +60,11 @@ main.content a, .trix-content a, #messages a {
     @apply focus:ring-0 focus:outline-none;
 }
 
+.content h1 {
+    font-size: 1.2em;
+    line-height: 1.2;
+}
+
 .help-text {
     @apply text-xs text-bianca-800;
 }

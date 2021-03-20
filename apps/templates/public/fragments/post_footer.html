@@ -9,7 +9,7 @@
             <a href="{{ edit_link }}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
         {% endif %}
         {% if detail %}
-            {% if t_entry.t_syndication %}
+            {% if t_entry.t_syndication.all %}
             <p class="mt-2 help-text">This post is also found on
                 {% for syndication in t_entry.t_syndication.all %}
                     <a href="{{ syndication.url }}" class="u-syndication">{{ syndication.url|domain|cut:"www." }}</a>
