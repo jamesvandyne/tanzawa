@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "files",
     "streams",
     "public",
+    "wordpress",
 ]
 
 MIDDLEWARE = [
