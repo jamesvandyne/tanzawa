@@ -2,7 +2,6 @@ import hashlib
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from django.utils.timezone import now
 
 if TYPE_CHECKING:
     from .models import TWordpress
@@ -19,6 +18,6 @@ def _md5_sum_for_file(file_field) -> str:
 
 def wordpress_upload_to(instance: "TWordpress", filename: str) -> Path:
     instance.filename = filename
-    file_directory = MAIN_DIRECTORY / "import" / str(instance.uuid)
-    file_name = _md5_sum_for_file(instance.file)
+    file_directory = MAIN_DIRECTORY / "import"
+    file_name = _md5_sum_for_file(instance.export_file)
     return file_directory / file_name
