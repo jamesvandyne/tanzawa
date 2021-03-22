@@ -3,7 +3,7 @@ from django import forms
 from .models import TWordpress
 
 
-class MediaUploadForm(forms.ModelForm):
+class WordpressUploadForm(forms.ModelForm):
     class Meta:
         model = TWordpress
         fields = ["export_file"]
