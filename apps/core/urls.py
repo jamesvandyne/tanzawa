@@ -19,6 +19,7 @@ from django.urls import include, path
 urlpatterns = [
     path("a/", include("entry.urls")),
     path("a/", include("post.urls", namespace="post")),
+    path("a/wordpress/", include("wordpress.urls", namespace="wordpress")),
     path("a/", include("indieweb.urls", namespace="indieweb")),
     path("files/", include("files.urls")),
     path("", include("feeds.urls", namespace="feeds")),

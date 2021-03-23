@@ -15,13 +15,16 @@ class TWordpress(TimestampModel):
     class Meta:
         db_table = "t_wordpress"
 
+    def __str__(self):
+        return self.filename
+
 
 class TCategory(TimestampModel):
     t_wordpress = models.ForeignKey(
         TWordpress, on_delete=models.CASCADE, related_name="ref_t_category"
     )
     name = models.CharField(max_length=64)
-    nice_name = models.CharField(max_length=64)
+    nice_name = models.SlugField(max_length=64)
 
     t_stream = models.ForeignKey(
         "streams.MStream", null=True, blank=True, on_delete=models.CASCADE
@@ -29,6 +32,9 @@ class TCategory(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_category"
+
+    def __str__(self):
+        return self.name
 
 
 class TPostFormat(TimestampModel):
@@ -44,10 +50,14 @@ class TPostFormat(TimestampModel):
         blank=True,
         null=True,
     )
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=64)
+    nice_name = models.SlugField(max_length=64)
 
     class Meta:
         db_table = "t_wordpress_post_format"
+
+    def __str__(self):
+        return self.name
 
 
 class TPostKind(TimestampModel):
@@ -64,9 +74,13 @@ class TPostKind(TimestampModel):
         null=True,
     )
     name = models.CharField(max_length=32)
+    nice_name = models.SlugField(max_length=64)
 
     class Meta:
         db_table = "t_wordpress_post_kind"
+
+    def __str__(self):
+        return self.name
 
 
 class TWordpressPost(TimestampModel):

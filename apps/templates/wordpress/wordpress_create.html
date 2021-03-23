@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-xl">Import Wordpress Posts</h1>
+    <div class="max-w-prose mt-2">
+        <p>Using this Wordpress import tool you can automatically import your posts from Wordpress into Tanzawa.
+            After uploading your export file, Tanzawa will ask how to map between categories and streams.
+        </p>
+        <p class="mt-2">Once you're happy with import settings, Tanzawa will import all posts and attachments from your Wordpress site.</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="flex-col">
+        {% csrf_token %}
+        {{ form.errors }}
+        <div class="mt-2">
+            {{ form.export_file }}
+        </div>
+
+        <button class="rounded mt-2 text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" type="submit" data-turbo="false">Upload</button>
+    </form>
+{% endblock %}
