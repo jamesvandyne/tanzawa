@@ -5,6 +5,9 @@ from bs4 import BeautifulSoup
 
 from .models import TWordpress, TCategory, TPostFormat, TPostKind
 
+from streams.models import MStream
+from streams.forms import StreamModelChoiceField
+
 
 class WordpressUploadForm(forms.ModelForm):
     class Meta:
@@ -81,3 +84,15 @@ class WordpressUploadForm(forms.ModelForm):
         TPostFormat.objects.bulk_create(self.t_post_formats)
 
         return instance
+
+
+class TCategoryModelForm(forms.ModelForm):
+
+    t_stream = StreamModelChoiceField(MStream.objects, label='', empty_label="None")
+
+    class Meta:
+        model = TCategory
+        fields = ("t_stream", )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

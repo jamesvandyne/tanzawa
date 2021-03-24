@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load utils %}
+{% block content %}
+    <h1 class="text-xl">Import from Wordpress</h1>
+    <div class="flex">
+        {% for t_wordpress in object_list %}
+            <div class="flex-col">
+                <span>{{ t_wordpress }}</span>
+                <span class="block help-text">{{ t_wordpress.link|domain }}</span>
+            </div>
+            <a href="{% url 'wordpress:t_category_mapping' t_wordpress.pk %}">Category Mapping</a>
+            <button>Post Kind Mapping</button>
+            <button disabled>Import Attachments</button>
+            <button disabled>Import Posts</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
