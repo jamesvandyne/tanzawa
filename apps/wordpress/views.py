@@ -5,8 +5,8 @@ from django.http import Http404
 from turbo_response import redirect_303
 from django.contrib import messages
 
-from .models import TWordpress, TCategory
-from .forms import WordpressUploadForm, TCategoryModelForm
+from .models import TWordpress, TCategory, TPostKind
+from .forms import WordpressUploadForm, TCategoryModelForm, TPostKindModelForm
 
 
 class TWordpressListView(ListView):
@@ -41,3 +41,20 @@ def category_mappings(request, pk):
         "formset": formset,
     }
     return render(request, "wordpress/tcategory_mapping.html", context=context)
+
+
+def post_kind_mappings(request, pk):
+    t_wordpress = get_object_or_404(TWordpress, pk=pk)
+    TPostKindModelFormSet = forms.inlineformset_factory(
+        TWordpress, TPostKind , form=TPostKindModelForm, extra=0
+    )
+    formset = TPostKindModelFormSet(request.POST or None, instance=t_wordpress)
+    if request.method == "POST" and formset.is_valid():
+        formset.save()
+        messages.success(request, "Updated Post Kind Mapping")
+        return redirect_303("wordpress:t_wordpress_list")
+    context = {
+        "t_wordpress": t_wordpress,
+        "formset": formset,
+    }
+    return render(request, "wordpress/tpostkind_mapping.html", context=context)

@@ -9,5 +9,8 @@ urlpatterns = [
     path(
         "upload/<int:pk>/categories", views.category_mappings, name="t_category_mapping"
     ),
+    path(
+        "upload/<int:pk>/postkinds", views.post_kind_mappings, name="t_post_kind_mapping"
+    ),
     path("", views.TWordpressListView.as_view(), name="t_wordpress_list"),
 ]

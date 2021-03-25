@@ -12,7 +12,7 @@
                 <span class="block help-text">{{ t_wordpress.link|domain }}</span>
             </div>
             <a href="{% url 'wordpress:t_category_mapping' t_wordpress.pk %}">Category Mapping</a>
-            <button>Post Kind Mapping</button>
+            <a href="{% url 'wordpress:t_post_kind_mapping' t_wordpress.pk %}">Post Kind Mapping</a>
             <button disabled>Import Attachments</button>
             <button disabled>Import Posts</button>
             </div>

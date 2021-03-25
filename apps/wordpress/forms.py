@@ -94,5 +94,9 @@ class TCategoryModelForm(forms.ModelForm):
         model = TCategory
         fields = ("t_stream",)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+
+class TPostKindModelForm(forms.ModelForm):
+
+    class Meta:
+        model = TPostKind
+        fields = ("m_post_kind",)
