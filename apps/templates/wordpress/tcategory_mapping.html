@@ -20,7 +20,7 @@
             {% for form in formset.forms %}
                 <tr class="p-2">
                     <td class="pr-2">{{ form.instance.name }}{{ form.id }}</td>
-                    <td class="p-2">{{ form.t_stream }}{{ form.errors.t_stream }}</td>
+                    <td class="p-2">{{ form.m_stream }}{{ form.errors.m_stream }}</td>
                 </tr>
                 {% if form.non_field_errors %}
                     <tr>

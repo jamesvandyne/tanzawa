@@ -3,7 +3,7 @@ from django import forms
 from django.db import transaction
 from bs4 import BeautifulSoup
 
-from .models import TWordpress, TCategory, TPostFormat, TPostKind
+from .models import TWordpress, TCategory, TPostFormat, TPostKind, TWordpressAttachment
 
 from streams.models import MStream
 from streams.forms import StreamModelChoiceField
@@ -19,6 +19,7 @@ class WordpressUploadForm(forms.ModelForm):
         self.t_categories: List[TCategory] = []
         self.t_post_formats: List[TPostFormat] = []
         self.t_post_kinds: List[TPostKind] = []
+        self.t_attachments: List[TWordpressAttachment] = []
 
     def clean_export_file(self):
         if self.cleaned_data["export_file"].content_type not in [
@@ -39,6 +40,7 @@ class WordpressUploadForm(forms.ModelForm):
         self._extract_categories(soup)
         self._extract_post_format(soup)
         self._extract_post_kind(soup)
+        self._extract_attachments(soup)
 
     def _extract_categories(self, soup):
         categories = set(soup.find_all("category", attrs={"domain": "category"}))
@@ -67,6 +69,15 @@ class WordpressUploadForm(forms.ModelForm):
             ]
         )
 
+    def _extract_attachments(self, soup):
+        attachments = soup.find_all("wp:post_type", text="attachment")
+        self.t_attachments.extend(
+            [
+                TWordpressAttachment(guid=attachment.parent.find("guid").text)
+                for attachment in attachments
+            ]
+        )
+
     @transaction.atomic
     def save(self, commit=True):
         instance = super().save(commit)
@@ -83,20 +94,25 @@ class WordpressUploadForm(forms.ModelForm):
             t_post_format.t_wordpress = instance
         TPostFormat.objects.bulk_create(self.t_post_formats)
 
+        for t_attachment in self.t_attachments:
+            t_attachment.t_wordpress = instance
+        TWordpressAttachment.objects.bulk_create(self.t_attachments)
+
         return instance
 
 
 class TCategoryModelForm(forms.ModelForm):
 
-    t_stream = StreamModelChoiceField(MStream.objects, label="", empty_label="Skip", required=False)
+    t_stream = StreamModelChoiceField(
+        MStream.objects, label="", empty_label="Skip", required=False
+    )
 
     class Meta:
         model = TCategory
-        fields = ("t_stream",)
+        fields = ("m_stream",)
 
 
 class TPostKindModelForm(forms.ModelForm):
-
     class Meta:
         model = TPostKind
         fields = ("m_post_kind",)

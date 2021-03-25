@@ -26,7 +26,7 @@ class TCategory(TimestampModel):
     name = models.CharField(max_length=64)
     nice_name = models.SlugField(max_length=64)
 
-    t_stream = models.ForeignKey(
+    m_stream = models.ForeignKey(
         "streams.MStream", null=True, blank=True, on_delete=models.CASCADE
     )
 
@@ -84,6 +84,10 @@ class TPostKind(TimestampModel):
 
 
 class TWordpressPost(TimestampModel):
+    t_wordpress = models.ForeignKey(
+        TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_post"
+    )
+
     guid = models.CharField(max_length=256)
     uuid = models.UUIDField(default=uuid.uuid4)
     t_post = models.ForeignKey(
@@ -95,6 +99,10 @@ class TWordpressPost(TimestampModel):
 
 
 class TWordpressAttachment(TimestampModel):
+    t_wordpress = models.ForeignKey(
+        TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_attachment"
+    )
+
     guid = models.CharField(max_length=256)
     uuid = models.UUIDField(default=uuid.uuid4)
     t_file = models.ForeignKey(

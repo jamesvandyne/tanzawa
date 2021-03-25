@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
 from django import forms
@@ -25,6 +26,9 @@ class TWordpressCreate(CreateView):
     form_class = WordpressUploadForm
     template_name = "wordpress/wordpress_create.html"
 
+    def get_success_url(self):
+        return reverse("wordpress:tcategory_mapping", args=[self.object.pk])
+
 
 def category_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
@@ -46,7 +50,7 @@ def category_mappings(request, pk):
 def post_kind_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     TPostKindModelFormSet = forms.inlineformset_factory(
-        TWordpress, TPostKind , form=TPostKindModelForm, extra=0
+        TWordpress, TPostKind, form=TPostKindModelForm, extra=0
     )
     formset = TPostKindModelFormSet(request.POST or None, instance=t_wordpress)
     if request.method == "POST" and formset.is_valid():
