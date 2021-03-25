@@ -88,11 +88,11 @@ class WordpressUploadForm(forms.ModelForm):
 
 class TCategoryModelForm(forms.ModelForm):
 
-    t_stream = StreamModelChoiceField(MStream.objects, label='', empty_label="None")
+    t_stream = StreamModelChoiceField(MStream.objects, label="", empty_label="Skip", required=False)
 
     class Meta:
         model = TCategory
-        fields = ("t_stream", )
+        fields = ("t_stream",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

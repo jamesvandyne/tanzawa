@@ -14,6 +14,5 @@ class StreamModelMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 
 class StreamModelChoiceField(forms.ModelChoiceField):
-
     def label_from_instance(self, obj: MStream) -> str:
         return f"{obj.icon} {obj.name}"

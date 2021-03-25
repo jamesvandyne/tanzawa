@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load utils %}
 {% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
     <h1 class="text-xl">Import from Wordpress</h1>
     <div class="flex">
         {% for t_wordpress in object_list %}
