@@ -14,5 +14,10 @@ urlpatterns = [
         views.post_kind_mappings,
         name="t_post_kind_mapping",
     ),
+    path(
+        "attachment/<uuid:uuid>/import",
+        views.import_attachment,
+        name="import_attachment",
+    ),
     path("", views.TWordpressListView.as_view(), name="t_wordpress_list"),
 ]

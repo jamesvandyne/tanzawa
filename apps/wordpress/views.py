@@ -1,12 +1,17 @@
+from pathlib import Path
 from django.urls import reverse
+
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
 from django import forms
-from django.http import Http404
+from django.http import Http404, HttpResponse, JsonResponse
 from turbo_response import redirect_303
 from django.contrib import messages
+from indieweb.utils import download_image
+from files.images import bytes_as_upload_image
+from files.forms import MediaUploadForm
 
-from .models import TWordpress, TCategory, TPostKind
+from .models import TWordpress, TCategory, TPostKind, TWordpressAttachment
 from .forms import WordpressUploadForm, TCategoryModelForm, TPostKindModelForm
 
 
@@ -62,3 +67,27 @@ def post_kind_mappings(request, pk):
         "formset": formset,
     }
     return render(request, "wordpress/tpostkind_mapping.html", context=context)
+
+
+def import_attachment(request, uuid):
+
+    t_attachment = get_object_or_404(TWordpressAttachment, uuid=uuid)
+    if t_attachment.t_file:
+        return JsonResponse(status=400, data={"error": "already_imported"})
+    data_image = download_image(t_attachment.guid)
+    filename = Path(t_attachment.guid).name
+    upload_image, _, _ = bytes_as_upload_image(
+        data_image.image_data, data_image.mime_type, filename
+    )
+    form = MediaUploadForm(files={"file": upload_image})
+    if form.is_valid():
+        t_file = form.save()
+        t_attachment.t_file = t_file
+        t_attachment.save()
+        response = HttpResponse(status=201)
+        response["Location"] = request.build_absolute_uri(t_file.get_absolute_url())
+        return response
+    return JsonResponse(
+        status=400,
+        data={"error": "invalid_request", "errors": form.errors.as_json()},
+    )
