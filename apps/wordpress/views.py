@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
 from django import forms
 from django.http import Http404, HttpResponse, JsonResponse
-from turbo_response import redirect_303
+from turbo_response import redirect_303, TurboFrame
 from django.contrib import messages
 from indieweb.utils import download_image
 from files.images import bytes_as_upload_image
@@ -69,8 +69,16 @@ def post_kind_mappings(request, pk):
     return render(request, "wordpress/tpostkind_mapping.html", context=context)
 
 
-def import_attachment(request, uuid):
+def t_wordpress_attachments(request, pk):
+    t_wordpress = get_object_or_404(TWordpress, pk=pk)
+    context = {
+        "t_wordpress": t_wordpress,
+        "object_list": t_wordpress.ref_t_wordpress_attachment.all(),
+    }
+    return render(request, "wordpress/twordpressattachment_list.html", context=context)
 
+
+def import_attachment(request, uuid):
     t_attachment = get_object_or_404(TWordpressAttachment, uuid=uuid)
     if t_attachment.t_file:
         return JsonResponse(status=400, data={"error": "already_imported"})
@@ -86,8 +94,11 @@ def import_attachment(request, uuid):
         t_attachment.save()
         response = HttpResponse(status=201)
         response["Location"] = request.build_absolute_uri(t_file.get_absolute_url())
-        return response
-    return JsonResponse(
-        status=400,
-        data={"error": "invalid_request", "errors": form.errors.as_json()},
+    return (
+        TurboFrame(uuid)
+        .template(
+            "wordpress/_attachment.html",
+            context={"t_wordpress_attachment": t_attachment},
+        )
+        .response(request)
     )

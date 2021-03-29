@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <h1 class="text-xl">Import Attachments</h1>
+    <p>Slowly scroll down the page and Tanzawa will import your attachments automatically.</p>
+    <ul>
+        {% for t_wordpress_attachment in object_list %}
+            <li class="flex mt-2">
+                <turbo-frame id="{{ t_wordpress_attachment.uuid }}" loading="lazy" class="flex" {% if not t_wordpress_attachment.t_file_id %}src="{% url 'wordpress:import_attachment' t_wordpress_attachment.uuid %}"{% endif %}>
+                    {% include "wordpress/_attachment.html" %}
+                </turbo-frame>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

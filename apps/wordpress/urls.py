@@ -15,6 +15,11 @@ urlpatterns = [
         name="t_post_kind_mapping",
     ),
     path(
+        "upload/<int:pk>/attachments",
+        views.t_wordpress_attachments,
+        name="t_wordpress_attachment_list",
+    ),
+    path(
         "attachment/<uuid:uuid>/import",
         views.import_attachment,
         name="import_attachment",
