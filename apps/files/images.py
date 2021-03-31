@@ -44,6 +44,9 @@ def bytes_as_upload_image(
         base_name = now().strftime("%Y-%m-%-dT%H:%M:%S")
         filename = f"{base_name}{ext}"
 
-    image = Image.open(io.BytesIO(image_data))
     upload_file = SimpleUploadedFile(filename, image_data, mime_type)
-    return upload_file, image.width, image.height
+    if mime_type.startswith("video"):
+        return upload_file, 0, 0
+    else:
+        image = Image.open(io.BytesIO(image_data))
+        return upload_file, image.width, image.height

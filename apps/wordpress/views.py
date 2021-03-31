@@ -1,6 +1,8 @@
 from pathlib import Path
 from django.urls import reverse
 
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
 from django import forms
@@ -15,6 +17,7 @@ from .models import TWordpress, TCategory, TPostKind, TWordpressAttachment
 from .forms import WordpressUploadForm, TCategoryModelForm, TPostKindModelForm
 
 
+@method_decorator(login_required, name="dispatch")
 class TWordpressListView(ListView):
 
     model = TWordpress
@@ -27,6 +30,7 @@ class TWordpressListView(ListView):
             return redirect_303("wordpress:t_wordpress_create")
 
 
+@method_decorator(login_required, name="dispatch")
 class TWordpressCreate(CreateView):
     form_class = WordpressUploadForm
     template_name = "wordpress/wordpress_create.html"
@@ -35,6 +39,7 @@ class TWordpressCreate(CreateView):
         return reverse("wordpress:tcategory_mapping", args=[self.object.pk])
 
 
+@login_required
 def category_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     TCategoryModelFormSet = forms.inlineformset_factory(
@@ -52,6 +57,7 @@ def category_mappings(request, pk):
     return render(request, "wordpress/tcategory_mapping.html", context=context)
 
 
+@login_required
 def post_kind_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     TPostKindModelFormSet = forms.inlineformset_factory(
@@ -69,15 +75,19 @@ def post_kind_mappings(request, pk):
     return render(request, "wordpress/tpostkind_mapping.html", context=context)
 
 
+@login_required
 def t_wordpress_attachments(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     context = {
         "t_wordpress": t_wordpress,
-        "object_list": t_wordpress.ref_t_wordpress_attachment.all(),
+        "attachment_count": t_wordpress.ref_t_wordpress_attachment.count(),
+        "imported": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=False).select_related("t_file"),
+        "object_list": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True),
     }
     return render(request, "wordpress/twordpressattachment_list.html", context=context)
 
 
+@login_required
 def import_attachment(request, uuid):
     t_attachment = get_object_or_404(TWordpressAttachment, uuid=uuid)
     if t_attachment.t_file:
@@ -98,7 +108,7 @@ def import_attachment(request, uuid):
         TurboFrame(uuid)
         .template(
             "wordpress/_attachment.html",
-            context={"t_wordpress_attachment": t_attachment},
+            context={"t_wordpress_attachment": t_attachment, "img_src": t_attachment.t_file.get_absolute_url()},
         )
         .response(request)
     )

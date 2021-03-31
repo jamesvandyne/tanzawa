@@ -13,7 +13,6 @@ export default class extends Controller {
             clearTimeout(this.timer);
         }
         if(this.fieldTarget.validity.valid) {
-            console.log(this.formTarget);
             this.timer = setTimeout(() => {
                 this.formTarget.requestSubmit();
             }, 400);

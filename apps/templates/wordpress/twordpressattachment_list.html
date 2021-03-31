@@ -4,13 +4,20 @@
     {% if messages %}
         {% include "fragments/messages.html" %}
     {% endif %}
-    <h1 class="text-xl">Import Attachments</h1>
-    <p>Slowly scroll down the page and Tanzawa will import your attachments automatically.</p>
+    <h1 class="text-xl">Importing Attachments...</h1>
+    <p>Leave this page open while Tanzawa imports your attachments.</p>
     <ul>
-        {% for t_wordpress_attachment in object_list %}
+        {% for t_wordpress_attachment in object_list reversed %}
             <li class="flex mt-2">
-                <turbo-frame id="{{ t_wordpress_attachment.uuid }}" loading="lazy" class="flex" {% if not t_wordpress_attachment.t_file_id %}src="{% url 'wordpress:import_attachment' t_wordpress_attachment.uuid %}"{% endif %}>
-                    {% include "wordpress/_attachment.html" %}
+                <turbo-frame id="{{ t_wordpress_attachment.uuid }}" class="flex" src="{% url 'wordpress:import_attachment' t_wordpress_attachment.uuid %}">
+                    {% include "wordpress/_attachment.html" with img_src=t_wordpress_attachment.guid loading="true" %}
+                </turbo-frame>
+            </li>
+        {% endfor %}
+        {% for t_wordpress_attachment in imported reversed %}
+            <li class="flex mt-2">
+                <turbo-frame loading="lazy" class="flex">
+                    {% include "wordpress/_attachment.html" with img_src=t_wordpress_attachment.t_file.get_absolute_url %}
                 </turbo-frame>
             </li>
         {% endfor %}
