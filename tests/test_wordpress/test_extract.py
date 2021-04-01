@@ -1,5 +1,7 @@
 import pytest
 from bs4 import BeautifulSoup
+from datetime import datetime
+import pytz
 
 
 @pytest.fixture
@@ -65,3 +67,16 @@ class TestExtractPostFormat:
     def test_extract_post_kind(self, target, checkin_xml_soup):
         categories = target(checkin_xml_soup)
         assert categories == [("Status", "post-format-status")]
+
+
+class TestExtractPublishedDate:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_published_date
+
+        return extract_published_date
+
+    def test_extract_published_date(self, target, post_xml_soup):
+        assert datetime(
+            year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=pytz.utc
+        ) == target(post_xml_soup)

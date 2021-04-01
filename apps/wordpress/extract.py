@@ -1,9 +1,12 @@
+from datetime import datetime
 from typing import Dict, Any, ByteString, List, Tuple
 from bs4 import BeautifulSoup
 import phpserialize
+from django.utils.timezone import make_aware
+import pytz
 
 from .models import TWordpressAttachment
-from post.models import TPost
+from post.models import TPost, MPostKind, MPostStatus, MPostStatuses
 
 from entry.models import TEntry, TSyndication, TBookmark, TLocation, TCheckin, TReply
 
@@ -22,6 +25,16 @@ def extract_attachment_meta(attachment: TWordpressAttachment) -> Dict[ByteString
         TCategory(name=category.text, nice_name=category.attrs["nicename"])
         for category in categories
     ]
+
+
+def extract_post_status(soup: BeautifulSoup) -> str:
+    status_map = {"publish": MPostStatuses.published, "draft": MPostStatuses.draft}
+    return status_map.get(soup.find("status").text, MPostStatuses.draft)
+
+
+def extract_published_date(soup: BeautifulSoup) -> datetime:
+    pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
+    return make_aware(pub_date, pytz.utc)
 
 
 def extract_entry(soup: BeautifulSoup) -> TEntry:
