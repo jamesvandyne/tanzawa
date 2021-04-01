@@ -81,8 +81,12 @@ def t_wordpress_attachments(request, pk):
     context = {
         "t_wordpress": t_wordpress,
         "attachment_count": t_wordpress.ref_t_wordpress_attachment.count(),
-        "imported": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=False).select_related("t_file"),
-        "object_list": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True),
+        "imported": t_wordpress.ref_t_wordpress_attachment.filter(
+            t_file__isnull=False
+        ).select_related("t_file"),
+        "object_list": t_wordpress.ref_t_wordpress_attachment.filter(
+            t_file__isnull=True
+        ),
     }
     return render(request, "wordpress/twordpressattachment_list.html", context=context)
 
@@ -108,7 +112,10 @@ def import_attachment(request, uuid):
         TurboFrame(uuid)
         .template(
             "wordpress/_attachment.html",
-            context={"t_wordpress_attachment": t_attachment, "img_src": t_attachment.t_file.get_absolute_url()},
+            context={
+                "t_wordpress_attachment": t_attachment,
+                "img_src": t_attachment.t_file.get_absolute_url(),
+            },
         )
         .response(request)
     )

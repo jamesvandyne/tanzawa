@@ -4,6 +4,7 @@ from django.db import transaction
 from bs4 import BeautifulSoup
 
 from .models import TWordpress, TCategory, TPostFormat, TPostKind, TWordpressAttachment
+from .extract import extract_categories, extract_post_kind, extract_post_format
 
 from streams.models import MStream
 from streams.forms import StreamModelChoiceField
@@ -37,37 +38,25 @@ class WordpressUploadForm(forms.ModelForm):
         self.instance.base_site_url = soup.find("wp:base_site_url").text
         self.instance.base_blog_url = soup.find("wp:base_blog_url").text
 
-        self._extract_categories(soup)
-        self._extract_post_format(soup)
-        self._extract_post_kind(soup)
-        self._extract_attachments(soup)
-
-    def _extract_categories(self, soup):
-        categories = set(soup.find_all("category", attrs={"domain": "category"}))
         self.t_categories.extend(
             [
-                TCategory(name=category.text, nice_name=category.attrs["nicename"])
-                for category in categories
+                TCategory(name=name, nice_name=nice_name)
+                for name, nice_name in extract_categories(soup)
             ]
         )
-
-    def _extract_post_kind(self, soup):
-        categories = set(soup.find_all("category", attrs={"domain": "kind"}))
-        self.t_post_kinds.extend(
-            [
-                TPostKind(name=category.text, nice_name=category.attrs["nicename"])
-                for category in categories
-            ]
-        )
-
-    def _extract_post_format(self, soup):
-        categories = set(soup.find_all("category", attrs={"domain": "post_format"}))
         self.t_post_formats.extend(
             [
-                TPostFormat(name=category.text, nice_name=category.attrs["nicename"])
-                for category in categories
+                TPostFormat(name=name, nice_name=nice_name)
+                for name, nice_name in extract_post_format(soup)
             ]
         )
+        self.t_post_kinds.extend(
+            [
+                TPostKind(name=name, nice_name=nice_name)
+                for name, nice_name in extract_post_kind(soup)
+            ]
+        )
+        self._extract_attachments(soup)
 
     def _extract_attachments(self, soup):
         attachments = soup.find_all("wp:post_type", text="attachment")

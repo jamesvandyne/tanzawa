@@ -17,3 +17,4 @@ ronkyuu
 ninka
 extruct
 django-turbo-response
+phpserialize
