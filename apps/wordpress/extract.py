@@ -70,3 +70,20 @@ def extract_post_format(soup: BeautifulSoup) -> List[Tuple[str, str]]:
         (cat.text, cat.attrs["nicename"])
         for cat in set(soup.find_all("category", attrs={"domain": "post_format"}))
     ]
+
+
+def _extract_meta_list(soup: BeautifulSoup, key:str) -> List[str]:
+    values = []
+    for item in soup.find("meta_key", text=key):
+        value = item.find_next("meta_value")
+        value_dict: Dict[int, bytes] = phpserialize.loads(value.text.encode("utf8"))
+        values.extend([url.decode("utf8") for url in value_dict.values()])
+    return values
+
+
+def extract_photo(soup: BeautifulSoup) -> List[str]:
+    return _extract_meta_list(soup, "mf2_photo")
+
+
+def extract_syndication(soup: BeautifulSoup) -> List[str]:
+    return _extract_meta_list(soup, "mf2_syndication")

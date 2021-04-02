@@ -80,3 +80,17 @@ class TestExtractPublishedDate:
         assert datetime(
             year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=pytz.utc
         ) == target(post_xml_soup)
+
+
+class TestExtractPhoto:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_photo
+
+        return extract_photo
+
+    def test_extract_photo(self, target, checkin_xml_soup):
+        photos = target(checkin_xml_soup)
+        assert photos == [
+            "https://fastly.4sqi.net/img/general/original/89277993_FzCrX1lGY8katwtWXKivLtYCtjI1sA9pb_bXODpP1Bc.jpg"
+        ]
