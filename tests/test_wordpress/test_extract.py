@@ -1,6 +1,8 @@
+from datetime import datetime
+
 import pytest
 from bs4 import BeautifulSoup
-from datetime import datetime
+from django.contrib.gis.geos import Point
 import pytz
 
 
@@ -13,6 +15,12 @@ def post_xml_soup():
 @pytest.fixture
 def checkin_xml_soup():
     with open("tests/fixtures/checkin.xml") as f:
+        return BeautifulSoup(f.read(), "xml")
+
+
+@pytest.fixture
+def reply_xml_soup():
+    with open("tests/fixtures/replyto.xml") as f:
         return BeautifulSoup(f.read(), "xml")
 
 
@@ -94,3 +102,63 @@ class TestExtractPhoto:
         assert photos == [
             "https://fastly.4sqi.net/img/general/original/89277993_FzCrX1lGY8katwtWXKivLtYCtjI1sA9pb_bXODpP1Bc.jpg"
         ]
+
+
+class TestExtractSyndication:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_syndication
+
+        return extract_syndication
+
+    def test_extract_syndication(self, target, checkin_xml_soup):
+        urls = target(checkin_xml_soup)
+        assert urls == [
+            "https://www.swarmapp.com/user/89277993/checkin/5f6563d6a183c074f5e2e472"
+        ]
+
+
+class TestExtractLocation:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_location
+
+        return extract_location
+
+    def test_extract_location(self, target, checkin_xml_soup):
+        location = target(checkin_xml_soup)
+        assert location == {
+            "street_address": "都筑区折本町201-1",
+            "locality": "Yokohama",
+            "region": "Kanagawa",
+            "country_name": "Japan",
+            "postal_code": "224-0043",
+            "point": Point(35.522764,  139.590671),
+        }
+
+
+class TestExtractCheckin:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_checkin
+
+        return extract_checkin
+
+    def test_extract_checkin(self, target, checkin_xml_soup):
+        checkin = target(checkin_xml_soup)
+        assert checkin == {
+            "name": "IKEA Restaurant & Cafe (IKEAレストラン&カフェ)",
+            "url": "https://foursquare.com/v/4e745d4f1838f918895cf6fd"
+        }
+
+
+class TestExtractReply:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_in_reply_to
+
+        return extract_in_reply_to
+
+    def test_extract_checkin(self, target, reply_xml_soup):
+        reply = target(reply_xml_soup)
+        assert reply == {}
