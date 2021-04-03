@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
 import pytz
 
+from indieweb.extract import LinkedPageAuthor, LinkedPage
+
 
 @pytest.fixture
 def post_xml_soup():
@@ -21,6 +23,12 @@ def checkin_xml_soup():
 @pytest.fixture
 def reply_xml_soup():
     with open("tests/fixtures/replyto.xml") as f:
+        return BeautifulSoup(f.read(), "xml")
+
+
+@pytest.fixture
+def bookmark_xml_soup():
+    with open("tests/fixtures/bookmark.xml") as f:
         return BeautifulSoup(f.read(), "xml")
 
 
@@ -159,6 +167,32 @@ class TestExtractReply:
 
         return extract_in_reply_to
 
-    def test_extract_checkin(self, target, reply_xml_soup):
+    def test_extract_reply(self, target, reply_xml_soup):
         reply = target(reply_xml_soup)
-        assert reply == {}
+        assert reply == LinkedPage(
+            url="https://jamesg.blog/2020/10/19/a-conflict-with-rss",
+            title="A Conflict with RSS",
+            description="On my vacation, I took some time away from technology.",
+            author=LinkedPageAuthor(
+                name="capjamesg",
+                url="https://jamesg.blog",
+                photo="https://jamesg.blog/assets/coffeeshop.jpg"
+            )
+        )
+
+
+class TestExtractBookmark:
+    @pytest.fixture
+    def target(self):
+        from wordpress.extract import extract_bookmark
+
+        return extract_bookmark
+
+    def test_extract_reply(self, target, bookmark_xml_soup):
+        bookmark = target(bookmark_xml_soup)
+        assert bookmark == LinkedPage(
+            url="https://www.nikkei.com/article/DGXMZO65278360R21C20A0MM8000/",
+            title="温暖化ガス排出、2050年に実質ゼロ　菅首相が表明へ　　:日本経済新聞",
+            description="■26日、就任後初の所信演説で方針を示す■ＥＵが既に掲げた目標を日本もようやく追いかける■高い基準の達成に日本企業も厳しい対応を迫られる",
+            author=None
+        )

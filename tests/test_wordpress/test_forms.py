@@ -1,6 +1,6 @@
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
-from wordpress.models import TCategory, TPostFormat, TPostKind, TWordpressAttachment
+from wordpress.models import TCategory, TPostFormat, TPostKind, TWordpressAttachment, TWordpressPost
 
 
 @pytest.mark.django_db
@@ -40,3 +40,4 @@ class TestWordpressUploadFrom:
         assert TPostFormat.objects.count() == 6
         assert TPostKind.objects.count() == 6
         assert TWordpressAttachment.objects.count() == 245
+        assert TWordpressPost.objects.count() == 398

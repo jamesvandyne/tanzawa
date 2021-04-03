@@ -88,8 +88,10 @@ class TWordpressPost(TimestampModel):
         TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_post"
     )
 
+    path = models.CharField(max_length=256, db_index=True)  # original db path
     guid = models.CharField(max_length=256)
-    uuid = models.UUIDField(default=uuid.uuid4)
+    uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
+
     t_post = models.ForeignKey(
         "post.TPost", on_delete=models.CASCADE, blank=True, null=True
     )

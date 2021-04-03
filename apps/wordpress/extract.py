@@ -145,7 +145,7 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     return {}
 
 
-def _extract_author(author: Dict[bytes, Dict[int, bytes]]) -> Optional[LinkedPageAuthor]:
+def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optional[LinkedPageAuthor]:
     properties = author.get(b"properties")
     if properties:
         return LinkedPageAuthor(
@@ -156,13 +156,12 @@ def _extract_author(author: Dict[bytes, Dict[int, bytes]]) -> Optional[LinkedPag
     return None
 
 
-def extract_in_reply_to(soup: BeautifulSoup) -> Optional[LinkedPage]:
-    reply_to = soup.find("meta_key", text="mf2_in-reply-to")
-    if reply_to:
-        value = reply_to.find_next("meta_value")
+def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
+    cite = soup.find("meta_key", text=key)
+    if cite:
+        value = cite.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b'properties', {})
-        import pdb; pdb.set_trace()
         return LinkedPage(
             url=_get_item_as_string(properties, b"url").decode("utf8"),
             title=_get_item_as_string(properties, b"name").decode("utf8"),
@@ -170,3 +169,11 @@ def extract_in_reply_to(soup: BeautifulSoup) -> Optional[LinkedPage]:
             author=_extract_author(properties.get(b"author", {}))
         )
     return None
+
+
+def extract_in_reply_to(soup: BeautifulSoup) -> Optional[LinkedPage]:
+    return _extract_cite(soup, "mf2_in-reply-to")
+
+
+def extract_bookmark(soup: BeautifulSoup) -> Optional[LinkedPage]:
+    return _extract_cite(soup, "mf2_bookmark-of")

@@ -119,3 +119,15 @@ def import_attachment(request, uuid):
         )
         .response(request)
     )
+
+
+@login_required
+def import_posts(request, pk):
+    t_wordpress = get_object_or_404(TWordpress, pk=pk)
+    context = {
+        "t_wordpress": t_wordpress,
+    }
+    if request.method == "POST":
+        pass
+
+    return render(request, "wordpress/twordpressattachment_list.html", context=context)

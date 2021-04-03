@@ -1,0 +1,112 @@
+<item>
+		<title><![CDATA[]]></title>
+		<link>https://jamesvandyne.com/2020/10/20/964.html</link>
+		<pubDate>Tue, 20 Oct 2020 03:09:55 +0000</pubDate>
+		<dc:creator><![CDATA[jamesvandyne]]></dc:creator>
+		<guid isPermaLink="false">https://jamesvandyne.com/?p=964</guid>
+		<description></description>
+		<content:encoded><![CDATA[The major difference between the feeds of the Social Dilemma and your RSS feed is one is algorithmly designed to addict and manipulate, while the other is just a chronological list of stuff you're interested in reading. What I do in these cases is I give a quick glance at the unreads for something that really interests me and then mark everything as read.
+
+My feed list is only about 10 - 15 items at the moment, it's quickly expanding as I find interesting people on the IndieWeb, so it may not be as viable of a strategy for a larger number of feeds.]]></content:encoded>
+		<excerpt:encoded><![CDATA[]]></excerpt:encoded>
+		<wp:post_id>964</wp:post_id>
+		<wp:post_date><![CDATA[2020-10-20 12:09:55]]></wp:post_date>
+		<wp:post_date_gmt><![CDATA[2020-10-20 03:09:55]]></wp:post_date_gmt>
+		<wp:post_modified><![CDATA[2020-10-20 12:10:43]]></wp:post_modified>
+		<wp:post_modified_gmt><![CDATA[2020-10-20 03:10:43]]></wp:post_modified_gmt>
+		<wp:comment_status><![CDATA[open]]></wp:comment_status>
+		<wp:ping_status><![CDATA[open]]></wp:ping_status>
+		<wp:post_name><![CDATA[964]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_parent>0</wp:post_parent>
+		<wp:menu_order>0</wp:menu_order>
+		<wp:post_type><![CDATA[post]]></wp:post_type>
+		<wp:post_password><![CDATA[]]></wp:post_password>
+		<wp:is_sticky>0</wp:is_sticky>
+										<category domain="category" nicename="replies"><![CDATA[Replies]]></category>
+		<category domain="kind" nicename="reply"><![CDATA[Reply]]></category>
+						<wp:postmeta>
+		<wp:meta_key><![CDATA[_wpcom_is_markdown]]></wp:meta_key>
+		<wp:meta_value><![CDATA[1]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[_edit_last]]></wp:meta_key>
+		<wp:meta_value><![CDATA[1]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[mf2_mp-syndicate-to]]></wp:meta_key>
+		<wp:meta_value><![CDATA[a:1:{i:0;s:4:"none";}]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[mf2_syndication]]></wp:meta_key>
+		<wp:meta_value><![CDATA[a:0:{}]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[mf2_in-reply-to]]></wp:meta_key>
+		<wp:meta_value><![CDATA[a:2:{s:10:"properties";a:6:{s:9:"published";a:1:{i:0;s:25:"2020-10-19T22:32:05+00:00";}s:7:"updated";a:1:{i:0;s:25:"2020-10-19T22:32:05+00:00";}s:7:"summary";a:1:{i:0;s:54:"On my vacation, I took some time away from technology.";}s:4:"name";a:1:{i:0;s:19:"A Conflict with RSS";}s:3:"url";a:1:{i:0;s:50:"https://jamesg.blog/2020/10/19/a-conflict-with-rss";}s:6:"author";a:2:{s:4:"type";a:1:{i:0;s:6:"h-card";}s:10:"properties";a:3:{s:4:"name";a:1:{i:0;s:9:"capjamesg";}s:3:"url";a:1:{i:0;s:19:"https://jamesg.blog";}s:5:"photo";a:1:{i:0;s:41:"https://jamesg.blog/assets/coffeeshop.jpg";}}}}s:4:"type";s:4:"cite";}]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:comment>
+			<wp:comment_id>2171</wp:comment_id>
+			<wp:comment_author><![CDATA[James]]></wp:comment_author>
+			<wp:comment_author_email><![CDATA[]]></wp:comment_author_email>
+			<wp:comment_author_url>https://jamesvandyne.com/2020/10/27/2020-44.html</wp:comment_author_url>
+			<wp:comment_author_IP><![CDATA[165.22.85.134]]></wp:comment_author_IP>
+			<wp:comment_date><![CDATA[2020-10-27 05:38:26]]></wp:comment_date>
+			<wp:comment_date_gmt><![CDATA[2020-10-26 20:38:26]]></wp:comment_date_gmt>
+			<wp:comment_content><![CDATA[I started experimenting more with <a href="https://indieweb.org/WordPress/Plugins" rel="nofollow ugc">IndieWeb Post Kinds</a>. I tried a <a href="https://jamesvandyne.com/2020/10/22/976.html">bookmark</a> and a <a href="https://jamesvandyne.com/2020/10/20/964.html">reply</a> to James’ post about RSS, but I’m not sure if it sent webmentions like it should’ve. One thing’s for certain my blog needs some style adjustments – replies don’t have enough space between them and the next post. Finding a good mapping between WordPress “Kind” and the IndieWeb “Post Kind” is difficult, as well.
+I’ve rearranged the footer of my site. Site meta was deleted, Categories was moved to the right, and I’ve added post kinds to encourage me to use them more. While I <a href="https://indieweb.org/backfeed" rel="nofollow ugc">backfeed</a> all of my Swarm checkins to my blog, I filter them from my homepage and main rss feed as it creates too much noise. But I still wanted a place to list them on my site, so my most recent 5 checkins are listed as well.
+I’ve been ignoring my Bedtime and watching Long Way Up/Down/Round. While it’s been good to have some time to travel with my mind it’s been bad for daily energy levels. This week I’m going to try and get to bed on time so I can wake easier.]]></wp:comment_content>
+			<wp:comment_approved><![CDATA[1]]></wp:comment_approved>
+			<wp:comment_type><![CDATA[webmention]]></wp:comment_type>
+			<wp:comment_parent>0</wp:comment_parent>
+			<wp:comment_user_id>0</wp:comment_user_id>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[webmention_created_at]]></wp:meta_key>
+			<wp:meta_value><![CDATA[2020-10-26 20:38:31]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[protocol]]></wp:meta_key>
+			<wp:meta_value><![CDATA[webmention]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[webmention_source_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://jamesvandyne.com/2020/10/27/2020-44.html]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[webmention_target_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://jamesvandyne.com/2020/10/20/964.html]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[semantic_linkbacks_source]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://jamesvandyne.com/2020/10/27/2020-44.html]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[semantic_linkbacks_author_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://jamesvandyne.com/author/jamesvandyne]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[avatar]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://secure.gravatar.com/avatar/f6995495f1edd1b4294fa8b017801dc7?s=40&d=mm&r=g]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[semantic_linkbacks_canonical]]></wp:meta_key>
+			<wp:meta_value><![CDATA[https://jamesvandyne.com/2020/10/27/2020-44.html]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[semantic_linkbacks_type]]></wp:meta_key>
+			<wp:meta_value><![CDATA[mention]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[mf2_author]]></wp:meta_key>
+			<wp:meta_value><![CDATA[a:6:{s:4:"type";s:6:"h-card";s:4:"name";s:5:"James";s:5:"photo";s:81:"https://secure.gravatar.com/avatar/f6995495f1edd1b4294fa8b017801dc7?s=40&d=mm&r=g";s:3:"url";s:44:"https://jamesvandyne.com/author/jamesvandyne";s:3:"uid";s:44:"https://jamesvandyne.com/author/jamesvandyne";s:2:"me";a:1:{i:0;s:23:"mailto:james@hoge.vandyne.co";}}]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[akismet_result]]></wp:meta_key>
+			<wp:meta_value><![CDATA[false]]></wp:meta_value>
+			</wp:commentmeta>
+						<wp:commentmeta>
+	<wp:meta_key><![CDATA[akismet_history]]></wp:meta_key>
+			<wp:meta_value><![CDATA[a:2:{s:4:"time";d:1603744711.564728;s:5:"event";s:9:"check-ham";}]]></wp:meta_value>
+			</wp:commentmeta>
+							</wp:comment>
+					</item>

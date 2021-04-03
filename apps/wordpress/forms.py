@@ -1,9 +1,10 @@
 from typing import List
+from urllib.parse import urlparse
 from django import forms
 from django.db import transaction
 from bs4 import BeautifulSoup
 
-from .models import TWordpress, TCategory, TPostFormat, TPostKind, TWordpressAttachment
+from .models import TWordpress, TCategory, TPostFormat, TPostKind, TWordpressAttachment, TWordpressPost
 from .extract import extract_categories, extract_post_kind, extract_post_format
 
 from streams.models import MStream
@@ -21,6 +22,7 @@ class WordpressUploadForm(forms.ModelForm):
         self.t_post_formats: List[TPostFormat] = []
         self.t_post_kinds: List[TPostKind] = []
         self.t_attachments: List[TWordpressAttachment] = []
+        self.t_posts: List[TWordpressPost] = []
 
     def clean_export_file(self):
         if self.cleaned_data["export_file"].content_type not in [
@@ -57,6 +59,7 @@ class WordpressUploadForm(forms.ModelForm):
             ]
         )
         self._extract_attachments(soup)
+        self._extract_posts(soup)
 
     def _extract_attachments(self, soup):
         attachments = soup.find_all("wp:post_type", text="attachment")
@@ -64,6 +67,16 @@ class WordpressUploadForm(forms.ModelForm):
             [
                 TWordpressAttachment(guid=attachment.parent.find("guid").text)
                 for attachment in attachments
+            ]
+        )
+
+    def _extract_posts(self, soup):
+        posts = soup.find_all("wp:post_type", text="post")
+        self.t_posts.extend(
+            [
+                TWordpressPost(guid=post.parent.find("guid").text,
+                               path=urlparse(post.parent.find("link").text).path)
+                for post in posts
             ]
         )
 
@@ -87,6 +100,10 @@ class WordpressUploadForm(forms.ModelForm):
             t_attachment.t_wordpress = instance
         TWordpressAttachment.objects.bulk_create(self.t_attachments)
 
+        for t_post in self.t_posts:
+            t_post.t_wordpress = instance
+        TWordpressPost.objects.bulk_create(self.t_posts)
+
         return instance
 
 
@@ -105,3 +122,13 @@ class TPostKindModelForm(forms.ModelForm):
     class Meta:
         model = TPostKind
         fields = ("m_post_kind",)
+
+
+class ImportTWordpressPostForm(forms.ModelForm):
+    class Meta:
+        model = TWordpressPost
+        fields = ("t_post", )
+
+    def clean(self):
+        pass
+        # loop through item xml and prepare objects
