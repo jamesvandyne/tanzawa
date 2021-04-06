@@ -107,6 +107,7 @@ class TWordpressAttachment(TimestampModel):
 
     guid = models.CharField(max_length=256)
     uuid = models.UUIDField(default=uuid.uuid4)
+    link = models.URLField(blank=True)
     t_file = models.ForeignKey(
         "files.TFile", on_delete=models.CASCADE, blank=True, null=True
     )

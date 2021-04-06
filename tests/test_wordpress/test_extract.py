@@ -141,7 +141,7 @@ class TestExtractLocation:
             "region": "Kanagawa",
             "country_name": "Japan",
             "postal_code": "224-0043",
-            "point": Point(35.522764,  139.590671),
+            "point": Point(35.522764, 139.590671),
         }
 
 
@@ -156,7 +156,7 @@ class TestExtractCheckin:
         checkin = target(checkin_xml_soup)
         assert checkin == {
             "name": "IKEA Restaurant & Cafe (IKEAレストラン&カフェ)",
-            "url": "https://foursquare.com/v/4e745d4f1838f918895cf6fd"
+            "url": "https://foursquare.com/v/4e745d4f1838f918895cf6fd",
         }
 
 
@@ -176,8 +176,8 @@ class TestExtractReply:
             author=LinkedPageAuthor(
                 name="capjamesg",
                 url="https://jamesg.blog",
-                photo="https://jamesg.blog/assets/coffeeshop.jpg"
-            )
+                photo="https://jamesg.blog/assets/coffeeshop.jpg",
+            ),
         )
 
 
@@ -194,5 +194,5 @@ class TestExtractBookmark:
             url="https://www.nikkei.com/article/DGXMZO65278360R21C20A0MM8000/",
             title="温暖化ガス排出、2050年に実質ゼロ　菅首相が表明へ　　:日本経済新聞",
             description="■26日、就任後初の所信演説で方針を示す■ＥＵが既に掲げた目標を日本もようやく追いかける■高い基準の達成に日本企業も厳しい対応を迫られる",
-            author=None
+            author=None,
         )

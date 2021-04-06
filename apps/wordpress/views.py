@@ -1,7 +1,9 @@
 from pathlib import Path
-from django.urls import reverse
 
+from bs4 import BeautifulSoup
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, CreateView
@@ -9,12 +11,30 @@ from django import forms
 from django.http import Http404, HttpResponse, JsonResponse
 from turbo_response import redirect_303, TurboFrame
 from django.contrib import messages
-from indieweb.utils import download_image
+from indieweb.utils import download_image, render_attachment
+from indieweb.location import location_to_pointfield_input
 from files.images import bytes_as_upload_image
 from files.forms import MediaUploadForm
+from entry.forms import (
+    CreateStatusForm,
+    CreateArticleForm,
+    CreateBookmarkForm,
+    CreateReplyForm,
+    CreateCheckinForm,
+    TCheckinModelForm,
+    TSyndicationModelForm,
+    TLocationModelForm,
+)
 
-from .models import TWordpress, TCategory, TPostKind, TWordpressAttachment
+from .models import (
+    TWordpress,
+    TCategory,
+    TPostKind,
+    TWordpressAttachment,
+    TWordpressPost,
+)
 from .forms import WordpressUploadForm, TCategoryModelForm, TPostKindModelForm
+from . import extract
 
 
 @method_decorator(login_required, name="dispatch")
@@ -36,7 +56,7 @@ class TWordpressCreate(CreateView):
     template_name = "wordpress/wordpress_create.html"
 
     def get_success_url(self):
-        return reverse("wordpress:tcategory_mapping", args=[self.object.pk])
+        return reverse("wordpress:t_category_mapping", args=[self.object.pk])
 
 
 @login_required
@@ -126,8 +146,109 @@ def import_posts(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     context = {
         "t_wordpress": t_wordpress,
+        "unimported_attachments": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True).exists(),
+        "category_map": t_wordpress.ref_t_category.filter(m_stream__isnull=False).exists(),
+        "postkind_map": t_wordpress.ref_t_post_kind.filter(m_post_kind__isnull=False).exists(),
     }
     if request.method == "POST":
-        pass
+        soup = BeautifulSoup(t_wordpress.export_file.read(), "xml")
+        import pdb; pdb.set_trace()
+        for t_post in t_wordpress.ref_t_wordpress_post.all()[:1]:
+            import_post(request, t_post, soup)
+        messages.success(request, "Imported Posts 🎉")
+    return render(request, "wordpress/import_posts.html", context=context)
 
-    return render(request, "wordpress/twordpressattachment_list.html", context=context)
+
+def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
+
+    # t_wordpress_post = get_object_or_404(TWordpressPost, uuid=uuid)
+    # soup = BeautifulSoup(t_wordpress_post.t_wordpress.export_file.read(), "xml")
+
+    guid = soup.find("guid", text=t_wordpress_post.guid)
+    if not guid:
+
+        raise forms.ValidationError("Guid doesn't exist in export file")
+    item = guid.parent
+
+    named_forms = {}
+    dt_published = extract.extract_published_date(item)
+    form_data = {
+        "p_name": item.find("title").text,
+        "e_content": item.find("encoded").text,
+        "m_post_status": "".join(extract.extract_post_status(item)),
+        "dt_published": dt_published.isoformat() if dt_published else None,
+        # "streams": serializer.validated_data["properties"]["streams"].values_list(
+        #     "pk", flat=True
+        # )
+    }
+    reply = extract.extract_in_reply_to(item)
+    bookmark_of = extract.extract_bookmark(item)
+    if reply:
+        form_data.update(
+            {
+                "u_in_reply_to": reply.url,
+                "title": reply.title,
+                "author": reply.author.name,
+                "summary": reply.description,
+            }
+        )
+    elif bookmark_of:
+        form_data.update(
+            {
+                "u_bookmark_of": bookmark_of.url,
+                "title": bookmark_of.title,
+                "author": bookmark_of.author.name,
+                "summary": bookmark_of.description,
+            }
+        )
+
+    # Process related content
+    location = extract.extract_location(item)
+    checkin = extract.extract_checkin(item)
+    syndication = extract.extract_syndication(item)
+    if location:
+        location["point"] = location_to_pointfield_input(location["point"])
+        named_forms["location"] = TLocationModelForm(data=location)
+    if checkin:
+        named_forms["checkin"] = TCheckinModelForm(data=checkin)
+    if syndication:
+        for idx, syndication_url in enumerate(syndication):
+            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
+                data={"url": syndication_url}
+            )
+
+    form_data["e_content"] = str(soup)
+
+    # Append any attachments
+    for attachment in TWordpressAttachment.objects.filter(
+        link__contains=t_wordpress_post.path
+    ):
+        if attachment.t_file:
+            tag = render_attachment(request, attachment.t_file)
+            form_data["e_content"] += tag
+
+    form_class = CreateStatusForm
+    if form_data["p_name"]:
+        form_class = CreateArticleForm
+    if form_data.get("u_in_reply_to"):
+        form_class = CreateReplyForm
+    if form_data.get("u_bookmark_of"):
+        form_class = CreateBookmarkForm
+    if named_forms.get("checkin"):
+        form_class = CreateCheckinForm
+
+    form = form_class(data=form_data, p_author=request.user)
+    import pdb; pdb.set_trace()
+    if form.is_valid() and all(
+        named_form.is_valid() for named_form in named_forms.values()
+    ):
+        form.prepare_data()
+
+        with transaction.atomic():
+            entry = form.save()
+
+            for named_form in named_forms.values():
+                named_form.prepare_data(entry)
+                named_form.save()
+    else:
+        import pdb; pdb.set_trace()

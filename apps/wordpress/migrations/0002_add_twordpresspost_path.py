@@ -7,19 +7,19 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wordpress', '0001_initial'),
+        ("wordpress", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='twordpresspost',
-            name='path',
-            field=models.CharField(db_index=True, default='', max_length=256),
+            model_name="twordpresspost",
+            name="path",
+            field=models.CharField(db_index=True, default="", max_length=256),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='twordpresspost',
-            name='uuid',
+            model_name="twordpresspost",
+            name="uuid",
             field=models.UUIDField(db_index=True, default=uuid.uuid4),
         ),
     ]

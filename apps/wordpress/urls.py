@@ -24,5 +24,10 @@ urlpatterns = [
         views.import_attachment,
         name="import_attachment",
     ),
+    path(
+        "upload/<int:pk>/import_posts",
+        views.import_posts,
+        name="import_posts",
+    ),
     path("", views.TWordpressListView.as_view(), name="t_wordpress_list"),
 ]

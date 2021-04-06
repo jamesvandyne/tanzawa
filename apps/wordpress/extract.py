@@ -73,7 +73,7 @@ def extract_post_format(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     ]
 
 
-def _extract_meta_list(soup: BeautifulSoup, key:str) -> List[str]:
+def _extract_meta_list(soup: BeautifulSoup, key: str) -> List[str]:
     values = []
     for item in soup.find("meta_key", text=key):
         value = item.find_next("meta_value")
@@ -97,37 +97,45 @@ def _get_item_as_string(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -
             return value[0]
         except KeyError:
             pass
-    return b''
+    return b""
 
 
 def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     location_key = soup.find("meta_key", text="mf2_location")
     if location_key:
         """
-        {b'type': 
-            {0: b'h-adr'}, 
+        {b'type':
+            {0: b'h-adr'},
         b'properties': {
-            b'latitude': {0: 35.522764}, 
-            b'longitude': {0: 139.590671}, 
+            b'latitude': {0: 35.522764},
+            b'longitude': {0: 139.590671},
             b'street-address': {0: b'\xe9\x83\xbd\xe7\xad\x91\xe5\x8c\xba\xe6\x8a\x98\xe6\x9c\xac\xe7\x94\xba201-1'},
-            b'locality': {0: b'Yokohama'}, 
-            b'region': {0: b'Kanagawa'}, 
-            b'country-name': {0: b'Japan'}, 
+            b'locality': {0: b'Yokohama'},
+            b'region': {0: b'Kanagawa'},
+            b'country-name': {0: b'Japan'},
             b'postal-code': {0: b'224-0043'}
             }
         }
         """
         value = location_key.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
-        properties = value_dict.get(b'properties', {})
+        properties = value_dict.get(b"properties", {})
         return {
-            "street_address": _get_item_as_string(properties, b"street-address").decode("utf8"),
+            "street_address": _get_item_as_string(properties, b"street-address").decode(
+                "utf8"
+            ),
             "locality": _get_item_as_string(properties, b"locality").decode("utf8"),
             "region": _get_item_as_string(properties, b"region").decode("utf8"),
-            "country_name": _get_item_as_string(properties, b"country-name").decode("utf8"),
-            "postal_code": _get_item_as_string(properties, b"postal-code").decode("utf8"),
-            "point": Point(_get_item_as_string(properties, b"latitude"),
-                           _get_item_as_string(properties, b"longitude")),
+            "country_name": _get_item_as_string(properties, b"country-name").decode(
+                "utf8"
+            ),
+            "postal_code": _get_item_as_string(properties, b"postal-code").decode(
+                "utf8"
+            ),
+            "point": Point(
+                _get_item_as_string(properties, b"latitude"),
+                _get_item_as_string(properties, b"longitude"),
+            ),
         }
     return {}
 
@@ -137,7 +145,7 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     if location_key:
         value = location_key.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
-        properties = value_dict.get(b'properties', {})
+        properties = value_dict.get(b"properties", {})
         return {
             "name": _get_item_as_string(properties, b"name").decode("utf8"),
             "url": _get_item_as_string(properties, b"url").decode("utf8"),
@@ -145,13 +153,15 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     return {}
 
 
-def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optional[LinkedPageAuthor]:
+def _extract_author(
+    author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]
+) -> Optional[LinkedPageAuthor]:
     properties = author.get(b"properties")
     if properties:
         return LinkedPageAuthor(
             name=_get_item_as_string(properties, b"name").decode("utf8"),
             url=_get_item_as_string(properties, b"url").decode("utf8"),
-            photo=_get_item_as_string(properties, b"photo").decode("utf8")
+            photo=_get_item_as_string(properties, b"photo").decode("utf8"),
         )
     return None
 
@@ -161,12 +171,12 @@ def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
     if cite:
         value = cite.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
-        properties = value_dict.get(b'properties', {})
+        properties = value_dict.get(b"properties", {})
         return LinkedPage(
             url=_get_item_as_string(properties, b"url").decode("utf8"),
             title=_get_item_as_string(properties, b"name").decode("utf8"),
             description=_get_item_as_string(properties, b"summary").decode("utf8"),
-            author=_extract_author(properties.get(b"author", {}))
+            author=_extract_author(properties.get(b"author", {})),
         )
     return None
 

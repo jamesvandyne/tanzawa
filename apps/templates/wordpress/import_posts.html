@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <h1 class="text-xl">Importing Posts</h1>
+    <ul>
+        {% if unimported_attachments %}
+            <li>❌ Finish importing attachments.</li>
+        {% else %}
+            <li>✅ Attachments Imported</li>
+        {% endif %}
+
+        {% if category_map %}
+            <li>✅ Categories Mapped</li>
+        {% else %}
+            <li>❌ Category mapping isn't set.</li>
+        {% endif %}
+
+        {% if postkind_map %}
+            <li>✅ Postkinds Mapped</li>
+        {% else %}
+            <li>❌ Postkind mapping isn't set.</li>
+        {% endif %}
+    </ul>
+    <form method="post">
+        {% csrf_token %}
+        <button class="rounded mt-2 text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" type="submit" data-turbo="false">Import Posts</button>
+    </form>
+{% endblock %}

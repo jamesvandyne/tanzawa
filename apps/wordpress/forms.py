@@ -4,7 +4,16 @@ from django import forms
 from django.db import transaction
 from bs4 import BeautifulSoup
 
-from .models import TWordpress, TCategory, TPostFormat, TPostKind, TWordpressAttachment, TWordpressPost
+from post.models import TPost
+
+from .models import (
+    TWordpress,
+    TCategory,
+    TPostFormat,
+    TPostKind,
+    TWordpressAttachment,
+    TWordpressPost,
+)
 from .extract import extract_categories, extract_post_kind, extract_post_format
 
 from streams.models import MStream
@@ -65,7 +74,10 @@ class WordpressUploadForm(forms.ModelForm):
         attachments = soup.find_all("wp:post_type", text="attachment")
         self.t_attachments.extend(
             [
-                TWordpressAttachment(guid=attachment.parent.find("guid").text)
+                TWordpressAttachment(
+                    guid=attachment.parent.find("guid").text,
+                    link=attachment.parent.find("link").text,
+                )
                 for attachment in attachments
             ]
         )
@@ -74,8 +86,10 @@ class WordpressUploadForm(forms.ModelForm):
         posts = soup.find_all("wp:post_type", text="post")
         self.t_posts.extend(
             [
-                TWordpressPost(guid=post.parent.find("guid").text,
-                               path=urlparse(post.parent.find("link").text).path)
+                TWordpressPost(
+                    guid=post.parent.find("guid").text,
+                    path=urlparse(post.parent.find("link").text).path,
+                )
                 for post in posts
             ]
         )
@@ -127,8 +141,14 @@ class TPostKindModelForm(forms.ModelForm):
 class ImportTWordpressPostForm(forms.ModelForm):
     class Meta:
         model = TWordpressPost
-        fields = ("t_post", )
+        fields = ("t_post",)
 
-    def clean(self):
-        pass
+    def __init__(self, *args, soup: BeautifulSoup, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.soup = soup
+        self.item = None
+
+    def prepare_data(self):
+        self.t_post = self.instance.t_post or TPost()
+
         # loop through item xml and prepare objects
