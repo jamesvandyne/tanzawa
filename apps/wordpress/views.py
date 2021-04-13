@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, get_object_or_404
+from django.template.defaultfilters import linebreaks_filter, safe
 from django.views.generic import ListView, CreateView
 from django import forms
 from django.http import Http404, HttpResponse, JsonResponse
@@ -24,7 +25,13 @@ from entry.forms import (
     TCheckinModelForm,
     TSyndicationModelForm,
     TLocationModelForm,
+    UpdateStatusForm,
+    UpdateArticleForm,
+    UpdateBookmarkForm,
+    UpdateReplyForm,
+    UpdateCheckinForm
 )
+from entry.models import TCheckin, TLocation
 
 from .models import (
     TWordpress,
@@ -152,8 +159,8 @@ def import_posts(request, pk):
     }
     if request.method == "POST":
         soup = BeautifulSoup(t_wordpress.export_file.read(), "xml")
-        import pdb; pdb.set_trace()
-        for t_post in t_wordpress.ref_t_wordpress_post.all()[:1]:
+
+        for t_post in t_wordpress.ref_t_wordpress_post.all():
             import_post(request, t_post, soup)
         messages.success(request, "Imported Posts 🎉")
     return render(request, "wordpress/import_posts.html", context=context)
@@ -161,15 +168,18 @@ def import_posts(request, pk):
 
 def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
-    # t_wordpress_post = get_object_or_404(TWordpressPost, uuid=uuid)
-    # soup = BeautifulSoup(t_wordpress_post.t_wordpress.export_file.read(), "xml")
-
     guid = soup.find("guid", text=t_wordpress_post.guid)
+    t_post = t_wordpress_post.t_post
+    if t_post:
+        t_entry = t_post.ref_t_entry.first()
+    else:
+        t_entry = None
+
     if not guid:
 
         raise forms.ValidationError("Guid doesn't exist in export file")
     item = guid.parent
-
+    print("Processing %s" % guid)
     named_forms = {}
     dt_published = extract.extract_published_date(item)
     form_data = {
@@ -188,7 +198,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
             {
                 "u_in_reply_to": reply.url,
                 "title": reply.title,
-                "author": reply.author.name,
+                "author": reply.author.name if reply.author else "",
                 "summary": reply.description,
             }
         )
@@ -196,8 +206,8 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         form_data.update(
             {
                 "u_bookmark_of": bookmark_of.url,
-                "title": bookmark_of.title,
-                "author": bookmark_of.author.name,
+                "title": bookmark_of.title or bookmark_of.url,
+                "author": bookmark_of.author.name if bookmark_of.author else "",
                 "summary": bookmark_of.description,
             }
         )
@@ -208,47 +218,84 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
     syndication = extract.extract_syndication(item)
     if location:
         location["point"] = location_to_pointfield_input(location["point"])
-        named_forms["location"] = TLocationModelForm(data=location)
+        try:
+            t_location = t_entry.t_location
+        except (TLocation.DoesNotExist, AttributeError):
+            t_location = None
+
+        named_forms["location"] = TLocationModelForm(data=location, instance=t_location)
+        print("Location")
     if checkin:
-        named_forms["checkin"] = TCheckinModelForm(data=checkin)
+        try:
+            t_checkin = t_entry.t_checkin
+        except (TCheckin.DoesNotExist, AttributeError):
+            t_checkin = None
+        named_forms["checkin"] = TCheckinModelForm(data=checkin, instance=t_checkin)
+        print("Checkin")
     if syndication:
         for idx, syndication_url in enumerate(syndication):
+            t_syndication = t_entry.t_syndication.filter(url=syndication_url).first() if t_entry else None
             named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
-                data={"url": syndication_url}
+                data={"url": syndication_url}, instance=t_syndication
             )
 
-    form_data["e_content"] = str(soup)
-
     # Append any attachments
-    for attachment in TWordpressAttachment.objects.filter(
-        link__contains=t_wordpress_post.path
-    ):
-        if attachment.t_file:
-            tag = render_attachment(request, attachment.t_file)
-            form_data["e_content"] += tag
+    if t_wordpress_post.path != "/":
+        for attachment in TWordpressAttachment.objects.filter(
+            link__contains=t_wordpress_post.path
+        ):
+            if attachment.t_file:
+                if attachment.t_file.mime_type.startswith("video"):
+                    import pdb; pdb.set_trace()
+                    form_data["e_content"].replace(attachment.guid, request.build_absolute_uri(
+                        attachment.t_file.get_absolute_url()))
+                else:
+                    tag = render_attachment(request, attachment.t_file)
+                    form_data["e_content"] += tag
 
-    form_class = CreateStatusForm
-    if form_data["p_name"]:
-        form_class = CreateArticleForm
-    if form_data.get("u_in_reply_to"):
-        form_class = CreateReplyForm
-    if form_data.get("u_bookmark_of"):
-        form_class = CreateBookmarkForm
-    if named_forms.get("checkin"):
-        form_class = CreateCheckinForm
+    form_data["e_content"] = linebreaks_filter(safe(form_data["e_content"]))
 
-    form = form_class(data=form_data, p_author=request.user)
-    import pdb; pdb.set_trace()
+    if t_wordpress_post.t_post:
+        form_class = UpdateStatusForm
+        form_kwargs = {
+            "instance": t_wordpress_post.t_post.ref_t_entry.first()
+        }
+        if form_data["p_name"]:
+            form_class = UpdateArticleForm
+        if form_data.get("u_in_reply_to"):
+            form_class = UpdateReplyForm
+        if form_data.get("u_bookmark_of"):
+            form_class = UpdateBookmarkForm
+        if named_forms.get("checkin"):
+            form_class = UpdateCheckinForm
+    else:
+        form_kwargs = {
+            "p_author": request.user
+        }
+        form_class = CreateStatusForm
+        if form_data["p_name"]:
+            form_class = CreateArticleForm
+        if form_data.get("u_in_reply_to"):
+            form_class = CreateReplyForm
+        if form_data.get("u_bookmark_of"):
+            form_class = CreateBookmarkForm
+        if named_forms.get("checkin"):
+            form_class = CreateCheckinForm
+
+    form = form_class(data=form_data, **form_kwargs)
+
     if form.is_valid() and all(
         named_form.is_valid() for named_form in named_forms.values()
     ):
         form.prepare_data()
-
         with transaction.atomic():
             entry = form.save()
 
             for named_form in named_forms.values():
                 named_form.prepare_data(entry)
                 named_form.save()
+
+            t_wordpress_post.t_post = entry.t_post
+            t_wordpress_post.save()
     else:
         import pdb; pdb.set_trace()

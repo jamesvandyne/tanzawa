@@ -33,9 +33,13 @@ def extract_post_status(soup: BeautifulSoup) -> str:
     return status_map.get(soup.find("status").text, MPostStatuses.draft)
 
 
-def extract_published_date(soup: BeautifulSoup) -> datetime:
-    pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
-    return make_aware(pub_date, pytz.utc)
+def extract_published_date(soup: BeautifulSoup) -> Optional[datetime]:
+    try:
+        pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
+        return make_aware(pub_date, pytz.utc)
+    except ValueError:
+        # draft posts
+        return None
 
 
 def extract_entry(soup: BeautifulSoup) -> TEntry:
@@ -75,7 +79,7 @@ def extract_post_format(soup: BeautifulSoup) -> List[Tuple[str, str]]:
 
 def _extract_meta_list(soup: BeautifulSoup, key: str) -> List[str]:
     values = []
-    for item in soup.find("meta_key", text=key):
+    for item in soup.find("meta_key", text=key) or []:
         value = item.find_next("meta_value")
         value_dict: Dict[int, bytes] = phpserialize.loads(value.text.encode("utf8"))
         values.extend([url.decode("utf8") for url in value_dict.values()])
@@ -93,10 +97,12 @@ def extract_syndication(soup: BeautifulSoup) -> List[str]:
 def _get_item_as_string(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> bytes:
     value = value_dict.get(key)
     if value:
+        if isinstance(value, bytes):
+            return value
         try:
             return value[0]
         except KeyError:
-            pass
+            return value
     return b""
 
 
@@ -146,10 +152,13 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
         value = location_key.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
-        return {
-            "name": _get_item_as_string(properties, b"name").decode("utf8"),
-            "url": _get_item_as_string(properties, b"url").decode("utf8"),
-        }
+        try:
+            return {
+                "name": _get_item_as_string(properties, b"name").decode("utf8"),
+                "url": _get_item_as_string(properties, b"url").decode("utf8"),
+            }
+        except AttributeError:
+            import pdb; pdb.set_trace()
     return {}
 
 
@@ -167,9 +176,15 @@ def _extract_author(
 
 
 def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
-    cite = soup.find("meta_key", text=key)
+    cite = None
+    cites = soup.find_all("meta_key", text=key)
+    for c in cites:
+        if c.parent.name == "commentmeta":
+            continue
+        cite = c
     if cite:
         value = cite.find_next("meta_value")
+        import pdb; pdb.set_trace()
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return LinkedPage(
