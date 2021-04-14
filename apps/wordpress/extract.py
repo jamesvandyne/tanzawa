@@ -35,7 +35,9 @@ def extract_post_status(soup: BeautifulSoup) -> str:
 
 def extract_published_date(soup: BeautifulSoup) -> Optional[datetime]:
     try:
-        pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
+        pub_date = datetime.strptime(
+            soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S"
+        )
         return make_aware(pub_date, pytz.utc)
     except ValueError:
         # draft posts
@@ -152,13 +154,10 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
         value = location_key.find_next("meta_value")
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
-        try:
-            return {
-                "name": _get_item_as_string(properties, b"name").decode("utf8"),
-                "url": _get_item_as_string(properties, b"url").decode("utf8"),
-            }
-        except AttributeError:
-            import pdb; pdb.set_trace()
+        return {
+            "name": _get_item_as_string(properties, b"name").decode("utf8"),
+            "url": _get_item_as_string(properties, b"url").decode("utf8"),
+        }
     return {}
 
 
@@ -184,7 +183,6 @@ def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
         cite = c
     if cite:
         value = cite.find_next("meta_value")
-        import pdb; pdb.set_trace()
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return LinkedPage(

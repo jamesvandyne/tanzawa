@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import TWordpress, TPostKind, TCategory, TPostFormat, TWordpressAttachment, TWordpressPost
+from .models import (
+    TWordpress,
+    TPostKind,
+    TCategory,
+    TPostFormat,
+    TWordpressAttachment,
+    TWordpressPost,
+)
 
 admin.site.register(TWordpress)
 admin.site.register(TCategory)

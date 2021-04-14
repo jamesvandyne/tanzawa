@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from bs4 import BeautifulSoup
@@ -29,7 +30,7 @@ from entry.forms import (
     UpdateArticleForm,
     UpdateBookmarkForm,
     UpdateReplyForm,
-    UpdateCheckinForm
+    UpdateCheckinForm,
 )
 from entry.models import TCheckin, TLocation
 
@@ -42,6 +43,8 @@ from .models import (
 )
 from .forms import WordpressUploadForm, TCategoryModelForm, TPostKindModelForm
 from . import extract
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -153,9 +156,15 @@ def import_posts(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     context = {
         "t_wordpress": t_wordpress,
-        "unimported_attachments": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True).exists(),
-        "category_map": t_wordpress.ref_t_category.filter(m_stream__isnull=False).exists(),
-        "postkind_map": t_wordpress.ref_t_post_kind.filter(m_post_kind__isnull=False).exists(),
+        "unimported_attachments": t_wordpress.ref_t_wordpress_attachment.filter(
+            t_file__isnull=True
+        ).exists(),
+        "category_map": t_wordpress.ref_t_category.filter(
+            m_stream__isnull=False
+        ).exists(),
+        "postkind_map": t_wordpress.ref_t_post_kind.filter(
+            m_post_kind__isnull=False
+        ).exists(),
     }
     if request.method == "POST":
         soup = BeautifulSoup(t_wordpress.export_file.read(), "xml")
@@ -179,21 +188,24 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
         raise forms.ValidationError("Guid doesn't exist in export file")
     item = guid.parent
-    print("Processing %s" % guid)
+    logging.info("Processing %s", guid)
     named_forms = {}
     dt_published = extract.extract_published_date(item)
+    categories = extract.extract_categories(item)
     form_data = {
         "p_name": item.find("title").text,
         "e_content": item.find("encoded").text,
         "m_post_status": "".join(extract.extract_post_status(item)),
         "dt_published": dt_published.isoformat() if dt_published else None,
-        # "streams": serializer.validated_data["properties"]["streams"].values_list(
-        #     "pk", flat=True
-        # )
+        "streams": TCategory.objects.exclude(m_stream__isnull=True)
+        .filter(nice_name__in=[nice_name for _, nice_name in categories])
+        .values_list("m_stream_id", flat=True),
     }
+
     reply = extract.extract_in_reply_to(item)
     bookmark_of = extract.extract_bookmark(item)
     if reply:
+        logging.info("Has reply")
         form_data.update(
             {
                 "u_in_reply_to": reply.url,
@@ -203,6 +215,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
             }
         )
     elif bookmark_of:
+        logging.info("Has bookmark")
         form_data.update(
             {
                 "u_bookmark_of": bookmark_of.url,
@@ -217,6 +230,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
     checkin = extract.extract_checkin(item)
     syndication = extract.extract_syndication(item)
     if location:
+        logging.info("Has location")
         location["point"] = location_to_pointfield_input(location["point"])
         try:
             t_location = t_entry.t_location
@@ -226,6 +240,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         named_forms["location"] = TLocationModelForm(data=location, instance=t_location)
         print("Location")
     if checkin:
+        logging.info("Has checkin")
         try:
             t_checkin = t_entry.t_checkin
         except (TCheckin.DoesNotExist, AttributeError):
@@ -233,8 +248,13 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         named_forms["checkin"] = TCheckinModelForm(data=checkin, instance=t_checkin)
         print("Checkin")
     if syndication:
+        logging.info("Has syndication")
         for idx, syndication_url in enumerate(syndication):
-            t_syndication = t_entry.t_syndication.filter(url=syndication_url).first() if t_entry else None
+            t_syndication = (
+                t_entry.t_syndication.filter(url=syndication_url).first()
+                if t_entry
+                else None
+            )
             named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
                 data={"url": syndication_url}, instance=t_syndication
             )
@@ -246,9 +266,12 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         ):
             if attachment.t_file:
                 if attachment.t_file.mime_type.startswith("video"):
-                    import pdb; pdb.set_trace()
-                    form_data["e_content"].replace(attachment.guid, request.build_absolute_uri(
-                        attachment.t_file.get_absolute_url()))
+                    form_data["e_content"].replace(
+                        attachment.guid,
+                        request.build_absolute_uri(
+                            attachment.t_file.get_absolute_url()
+                        ),
+                    )
                 else:
                     tag = render_attachment(request, attachment.t_file)
                     form_data["e_content"] += tag
@@ -257,9 +280,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
     if t_wordpress_post.t_post:
         form_class = UpdateStatusForm
-        form_kwargs = {
-            "instance": t_wordpress_post.t_post.ref_t_entry.first()
-        }
+        form_kwargs = {"instance": t_wordpress_post.t_post.ref_t_entry.first()}
         if form_data["p_name"]:
             form_class = UpdateArticleForm
         if form_data.get("u_in_reply_to"):
@@ -269,9 +290,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         if named_forms.get("checkin"):
             form_class = UpdateCheckinForm
     else:
-        form_kwargs = {
-            "p_author": request.user
-        }
+        form_kwargs = {"p_author": request.user}
         form_class = CreateStatusForm
         if form_data["p_name"]:
             form_class = CreateArticleForm
@@ -298,4 +317,4 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
             t_wordpress_post.t_post = entry.t_post
             t_wordpress_post.save()
     else:
-        import pdb; pdb.set_trace()
+        logger.error(form.errors)
