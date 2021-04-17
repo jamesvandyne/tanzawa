@@ -1,3 +1,4 @@
+from django.views.generic import ListView
 from django.db.models import Count, Q
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.utils.timezone import now
@@ -7,27 +8,55 @@ from post.models import TPost
 from streams.models import MStream
 
 
-def home(request):
-    context = {
-        "entries": TEntry.objects.select_related(
+class HomeView(ListView):
+    template_name = "public/index.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (TEntry.objects.select_related(
             "t_post",
             "t_post__p_author",
             "t_location",
             "t_bookmark",
             "t_reply",
             "t_checkin",
-        )
-        .filter(t_post__m_post_status__key=MPostStatuses.published)
+        ).filter(t_post__m_post_status__key=MPostStatuses.published)
         .annotate(
             interaction_count=Count(
                 "t_post__ref_t_webmention",
                 filter=Q(t_post__ref_t_webmention__approval_status=True),
             )
-        ),
+        ).order_by("-t_post__dt_published"))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update({
         "selected": ["home"],
-        "streams": MStream.objects.visible(request.user),
-    }
-    return render(request, "public/index.html", context=context)
+        "streams": MStream.objects.visible(self.request.user),
+        })
+        return context
+#
+# def home(request):
+#     context = {
+#         "entries": TEntry.objects.select_related(
+#             "t_post",
+#             "t_post__p_author",
+#             "t_location",
+#             "t_bookmark",
+#             "t_reply",
+#             "t_checkin",
+#         )
+#         .filter(t_post__m_post_status__key=MPostStatuses.published)
+#         .annotate(
+#             interaction_count=Count(
+#                 "t_post__ref_t_webmention",
+#                 filter=Q(t_post__ref_t_webmention__approval_status=True),
+#             )
+#         ),
+#         "selected": ["home"],
+#         "streams": MStream.objects.visible(request.user),
+#     }
+#     return render(request, "public/index.html", context=context)
 
 
 def status_detail(request, uuid):
