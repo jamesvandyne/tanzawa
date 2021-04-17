@@ -7,21 +7,31 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='MSiteSettings',
+            name="MSiteSettings",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('title', models.CharField(default='Tanzawa', max_length=128, blank=True)),
-                ('subtitle', models.CharField(default='', max_length=128, blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "title",
+                    models.CharField(default="Tanzawa", max_length=128, blank=True),
+                ),
+                ("subtitle", models.CharField(default="", max_length=128, blank=True)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

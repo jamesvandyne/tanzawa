@@ -1,6 +1,7 @@
 from django.views.generic import ListView
 from django.db.models import Count, Q
-from django.shortcuts import get_list_or_404, get_object_or_404, render
+from django.shortcuts import get_object_or_404, render
+from django.utils.functional import cached_property
 from django.utils.timezone import now
 from entry.models import TEntry
 from indieweb.constants import MPostStatuses
@@ -13,50 +14,34 @@ class HomeView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return (TEntry.objects.select_related(
-            "t_post",
-            "t_post__p_author",
-            "t_location",
-            "t_bookmark",
-            "t_reply",
-            "t_checkin",
-        ).filter(t_post__m_post_status__key=MPostStatuses.published)
-        .annotate(
-            interaction_count=Count(
-                "t_post__ref_t_webmention",
-                filter=Q(t_post__ref_t_webmention__approval_status=True),
+        return (
+            TEntry.objects.select_related(
+                "t_post",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+                "t_reply",
+                "t_checkin",
             )
-        ).order_by("-t_post__dt_published"))
+            .filter(t_post__m_post_status__key=MPostStatuses.published)
+            .annotate(
+                interaction_count=Count(
+                    "t_post__ref_t_webmention",
+                    filter=Q(t_post__ref_t_webmention__approval_status=True),
+                )
+            )
+            .order_by("-t_post__dt_published")
+        )
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context.update({
-        "selected": ["home"],
-        "streams": MStream.objects.visible(self.request.user),
-        })
+        context.update(
+            {
+                "selected": ["home"],
+                "streams": MStream.objects.visible(self.request.user),
+            }
+        )
         return context
-#
-# def home(request):
-#     context = {
-#         "entries": TEntry.objects.select_related(
-#             "t_post",
-#             "t_post__p_author",
-#             "t_location",
-#             "t_bookmark",
-#             "t_reply",
-#             "t_checkin",
-#         )
-#         .filter(t_post__m_post_status__key=MPostStatuses.published)
-#         .annotate(
-#             interaction_count=Count(
-#                 "t_post__ref_t_webmention",
-#                 filter=Q(t_post__ref_t_webmention__approval_status=True),
-#             )
-#         ),
-#         "selected": ["home"],
-#         "streams": MStream.objects.visible(request.user),
-#     }
-#     return render(request, "public/index.html", context=context)
 
 
 def status_detail(request, uuid):
@@ -89,23 +74,56 @@ def status_detail(request, uuid):
     return render(request, "public/post/post_detail.html", context=context)
 
 
-def author(request, username: str):
-    objs = get_list_or_404(
-        TEntry.objects.select_related("t_post", "t_post__p_author").filter(
-            t_post__m_post_status__key=MPostStatuses.published,
-            t_post__p_author__username__exact=username,
+class AuthorDetail(ListView):
+    template_name = "public/index.html"
+    paginate_by = 10
+
+    def get_queryset(self):
+        return (
+            TEntry.objects.select_related(
+                "t_post",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+                "t_reply",
+                "t_checkin",
+            )
+            .filter(
+                t_post__m_post_status__key=MPostStatuses.published,
+                t_post__p_author__username__exact=self.kwargs["username"],
+            )
+            .annotate(
+                interaction_count=Count(
+                    "t_post__ref_t_webmention",
+                    filter=Q(t_post__ref_t_webmention__approval_status=True),
+                )
+            )
+            .order_by("-t_post__dt_published")
         )
-    )
-    context = {"entries": objs}
-    return render(request, "public/index.html", context=context)
 
 
-def stream(request, stream_slug: str):
-    stream = get_object_or_404(MStream.objects.visible(request.user), slug=stream_slug)
-    context = {
-        "entries": (
-            TEntry.objects.filter(t_post__in=stream.posts.published())
-            .select_related("t_post", "t_post__p_author")
+class StreamView(ListView):
+    template_name = "public/index.html"
+    paginate_by = 10
+
+    @cached_property
+    def stream(self):
+        return get_object_or_404(
+            MStream.objects.visible(self.request.user), slug=self.kwargs["stream_slug"]
+        )
+
+    def get_queryset(self):
+
+        return (
+            TEntry.objects.select_related(
+                "t_post",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+                "t_reply",
+                "t_checkin",
+            )
+            .filter(t_post__in=self.stream.posts.published())
             .filter(t_post__m_post_status__key=MPostStatuses.published)
             .annotate(
                 interaction_count=Count(
@@ -113,9 +131,16 @@ def stream(request, stream_slug: str):
                     filter=Q(t_post__ref_t_webmention__approval_status=True),
                 )
             )
-        ),
-        "stream": stream,
-        "selected": [stream.slug],
-        "streams": MStream.objects.visible(request.user),
-    }
-    return render(request, "public/index.html", context=context)
+            .order_by("-t_post__dt_published")
+        )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update(
+            {
+                "stream": self.stream,
+                "selected": [self.stream.slug],
+                "streams": MStream.objects.visible(self.request.user),
+            }
+        )
+        return context
