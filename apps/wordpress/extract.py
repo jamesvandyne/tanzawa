@@ -12,20 +12,12 @@ from post.models import TPost, MPostKind, MPostStatus, MPostStatuses
 from entry.models import TEntry, TSyndication, TBookmark, TLocation, TCheckin, TReply
 
 
-def extract_attachment_meta(attachment: TWordpressAttachment) -> Dict[ByteString, Any]:
-    soup = BeautifulSoup(attachment.t_wordpress.export_file.read(), "xml")
-    guid = soup.find("guid", text=attachment.guid)
-    item = guid.parent
-    attachment_meta_key = item.find("wp:meta_key", text="_wp_attachment_metadata")
-    attachment_meta_data = attachment_meta_key.find_next("wp:meta_value").text
+def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:
+    return [link for link in soup.find_all("a") if domain in link["href"]]
 
-    phpserialize.loads(attachment_meta_key.encode("utf8"))
 
-    categories = set(soup.find_all("category", attrs={"domain": "category"}))
-    return [
-        TCategory(name=category.text, nice_name=category.attrs["nicename"])
-        for category in categories
-    ]
+def extract_images(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:
+    return [img for img in soup.find_all("img") if domain in img["src"]]
 
 
 def extract_post_status(soup: BeautifulSoup) -> str:

@@ -259,12 +259,50 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
                 data={"url": syndication_url}, instance=t_syndication
             )
 
+    # Rewrite any image links
+    content = BeautifulSoup(form_data["e_content"], "html.parser")
+    images = extract.extract_images(content, t_wordpress_post.t_wordpress.base_site_url)
+    for image in images:
+        image_url = (
+            image["src"]
+            .replace("-scaled", "")
+            .replace("https://micro.blog/photos/200/", "")
+        )
+        image_attachment = (
+            TWordpressAttachment.objects.filter(
+                t_wordpress_id=t_wordpress_post.t_wordpress_id,
+                guid__startswith=image_url,
+            )
+            .select_related("t_file")
+            .first()
+        )
+        if image_attachment:
+            tag = BeautifulSoup(
+                render_attachment(request, image_attachment.t_file), "html.parser"
+            )
+            if image.parent and image.parent.name == "a":
+                image.parent.replace_with(tag)
+            else:
+                image.replace_with(tag)
+        else:
+            logger.info(
+                "%s has no attachment is possibly a dead url t_wordpress_post.uuid=%s",
+                image_url,
+                t_wordpress_post.uuid,
+            )
+    form_data["e_content"] = str(content)
+
     # Append any attachments
     if t_wordpress_post.path != "/":
         for attachment in TWordpressAttachment.objects.filter(
             link__contains=t_wordpress_post.path
         ):
             if attachment.t_file:
+
+                if str(attachment.t_file.uuid) in form_data["e_content"]:
+                    # File was already inserted into the post in the image rewrite step above. Skip.
+                    continue
+
                 if attachment.t_file.mime_type.startswith("video"):
                     form_data["e_content"].replace(
                         attachment.guid,

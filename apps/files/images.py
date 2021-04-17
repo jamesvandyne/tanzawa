@@ -4,10 +4,27 @@ from pathlib import Path
 from typing import Tuple, Union, Optional
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image
+from PIL import Image, ImageOps
 from django.utils.timezone import now
 
 from .models import TFile
+
+
+def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
+    if not mime_type.startswith("image"):
+        return image_bytes
+
+    try:
+        image = Image.open(image_bytes)
+    except:
+        image_bytes.seek(0)
+        return image_bytes
+
+    rotated_image = ImageOps.exif_transpose(image)
+    rotated_bytes = io.BytesIO()
+    rotated_image.save(rotated_bytes, mime_type.split("/")[1])
+    rotated_bytes.seek(0)
+    return rotated_bytes
 
 
 def convert_image_format(
@@ -20,10 +37,23 @@ def convert_image_format(
     if not ext:
         # unknown mimetype, can't convert
         return None, None, None
+    orientation = 274
+    try:
+        exif = image._getexif()
+        if exif:
+            exif = dict(exif.items())
+            if exif[orientation] == 3:
+                image = image.rotate(180, expand=True)
+            elif exif[orientation] == 6:
+                image = image.rotate(270, expand=True)
+            elif exif[orientation] == 8:
+                image = image.rotate(90, expand=True)
+    except AttributeError:
+        # There is AttributeError: _getexif sometimes.
+        pass
     image.save(new_image_data, format=ext[1:])
     new_image_data.seek(0)
     new_image = Image.open(new_image_data)
-
     new_filename = t_file.filename.replace(Path(t_file.filename).suffix, ext)
     new_image_data.seek(0)
     upload_file = SimpleUploadedFile(new_filename, new_image_data.read(), target_mime)
