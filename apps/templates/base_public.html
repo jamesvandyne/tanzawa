@@ -34,9 +34,9 @@
             {% block content_wrapper  %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col">
                 <ul class="mb-2">
-                    <li class="{% if 'home' in selected %}selected{% endif %} w-32 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if 'home' in selected %}selected{% endif %} p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     {% for stream in streams %}
-                        <li class="{% if stream.slug in selected %}selected{% endif %} w-32 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                        <li class="{% if stream.slug in selected %}selected{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
                     {% endfor %}
                 </ul>
             </nav>
