@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <h1 class="text-xl">Category Mapping</h1>
+    <p class="mt-2">Select the Streams that each wordpress category imported into.</p>
+    <p>If the existing streams don't map well you can <a href="{% url 'admin:streams_mstream_changelist' %}" class="underline">create a new stream</a>.</p>
+    <form method="post" class="flex-col mt-2 text-left">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table>
+            <tr>
+                <th class="align-top">Category</th>
+                <th class="pl-2">Stream
+                    <p class="block help-text" style="font-weight: normal;">Categories without a stream selected will not be imported.</p>
+                </th>
+            </tr>
+            {% for form in formset.forms %}
+                <tr class="p-2">
+                    <td class="pr-2">{{ form.instance.name }}{{ form.id }}</td>
+                    <td class="p-2">{{ form.m_stream }}{{ form.errors.m_stream }}</td>
+                </tr>
+                {% if form.non_field_errors %}
+                    <tr>
+                        <td colspan="2">{{ form.non_field_errors }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <button class="rounded mt-2 text-white bg-malachite-800 border-malachite-900 px-3 py-1 border" name="m_post_status" type="submit" data-turbo="false">Save Mapping</button>
+    </form>
+{% endblock %}

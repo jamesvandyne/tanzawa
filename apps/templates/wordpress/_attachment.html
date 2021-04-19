@@ -1,0 +1,13 @@
+<a href="{{ img_src }}" class="mr-2"><img src="{{ img_src }}" width="100" height="100" loading="lazy"/></a>
+<div class="flex-col">
+    <div class="flex">
+        {% if loading %}
+            {% include "fragments/loading.html" with color="text-negroni-900" %}Importing...
+        {% else %}
+            {{ t_wordpress_attachment.t_file_id|yesno:"Imported,Pending" }}
+        {% endif %}
+    </div>
+    <div class="help-text">
+        {{ t_wordpress_attachment.guid|urlize}}
+    </div>
+</div>

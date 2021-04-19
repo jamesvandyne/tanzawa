@@ -1,6 +1,7 @@
 import json
-from typing import Dict, Any
+from typing import Dict, Any, Union
 from mf2util import string_type, LOCATION_PROPERTIES
+from django.contrib.gis.geos import Point
 
 
 def get_location(hentry):
@@ -44,13 +45,16 @@ def get_location(hentry):
     return result
 
 
-def location_to_pointfield_input(location: Dict[str, Any]) -> str:
+def location_to_pointfield_input(location: Union[Point, Dict[str, Any]]) -> str:
+    if isinstance(location, Point):
+        lat = location.x
+        lon = location.y
+    else:
+        lat = float(location["location"]["latitude"])
+        lon = float(location["location"]["longitude"])
     return json.dumps(
         {
             "type": "Point",
-            "coordinates": [
-                float(location["location"]["latitude"]),
-                float(location["location"]["longitude"]),
-            ],
+            "coordinates": [lat, lon],
         }
     )

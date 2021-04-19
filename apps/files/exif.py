@@ -21,7 +21,7 @@ def extract_exif(image) -> Dict[str, Any]:
     return exif
 
 
-def scrub_exif(image: Image) -> Optional[BytesIO]:
+def scrub_exif(image: BytesIO) -> Optional[BytesIO]:
     img = Image(image)
     if not img.has_exif:
         return None

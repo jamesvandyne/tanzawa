@@ -130,6 +130,7 @@ class CreateReplyForm(CreateStatusForm):
         widget=forms.Textarea,
         label="Summary",
         help_text="This will appear above your reply as a quote for context.",
+        required=False,
     )
 
     class Meta:
@@ -268,6 +269,7 @@ class UpdateReplyForm(UpdateStatusForm):
         widget=forms.Textarea,
         label="Summary",
         help_text="This will appear above your reply as a quote for context.",
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):

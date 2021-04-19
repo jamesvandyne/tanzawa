@@ -13,7 +13,7 @@ class MStreamManager(models.Manager):
 
 class MStream(TimestampModel):
 
-    icon = models.CharField(max_length=1, help_text="Select an emoji")
+    icon = models.CharField(max_length=2, help_text="Select an emoji")
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True)
     visibility = models.SmallIntegerField(

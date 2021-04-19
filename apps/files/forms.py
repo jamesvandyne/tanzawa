@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from .images import rotate_image
 from .exif import extract_exif, get_location, scrub_exif
 from .models import TFile
 
@@ -28,7 +29,12 @@ class MediaUploadForm(forms.ModelForm):
             self.instance.exif = exif
             self.instance.point = get_location(exif)
             self.cleaned_data["file"].seek(0)
-            scrubbed_image_data = scrub_exif(self.cleaned_data["file"].file)
+
+            rotated_image = rotate_image(
+                self.cleaned_data["file"].file, self.cleaned_data["file"].content_type
+            )
+
+            scrubbed_image_data = scrub_exif(rotated_image)
             if scrubbed_image_data:
                 upload_file = SimpleUploadedFile(
                     self.cleaned_data["file"].name,

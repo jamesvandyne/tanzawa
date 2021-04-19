@@ -146,7 +146,7 @@ def micropub(request):
         form_data.update(linked_page)
     elif serializer.validated_data["properties"].get("bookmark_of"):
         linked_page = serializer.validated_data["properties"].get("bookmark_of")
-        # adds u_in_reply_to, title, author, summary fields
+        # adds u_bookmark_of, title, author, summary fields
         form_data.update(linked_page)
 
     # Process related content

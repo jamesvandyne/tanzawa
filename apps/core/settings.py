@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "webmention",
     "core",
+    "settings",
     "indieweb",
     "trix",
     "post",
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     "files",
     "streams",
     "public",
+    "wordpress",
 ]
 
 MIDDLEWARE = [
@@ -77,6 +79,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "settings.middleware.SettingsMiddleware",
     "webmention.middleware.webmention_middleware",
 ]
 

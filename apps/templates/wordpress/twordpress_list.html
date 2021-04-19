@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load utils %}
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <h1 class="text-xl">Import from Wordpress</h1>
+    <ul>
+        {% for t_wordpress in object_list %}
+            <li class="flex mt-2">
+            <div class="flex-col">
+                <span>{{ t_wordpress }}</span>
+                <span class="block help-text">{{ t_wordpress.link|domain }}</span>
+            </div>
+            <a href="{% url 'wordpress:t_category_mapping' t_wordpress.pk %}" class="mr-2">Category Mapping</a>
+            <a href="{% url 'wordpress:t_post_kind_mapping' t_wordpress.pk %}" class="mr-2">Post Kind Mapping</a>
+            <a href="{% url 'wordpress:t_wordpress_attachment_list' t_wordpress.pk %}" class="mr-2">Import Attachments</a>
+            <a>Import Posts</a>
+            </li>
+        {% endfor %}
+     </ul>
+{% endblock %}
