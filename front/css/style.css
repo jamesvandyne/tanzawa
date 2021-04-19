@@ -39,6 +39,10 @@ main.content a, .trix-content a, #messages a {
     @apply underline;
 }
 
+main.content ul, .trix-content ul {
+    @apply list-disc ml-4;
+}
+
 .green-button {
     @apply rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border;
 }
