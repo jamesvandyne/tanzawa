@@ -48,7 +48,7 @@ def convert_image_format(
                 image = image.rotate(270, expand=True)
             elif exif[orientation] == 8:
                 image = image.rotate(90, expand=True)
-    except AttributeError:
+    except (AttributeError, KeyError):
         # There is AttributeError: _getexif sometimes.
         pass
     image.save(new_image_data, format=ext[1:])
