@@ -19,20 +19,37 @@
     <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
+    <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
+    <script src="{% static 'js/public.js' %}"></script>
     {% block head %}{% endblock %}
 </head>
 <body class="bg-bianca-500">
     <div class="min-h-screen flex flex-col">
         <header class="p-2">
             {% block header %}
-            <nav>
-                <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
+            <nav  data-controller="reveal">
+                <div class="flex">
+                    <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
+                    <div class="ml-auto pt-2 md:hidden">
+                        <button data-reveal-target="button" data-action="click->reveal#toggle">
+                            <div class="w-8 bg-negroni-700 h-1"></div>
+                            <div class="w-8 bg-negroni-700 h-1 mt-1"></div>
+                            <div class="w-8 bg-negroni-700 h-1 mt-1"></div>
+                        </button>
+                    </div>
+                </div>
+                <ul data-reveal-target="item" class="mb-2 hidden md:hidden mt-2">
+                    <li class="{% if 'home' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    {% for stream in streams %}
+                        <li class="{% if stream.slug in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                    {% endfor %}
+                </ul>
             </nav>
             {% endblock %}
         </header>
-        <div class="flex flex-grow">
+        <div class="md:flex md:flex-grow">
             {% block content_wrapper  %}
-            <nav id="section-nav" class="min-w-min p-2 flex flex-col">
+            <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
                 <ul class="mb-2">
                     <li class="{% if 'home' in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     {% for stream in streams %}

@@ -3,11 +3,6 @@
 
 {% block breadcrumbs_block %}{% endblock %}
 
-{% block head %}
-    <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
-    <script src="{% static 'js/public.js' %}"></script>
-{% endblock %}
-
 {% block main %}
     {% include detail_template with detail=True %}
     {% if webmentions_count %}
