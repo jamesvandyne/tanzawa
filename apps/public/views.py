@@ -70,6 +70,7 @@ def status_detail(request, uuid):
         "title": t_entry.p_name if t_entry.p_name else t_entry.p_summary[:140],
         "streams": MStream.objects.visible(request.user),
         "public": True,
+        "open_interactions": request.GET.get("o"),
     }
     return render(request, "public/post/post_detail.html", context=context)
 

@@ -12,7 +12,7 @@
     {% include detail_template with detail=True %}
     {% if webmentions_count %}
         {# When turbo is working make webmentions load lazily #}
-        <details class="mt-2">
+        <details class="mt-2"{% if open_interactions %} open{% endif %}>
             <summary>
                 Interactions
                 <div class="inline-block ml-1">
