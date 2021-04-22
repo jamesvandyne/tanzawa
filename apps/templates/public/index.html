@@ -2,6 +2,8 @@
 
 {% block breadcrumbs_block %}{% endblock %}
 
+{% block meta_section %}{% endblock %}
+
 {% block main %}
     <ul>
     {% for t_entry in object_list %}
@@ -20,7 +22,7 @@
         </li>
     {% endfor %}
     </ul>
-    <div class="mt-2">
+    <div class="mt-2 text-center md:text-left">
         {% if is_paginated %}
             {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}">Previous</a>

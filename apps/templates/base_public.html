@@ -16,7 +16,7 @@
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint"/>
     <link href="{{ absolute_url }}{% url 'indieweb:micropub' %}" rel="micropub"/>
     <link href="{{ absolute_url }}{% url 'micropub_media' %}" rel="micropub_media"/>
-    <link href="{% static 'tailwind/style.css' %}" rel="stylesheet">
+    <link href="{% static 'tailwind/style.css' %}?=1" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
     <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
@@ -57,11 +57,11 @@
                     {% endfor %}
                 </ul>
             </nav>
-            <div class="w-11/12 flex flex-col">
+            <div class="flex-col md:w-11/12 md:flex">
                 {% block content_before %}{% endblock %}
-                <div id="main-container" class="flex">
+                <div id="main-container" class="flex-col md:flex">
                     {% block content %}
-                        <main id="main" class="main w-9/12 max-w-prose p-2">
+                        <main id="main" class="main md:w-9/12 max-w-prose md:order-first p-2">
                             {% block breadcrumbs_block %}
                                 <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2">
                                     {% block breadcrumbs %}{% endblock %}
@@ -69,9 +69,11 @@
                             {% endblock %}
                             {% block main %}{% endblock %}
                         </main>
-                        <section id="meta" class="meta w-3/12 p-2">
+                        {% block meta_section %}
+                        <section id="meta" class="meta order-first md:w-3/12 p-2">
                             {% block meta %}{% endblock %}
                         </section>
+                        {% endblock %}
                     {% endblock  %}
                 </div>
                 {% block content_after %}

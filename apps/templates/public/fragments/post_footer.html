@@ -1,5 +1,5 @@
 {% load utils %}
-<footer class="mt-2 pt-2 flex{% if detail %} border-t-2  border-bianca-600{% endif %}">
+<footer class="mt-2 pt-2 sm:flex-col md:flex{% if detail %} border-t-2  border-bianca-600{% endif %}">
     <div>
         <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
         {% if t_entry.interaction_count %}
