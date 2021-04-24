@@ -71,6 +71,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.gzip.GZipMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "turbo_response.middleware.TurboMiddleware",
@@ -81,7 +82,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "settings.middleware.SettingsMiddleware",
     "webmention.middleware.webmention_middleware",
-    "django.middleware.gzip.GZipMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
