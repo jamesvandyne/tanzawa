@@ -10,3 +10,4 @@ model-bakery
 mypy
 flake8
 black
+django-debug-toolbar

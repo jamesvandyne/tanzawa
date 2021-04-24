@@ -18,3 +18,4 @@ ninka==0.3.4
 extruct==0.12.0
 django-turbo-response==0.0.48
 phpserialize==1.3
+django-debug-toolbar==3.2.1
