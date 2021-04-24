@@ -51,6 +51,10 @@ def convert_image_format(
     except (AttributeError, KeyError):
         # There is AttributeError: _getexif sometimes.
         pass
+
+    width, height = (image.width // 2, image.height // 2)
+    image = image.resize((width, height))
+
     image.save(new_image_data, format=ext[1:])
     new_image_data.seek(0)
     new_image = Image.open(new_image_data)
