@@ -47,7 +47,10 @@ class AllEntriesFeed(Feed):
 
     def item_title(self, item: TPost):
         t_entry = item.ref_t_entry.all()[0]
-        title = t_entry.p_name or t_entry.p_summary[:128]
+        summary = t_entry.p_summary[:128]
+        title = t_entry.p_name or (
+            f"{summary}…" if len(t_entry.p_summary) > 128 else summary
+        )
         if item.m_post_kind.key == MPostKinds.reply:
             title = f"Response to {t_entry.t_reply.title}"
         elif item.m_post_kind.key == MPostKinds.bookmark:
