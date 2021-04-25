@@ -52,8 +52,9 @@ def convert_image_format(
         # There is AttributeError: _getexif sometimes.
         pass
 
-    width, height = (image.width // 2, image.height // 2)
-    image = image.resize((width, height))
+    if image.width >= 1200 or image.height >= 1200:
+        width, height = (image.width // 2, image.height // 2)
+        image = image.resize((width, height))
 
     image.save(new_image_data, format=ext[1:])
     new_image_data.seek(0)
