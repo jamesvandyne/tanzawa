@@ -8,3 +8,8 @@
         {% endif %}
     </div>
 </section>
+{% if form.instance.pk %}
+<section>
+    <a href="{% url 'public:post_detail' form.instance.t_post.uuid %}" class="ml-auto btn-link" target="_new">View on site</a>
+</section>
+{% endif %}
