@@ -395,6 +395,7 @@ def status_delete(request, pk: int):
 @method_decorator(login_required, name="dispatch")
 class TEntryListView(ListView):
     template_name = "entry/posts.html"
+    paginate_by = 10
 
     m_post_kind_key = None
     m_post_kind = None
@@ -410,7 +411,16 @@ class TEntryListView(ListView):
         return "entry/posts.html"
 
     def get_queryset(self):
-        qs = models.TEntry.objects.all()
+        qs = models.TEntry.objects.all().select_related(
+                "t_post",
+                "t_post__m_post_status",
+                "t_post__m_post_kind",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+                "t_reply",
+                "t_checkin",
+            )
         if self.m_post_kind:
             qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
         return qs.order_by("-created_at")
