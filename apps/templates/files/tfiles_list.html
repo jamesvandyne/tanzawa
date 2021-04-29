@@ -1,0 +1,19 @@
+{%  extends "base.html" %}
+
+{% block content %}
+    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4">
+    {% for t_file in object_list %}
+        <div class="w-52 inline-block overflow-hidden">
+            {% if "image" in t_file.mime_type %}
+                <img src="{% url 'get_media' t_file.uuid %}" class="h-52 w-52 object-fill scale-down">
+            {% else %}
+                ?
+            {% endif %}
+            <div class="details">
+                <span class="help-text overflow-ellipsis overflow-hidden">{{ t_file.filename }}</span>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% include "fragments/paging.html" %}
+{% endblock %}

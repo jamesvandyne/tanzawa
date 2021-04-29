@@ -6,6 +6,9 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
+from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from .constants import PICTURE_FORMATS
@@ -71,3 +74,12 @@ def get_media(request, uuid):
         as_attachment=as_attachment,
     )
     return response
+
+
+@method_decorator(login_required, name="dispatch")
+class FilesList(ListView):
+    template_name = "files/tfiles_list.html"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return TFile.objects.all().order_by("-created_at")
