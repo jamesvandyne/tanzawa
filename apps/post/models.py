@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
+from django.utils.functional import cached_property
 from indieweb.constants import MPostStatuses, MPostKinds
 
 
@@ -78,9 +79,25 @@ class TPost(TimestampModel):
     class Meta:
         db_table = "t_post"
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("public:post_detail", args=[self.uuid])
 
     @property
-    def is_draft(self):
+    def is_draft(self) -> bool:
         return self.m_post_status.key == MPostStatuses.draft
+
+    @cached_property
+    def post_title(self) -> str:
+        t_entry = self.ref_t_entry.all()[0]
+        summary = t_entry.p_summary[:128]
+        title = t_entry.p_name or (
+            f"{summary}…" if len(t_entry.p_summary) > 128 else summary
+        )
+        if self.m_post_kind.key == MPostKinds.reply:
+            title = f"Response to {t_entry.t_reply.title}"
+        elif self.m_post_kind.key == MPostKinds.bookmark:
+            t_bookmark = t_entry.t_bookmark
+            title = f"Bookmark of {t_bookmark.title or t_bookmark.u_bookmark_of}"
+        elif self.m_post_kind.key == MPostKinds.checkin:
+            title = f"Checkin to {t_entry.t_checkin.name}"
+        return title

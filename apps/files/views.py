@@ -6,7 +6,7 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -83,3 +83,12 @@ class FilesList(ListView):
 
     def get_queryset(self):
         return TFile.objects.all().order_by("-created_at")
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        return super().get_context_data(*args, object_list=object_list, nav="files")
+
+
+@method_decorator(login_required, name="dispatch")
+class FileDetail(DetailView):
+    template_name = "files/tfile_detail.html"
+    queryset = TFile.objects.all()

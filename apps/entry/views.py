@@ -412,15 +412,15 @@ class TEntryListView(ListView):
 
     def get_queryset(self):
         qs = models.TEntry.objects.all().select_related(
-                "t_post",
-                "t_post__m_post_status",
-                "t_post__m_post_kind",
-                "t_post__p_author",
-                "t_location",
-                "t_bookmark",
-                "t_reply",
-                "t_checkin",
-            )
+            "t_post",
+            "t_post__m_post_status",
+            "t_post__m_post_kind",
+            "t_post__p_author",
+            "t_location",
+            "t_bookmark",
+            "t_reply",
+            "t_checkin",
+        )
         if self.m_post_kind:
             qs = qs.filter(t_post__m_post_kind=self.m_post_kind)
         return qs.order_by("-created_at")
