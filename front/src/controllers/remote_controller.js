@@ -18,7 +18,7 @@ export default class extends Controller {
         }
 
         if (this.open) {
-            this.getContent(this.url)
+            this.getContent(this.url);
             this.wrapperTarget.insertAdjacentHTML('afterbegin', this.template())
         } else {
             console.log("closed");
@@ -26,7 +26,7 @@ export default class extends Controller {
     }
 
     close(e) {
-        e.preventDefault()
+        e.preventDefault();
 
         if (this.open) {
             if (this.hasContainerTarget) {
@@ -36,7 +36,7 @@ export default class extends Controller {
     }
 
     closeBackground(e) {
-        if (e.target === this.backgroundTarget) {
+        if (e.target === this.backgroundTarget || e.target === this.contentTarget ) {
             this.close(e)
         }
     }
