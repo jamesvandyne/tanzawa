@@ -1,0 +1,63 @@
+{% with object as t_file %}
+{% if not request.turbo.frame %}
+<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded flex">
+{% endif %}
+    <img src="{% url 'get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
+    <div class="ml-2 flex flex-col" style="width: 300px">
+        {# actions #}
+        <div class="flex">
+            <a class="outline-button text-xs" href="{{ t_file.get_absolute_url }}" target="_new">view on site</a>
+            <a class="text-negroni-800 text-xs ml-auto" href="{% url "file_delete"  t_file.pk %}?page={{ page }}">delete</a>
+        </div>
+        {# related #}
+        <details open class="pt-2">
+            <summary>
+                Posts
+                <div class="inline-block ml-1">
+                    {% with t_file.posts.count as post_count %}
+                    <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="Used in {{ post_count }} post{{ post_count|pluralize }}">{{ post_count }}</div>
+                    {% endwith %}
+                </div>
+                <ul>
+                    {% for t_post in t_file.posts.all %}
+                        <li><a href="{{ t_post.get_absolute_url }}" target="_new">{{ t_post.post_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </summary>
+        </details>
+        {# exif #}
+        <div class="mt-auto">
+            {% if t_file.exif %}
+                <div class="hover:underline block">{{ t_file.exif.make }} {{ t_file.exif.model }}</div>
+                <table class="pt-2">
+                    <tr>
+                        <td class="text-sm">Aperture</td>
+                        <td class="help-text pl-2">{{ t_file.exif.f_number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-sm">Focal Length</td>
+                        <td class="help-text pl-2">{{ t_file.exif.focal_length }}</td>
+                    </tr>
+                    <tr>
+                        <td class="text-sm">Flash</td>
+                        <td class="help-text pl-2">{{ t_file.exif.flash_fired|yesno:"fired,did not fire" }}</td>
+                    </tr>
+                </table>
+            {% endif %}
+        </div>
+        {% if t_file.point %}
+            <div data-controller="meta-map" style="width: 300px" class="inline-block pt-2 md:ml-auto md:pt-0 mt-2">
+                <div id="map"
+                     class="h-32"
+                     data-meta-map-target="map"
+                     data-default-lon="{{ t_file.point.x}}"
+                     data-default-lat="{{ t_file.point.y}}"
+                     data-default-zoom="4"
+                ></div>
+            </div>
+        {% endif %}
+    </div>
+{% if not request.turbo.frame %}
+</turbo-frame>
+{% endif %}
+{% endwith %}

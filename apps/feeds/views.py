@@ -46,19 +46,7 @@ class AllEntriesFeed(Feed):
         )
 
     def item_title(self, item: TPost):
-        t_entry = item.ref_t_entry.all()[0]
-        summary = t_entry.p_summary[:128]
-        title = t_entry.p_name or (
-            f"{summary}…" if len(t_entry.p_summary) > 128 else summary
-        )
-        if item.m_post_kind.key == MPostKinds.reply:
-            title = f"Response to {t_entry.t_reply.title}"
-        elif item.m_post_kind.key == MPostKinds.bookmark:
-            t_bookmark = t_entry.t_bookmark
-            title = f"Bookmark of {t_bookmark.title or t_bookmark.u_bookmark_of}"
-        elif item.m_post_kind.key == MPostKinds.checkin:
-            title = f"Checkin to {t_entry.t_checkin.name}"
-        return title
+        return item.post_title
 
     def item_description(self, item: TPost):
         return item.ref_t_entry.all()[0].p_summary

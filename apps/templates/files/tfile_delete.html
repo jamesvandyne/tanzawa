@@ -1,0 +1,29 @@
+{% with object as t_file %}
+    <form action="{% url "file_delete" t_file.pk %}?page={{ page }}"
+          method="post"
+          class="max-w-prose"
+          data-target="_top"
+          data-action="remote#submit"
+          data-remote-target="form"
+    >
+        {% csrf_token %}
+        <h1 class="text-2xl">Are you sure you want to delete this file?</h1>
+        <div class="flex pt-2">
+            <img src="{% url 'get_media' t_file.uuid %}" class="h-32 w-32 object-cover">
+            <div class="pl-2">
+                <h2 class="help-text">Deleting this file will also remove it from the following posts:</h2>
+                    <ul>
+                        <ul class="list-disc pt-2">
+                            {% for t_post in t_file.posts.all %}
+                                <li class="help-text ml-2"><a href="{{ t_post.get_absolute_url }}" target="_new">{{ t_post.post_title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </ul>
+            </div>
+        </div>
+        <div class="flex pt-2">
+            <button type="submit" class="outline-button">Delete</button>
+            <a href="{% url "file_detail" t_file.pk %}?page={{ page }}" class="ml-auto">Cancel</a>
+        </div>
+    </form>
+{% endwith %}

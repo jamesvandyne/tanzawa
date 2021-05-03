@@ -22,6 +22,7 @@ from . import views
 urlpatterns = [
     path("a/", include("entry.urls")),
     path("a/", include("post.urls", namespace="post")),
+    path("a/", include("files.admin_urls")),
     path("a/wordpress/", include("wordpress.urls", namespace="wordpress")),
     path("a/", include("indieweb.urls", namespace="indieweb")),
     path("files/", include("files.urls")),

@@ -1,0 +1,27 @@
+{%  extends "base.html" %}
+
+{% block content %}
+    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4">
+    {% for t_file in object_list %}
+        <div class="w-52 inline-block overflow-hidden"
+            data-controller='remote'
+            data-remote-target='wrapper'
+            data-action='keydown@window->remote#closeWithKeyboard'
+            data-remote-url='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}'
+        >
+            <div data-action='click->remote#view' class="cursor-pointer">
+                {% if "image" in t_file.mime_type %}
+                    <img src="{% url 'get_media' t_file.uuid %}" class="h-52 w-52 object-cover">
+                {% else %}
+                    <div class="h-52 w-52 inline-block flex">
+                        <span class="self-center mx-auto">?</span>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="details">
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+    {% include "fragments/paging.html" %}
+{% endblock %}
