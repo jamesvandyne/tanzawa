@@ -45,7 +45,7 @@ class TPostFormat(TimestampModel):
     )
     m_post_kind = models.ForeignKey(
         "post.MPostKind",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="ref_t_post_format",
         blank=True,
         null=True,
@@ -68,7 +68,7 @@ class TPostKind(TimestampModel):
     )
     m_post_kind = models.ForeignKey(
         "post.MPostKind",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="ref_t_post_kind",
         blank=True,
         null=True,
@@ -109,7 +109,7 @@ class TWordpressAttachment(TimestampModel):
     uuid = models.UUIDField(default=uuid.uuid4)
     link = models.URLField(blank=True)
     t_file = models.ForeignKey(
-        "files.TFile", on_delete=models.CASCADE, blank=True, null=True
+        "files.TFile", on_delete=models.SET_NULL, blank=True, null=True
     )
 
     class Meta:

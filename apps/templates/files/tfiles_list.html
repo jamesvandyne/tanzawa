@@ -7,7 +7,7 @@
             data-controller='remote'
             data-remote-target='wrapper'
             data-action='keydown@window->remote#closeWithKeyboard'
-            data-remote-url='{% url "file_detail" t_file.pk %}'
+            data-remote-url='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}'
         >
             <div data-action='click->remote#view' class="cursor-pointer">
                 {% if "image" in t_file.mime_type %}
@@ -16,7 +16,6 @@
                     <div class="h-52 w-52 inline-block flex">
                         <span class="self-center mx-auto">?</span>
                     </div>
-
                 {% endif %}
             </div>
             <div class="details">

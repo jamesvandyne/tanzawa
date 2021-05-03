@@ -1,11 +1,13 @@
 {% with object as t_file %}
-<div class="self-center shadow-2xl bg-bianca-500 p-2 rounded flex">
+{% if not request.turbo.frame %}
+<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded flex">
+{% endif %}
     <img src="{% url 'get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
     <div class="ml-2 flex flex-col" style="width: 300px">
         {# actions #}
         <div class="flex">
             <a class="outline-button text-xs" href="{{ t_file.get_absolute_url }}" target="_new">view on site</a>
-            <button class="text-negroni-800 text-xs ml-auto">delete</button>
+            <a class="text-negroni-800 text-xs ml-auto" href="{% url "file_delete"  t_file.pk %}?page={{ page }}">delete</a>
         </div>
         {# related #}
         <details open class="pt-2">
@@ -55,5 +57,7 @@
             </div>
         {% endif %}
     </div>
-</div>
+{% if not request.turbo.frame %}
+</turbo-frame>
+{% endif %}
 {% endwith %}

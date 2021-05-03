@@ -28,6 +28,10 @@ class TFile(TimestampModel):
     def __str__(self):
         return self.filename
 
+    def delete(self, using=None, keep_parents=False):
+        self.file.delete()
+        super().delete(using=using, keep_parents=keep_parents)
+
 
 class TFilePost(TimestampModel):
 
@@ -57,3 +61,7 @@ class TFormattedImage(TimestampModel):
 
     def __str__(self):
         return self.filename
+
+    def delete(self, using=None, keep_parents=False):
+        self.file.delete()
+        super().delete(using=using, keep_parents=keep_parents)

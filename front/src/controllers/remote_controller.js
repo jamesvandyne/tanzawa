@@ -3,7 +3,7 @@ import { Controller } from 'stimulus'
 export default class extends Controller {
 
     static get targets() {
-        return ['wrapper', 'container', 'content', 'background'];
+        return ['wrapper', 'container', 'content', 'background', 'form'];
     }
 
     initialize() {
@@ -56,6 +56,10 @@ export default class extends Controller {
             .then(html => {
                 this.contentTarget.innerHTML = html
             })
+    }
+
+    submit(e) {
+        this.formTarget.submit(e);
     }
 
     template() {
