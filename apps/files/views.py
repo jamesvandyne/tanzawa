@@ -2,6 +2,7 @@ import json
 
 from bs4 import BeautifulSoup
 from django.db import transaction
+from django.db.models import Q
 from django.urls import reverse_lazy
 from django.http import (
     FileResponse,
@@ -50,22 +51,46 @@ def get_media(request, uuid):
     return_file = t_file
     as_attachment = request.GET.get("content-disposition", "inline") == "attachment"
     file_format = request.GET.get("f")
+    size = request.GET.get("s")
 
     if file_format in PICTURE_FORMATS.keys():
-        formatted_file = t_file.ref_t_formatted_image.filter(
+        qs = t_file.ref_t_formatted_image.filter(
             mime_type=file_format
-        ).first()
+        )
+        if size:
+            qs = qs.filter(Q(width=size) | Q(height=size))
+        formatted_file = qs.first()
         if formatted_file:
             return_file = formatted_file
         else:
             upload_file, width, height = convert_image_format(
-                t_file, target_mime=file_format
+                t_file, target_mime=file_format, size=int(size) if size else None
             )
             if upload_file:
                 formatted_file = TFormattedImage(
                     file=upload_file,
                     t_file=t_file,
                     mime_type=file_format,
+                    filename=upload_file.name,
+                    width=width,
+                    height=height,
+                )
+                formatted_file.save()
+                return_file = formatted_file
+    elif size:
+        qs = t_file.ref_t_formatted_image.filter(Q(width=size) | Q(height=size))
+        formatted_file = qs.first()
+        if formatted_file:
+            return_file = formatted_file
+        else:
+            upload_file, width, height = convert_image_format(
+                t_file, target_mime=t_file.mime_type, size=int(size)
+            )
+            if upload_file:
+                formatted_file = TFormattedImage(
+                    file=upload_file,
+                    t_file=t_file,
+                    mime_type=t_file.mime_type,
                     filename=upload_file.name,
                     width=width,
                     height=height,

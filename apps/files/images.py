@@ -28,7 +28,7 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
 
 
 def convert_image_format(
-    t_file: TFile, target_mime: str
+    t_file: TFile, target_mime: str, size: Optional[int] = None
 ) -> Union[Tuple[SimpleUploadedFile, int, int], Tuple[None, None, None]]:
     image = Image.open(t_file.file)
     new_image_data = io.BytesIO()
@@ -52,11 +52,19 @@ def convert_image_format(
         # There is AttributeError: _getexif sometimes.
         pass
 
-    if image.width >= 1200 or image.height >= 1200:
+    if size:
+        image = image.copy()
+        # thumbnail resizes in place. resize returns a new image instance
+        image.thumbnail((size, size))
+    elif image.width >= 1200 or image.height >= 1200:
         width, height = (image.width // 2, image.height // 2)
         image = image.resize((width, height))
+    fmt = ext[1:]
 
-    image.save(new_image_data, format=ext[1:])
+    if fmt == "jpg":
+        # .jpg fails but jpeg works ¯\_(ツ)_/¯
+        fmt = "jpeg"
+    image.save(new_image_data, format=fmt)
     new_image_data.seek(0)
     new_image = Image.open(new_image_data)
     new_filename = t_file.filename.replace(Path(t_file.filename).suffix, ext)

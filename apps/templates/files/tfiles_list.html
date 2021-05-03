@@ -11,7 +11,8 @@
         >
             <div data-action='click->remote#view' class="cursor-pointer">
                 {% if "image" in t_file.mime_type %}
-                    <img src="{% url 'get_media' t_file.uuid %}" class="h-52 w-52 object-cover">
+                    {#  208px ==  13rm #}
+                    <img src="{% url 'get_media' t_file.uuid %}?s=208" class="h-52 w-52 object-cover">
                 {% else %}
                     <div class="h-52 w-52 inline-block flex">
                         <span class="self-center mx-auto">?</span>

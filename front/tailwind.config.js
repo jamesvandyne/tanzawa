@@ -1,7 +1,8 @@
 module.exports = {
   purge: [
      '../apps/**/*.html',
-      '../apps/**/forms.py'
+      '../apps/**/forms.py',
+      'src/**/*.js',
    ],
   darkMode: false, // or 'media' or 'class'
   theme: {

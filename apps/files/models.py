@@ -57,7 +57,7 @@ class TFormattedImage(TimestampModel):
     class Meta:
         db_table = "t_formatted_image"
         verbose_name = "Formatted Image"
-        unique_together = ("t_file", "mime_type")
+        unique_together = ("t_file", "mime_type", "width", "height")
 
     def __str__(self):
         return self.filename
