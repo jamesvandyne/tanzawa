@@ -108,7 +108,7 @@ def get_media(request, uuid):
 
 
 @method_decorator(login_required, name="dispatch")
-class FilesList(ListView):
+class FilesList(TurboFrameTemplateResponseMixin, ListView):
     template_name = "files/tfiles_list.html"
     paginate_by = 20
 
@@ -127,6 +127,7 @@ class FileDetail(TurboFrameTemplateResponseMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs["page"] = self.request.GET.get("page")
+        kwargs["insert"] = self.request.GET.get("insert")
         if "turbo_frame_target" not in kwargs:
             target = self.get_turbo_frame_dom_id()
             kwargs["turbo_frame_target"] = target
@@ -176,3 +177,15 @@ class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
         self.object.delete()
         success_url = self.get_success_url()
         return HttpResponseSeeOther(success_url)
+
+
+@method_decorator(login_required, name="dispatch")
+class FileBrowser(TurboFrameTemplateResponseMixin, ListView):
+    template_name = "files/tfiles_browser.html"
+    paginate_by = 20
+
+    def get_queryset(self):
+        return TFile.objects.all().order_by("-created_at")
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        return super().get_context_data(*args, object_list=object_list, nav="files")
