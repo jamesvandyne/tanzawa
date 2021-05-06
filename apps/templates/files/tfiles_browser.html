@@ -2,7 +2,7 @@
 <turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded md:w-2/3 overflow-scroll" style="max-height: 50%;">
 {% endif %}
     <h1 class="text-xl">Select a photo to insert.</h1>
-    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4 pt-2">
+    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4 pt-2" data-controller="picker">
     {% for t_file in object_list %}
         <div class="w-52 inline-block overflow-hidden"
             data-controller='remote'
@@ -10,7 +10,7 @@
             data-action='keydown@window->remote#closeWithKeyboard'
             data-remote-url='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}&insert=1'
         >
-            <div data-action='click->remote#view' class="cursor-pointer" data-controller="">
+            <div data-action='click->remote#view' class="cursor-pointer">
                 {% if "image" in t_file.mime_type %}
                     {#  208px ==  13rm #}
                     <img src="{% url 'get_media' t_file.uuid %}?s=208" class="h-52 w-52 object-cover align-middle">

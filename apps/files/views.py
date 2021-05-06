@@ -16,6 +16,7 @@ from django.views.generic import ListView, DetailView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
 from turbo_response.mixins import TurboFrameTemplateResponseMixin, HttpResponseSeeOther
 
 from .constants import PICTURE_FORMATS
@@ -189,3 +190,36 @@ class FileBrowser(TurboFrameTemplateResponseMixin, ListView):
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         return super().get_context_data(*args, object_list=object_list, nav="files")
+
+
+@method_decorator(login_required, name="dispatch")
+class TrixFigure(DetailView):
+    template_name = "trix/figure.html"
+    queryset = TFile.objects.all()
+
+    def get_context_data(self, **kwargs):
+        t_file: TFile = self.object
+
+        with Image.open(t_file.file) as image:
+            width = image.width
+            height = image.height
+
+        img_src = self.request.build_absolute_uri(t_file.get_absolute_url())
+        context = {
+            "mime": self.object.mime_type,
+            "src": img_src,
+            "width": width,
+            "height": height,
+            "trix_attachment_data": json.dumps(
+                {
+                    "contentType": self.object.mime_type,
+                    "filename": self.object.filename,
+                    "filesize": self.object.file.size,
+                    "height": height,
+                    "href": f"{img_src}?content-disposition=attachment",
+                    "url": img_src,
+                    "width": width,
+                }
+            ),
+        }
+        return super().get_context_data(**kwargs, **context)

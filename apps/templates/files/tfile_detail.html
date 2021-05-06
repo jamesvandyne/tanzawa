@@ -7,7 +7,7 @@
         {# actions #}
         <div class="flex">
             {% if insert %}
-                <button class="outline-button text-xs" href="{{ t_file.get_absolute_url }}">insert into post</button>
+                <button class="outline-button text-xs" data-url="{% url 'file_trix_figure' t_file.pk %}" data-action='click->picker#insertIntoPost'>insert into post</button>
             {% else %}
             <a class="outline-button text-xs" href="{{ t_file.get_absolute_url }}" target="_new">view on site</a>
             <a class="text-negroni-800 text-xs ml-auto" href="{% url "file_delete"  t_file.pk %}?page={{ page }}">delete</a>
