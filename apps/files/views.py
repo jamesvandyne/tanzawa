@@ -55,9 +55,7 @@ def get_media(request, uuid):
     size = request.GET.get("s")
 
     if file_format in PICTURE_FORMATS.keys():
-        qs = t_file.ref_t_formatted_image.filter(
-            mime_type=file_format
-        )
+        qs = t_file.ref_t_formatted_image.filter(mime_type=file_format)
         if size:
             qs = qs.filter(Q(width=size) | Q(height=size))
         formatted_file = qs.first()

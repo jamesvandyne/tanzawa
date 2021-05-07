@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('files', '0003_tfile_exif'),
+        ("files", "0003_tfile_exif"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='tformattedimage',
-            unique_together={('t_file', 'mime_type', 'width', 'height')},
+            name="tformattedimage",
+            unique_together={("t_file", "mime_type", "width", "height")},
         ),
     ]
