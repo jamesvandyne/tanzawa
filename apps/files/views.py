@@ -184,12 +184,18 @@ class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
 class FileBrowser(TurboFrameTemplateResponseMixin, ListView):
     template_name = "files/tfiles_browser.html"
     paginate_by = 20
+    turbo_frame_dom_id = "modal"
 
     def get_queryset(self):
         return TFile.objects.all().order_by("-created_at")
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         return super().get_context_data(*args, object_list=object_list, nav="files")
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.turbo.frame:
+            return self.render_turbo_frame(context, **response_kwargs)
+        return super().render_to_response(context, **response_kwargs)
 
 
 @method_decorator(login_required, name="dispatch")

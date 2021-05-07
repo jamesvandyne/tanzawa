@@ -11,6 +11,13 @@ export default class extends Controller {
         this.url = this.data.get('url');
     }
 
+    simulateEscKeyPress() {
+        const ev = document.createEvent('KeyboardEvent');
+        // 27 is the keycode for esc
+        ev.initKeyEvent('keydown', true, true, window, false, false, false, false, 27, 0);
+        document.body.dispatchEvent(ev);
+    }
+
     insertIntoPost(e) {
         fetch(e.target.dataset.url).then(response => {
             if (response.ok) {
@@ -20,6 +27,7 @@ export default class extends Controller {
         .then(html => {
             if(html) {
                 this.trix.insertHTML(html);
+                this.simulateEscKeyPress();
             }
         })
     }

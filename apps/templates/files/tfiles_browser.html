@@ -1,10 +1,10 @@
 {% if not request.turbo.frame %}
-<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded md:w-2/3 overflow-scroll" style="max-height: 50%;">
+<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded overflow-scroll md:w-2/3 " style="max-height: 75%;">
 {% endif %}
     <h1 class="text-xl">Select a photo to insert.</h1>
-    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4 pt-2" data-controller="picker">
+    <div class="flex flex-wrap" data-controller="picker">
     {% for t_file in object_list %}
-        <div class="w-52 inline-block overflow-hidden"
+        <div class="max-w-1/4 inline-block overflow-hidden p-2"
             data-controller='remote'
             data-remote-target='wrapper'
             data-action='keydown@window->remote#closeWithKeyboard'
@@ -25,8 +25,7 @@
         </div>
     {% endfor %}
     </div>
-    {% include "fragments/paging.html" %}
-
+    {% include "fragments/paging.html"  with turbo="true" %}
 {% if not request.turbo.frame %}
 </turbo-frame>
 {% endif %}
