@@ -16,6 +16,7 @@ from django.views.generic import ListView, DetailView, DeleteView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
 from turbo_response.mixins import TurboFrameTemplateResponseMixin, HttpResponseSeeOther
 
 from .constants import PICTURE_FORMATS
@@ -54,9 +55,7 @@ def get_media(request, uuid):
     size = request.GET.get("s")
 
     if file_format in PICTURE_FORMATS.keys():
-        qs = t_file.ref_t_formatted_image.filter(
-            mime_type=file_format
-        )
+        qs = t_file.ref_t_formatted_image.filter(mime_type=file_format)
         if size:
             qs = qs.filter(Q(width=size) | Q(height=size))
         formatted_file = qs.first()
@@ -108,7 +107,7 @@ def get_media(request, uuid):
 
 
 @method_decorator(login_required, name="dispatch")
-class FilesList(ListView):
+class FilesList(TurboFrameTemplateResponseMixin, ListView):
     template_name = "files/tfiles_list.html"
     paginate_by = 20
 
@@ -127,6 +126,7 @@ class FileDetail(TurboFrameTemplateResponseMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs["page"] = self.request.GET.get("page")
+        kwargs["insert"] = self.request.GET.get("insert")
         if "turbo_frame_target" not in kwargs:
             target = self.get_turbo_frame_dom_id()
             kwargs["turbo_frame_target"] = target
@@ -176,3 +176,54 @@ class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
         self.object.delete()
         success_url = self.get_success_url()
         return HttpResponseSeeOther(success_url)
+
+
+@method_decorator(login_required, name="dispatch")
+class FileBrowser(TurboFrameTemplateResponseMixin, ListView):
+    template_name = "files/tfiles_browser.html"
+    paginate_by = 20
+    turbo_frame_dom_id = "modal"
+
+    def get_queryset(self):
+        return TFile.objects.all().order_by("-created_at")
+
+    def get_context_data(self, *args, object_list=None, **kwargs):
+        return super().get_context_data(*args, object_list=object_list, nav="files")
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.turbo.frame:
+            return self.render_turbo_frame(context, **response_kwargs)
+        return super().render_to_response(context, **response_kwargs)
+
+
+@method_decorator(login_required, name="dispatch")
+class TrixFigure(DetailView):
+    template_name = "trix/figure.html"
+    queryset = TFile.objects.all()
+
+    def get_context_data(self, **kwargs):
+        t_file: TFile = self.object
+
+        with Image.open(t_file.file) as image:
+            width = image.width
+            height = image.height
+
+        img_src = self.request.build_absolute_uri(t_file.get_absolute_url())
+        context = {
+            "mime": self.object.mime_type,
+            "src": img_src,
+            "width": width,
+            "height": height,
+            "trix_attachment_data": json.dumps(
+                {
+                    "contentType": self.object.mime_type,
+                    "filename": self.object.filename,
+                    "filesize": self.object.file.size,
+                    "height": height,
+                    "href": f"{img_src}?content-disposition=attachment",
+                    "url": img_src,
+                    "width": width,
+                }
+            ),
+        }
+        return super().get_context_data(**kwargs, **context)

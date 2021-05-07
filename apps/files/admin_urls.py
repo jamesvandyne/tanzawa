@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path("files/", views.FilesList.as_view(), name="files"),
+    path("files/browser", views.FileBrowser.as_view(), name="file_browser"),
     path("files/<int:pk>", views.FileDetail.as_view(), name="file_detail"),
     path("files/<int:pk>/delete", views.FileDelete.as_view(), name="file_delete"),
+    path("files/<int:pk>/figure", views.TrixFigure.as_view(), name="file_trix_figure"),
 ]

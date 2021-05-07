@@ -1,8 +1,7 @@
 from __future__ import unicode_literals
 
 from django import forms
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
 
 
 class TrixEditor(forms.Textarea):
@@ -18,9 +17,8 @@ class TrixEditor(forms.Textarea):
         param_str = " ".join('{}="{}"'.format(k, v) for k, v in params.items())
 
         html = super(TrixEditor, self).render(name, value, attrs)
-        html = format_html(
-            "{}<p><trix-editor {}></trix-editor></p>", html, mark_safe(param_str)
-        )
+        context = {"html": html, "param_str": param_str}
+        html = render_to_string("trix/editor.html", context=context)
         return html
 
     class Media:

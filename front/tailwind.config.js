@@ -49,7 +49,7 @@ module.exports = {
     },
     extend: {
       spacing: {
-        '99': '42rem',
+        '99': '45rem',
       },
     },
   },

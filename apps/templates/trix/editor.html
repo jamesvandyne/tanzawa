@@ -1,0 +1,41 @@
+{{ html }}
+<p
+    data-controller='remote'
+    data-remote-target='wrapper'
+    data-action='keydown@window->remote#closeWithKeyboard'
+    data-remote-url='{% url "file_browser" %}'
+>
+    <trix-editor {{ param_str|safe }}></trix-editor>
+</p>
+
+<template id="trixSelectFileButton">
+    <button data-trix-action="selectFile"
+            title="Select an existing file"
+            tabindex="-1"
+            class="trix-button trix-button--icon trix--button--select-file"
+            data-action='click->remote#view'
+            data-target="modal"
+    >
+    </button>
+</template>
+
+<script lang="JavaScript">
+    (function() {
+
+    Trix.config.attachments.preview.caption = { name: false, size: false };
+
+    function getSelectFileButton() {
+        const template = document.getElementById("trixSelectFileButton");
+        return template.content.firstElementChild;
+    }
+
+    document.addEventListener('trix-initialize', function(e) {
+        const trix = e.target;
+        const toolBar = trix.toolbarElement;
+
+        // Attachment of the button to the toolBar
+        const selectFileButton = getSelectFileButton();
+        toolBar.querySelector('.trix-button-group--file-tools').appendChild(selectFileButton);
+    });
+}());
+</script>
