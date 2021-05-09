@@ -38,7 +38,7 @@ class TCategory(TimestampModel):
 
 
 class TPostFormat(TimestampModel):
-    """ Wordpress PostFormat: Status, Quote, Link etc... """
+    """Wordpress PostFormat: Status, Quote, Link etc..."""
 
     t_wordpress = models.ForeignKey(
         TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_format"
@@ -61,7 +61,7 @@ class TPostFormat(TimestampModel):
 
 
 class TPostKind(TimestampModel):
-    """ IndieWeb PostKind: Article', Bookmark, Note, Reply, Checkin, Photo """
+    """IndieWeb PostKind: Article', Bookmark, Note, Reply, Checkin, Photo"""
 
     t_wordpress = models.ForeignKey(
         TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_kind"
