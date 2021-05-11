@@ -213,7 +213,8 @@ class SearchView(ListView):
             selected=["home"],
             streams=MStream.objects.visible(self.request.user),
             form=SearchForm(self.request.GET),
-
         )
-        context['show_map'] = any([getattr(e, 't_location', False) for e in context["object_list"]])
+        context["show_map"] = any(
+            [getattr(e, "t_location", False) for e in context["object_list"]]
+        )
         return context
