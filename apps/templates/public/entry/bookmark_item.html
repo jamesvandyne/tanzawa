@@ -20,7 +20,7 @@
             </time>
             {% include 'author/byline.html' with p_author=t_post.p_author %}
             {% if t_entry.t_location %}
-                <span>in {{ t_entry.t_location.summary  }}</span>
+                {% include 'public/fragments/location_link.html' %}
             {% endif %}
         </div>
     </header>

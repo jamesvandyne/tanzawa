@@ -199,7 +199,7 @@ class SearchView(ListView):
             lat = form.cleaned_data.get("lat")
             lon = form.cleaned_data.get("lon")
             if q:
-                qs = qs.filter(Q(tite__icontains=q) | Q(p_summary__icontains=q))
+                qs = qs.filter(Q(p_name__icontains=q) | Q(p_summary__icontains=q))
             if lat and lon:
                 point = Point(lat, lon, srid=3857)
                 qs = qs.filter(
@@ -208,9 +208,12 @@ class SearchView(ListView):
         return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        return super().get_context_data(
+        context = super().get_context_data(
             object_list=object_list,
             selected=["home"],
             streams=MStream.objects.visible(self.request.user),
             form=SearchForm(self.request.GET),
+
         )
+        context['show_map'] = any([getattr(e, 't_location', False) for e in context["object_list"]])
+        return context

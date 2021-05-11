@@ -1,0 +1,3 @@
+{% if t_entry.t_location %}
+    <span>in <a href="{% url 'public:search' %}?lat={{ t_entry.t_location.point.x }}&lon={{ t_entry.t_location.point.y }}">{{ t_entry.t_location.summary  }}</a></span>
+{% endif %}
