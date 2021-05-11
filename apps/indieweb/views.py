@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 def form_to_mf2(request):
-    """"""
+    """ """
     properties = {}
     post = request.POST
     for key in post.keys():

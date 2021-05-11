@@ -33,14 +33,14 @@ class MediaUploadForm(forms.ModelForm):
             rotated_image = rotate_image(
                 self.cleaned_data["file"].file, self.cleaned_data["file"].content_type
             )
-
             scrubbed_image_data = scrub_exif(rotated_image)
-            if scrubbed_image_data:
-                upload_file = SimpleUploadedFile(
-                    self.cleaned_data["file"].name,
-                    scrubbed_image_data.read(),
-                    self.cleaned_data["file"].content_type,
-                )
-                self.cleaned_data["file"] = upload_file
+            image_data = scrubbed_image_data if scrubbed_image_data else rotated_image
+            image_data.seek(0)
+            upload_file = SimpleUploadedFile(
+                self.cleaned_data["file"].name,
+                image_data.read(),
+                self.cleaned_data["file"].content_type,
+            )
+            self.cleaned_data["file"] = upload_file
         except plum._exceptions.UnpackError:
             pass

@@ -33,13 +33,13 @@ def scrub_exif(image: BytesIO) -> Optional[BytesIO]:
 
 
 def dms_to_dd(degree, minute, second) -> float:
-    """ Convert from degree, minutes, seconds to a decimal degree for storage in a Point"""
+    """Convert from degree, minutes, seconds to a decimal degree for storage in a Point"""
     sign = -1 if degree < 0 else 1
     return sign * (int(degree) + float(minute) / 60 + float(second) / 3600)
 
 
 def get_location(exif_dict: Dict[str, Tuple[float, float, float]]) -> Optional[Point]:
-    """ Convert the gps degree/minute/second to a Point"""
+    """Convert the gps degree/minute/second to a Point"""
     gps_latitude = exif_dict.get("gps_latitude")
     gps_longitude = exif_dict.get("gps_longitude")
     if gps_latitude and gps_longitude:
