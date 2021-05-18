@@ -5,6 +5,8 @@ from django import forms
 from django.db import transaction
 from django.contrib.gis.forms import OSMWidget, PointField
 from django.utils.timezone import now
+
+from core.forms import TCharField
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
@@ -15,10 +17,6 @@ from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
 
 from .models import TEntry, TReply, TBookmark, TLocation, TCheckin, TSyndication
-
-
-class TCharField(forms.CharField):
-    widget = forms.TextInput(attrs={"class": "input-field"})
 
 
 class CreateStatusForm(forms.ModelForm):
