@@ -50,6 +50,21 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
         description=extract_description(soup),
         author=LinkedPageAuthor(name="", url="", photo=""),
     )
+
+    if data["microformat"]:
+        entry = mf2util.interpret_entry({"items": data["microformat"]}, source_url=url)
+        entry_soup = BeautifulSoup(entry.get("content", ""), "html.parser")
+        description = entry_soup.text[:255].strip()
+        linked_page.title = (
+            entry.get("name") or linked_page.title or description[:128].strip()
+        )
+        linked_page.description = description
+        linked_page.author = LinkedPageAuthor(
+            name=entry.get("author", {}).get("name", ""),
+            url=entry.get("author", {}).get("url", ""),
+            photo=entry.get("author", {}).get("image"),
+        )
+        return linked_page
     for schema in data["json-ld"]:
         linked_page.title = (
             next(schema[key] for key in title_keys if key in schema)
@@ -67,21 +82,6 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
             )
             if "author" in schema
             else None
-        )
-        return linked_page
-
-    if data["microformat"]:
-        entry = mf2util.interpret_entry({"items": data["microformat"]}, source_url=url)
-        entry_soup = BeautifulSoup(entry.get("content", ""), "html.parser")
-        description = entry_soup.text[:255].strip()
-        linked_page.title = (
-            entry.get("name") or linked_page.title or description[:128].strip()
-        )
-        linked_page.description = description
-        linked_page.author = LinkedPageAuthor(
-            name=entry["author"].get("name", ""),
-            url=entry["author"].get("url", ""),
-            photo=entry["author"].get("image"),
         )
         return linked_page
     return linked_page
