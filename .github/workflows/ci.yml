@@ -22,4 +22,4 @@ jobs:
         pip install -r requirements_dev.txt
     - name: Running tox
       run: |
-        tox
+        ENV_FILE=.env.tox tox
