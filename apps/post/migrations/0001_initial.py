@@ -71,9 +71,7 @@ class Migration(migrations.Migration):
                 ("updated", models.DateTimeField(blank=True, null=True)),
                 (
                     "m_post_kind",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="post.mpostkind"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="post.mpostkind"),
                 ),
                 (
                     "m_post_status",
@@ -84,9 +82,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "p_author",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="auth.user"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="auth.user"),
                 ),
             ],
             options={

@@ -29,12 +29,8 @@ class CreateEntryView(CreateView):
 
     def get_named_forms(self):
         return {
-            "location": forms.TLocationModelForm(
-                self.request.POST or None, prefix="location"
-            ),
-            "syndication": forms.TSyndicationModelInlineFormSet(
-                self.request.POST or None, prefix="syndication"
-            ),
+            "location": forms.TLocationModelForm(self.request.POST or None, prefix="location"),
+            "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None, prefix="syndication"),
         }
 
     def form_valid(self, form, named_forms=None):
@@ -50,9 +46,7 @@ class CreateEntryView(CreateView):
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             send_webmention(self.request, entry.t_post, entry.e_content)
 
-        permalink_a_tag = render_to_string(
-            "fragments/view_post_link.html", {"t_post": entry.t_post}
-        )
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": entry.t_post})
         messages.success(
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
@@ -82,9 +76,7 @@ class CreateEntryView(CreateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all(
-            (named_form.is_valid() for named_form in named_forms.values())
-        ):
+        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
@@ -96,9 +88,7 @@ class UpdateEntryView(UpdateView):
     original_content = ""
 
     def get_queryset(self):
-        return models.TEntry.objects.select_related("t_post").filter(
-            t_post__m_post_kind__key=self.m_post_kind
-        )
+        return models.TEntry.objects.select_related("t_post").filter(t_post__m_post_kind__key=self.m_post_kind)
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
@@ -117,9 +107,7 @@ class UpdateEntryView(UpdateView):
         except models.TLocation.DoesNotExist:
             t_location = None
         return {
-            "location": forms.TLocationModelForm(
-                self.request.POST or None, instance=t_location, prefix="location"
-            ),
+            "location": forms.TLocationModelForm(self.request.POST or None, instance=t_location, prefix="location"),
             "syndication": forms.TSyndicationModelInlineFormSet(
                 self.request.POST or None, prefix="syndication", instance=self.object
             ),
@@ -140,9 +128,7 @@ class UpdateEntryView(UpdateView):
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             send_webmention(self.request, form.instance.t_post, form.instance.e_content)
 
-        permalink_a_tag = render_to_string(
-            "fragments/view_post_link.html", {"t_post": form.instance.t_post}
-        )
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": form.instance.t_post})
         messages.success(
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
@@ -169,9 +155,7 @@ class UpdateEntryView(UpdateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all(
-            (named_form.is_valid() for named_form in named_forms.values())
-        ):
+        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
@@ -191,9 +175,7 @@ class ExtractLinkedPageMetaView(FormView):
 
     def get_named_forms(self):
         return {
-            "location": forms.TLocationModelForm(
-                self.request.POST or None, prefix="location"
-            ),
+            "location": forms.TLocationModelForm(self.request.POST or None, prefix="location"),
             "syndication": forms.TSyndicationModelInlineFormSet(prefix="syndication"),
         }
 
@@ -218,11 +200,7 @@ class ExtractLinkedPageMetaView(FormView):
             form=self.success_form(initial=initial, p_author=self.request.user),
             named_forms=self.get_named_forms(),
         )
-        return (
-            TurboFrame(self.turbo_frame)
-            .template(self.validate_template, context)
-            .response(self.request)
-        )
+        return TurboFrame(self.turbo_frame).template(self.validate_template, context).response(self.request)
 
     def form_invalid(self, form):
         return render(
@@ -303,11 +281,7 @@ class CreateReplyView(CreateEntryView):
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
-        return (
-            TurboFrame("reply-form")
-            .template("entry/reply/_form.html", context)
-            .response(self.request)
-        )
+        return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -346,11 +320,7 @@ class CreateBookmarkView(CreateEntryView):
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
-        return (
-            TurboFrame("bookmark-form")
-            .template("entry/bookmark/_form.html", context)
-            .response(self.request)
-        )
+        return TurboFrame("bookmark-form").template("entry/bookmark/_form.html", context).response(self.request)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -452,9 +422,7 @@ def article_delete(request, pk: int):
 
 @login_required
 def edit_post(request, pk: int):
-    t_entry = get_object_or_404(
-        models.TEntry.objects.select_related("t_post", "t_post__m_post_kind"), pk=pk
-    )
+    t_entry = get_object_or_404(models.TEntry.objects.select_related("t_post", "t_post__m_post_kind"), pk=pk)
     if t_entry.t_post.m_post_kind.key == MPostKinds.article:
         return redirect(reverse("article_edit", args=[pk]))
     elif t_entry.t_post.m_post_kind.key == MPostKinds.note:

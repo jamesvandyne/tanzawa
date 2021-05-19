@@ -18,18 +18,12 @@ def handle404(request, exception):
     # Redirect to our mapped stream
     if request.path.startswith("/category/"):
         parts = request.path.split("/")
-        t_category = TCategory.objects.filter(
-            m_stream__isnull=False, nice_name=parts[2]
-        ).first()
+        t_category = TCategory.objects.filter(m_stream__isnull=False, nice_name=parts[2]).first()
         if t_category:
             if request.path.endswith("feed"):
                 # Redirect stream feeds
-                return HttpResponsePermanentRedirect(
-                    reverse("feeds:stream_feed", args=[t_category.m_stream.slug])
-                )
+                return HttpResponsePermanentRedirect(reverse("feeds:stream_feed", args=[t_category.m_stream.slug]))
             else:
                 # Redirect to stream page
-                return HttpResponsePermanentRedirect(
-                    reverse("public:stream", args=[t_category.m_stream.slug])
-                )
+                return HttpResponsePermanentRedirect(reverse("public:stream", args=[t_category.m_stream.slug]))
     return HttpResponseNotFound()

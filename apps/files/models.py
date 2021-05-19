@@ -14,9 +14,7 @@ class TFile(TimestampModel):
     exif = models.JSONField(default=dict)
     point = geo_models.PointField(blank=True, null=True)
 
-    posts = models.ManyToManyField(
-        "post.TPost", through="TFilePost", through_fields=("t_file", "t_post")
-    )
+    posts = models.ManyToManyField("post.TPost", through="TFilePost", through_fields=("t_file", "t_post"))
 
     class Meta:
         db_table = "t_file"
@@ -45,9 +43,7 @@ class TFilePost(TimestampModel):
 
 class TFormattedImage(TimestampModel):
     file = models.FileField(upload_to=format_upload_to)
-    t_file = models.ForeignKey(
-        TFile, on_delete=models.CASCADE, related_name="ref_t_formatted_image"
-    )
+    t_file = models.ForeignKey(TFile, on_delete=models.CASCADE, related_name="ref_t_formatted_image")
     filename = models.CharField(max_length=128)
     mime_type = models.CharField(max_length=32)
 

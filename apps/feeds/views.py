@@ -83,9 +83,7 @@ class AllEntriesFeed(Feed):
 
 class StreamFeed(AllEntriesFeed):
     def get_object(self, request, stream_slug: str):
-        return get_object_or_404(
-            MStream.objects.visible(request.user), slug=stream_slug
-        )
+        return get_object_or_404(MStream.objects.visible(request.user), slug=stream_slug)
 
     def items(self, obj):
         return (

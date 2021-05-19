@@ -21,7 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            add_default_streams, reverse_code=migrations.RunPython.noop
-        ),
+        migrations.RunPython(add_default_streams, reverse_code=migrations.RunPython.noop),
     ]

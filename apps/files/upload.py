@@ -20,9 +20,7 @@ def _md5_sum_for_file(file_field) -> str:
 
 def upload_to(instance: "TFile", filename: str) -> Path:
     instance.filename = filename
-    file_directory = (
-        MAIN_DIRECTORY / now().strftime(DATE_DIRECTORY) / str(instance.uuid)
-    )
+    file_directory = MAIN_DIRECTORY / now().strftime(DATE_DIRECTORY) / str(instance.uuid)
     file_name = _md5_sum_for_file(instance.file)
     return file_directory / file_name
 

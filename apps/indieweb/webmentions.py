@@ -17,9 +17,7 @@ def find_a_tags(e_content: str) -> List[str]:
 
 def send_webmention(request, t_post: TPost, e_content: str) -> List[TWebmentionSend]:
     source_url = request.build_absolute_uri(t_post.get_absolute_url())
-    mentions = ronkyuu.findMentions(
-        source_url, exclude_domains=settings.ALLOWED_HOSTS, content=e_content
-    )
+    mentions = ronkyuu.findMentions(source_url, exclude_domains=settings.ALLOWED_HOSTS, content=e_content)
 
     t_webmention_sends: List[TWebmentionSend] = []
     refs: Set[str] = mentions["refs"]
@@ -36,9 +34,7 @@ def send_webmention(request, t_post: TPost, e_content: str) -> List[TWebmentionS
             try:
                 t_webmention_send = t_post.ref_t_webmention_send.get(target=target)
             except TWebmentionSend.DoesNotExist:
-                t_webmention_send = TWebmentionSend(
-                    t_post=t_post, target=target, success=False
-                )
+                t_webmention_send = TWebmentionSend(t_post=t_post, target=target, success=False)
 
             response = ronkyuu.sendWebmention(source_url, target, wm_url)
             t_webmention_send.dt_sent = now()

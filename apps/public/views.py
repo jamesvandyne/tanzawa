@@ -121,9 +121,7 @@ class StreamView(ListView):
 
     @cached_property
     def stream(self):
-        return get_object_or_404(
-            MStream.objects.visible(self.request.user), slug=self.kwargs["stream_slug"]
-        )
+        return get_object_or_404(MStream.objects.visible(self.request.user), slug=self.kwargs["stream_slug"])
 
     def get_queryset(self):
 
@@ -202,9 +200,7 @@ class SearchView(ListView):
                 qs = qs.filter(Q(p_name__icontains=q) | Q(p_summary__icontains=q))
             if lat and lon:
                 point = Point(lat, lon, srid=3857)
-                qs = qs.filter(
-                    t_location__point__dwithin=(point, self.convert_km_to_degrees(2))
-                )
+                qs = qs.filter(t_location__point__dwithin=(point, self.convert_km_to_degrees(2)))
         return qs
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -214,7 +210,5 @@ class SearchView(ListView):
             streams=MStream.objects.visible(self.request.user),
             form=SearchForm(self.request.GET),
         )
-        context["show_map"] = any(
-            [getattr(e, "t_location", False) for e in context["object_list"]]
-        )
+        context["show_map"] = any([getattr(e, "t_location", False) for e in context["object_list"]])
         return context

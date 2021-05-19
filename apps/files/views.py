@@ -82,9 +82,7 @@ def get_media(request, uuid):
         if formatted_file:
             return_file = formatted_file
         else:
-            upload_file, width, height = convert_image_format(
-                t_file, target_mime=t_file.mime_type, size=int(size)
-            )
+            upload_file, width, height = convert_image_format(t_file, target_mime=t_file.mime_type, size=int(size))
             if upload_file:
                 formatted_file = TFormattedImage(
                     file=upload_file,

@@ -68,8 +68,13 @@ def normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
     return h_entry
 
 
+# TODO: Refactor into a CBV and break logical components into
 @api_view(["GET", "POST"])
-def micropub(request):
+def micropub(request):  # noqa: C901 too complex (30)
+    """
+    Micropub endpoint takes a micropub request, prepares images / data into the same
+    structure as if they were posted via the web interface and uses those forms to process it.
+    """
     normalize = {
         "application/json": lambda r: normalize_properties(r.data),
         "application/x-www-form-urlencoded": form_to_mf2,
@@ -83,9 +88,7 @@ def micropub(request):
     except IndexError:
         token = request.POST.get("access_token")
     except UnicodeError:
-        msg = _(
-            "Invalid token header. Token string should not contain invalid characters."
-        )
+        msg = _("Invalid token header. Token string should not contain invalid characters.")
         return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
 
     if not token:
@@ -132,13 +135,10 @@ def micropub(request):
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
         "m_post_status": "".join(
-            props.get("post-status", [])
-            or MPostStatuses.published  # pull this data from serialier
+            props.get("post-status", []) or MPostStatuses.published  # pull this data from serialier
         ),
         "dt_published": dt_published[0].isoformat() if dt_published else None,
-        "streams": serializer.validated_data["properties"]["streams"].values_list(
-            "pk", flat=True
-        ),
+        "streams": serializer.validated_data["properties"]["streams"].values_list("pk", flat=True),
     }
     if serializer.validated_data["properties"].get("in_reply_to"):
         linked_page = serializer.validated_data["properties"].get("in_reply_to")
@@ -162,16 +162,10 @@ def micropub(request):
         }
         named_forms["location"] = TLocationModelForm(data=location_form_data)
     if serializer.validated_data["properties"].get("checkin"):
-        named_forms["checkin"] = TCheckinModelForm(
-            data=serializer.validated_data["properties"].get("checkin")
-        )
+        named_forms["checkin"] = TCheckinModelForm(data=serializer.validated_data["properties"].get("checkin"))
     if serializer.validated_data["properties"].get("syndication"):
-        for idx, syndication_url in enumerate(
-            serializer.validated_data["properties"]["syndication"]
-        ):
-            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
-                data={"url": syndication_url}
-            )
+        for idx, syndication_url in enumerate(serializer.validated_data["properties"]["syndication"]):
+            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(data={"url": syndication_url})
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -209,13 +203,9 @@ def micropub(request):
     if named_forms.get("checkin"):
         form_class = CreateCheckinForm
 
-    form = form_class(
-        data=form_data, p_author=serializer.validated_data["access_token"].user
-    )
+    form = form_class(data=form_data, p_author=serializer.validated_data["access_token"].user)
 
-    if form.is_valid() and all(
-        named_form.is_valid() for named_form in named_forms.values()
-    ):
+    if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
 
         with transaction.atomic():
@@ -229,9 +219,7 @@ def micropub(request):
             send_webmention(request, entry.t_post, entry.e_content)
 
         response = Response(status=status.HTTP_201_CREATED)
-        response["Location"] = request.build_absolute_uri(
-            entry.t_post.get_absolute_url()
-        )
+        response["Location"] = request.build_absolute_uri(entry.t_post.get_absolute_url())
         return response
     named_forms["entry"] = form
     response = {key: value.errors.as_json() for key, value in named_forms.items()}
@@ -240,9 +228,7 @@ def micropub(request):
 
 @login_required
 def review_webmention(request, pk: int, approval: bool):
-    t_web_mention: TWebmention = get_object_or_404(
-        TWebmention.objects.select_related(), pk=pk
-    )
+    t_web_mention: TWebmention = get_object_or_404(TWebmention.objects.select_related(), pk=pk)
     t_webmention_response = t_web_mention.t_webmention_response
 
     with transaction.atomic():
@@ -284,7 +270,9 @@ def indieauth_authorize(request):
         form = IndieAuthAuthorizationForm(request.POST)
         if form.is_valid():
             t_token = form.save(request.user)
-            redirect_uri = f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
+            redirect_uri = (
+                f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
+            )
             return redirect(redirect_uri)
         context = {"form": form, "client_id": form.cleaned_data["client_id"]}
 
@@ -304,9 +292,7 @@ def token_endpoint(request):
         try:
             data = {"token": token.decode()}
         except UnicodeError:
-            msg = _(
-                "Invalid token header. Token string should not contain invalid characters."
-            )
+            msg = _("Invalid token header. Token string should not contain invalid characters.")
             return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = IndieAuthTokenVerificationSerializer(data=data)

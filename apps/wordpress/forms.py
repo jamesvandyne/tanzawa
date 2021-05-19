@@ -50,22 +50,13 @@ class WordpressUploadForm(forms.ModelForm):
         self.instance.base_blog_url = soup.find("wp:base_blog_url").text
 
         self.t_categories.extend(
-            [
-                TCategory(name=name, nice_name=nice_name)
-                for name, nice_name in extract_categories(soup)
-            ]
+            [TCategory(name=name, nice_name=nice_name) for name, nice_name in extract_categories(soup)]
         )
         self.t_post_formats.extend(
-            [
-                TPostFormat(name=name, nice_name=nice_name)
-                for name, nice_name in extract_post_format(soup)
-            ]
+            [TPostFormat(name=name, nice_name=nice_name) for name, nice_name in extract_post_format(soup)]
         )
         self.t_post_kinds.extend(
-            [
-                TPostKind(name=name, nice_name=nice_name)
-                for name, nice_name in extract_post_kind(soup)
-            ]
+            [TPostKind(name=name, nice_name=nice_name) for name, nice_name in extract_post_kind(soup)]
         )
         self._extract_attachments(soup)
         self._extract_posts(soup)
@@ -123,9 +114,7 @@ class WordpressUploadForm(forms.ModelForm):
 
 class TCategoryModelForm(forms.ModelForm):
 
-    t_stream = StreamModelChoiceField(
-        MStream.objects, label="", empty_label="Skip", required=False
-    )
+    t_stream = StreamModelChoiceField(MStream.objects, label="", empty_label="Skip", required=False)
 
     class Meta:
         model = TCategory

@@ -46,9 +46,7 @@ class MPostKind(TimestampModel):
 
 class TPostManager(models.Manager):
     def published(self):
-        return self.get_queryset().filter(
-            m_post_status__key=MPostStatuses.published, dt_published__lte=now()
-        )
+        return self.get_queryset().filter(m_post_status__key=MPostStatuses.published, dt_published__lte=now())
 
     def drafts(self):
         return self.get_queryset().filter(
@@ -66,9 +64,7 @@ class TPost(TimestampModel):
     dt_published = models.DateTimeField(blank=True, null=True)
     dt_updated = models.DateTimeField(blank=True, null=True)
 
-    files = models.ManyToManyField(
-        "files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file")
-    )
+    files = models.ManyToManyField("files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file"))
     streams = models.ManyToManyField(
         "streams.MStream",
         through="streams.TStreamPost",
@@ -90,9 +86,7 @@ class TPost(TimestampModel):
     def post_title(self) -> str:
         t_entry = self.ref_t_entry.all()[0]
         summary = t_entry.p_summary[:128]
-        title = t_entry.p_name or (
-            f"{summary}…" if len(t_entry.p_summary) > 128 else summary
-        )
+        title = t_entry.p_name or (f"{summary}…" if len(t_entry.p_summary) > 128 else summary)
         if self.m_post_kind.key == MPostKinds.reply:
             title = f"Response to {t_entry.t_reply.title}"
         elif self.m_post_kind.key == MPostKinds.bookmark:

@@ -43,9 +43,7 @@ class TestExtractEntry:
         t_entry = target(post_xml_soup)
 
         assert t_entry.p_name == "The Week #10"
-        assert t_entry.p_summary.startswith(
-            "It's week #10 - I've managed to make it to double digit weekly updates!"
-        )
+        assert t_entry.p_summary.startswith("It's week #10 - I've managed to make it to double digit weekly updates!")
         assert t_entry.e_content.startswith("<ul>")
 
 
@@ -93,9 +91,9 @@ class TestExtractPublishedDate:
         return extract_published_date
 
     def test_extract_published_date(self, target, post_xml_soup):
-        assert datetime(
-            year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=pytz.utc
-        ) == target(post_xml_soup)
+        assert datetime(year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=pytz.utc) == target(
+            post_xml_soup
+        )
 
 
 class TestExtractPhoto:
@@ -121,9 +119,7 @@ class TestExtractSyndication:
 
     def test_extract_syndication(self, target, checkin_xml_soup):
         urls = target(checkin_xml_soup)
-        assert urls == [
-            "https://www.swarmapp.com/user/89277993/checkin/5f6563d6a183c074f5e2e472"
-        ]
+        assert urls == ["https://www.swarmapp.com/user/89277993/checkin/5f6563d6a183c074f5e2e472"]
 
 
 class TestExtractLocation:

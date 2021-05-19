@@ -30,9 +30,7 @@ class MediaUploadForm(forms.ModelForm):
             self.instance.point = get_location(exif)
             self.cleaned_data["file"].seek(0)
 
-            rotated_image = rotate_image(
-                self.cleaned_data["file"].file, self.cleaned_data["file"].content_type
-            )
+            rotated_image = rotate_image(self.cleaned_data["file"].file, self.cleaned_data["file"].content_type)
             scrubbed_image_data = scrub_exif(rotated_image)
             image_data = scrubbed_image_data if scrubbed_image_data else rotated_image
             image_data.seek(0)

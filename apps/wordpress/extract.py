@@ -1,15 +1,14 @@
 from datetime import datetime
-from typing import Dict, Any, ByteString, List, Tuple, Union, Optional
+from typing import Dict, List, Tuple, Union, Optional
 from bs4 import BeautifulSoup
 import phpserialize
 from django.utils.timezone import make_aware
 import pytz
 from django.contrib.gis.geos import Point
-from .models import TWordpressAttachment
 from indieweb.extract import LinkedPage, LinkedPageAuthor
-from post.models import TPost, MPostKind, MPostStatus, MPostStatuses
+from post.models import MPostStatuses
 
-from entry.models import TEntry, TSyndication, TBookmark, TLocation, TCheckin, TReply
+from entry.models import TEntry
 
 
 def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:
@@ -27,9 +26,7 @@ def extract_post_status(soup: BeautifulSoup) -> str:
 
 def extract_published_date(soup: BeautifulSoup) -> Optional[datetime]:
     try:
-        pub_date = datetime.strptime(
-            soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S"
-        )
+        pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
         return make_aware(pub_date, pytz.utc)
     except ValueError:
         # draft posts
@@ -37,9 +34,7 @@ def extract_published_date(soup: BeautifulSoup) -> Optional[datetime]:
 
 
 def extract_entry(soup: BeautifulSoup) -> TEntry:
-    p_summary = BeautifulSoup(
-        soup.find("description").text or soup.find("encoded").text[:255], "html5lib"
-    )
+    p_summary = BeautifulSoup(soup.find("description").text or soup.find("encoded").text[:255], "html5lib")
     return TEntry(
         p_name=soup.find("title").text,
         p_summary=p_summary.text.strip(),
@@ -49,25 +44,18 @@ def extract_entry(soup: BeautifulSoup) -> TEntry:
 
 def extract_categories(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
-    return [
-        (cat.text, cat.attrs["nicename"])
-        for cat in set(soup.find_all("category", attrs={"domain": "category"}))
-    ]
+    return [(cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "category"}))]
 
 
 def extract_post_kind(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
-    return [
-        (cat.text, cat.attrs["nicename"])
-        for cat in set(soup.find_all("category", attrs={"domain": "kind"}))
-    ]
+    return [(cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "kind"}))]
 
 
 def extract_post_format(soup: BeautifulSoup) -> List[Tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
     return [
-        (cat.text, cat.attrs["nicename"])
-        for cat in set(soup.find_all("category", attrs={"domain": "post_format"}))
+        (cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "post_format"}))
     ]
 
 
@@ -121,17 +109,11 @@ def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return {
-            "street_address": _get_item_as_string(properties, b"street-address").decode(
-                "utf8"
-            ),
+            "street_address": _get_item_as_string(properties, b"street-address").decode("utf8"),
             "locality": _get_item_as_string(properties, b"locality").decode("utf8"),
             "region": _get_item_as_string(properties, b"region").decode("utf8"),
-            "country_name": _get_item_as_string(properties, b"country-name").decode(
-                "utf8"
-            ),
-            "postal_code": _get_item_as_string(properties, b"postal-code").decode(
-                "utf8"
-            ),
+            "country_name": _get_item_as_string(properties, b"country-name").decode("utf8"),
+            "postal_code": _get_item_as_string(properties, b"postal-code").decode("utf8"),
             "point": Point(
                 _get_item_as_string(properties, b"latitude"),
                 _get_item_as_string(properties, b"longitude"),
@@ -153,9 +135,7 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     return {}
 
 
-def _extract_author(
-    author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]
-) -> Optional[LinkedPageAuthor]:
+def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optional[LinkedPageAuthor]:
     properties = author.get(b"properties")
     if properties:
         return LinkedPageAuthor(

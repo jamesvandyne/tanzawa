@@ -34,9 +34,7 @@ class Migration(migrations.Migration):
                 ("filename", models.CharField(max_length=128)),
                 (
                     "point",
-                    django.contrib.gis.db.models.fields.PointField(
-                        blank=True, null=True, srid=4326
-                    ),
+                    django.contrib.gis.db.models.fields.PointField(blank=True, null=True, srid=4326),
                 ),
             ],
             options={
@@ -60,15 +58,11 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "t_file",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="files.tfile"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="files.tfile"),
                 ),
                 (
                     "t_post",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="post.tpost"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="post.tpost"),
                 ),
             ],
             options={

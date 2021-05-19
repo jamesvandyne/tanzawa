@@ -217,9 +217,7 @@ class TestArticleRendering:
             ),
         )
 
-    def test_microformats_data(
-        self, client, t_entry, t_post, t_syndication, t_location
-    ):
+    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -230,9 +228,7 @@ class TestArticleRendering:
             "properties": {
                 "name": ["My Awesome Post"],
                 "published": ["2020-09-28T12:59:30+00:00"],
-                "syndication": [
-                    "https://twitter.com/jamesvandyne/status/1372676240998428673"
-                ],
+                "syndication": ["https://twitter.com/jamesvandyne/status/1372676240998428673"],
                 "location": [
                     {
                         "type": ["h-adr"],

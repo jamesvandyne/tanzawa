@@ -22,9 +22,7 @@ from files.models import TFile
 from files.images import bytes_as_upload_image
 
 
-IMG_DATA_PATTERN = re.compile(
-    r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$"
-)
+IMG_DATA_PATTERN = re.compile(r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$")
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +55,7 @@ def find_entry(parsed, types, target_url):
     entry = None
     for entry in _find_all_entries(parsed, types, False):
         entry_urls = chain.from_iterable(
-            entry.get("properties", {}).get(prop, [])
-            for prop in ("like-of", "in-reply-to", "repost-of")
+            entry.get("properties", {}).get(prop, []) for prop in ("like-of", "in-reply-to", "repost-of")
         )
         if target_url in entry_urls:
             return entry
@@ -147,9 +144,7 @@ def save_and_get_tag(request, image: DataImage) -> Optional[BeautifulSoup]:
             ),
         }
         # Render as trix
-        return BeautifulSoup(
-            render_to_string("trix/figure.html", context), "html.parser"
-        )
+        return BeautifulSoup(render_to_string("trix/figure.html", context), "html.parser")
     logger.info("unable to save image: %s", file_form.errors)
     return None
 

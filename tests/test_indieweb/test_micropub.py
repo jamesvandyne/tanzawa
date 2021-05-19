@@ -3,7 +3,6 @@ from unittest.mock import Mock
 
 import pytest
 from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
-from unittest.mock import Mock
 from post.models import TPost
 
 
@@ -84,9 +83,7 @@ class TestMicropub:
         quill_note["action"] = "delete"
         response = client.post(target, data=quill_note)
         assert response.status_code == 400
-        assert response.json() == {
-            "non_field_errors": ["Token does not have delete permissions"]
-        }
+        assert response.json() == {"non_field_errors": ["Token does not have delete permissions"]}
 
     @pytest.mark.freeze_time("2021-02-13 12:30:59")
     def test_handles_embeded_base64_images(
@@ -107,7 +104,19 @@ class TestMicropub:
                 "name": ["A neat title"],
                 "content": [
                     {
-                        "html": '<p>This is a neat title</p>\n<h2>\n  Subtitle\n  <br />\n</h2>\n<p><b>Hello</b></p>\n<figure>\n  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAFBlWElmTU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADr/7PgAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWP4/f39fwAJswPh+tQCZAAAAABJRU5ErkJggg==" alt="" />\n</figure>'
+                        "html": '<p>This is a neat title</p>\n<h2>\n  Subtitle\n  <br />\n</h2>\n<p>'
+                                '<b>Hello</b></p>\n<figure>\n  <img src="data:image/png;base64,iVBOR'
+                                'w0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAFBlWElm'
+                                'TU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAE'
+                                'AAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADr/7PgAAABWWlUWHRYTUw6Y29tLm'
+                                'Fkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIge'
+                                'Dp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0'
+                                'dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA'
+                                '8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aW'
+                                'ZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmO'
+                                'k9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2Ny'
+                                'aXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWP'
+                                '4/f39fwAJswPh+tQCZAAAAABJRU5ErkJggg==" alt="" />\n</figure>'
                     }
                 ],
                 "category": ["photos", "checkins", "fake"],
@@ -210,9 +219,7 @@ class TestMicropub:
             "type": ["h-entry"],
             "properties": {
                 "h": ["entry"],
-                "content": [
-                    "This is a test reply from quill so I can add replies to micropub!"
-                ],
+                "content": ["This is a test reply from quill so I can add replies to micropub!"],
                 "in-reply-to": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
                 "category": ["replies"],
             },
@@ -234,10 +241,7 @@ class TestMicropub:
         assert t_reply.u_in_reply_to == data["properties"]["in-reply-to"][0]
         assert t_reply.author == "James"
         assert t_reply.title == "The Week #34"
-        assert (
-            t_reply.quote
-            == "I forget what I was searching for but I found this fantastic blog"
-        )
+        assert t_reply.quote == "I forget what I was searching for but I found this fantastic blog"
 
         mock_extract_reply.assert_called_once()
 
@@ -254,9 +258,7 @@ class TestMicropub:
         data = {
             "h": ["entry"],
             "access_token": [auth_token],
-            "content": [
-                "This is a test reply from quill so I can add replies to micropub!"
-            ],
+            "content": ["This is a test reply from quill so I can add replies to micropub!"],
             "in-reply-to": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
             "category": ["replies"],
         }
@@ -277,10 +279,7 @@ class TestMicropub:
         assert t_reply.u_in_reply_to == data["in-reply-to"][0]
         assert t_reply.author == "James"
         assert t_reply.title == "The Week #34"
-        assert (
-            t_reply.quote
-            == "I forget what I was searching for but I found this fantastic blog"
-        )
+        assert t_reply.quote == "I forget what I was searching for but I found this fantastic blog"
 
         mock_extract_reply.assert_called_once()
 
@@ -297,9 +296,7 @@ class TestMicropub:
         data = {
             "h": ["entry"],
             "access_token": [auth_token],
-            "content": [
-                "This is a test a book from quill so I can add replies to micropub!"
-            ],
+            "content": ["This is a test a book from quill so I can add replies to micropub!"],
             "bookmark-of": ["https://jamesvandyne.com/2021/03/02/2021-09.html"],
             "category": ["bookmarks"],
         }
@@ -320,10 +317,7 @@ class TestMicropub:
         assert t_bookmark.u_bookmark_of == data["bookmark-of"][0]
         assert t_bookmark.author == "James"
         assert t_bookmark.title == "The Week #34"
-        assert (
-            t_bookmark.quote
-            == "I forget what I was searching for but I found this fantastic blog"
-        )
+        assert t_bookmark.quote == "I forget what I was searching for but I found this fantastic blog"
 
         mock_extract_reply.assert_called_once()
 
@@ -333,12 +327,11 @@ class TestMicropub:
             "type": ["h-entry"],
             "properties": {
                 "published": ["2021-01-02T13:57:54+09:00"],
-                "syndication": [
-                    "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
-                ],
+                "syndication": ["https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"],
                 "content": ["\u98fd\u304d\u306a\u3044\u306a\u3041\u30fc"],
                 "photo": [
-                    "https://fastly.4sqi.net/img/general/original/89277993_vrz-_zxqAWoYCNJFnaaDWHpyAD7cJUPojCwRzTDJewE.jpg"
+                    "https://fastly.4sqi.net/img/general/original/89277993_vrz-_zxqAWoYCNJFnaaDWHpyA"
+                    "D7cJUPojCwRzTDJewE.jpg"
                 ],
                 "category": ["check-in"],
                 "location": [
@@ -367,9 +360,7 @@ class TestMicropub:
                         "type": ["h-card"],
                         "properties": {
                             "name": ["Kugenuma Beach (\u9d60\u6cbc\u6d77\u5cb8)"],
-                            "url": [
-                                "https://foursquare.com/v/4bf726e25ec320a1e18a86d3"
-                            ],
+                            "url": ["https://foursquare.com/v/4bf726e25ec320a1e18a86d3"],
                             "latitude": [35.31593281000502],
                             "longitude": [139.4700015160363],
                             "street-address": ["\u9d60\u6cbc\u6d77\u5cb8"],
@@ -419,9 +410,7 @@ class TestMicropub:
         assert t_location.point.x == 35.31593281000502
         assert t_location.point.y == 139.4700015160363
 
-        download_image_mock.assert_called_with(
-            entry_with_location["properties"]["photo"][0]
-        )
+        download_image_mock.assert_called_with(entry_with_location["properties"]["photo"][0])
 
     @pytest.fixture
     def download_image_mock(self, monkeypatch):
@@ -486,7 +475,4 @@ class TestMicropub:
 
         t_syndication = t_entry.t_syndication.first()
 
-        assert (
-            t_syndication.url
-            == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
-        )
+        assert t_syndication.url == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
