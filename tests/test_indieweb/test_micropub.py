@@ -104,19 +104,19 @@ class TestMicropub:
                 "name": ["A neat title"],
                 "content": [
                     {
-                        "html": '<p>This is a neat title</p>\n<h2>\n  Subtitle\n  <br />\n</h2>\n<p>'
-                                '<b>Hello</b></p>\n<figure>\n  <img src="data:image/png;base64,iVBOR'
-                                'w0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAFBlWElm'
-                                'TU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAE'
-                                'AAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADr/7PgAAABWWlUWHRYTUw6Y29tLm'
-                                'Fkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIge'
-                                'Dp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0'
-                                'dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA'
-                                '8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aW'
-                                'ZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmO'
-                                'k9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2Ny'
-                                'aXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWP'
-                                '4/f39fwAJswPh+tQCZAAAAABJRU5ErkJggg==" alt="" />\n</figure>'
+                        "html": "<p>This is a neat title</p>\n<h2>\n  Subtitle\n  <br />\n</h2>\n<p>"
+                        '<b>Hello</b></p>\n<figure>\n  <img src="data:image/png;base64,iVBOR'
+                        "w0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAFBlWElm"
+                        "TU0AKgAAAAgAAgESAAMAAAABAAEAAIdpAAQAAAABAAAAJgAAAAAAA6ABAAMAAAABAAE"
+                        "AAKACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADr/7PgAAABWWlUWHRYTUw6Y29tLm"
+                        "Fkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIge"
+                        "Dp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0"
+                        "dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA"
+                        "8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aW"
+                        "ZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmO"
+                        "k9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2Ny"
+                        "aXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAADUlEQVQIHWP"
+                        '4/f39fwAJswPh+tQCZAAAAABJRU5ErkJggg==" alt="" />\n</figure>'
                     }
                 ],
                 "category": ["photos", "checkins", "fake"],

@@ -58,7 +58,12 @@ class AllEntriesFeed(Feed):
             e_content = f"<blockquote>{t_entry.t_reply.quote}</blockquote>{e_content}"
         elif item.m_post_kind.key == MPostKinds.bookmark:
             t_bookmark = t_entry.t_bookmark
-            e_content = f'Bookmark: <a href="{t_bookmark.u_bookmark_of}">{t_bookmark.title or t_bookmark.u_bookmark_of}</a><blockquote>{t_bookmark.quote}</blockquote>{e_content}'
+            e_content = (
+                f"Bookmark: "
+                f'<a href="{t_bookmark.u_bookmark_of}"'
+                ">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
+                f"<blockquote>{t_bookmark.quote}</blockquote>{e_content}"
+            )
         try:
             e_content = f"{e_content}<br/>Location: {t_entry.t_location.summary}"
         except TLocation.DoesNotExist:
