@@ -87,3 +87,8 @@ trix-toolbar .trix--button--select-file::before {
     top: 8%;
     bottom: 4%;
 }
+
+
+main.content blockquote {
+    @apply border-l-2 border-bianca-600 mt-4 mb-4 pl-2 max-w-prose;
+}
