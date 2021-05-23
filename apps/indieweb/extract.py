@@ -38,7 +38,7 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
 
     response = requests.get(url)
     if response.status_code != 200:
-        return
+        return None
 
     data = extruct.extract(response.text)
     title_keys = ["headline", "title", "name"]

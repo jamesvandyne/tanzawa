@@ -10,7 +10,7 @@ def get_location(hentry):  # noqa: C901
     # properties:
     # https://indieweb.org/location#How_to_determine_the_location_of_a_microformat
     # Extracted from mf2util
-    result = {}
+    result: Dict[str, Any] = {}
     props = hentry["properties"]
     location_stack = [props]
     for prop in "location", "adr":

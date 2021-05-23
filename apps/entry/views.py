@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from django.db import transaction
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -19,7 +19,7 @@ from . import forms, models
 
 @method_decorator(login_required, name="dispatch")
 class CreateEntryView(CreateView):
-    autofocus = None
+    autofocus: Optional[str] = None
     redirect_url = "status_edit"
 
     def get_form_kwargs(self):
@@ -165,8 +165,8 @@ class UpdateEntryView(UpdateView):
 class ExtractLinkedPageMetaView(FormView):
     form_class = forms.ExtractMetaForm
     success_form = forms.CreateReplyForm
-    invalidate_template = None
-    validate_template = None
+    invalidate_template: Optional[str] = None
+    validate_template: Optional[str] = None
     turbo_frame = ""
     url_key = ""
 

@@ -7,7 +7,7 @@ from exif import Image
 
 def extract_exif(image) -> Dict[str, Any]:
     img = Image(image)
-    exif = {}
+    exif: Dict[str, Any] = {}
     if not img.has_exif:
         return exif
 

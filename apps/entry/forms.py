@@ -88,12 +88,14 @@ class CreateStatusForm(forms.ModelForm):
 
     @transaction.atomic
     def save(self, commit=True) -> TEntry:
-        self.t_post.save()
-        self.instance.t_post = self.t_post
-        entry = super().save(commit)
-        self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-        self.t_post.streams.set(self.cleaned_data["streams"])
-        return entry
+        if self.t_post:
+            self.t_post.save()
+            self.instance.t_post = self.t_post
+            entry = super().save(commit)
+            self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
+            self.t_post.streams.set(self.cleaned_data["streams"])
+            return entry
+        raise Exception("TPost must not be null")
 
 
 class CreateArticleForm(CreateStatusForm):

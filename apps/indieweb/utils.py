@@ -37,7 +37,7 @@ class DataImage:
     def decode(self) -> Optional[bytes]:
         if self.encoding == "base64":
             return base64.b64decode(self.image_data)
-        elif self.encoding == "none":
+        elif self.encoding == "none" and isinstance(self.image_data, bytes):
             return self.image_data
         else:
             logger.info("Unknown encoding. Unable decode image")
