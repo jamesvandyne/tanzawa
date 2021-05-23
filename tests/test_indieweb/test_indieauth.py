@@ -51,16 +51,12 @@ class TestIndieAuthExchangeToken:
         assert response.json() == {"non_field_errors": ["Token not found"]}
         assert not ninka_mock.called
 
-    def test_error_if_redirect_doesnt_match(
-        self, target, client, ninka_mock, post_data, t_token
-    ):
+    def test_error_if_redirect_doesnt_match(self, target, client, ninka_mock, post_data, t_token):
         post_data["redirect_uri"] = "http://local.test"
         ninka_mock.return_value = {"redirect_uri": []}
         response = client.post(target, data=post_data)
         assert response.status_code == 400
-        assert response.json() == {
-            "non_field_errors": ["Redirect uri not found on client app"]
-        }
+        assert response.json() == {"non_field_errors": ["Redirect uri not found on client app"]}
 
         ninka_mock.assert_called_with(post_data["client_id"])
 
@@ -84,9 +80,7 @@ class TestVerifyIndieAuthToken:
     def test_no_header(self, target, client):
         response = client.get(target)
         assert response.status_code == 400
-        assert response.json() == {
-            "message": "Invalid token header. No credentials provided."
-        }
+        assert response.json() == {"message": "Invalid token header. No credentials provided."}
 
     def test_no_token_found(self, target, client):
         client.credentials(HTTP_AUTHORIZATION="Bearer hogehoge")
@@ -116,17 +110,13 @@ class TestIndieAuthTokenRevoke:
         monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
-    def test_valid(
-        self, target, client, ninka_mock, post_data, t_token_access, auth_token
-    ):
+    def test_valid(self, target, client, ninka_mock, post_data, t_token_access, auth_token):
         assert TToken.objects.filter(key=auth_token).exists() is True
         response = client.post(target, data=post_data)
         assert response.status_code == 200
         assert TToken.objects.filter(key=auth_token).exists() is False
 
-    def test_requires_revoke(
-        self, target, client, ninka_mock, post_data, t_token_access, auth_token
-    ):
+    def test_requires_revoke(self, target, client, ninka_mock, post_data, t_token_access, auth_token):
         post_data["action"] = "hoge"
         assert TToken.objects.filter(key=auth_token).exists() is True
         response = client.post(target, data=post_data)

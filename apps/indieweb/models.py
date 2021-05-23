@@ -17,9 +17,7 @@ class TWebmention(TimestampModel):
     t_webmention_response = models.ForeignKey(
         WebMentionResponse, related_name="ref_t_webmention", on_delete=models.CASCADE
     )
-    t_post = models.ForeignKey(
-        "post.TPost", related_name="ref_t_webmention", on_delete=models.CASCADE
-    )
+    t_post = models.ForeignKey("post.TPost", related_name="ref_t_webmention", on_delete=models.CASCADE)
     approval_status = models.BooleanField(null=True, blank=True)
     microformat_data = PickledObjectField()
 
@@ -28,9 +26,7 @@ class TWebmention(TimestampModel):
         unique_together = ("t_webmention_response", "t_post")
 
     @classmethod
-    def instance_from_webmentionresponse(
-        cls, mention: WebMentionResponse, t_post: TPost
-    ) -> "TWebmention":
+    def instance_from_webmentionresponse(cls, mention: WebMentionResponse, t_post: TPost) -> "TWebmention":
         instance = cls(t_webmention_response=mention, t_post=t_post)
         instance.update_microformat_data()
         return instance
@@ -54,9 +50,7 @@ class TWebmention(TimestampModel):
 
 
 class TWebmentionSend(TimestampModel):
-    t_post = models.ForeignKey(
-        "post.TPost", related_name="ref_t_webmention_send", on_delete=models.CASCADE
-    )
+    t_post = models.ForeignKey("post.TPost", related_name="ref_t_webmention_send", on_delete=models.CASCADE)
     target = models.URLField()
     dt_sent = models.DateTimeField()
     success = models.BooleanField()
@@ -87,9 +81,7 @@ class MMicropubScope(TimestampModel):
 
 
 class TToken(TimestampModel):
-    user = models.ForeignKey(
-        get_user_model(), related_name="ref_t_token", on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(get_user_model(), related_name="ref_t_token", on_delete=models.CASCADE)
     auth_token = models.CharField(max_length=40, blank=True)
     key = models.CharField(max_length=40, blank=True)
     client_id = models.URLField()

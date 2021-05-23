@@ -4,12 +4,13 @@ from mf2util import string_type, LOCATION_PROPERTIES
 from django.contrib.gis.geos import Point
 
 
-def get_location(hentry):
+# TODO: Refactor to pass too complex (11)
+def get_location(hentry):  # noqa: C901
     # Collect location objects, then follow this algorithm to consolidate their
     # properties:
     # https://indieweb.org/location#How_to_determine_the_location_of_a_microformat
     # Extracted from mf2util
-    result = {}
+    result: Dict[str, Any] = {}
     props = hentry["properties"]
     location_stack = [props]
     for prop in "location", "adr":

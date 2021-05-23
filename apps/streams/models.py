@@ -16,13 +16,9 @@ class MStream(TimestampModel):
     icon = models.CharField(max_length=2, help_text="Select an emoji")
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True)
-    visibility = models.SmallIntegerField(
-        choices=VISIBILITY_CHOICES, default=Visibility.PUBLIC
-    )
+    visibility = models.SmallIntegerField(choices=VISIBILITY_CHOICES, default=Visibility.PUBLIC)
 
-    posts = models.ManyToManyField(
-        "post.TPost", through="TStreamPost", through_fields=("m_stream", "t_post")
-    )
+    posts = models.ManyToManyField("post.TPost", through="TStreamPost", through_fields=("m_stream", "t_post"))
     objects = MStreamManager()
 
     class Meta:

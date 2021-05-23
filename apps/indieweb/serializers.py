@@ -86,19 +86,11 @@ class HEntryPropertiesSerializer(serializers.Serializer):
 
     name = FlattenedStringField(required=False)
     content = ContentField(required=False)
-    category = serializers.ListSerializer(
-        child=serializers.CharField(), required=False, write_only=True
-    )
+    category = serializers.ListSerializer(child=serializers.CharField(), required=False, write_only=True)
     photo = serializers.ListSerializer(child=PhotoField(required=False), required=False)
-    streams = serializers.ModelSerializer(
-        MStream.objects, read_only=True, required=False
-    )
-    published = serializers.ListSerializer(
-        child=serializers.DateTimeField(), required=False
-    )
-    syndication = serializers.ListSerializer(
-        child=serializers.URLField(), required=False
-    )
+    streams = serializers.ModelSerializer(MStream.objects, read_only=True, required=False)
+    published = serializers.ListSerializer(child=serializers.DateTimeField(), required=False)
+    syndication = serializers.ListSerializer(child=serializers.URLField(), required=False)
     in_reply_to = FlattenedStringField(required=False, validators=[URLValidator])
     bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
     location = LocationField(required=False)
@@ -117,7 +109,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
                 {
                     url_key: linked_page.url,
                     "title": linked_page.title,
-                    "author": linked_page.author.name,
+                    "author": linked_page.author.name if linked_page.author and linked_page.author.name else "",
                     "summary": linked_page.description,
                 }
             )
@@ -166,9 +158,7 @@ class MicropubSerializer(serializers.Serializer):
         if action:
             t_token: TToken = data["access_token"]
             if not t_token.micropub_scope.filter(key__exact=action).exists():
-                raise serializers.ValidationError(
-                    f"Token does not have {action} permissions"
-                )
+                raise serializers.ValidationError(f"Token does not have {action} permissions")
         return data
 
 
@@ -186,22 +176,15 @@ class IndieAuthAuthorizationSerializer(serializers.Serializer):
     redirect_uri = serializers.URLField(required=True)
     state = serializers.CharField(required=True)
     scope = serializers.CharField(required=True)
-    response_type = serializers.ChoiceField(
-        choices=ResponseTypeChoices, required=False, initial="id"
-    )
+    response_type = serializers.ChoiceField(choices=ResponseTypeChoices, required=False, initial="id")
 
     def validate(self, data):
         if data["redirect_uri"]:
             # Verify redirect uri if host name is different
-            if (
-                urlparse(data["redirect_uri"]).netloc
-                != urlparse(data["client_id"]).netloc
-            ):
+            if urlparse(data["redirect_uri"]).netloc != urlparse(data["client_id"]).netloc:
                 response = discoverAuthEndpoints(data["client_id"])
                 if data["redirect_uri"] not in response["redirect_uri"]:
-                    raise serializers.ValidationError(
-                        "Redirect uri not found on client app"
-                    )
+                    raise serializers.ValidationError("Redirect uri not found on client app")
 
         return data
 
@@ -216,27 +199,18 @@ class IndieAuthTokenSerializer(serializers.Serializer):
 
     def validate(self, data):
         if data["redirect_uri"]:
-            if (
-                urlparse(data["redirect_uri"]).netloc
-                != urlparse(data["client_id"]).netloc
-            ):
+            if urlparse(data["redirect_uri"]).netloc != urlparse(data["client_id"]).netloc:
                 response = discoverAuthEndpoints(data["client_id"])
                 if data["redirect_uri"] not in response["redirect_uri"]:
-                    raise serializers.ValidationError(
-                        "Redirect uri not found on client app"
-                    )
+                    raise serializers.ValidationError("Redirect uri not found on client app")
         try:
-            t_token = TToken.objects.get(
-                auth_token=data["code"], client_id=data["client_id"]
-            )
+            t_token = TToken.objects.get(auth_token=data["code"], client_id=data["client_id"])
         except TToken.DoesNotExist:
             raise serializers.ValidationError("Token not found")
         else:
             data["access_token"] = t_token.generate_key()
             data["t_token"] = t_token
-            data["scope"] = " ".join(
-                t_token.micropub_scope.values_list("key", flat=True)
-            )
+            data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
 
     @transaction.atomic

@@ -20,15 +20,11 @@ class TWordpress(TimestampModel):
 
 
 class TCategory(TimestampModel):
-    t_wordpress = models.ForeignKey(
-        TWordpress, on_delete=models.CASCADE, related_name="ref_t_category"
-    )
+    t_wordpress = models.ForeignKey(TWordpress, on_delete=models.CASCADE, related_name="ref_t_category")
     name = models.CharField(max_length=64)
     nice_name = models.SlugField(max_length=64)
 
-    m_stream = models.ForeignKey(
-        "streams.MStream", null=True, blank=True, on_delete=models.CASCADE
-    )
+    m_stream = models.ForeignKey("streams.MStream", null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "t_wordpress_category"
@@ -40,9 +36,7 @@ class TCategory(TimestampModel):
 class TPostFormat(TimestampModel):
     """Wordpress PostFormat: Status, Quote, Link etc..."""
 
-    t_wordpress = models.ForeignKey(
-        TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_format"
-    )
+    t_wordpress = models.ForeignKey(TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_format")
     m_post_kind = models.ForeignKey(
         "post.MPostKind",
         on_delete=models.SET_NULL,
@@ -63,9 +57,7 @@ class TPostFormat(TimestampModel):
 class TPostKind(TimestampModel):
     """IndieWeb PostKind: Article', Bookmark, Note, Reply, Checkin, Photo"""
 
-    t_wordpress = models.ForeignKey(
-        TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_kind"
-    )
+    t_wordpress = models.ForeignKey(TWordpress, on_delete=models.CASCADE, related_name="ref_t_post_kind")
     m_post_kind = models.ForeignKey(
         "post.MPostKind",
         on_delete=models.SET_NULL,
@@ -84,33 +76,25 @@ class TPostKind(TimestampModel):
 
 
 class TWordpressPost(TimestampModel):
-    t_wordpress = models.ForeignKey(
-        TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_post"
-    )
+    t_wordpress = models.ForeignKey(TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_post")
 
     path = models.CharField(max_length=256, db_index=True)  # original db path
     guid = models.CharField(max_length=256)
     uuid = models.UUIDField(default=uuid.uuid4, db_index=True)
 
-    t_post = models.ForeignKey(
-        "post.TPost", on_delete=models.CASCADE, blank=True, null=True
-    )
+    t_post = models.ForeignKey("post.TPost", on_delete=models.CASCADE, blank=True, null=True)
 
     class Meta:
         db_table = "t_wordpress_post"
 
 
 class TWordpressAttachment(TimestampModel):
-    t_wordpress = models.ForeignKey(
-        TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_attachment"
-    )
+    t_wordpress = models.ForeignKey(TWordpress, on_delete=models.CASCADE, related_name="ref_t_wordpress_attachment")
 
     guid = models.CharField(max_length=256)
     uuid = models.UUIDField(default=uuid.uuid4)
     link = models.URLField(blank=True)
-    t_file = models.ForeignKey(
-        "files.TFile", on_delete=models.SET_NULL, blank=True, null=True
-    )
+    t_file = models.ForeignKey("files.TFile", on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = "t_wordpress_attachment"

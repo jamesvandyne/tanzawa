@@ -10,6 +10,7 @@ from wordpress.models import (
 
 
 @pytest.mark.django_db
+@pytest.mark.skip("Needs a sample wordpress export")
 class TestWordpressUploadFrom:
     @pytest.fixture
     def target(self):

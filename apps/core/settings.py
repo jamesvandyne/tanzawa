@@ -116,9 +116,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DATABASES = {
-    "default": env.db("DATABASE_URL", engine=env.str("DATABASE_ENGINE", default=None))
-}
+DATABASES = {"default": env.db("DATABASE_URL", engine=env.str("DATABASE_ENGINE", default=None))}
 
 
 # Password validation

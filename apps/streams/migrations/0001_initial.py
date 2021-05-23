@@ -70,9 +70,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "t_post",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="post.tpost"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="post.tpost"),
                 ),
             ],
             options={
@@ -83,8 +81,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="mstream",
             name="posts",
-            field=models.ManyToManyField(
-                through="streams.TStreamPost", to="post.TPost"
-            ),
+            field=models.ManyToManyField(through="streams.TStreamPost", to="post.TPost"),
         ),
     ]

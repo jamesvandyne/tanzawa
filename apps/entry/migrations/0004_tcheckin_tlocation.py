@@ -42,9 +42,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "point",
-                    django.contrib.gis.db.models.fields.PointField(
-                        geography=True, srid=3857
-                    ),
+                    django.contrib.gis.db.models.fields.PointField(geography=True, srid=3857),
                 ),
                 (
                     "t_entry",

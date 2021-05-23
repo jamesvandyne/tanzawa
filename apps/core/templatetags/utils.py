@@ -29,7 +29,7 @@ def domain(obj: str) -> str:
 def mimetype(obj: str) -> str:
     if obj is None:
         return ""
-    return mimetypes.guess_type(obj)[0]
+    return mimetypes.guess_type(obj)[0] or ""
 
 
 @register.filter

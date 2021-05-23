@@ -20,8 +20,4 @@ class Migration(migrations.Migration):
         ("indieweb", "0003_ttoken"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            register_micropub_scopes, reverse_code=migrations.RunPython.noop
-        )
-    ]
+    operations = [migrations.RunPython(register_micropub_scopes, reverse_code=migrations.RunPython.noop)]

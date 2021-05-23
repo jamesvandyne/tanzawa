@@ -93,9 +93,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ttoken",
             name="micropub_scope",
-            field=models.ManyToManyField(
-                through="indieweb.TTokenMicropubScope", to="indieweb.MMicropubScope"
-            ),
+            field=models.ManyToManyField(through="indieweb.TTokenMicropubScope", to="indieweb.MMicropubScope"),
         ),
         migrations.AddField(
             model_name="ttoken",

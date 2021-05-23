@@ -16,7 +16,7 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
 
     try:
         image = Image.open(image_bytes)
-    except:
+    except Exception:
         image_bytes.seek(0)
         return image_bytes
 
@@ -27,7 +27,8 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
     return rotated_bytes
 
 
-def convert_image_format(
+# TODO: Convert this into a class to handle image formatting
+def convert_image_format(  # noqa: C901
     t_file: TFile, target_mime: str, size: Optional[int] = None
 ) -> Union[Tuple[SimpleUploadedFile, int, int], Tuple[None, None, None]]:
     image = Image.open(t_file.file)

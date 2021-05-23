@@ -14,8 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="tpost",
             name="streams",
-            field=models.ManyToManyField(
-                through="streams.TStreamPost", to="streams.MStream"
-            ),
+            field=models.ManyToManyField(through="streams.TStreamPost", to="streams.MStream"),
         ),
     ]

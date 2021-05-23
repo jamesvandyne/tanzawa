@@ -6,9 +6,7 @@ from indieweb.extract import LinkedPage, LinkedPageAuthor
 
 class TEntry(TimestampModel):
 
-    t_post = models.ForeignKey(
-        "post.TPost", on_delete=models.CASCADE, related_name="ref_t_entry"
-    )
+    t_post = models.ForeignKey("post.TPost", on_delete=models.CASCADE, related_name="ref_t_entry")
 
     p_name = models.CharField(max_length=255, blank=True, default="")
     p_summary = models.CharField(max_length=1024, blank=True, default="")
@@ -23,9 +21,7 @@ class TEntry(TimestampModel):
 
 class TReply(TimestampModel):
 
-    t_entry = models.OneToOneField(
-        TEntry, on_delete=models.CASCADE, related_name="t_reply"
-    )
+    t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_reply")
     u_in_reply_to = models.URLField()
     title = models.CharField(max_length=128, blank=True, default="")
     quote = models.TextField(blank=True, default="")
@@ -46,17 +42,13 @@ class TReply(TimestampModel):
             url=self.u_in_reply_to,
             title=self.title,
             description=self.quote,
-            author=LinkedPageAuthor(
-                name=self.author, url=self.author_url, photo=self.author_photo
-            ),
+            author=LinkedPageAuthor(name=self.author, url=self.author_url, photo=self.author_photo),
         )
 
 
 class TBookmark(TimestampModel):
 
-    t_entry = models.OneToOneField(
-        TEntry, on_delete=models.CASCADE, related_name="t_bookmark"
-    )
+    t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_bookmark")
     u_bookmark_of = models.URLField()
     title = models.CharField(max_length=128, blank=True, default="")
     quote = models.TextField(blank=True, default="")
@@ -77,16 +69,12 @@ class TBookmark(TimestampModel):
             url=self.u_bookmark_of,
             title=self.title,
             description=self.quote,
-            author=LinkedPageAuthor(
-                name=self.author, url=self.author_url, photo=self.author_photo
-            ),
+            author=LinkedPageAuthor(name=self.author, url=self.author_url, photo=self.author_photo),
         )
 
 
 class TLocation(TimestampModel):
-    t_entry = models.OneToOneField(
-        TEntry, on_delete=models.CASCADE, related_name="t_location"
-    )
+    t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_location")
     street_address = models.CharField(max_length=128, blank=True, default="")
     locality = models.CharField(max_length=128, blank=True, default="")
     region = models.CharField(max_length=64, blank=True, default="")
@@ -100,18 +88,13 @@ class TLocation(TimestampModel):
     @property
     def summary(self):
         return (
-            ", ".join(filter(None, [self.locality, self.region, self.country_name]))
-            or f"{self.point.x},{self.point.y}"
+            ", ".join(filter(None, [self.locality, self.region, self.country_name])) or f"{self.point.x},{self.point.y}"
         )
 
 
 class TCheckin(TimestampModel):
-    t_entry = models.OneToOneField(
-        TEntry, on_delete=models.CASCADE, related_name="t_checkin"
-    )
-    t_location = models.OneToOneField(
-        TLocation, on_delete=models.CASCADE, related_name="t_checkin"
-    )
+    t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_checkin")
+    t_location = models.OneToOneField(TLocation, on_delete=models.CASCADE, related_name="t_checkin")
     name = models.CharField(max_length=255)
     url = models.URLField(blank=True, null=True)
 
@@ -120,9 +103,7 @@ class TCheckin(TimestampModel):
 
 
 class TSyndication(TimestampModel):
-    t_entry = models.ForeignKey(
-        TEntry, on_delete=models.CASCADE, related_name="t_syndication"
-    )
+    t_entry = models.ForeignKey(TEntry, on_delete=models.CASCADE, related_name="t_syndication")
     url = models.URLField()
 
     class Meta:

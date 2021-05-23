@@ -72,9 +72,7 @@ class TWordpressCreate(CreateView):
 @login_required
 def category_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
-    TCategoryModelFormSet = forms.inlineformset_factory(
-        TWordpress, TCategory, form=TCategoryModelForm, extra=0
-    )
+    TCategoryModelFormSet = forms.inlineformset_factory(TWordpress, TCategory, form=TCategoryModelForm, extra=0)
     formset = TCategoryModelFormSet(request.POST or None, instance=t_wordpress)
     if request.method == "POST" and formset.is_valid():
         formset.save()
@@ -90,9 +88,7 @@ def category_mappings(request, pk):
 @login_required
 def post_kind_mappings(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
-    TPostKindModelFormSet = forms.inlineformset_factory(
-        TWordpress, TPostKind, form=TPostKindModelForm, extra=0
-    )
+    TPostKindModelFormSet = forms.inlineformset_factory(TWordpress, TPostKind, form=TPostKindModelForm, extra=0)
     formset = TPostKindModelFormSet(request.POST or None, instance=t_wordpress)
     if request.method == "POST" and formset.is_valid():
         formset.save()
@@ -111,12 +107,8 @@ def t_wordpress_attachments(request, pk):
     context = {
         "t_wordpress": t_wordpress,
         "attachment_count": t_wordpress.ref_t_wordpress_attachment.count(),
-        "imported": t_wordpress.ref_t_wordpress_attachment.filter(
-            t_file__isnull=False
-        ).select_related("t_file"),
-        "object_list": t_wordpress.ref_t_wordpress_attachment.filter(
-            t_file__isnull=True
-        ),
+        "imported": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=False).select_related("t_file"),
+        "object_list": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True),
     }
     return render(request, "wordpress/twordpressattachment_list.html", context=context)
 
@@ -128,9 +120,7 @@ def import_attachment(request, uuid):
         return JsonResponse(status=400, data={"error": "already_imported"})
     data_image = download_image(t_attachment.guid)
     filename = Path(t_attachment.guid).name
-    upload_image, _, _ = bytes_as_upload_image(
-        data_image.image_data, data_image.mime_type, filename
-    )
+    upload_image, _, _ = bytes_as_upload_image(data_image.image_data, data_image.mime_type, filename)
     form = MediaUploadForm(files={"file": upload_image})
     if form.is_valid():
         t_file = form.save()
@@ -156,15 +146,9 @@ def import_posts(request, pk):
     t_wordpress = get_object_or_404(TWordpress, pk=pk)
     context = {
         "t_wordpress": t_wordpress,
-        "unimported_attachments": t_wordpress.ref_t_wordpress_attachment.filter(
-            t_file__isnull=True
-        ).exists(),
-        "category_map": t_wordpress.ref_t_category.filter(
-            m_stream__isnull=False
-        ).exists(),
-        "postkind_map": t_wordpress.ref_t_post_kind.filter(
-            m_post_kind__isnull=False
-        ).exists(),
+        "unimported_attachments": t_wordpress.ref_t_wordpress_attachment.filter(t_file__isnull=True).exists(),
+        "category_map": t_wordpress.ref_t_category.filter(m_stream__isnull=False).exists(),
+        "postkind_map": t_wordpress.ref_t_post_kind.filter(m_post_kind__isnull=False).exists(),
     }
     if request.method == "POST":
         soup = BeautifulSoup(t_wordpress.export_file.read(), "xml")
@@ -175,7 +159,7 @@ def import_posts(request, pk):
     return render(request, "wordpress/import_posts.html", context=context)
 
 
-def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
+def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):  # noqa: C901  too complex (32)!
 
     guid = soup.find("guid", text=t_wordpress_post.guid)
     t_post = t_wordpress_post.t_post
@@ -238,7 +222,6 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
             t_location = None
 
         named_forms["location"] = TLocationModelForm(data=location, instance=t_location)
-        print("Location")
     if checkin:
         logging.info("Has checkin")
         try:
@@ -246,15 +229,10 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         except (TCheckin.DoesNotExist, AttributeError):
             t_checkin = None
         named_forms["checkin"] = TCheckinModelForm(data=checkin, instance=t_checkin)
-        print("Checkin")
     if syndication:
         logging.info("Has syndication")
         for idx, syndication_url in enumerate(syndication):
-            t_syndication = (
-                t_entry.t_syndication.filter(url=syndication_url).first()
-                if t_entry
-                else None
-            )
+            t_syndication = t_entry.t_syndication.filter(url=syndication_url).first() if t_entry else None
             named_forms[f"syndication_{idx}"] = TSyndicationModelForm(
                 data={"url": syndication_url}, instance=t_syndication
             )
@@ -263,11 +241,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
     content = BeautifulSoup(form_data["e_content"], "html.parser")
     images = extract.extract_images(content, t_wordpress_post.t_wordpress.base_site_url)
     for image in images:
-        image_url = (
-            image["src"]
-            .replace("-scaled", "")
-            .replace("https://micro.blog/photos/200/", "")
-        )
+        image_url = image["src"].replace("-scaled", "").replace("https://micro.blog/photos/200/", "")
         image_attachment = (
             TWordpressAttachment.objects.filter(
                 t_wordpress_id=t_wordpress_post.t_wordpress_id,
@@ -277,9 +251,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
             .first()
         )
         if image_attachment:
-            tag = BeautifulSoup(
-                render_attachment(request, image_attachment.t_file), "html.parser"
-            )
+            tag = BeautifulSoup(render_attachment(request, image_attachment.t_file), "html.parser")
             if image.parent and image.parent.name == "a":
                 image.parent.replace_with(tag)
             else:
@@ -294,9 +266,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
     # Append any attachments
     if t_wordpress_post.path != "/":
-        for attachment in TWordpressAttachment.objects.filter(
-            link__contains=t_wordpress_post.path
-        ):
+        for attachment in TWordpressAttachment.objects.filter(link__contains=t_wordpress_post.path):
             if attachment.t_file:
 
                 if str(attachment.t_file.uuid) in form_data["e_content"]:
@@ -306,9 +276,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
                 if attachment.t_file.mime_type.startswith("video"):
                     form_data["e_content"].replace(
                         attachment.guid,
-                        request.build_absolute_uri(
-                            attachment.t_file.get_absolute_url()
-                        ),
+                        request.build_absolute_uri(attachment.t_file.get_absolute_url()),
                     )
                 else:
                     tag = render_attachment(request, attachment.t_file)
@@ -341,9 +309,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
     form = form_class(data=form_data, **form_kwargs)
 
-    if form.is_valid() and all(
-        named_form.is_valid() for named_form in named_forms.values()
-    ):
+    if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
         with transaction.atomic():
             entry = form.save()

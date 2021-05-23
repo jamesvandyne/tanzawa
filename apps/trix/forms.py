@@ -25,16 +25,12 @@ class TrixField(forms.CharField):
             if not img:
                 pass
             context = {
-                "source_formats": PICTURE_FORMATS.get(
-                    figure["data-trix-content-type"], []
-                ),
+                "source_formats": PICTURE_FORMATS.get(figure["data-trix-content-type"], []),
                 "src": img["src"],
                 "width": img["width"],
                 "height": img["height"],
             }
-            picture = BeautifulSoup(
-                render_to_string("trix/picture.html", context), "html.parser"
-            )
+            picture = BeautifulSoup(render_to_string("trix/picture.html", context), "html.parser")
             img.insert_before(picture)
             img.decompose()
         return str(soup)

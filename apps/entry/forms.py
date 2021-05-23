@@ -61,13 +61,9 @@ class CreateStatusForm(forms.ModelForm):
 
     def clean(self):
         try:
-            self.cleaned_data["m_post_kind"] = MPostKind.objects.get(
-                key=self.m_post_kind
-            )
+            self.cleaned_data["m_post_kind"] = MPostKind.objects.get(key=self.m_post_kind)
         except MPostKind.DoesNotExist:
-            raise forms.ValidationError(
-                f"m_post_kind: {self.m_post_kind} does not exist"
-            )
+            raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
         urls = extract_attachment_urls(self.cleaned_data["e_content"])
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
@@ -92,12 +88,14 @@ class CreateStatusForm(forms.ModelForm):
 
     @transaction.atomic
     def save(self, commit=True) -> TEntry:
-        self.t_post.save()
-        self.instance.t_post = self.t_post
-        entry = super().save(commit)
-        self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-        self.t_post.streams.set(self.cleaned_data["streams"])
-        return entry
+        if self.t_post:
+            self.t_post.save()
+            self.instance.t_post = self.t_post
+            entry = super().save(commit)
+            self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
+            self.t_post.streams.set(self.cleaned_data["streams"])
+            return entry
+        raise Exception("TPost must not be null")
 
 
 class CreateArticleForm(CreateStatusForm):
@@ -119,9 +117,7 @@ class CreateCheckinForm(CreateStatusForm):
 class CreateReplyForm(CreateStatusForm):
     m_post_kind = MPostKinds.reply
 
-    u_in_reply_to = forms.URLField(
-        label="What's the URL you're replying to?", widget=forms.HiddenInput
-    )
+    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
     author = forms.CharField(label="Author", widget=forms.HiddenInput, required=False)
     author_url = forms.URLField(widget=forms.HiddenInput, required=False)
     author_photo_url = forms.URLField(widget=forms.HiddenInput, required=False)
@@ -144,9 +140,7 @@ class CreateReplyForm(CreateStatusForm):
         self.t_reply: Optional[TReply] = None
         for key, val in self.initial.items():
             if not val:
-                self.fields[key].widget = forms.TextInput(
-                    attrs={"class": "input-field"}
-                )
+                self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
         super().prepare_data()
@@ -211,12 +205,8 @@ class UpdateStatusForm(forms.ModelForm):
         autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
         self.t_post: TPost = self.instance.t_post
-        self.already_published = (
-            self.t_post.m_post_status.key == MPostStatuses.published
-        )
-        self.fields["streams"].initial = self.t_post.streams.values_list(
-            "id", flat=True
-        )
+        self.already_published = self.t_post.m_post_status.key == MPostStatuses.published
+        self.fields["streams"].initial = self.t_post.streams.values_list("id", flat=True)
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
 
         if autofocus:
@@ -261,9 +251,7 @@ class UpdateCheckinForm(UpdateStatusForm):
 
 
 class UpdateReplyForm(UpdateStatusForm):
-    u_in_reply_to = forms.URLField(
-        label="What's the URL you're replying to?", widget=forms.HiddenInput
-    )
+    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
     title = forms.CharField(label="Title", widget=forms.HiddenInput)
     summary = forms.CharField(
         widget=forms.Textarea,
@@ -294,9 +282,7 @@ class UpdateReplyForm(UpdateStatusForm):
 class CreateBookmarkForm(CreateStatusForm):
     m_post_kind = MPostKinds.bookmark
 
-    u_bookmark_of = forms.URLField(
-        label="What's the URL you're bookmarking?", widget=forms.HiddenInput
-    )
+    u_bookmark_of = forms.URLField(label="What's the URL you're bookmarking?", widget=forms.HiddenInput)
     author = forms.CharField(label="Author", widget=forms.HiddenInput, required=False)
     author_url = forms.URLField(widget=forms.HiddenInput, required=False)
     author_photo_url = forms.URLField(widget=forms.HiddenInput, required=False)
@@ -319,9 +305,7 @@ class CreateBookmarkForm(CreateStatusForm):
         self.t_bookmark: Optional[TBookmark] = None
         for key, val in self.initial.items():
             if not val:
-                self.fields[key].widget = forms.TextInput(
-                    attrs={"class": "input-field"}
-                )
+                self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
         super().prepare_data()
@@ -343,9 +327,7 @@ class CreateBookmarkForm(CreateStatusForm):
 
 
 class UpdateBookmarkForm(UpdateStatusForm):
-    u_bookmark_of = forms.URLField(
-        label="What's the URL you're replying to?", widget=forms.HiddenInput
-    )
+    u_bookmark_of = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
     title = forms.CharField(label="Title", widget=forms.HiddenInput)
     summary = forms.CharField(
         widget=forms.Textarea,
@@ -387,9 +369,7 @@ class TLocationModelForm(forms.ModelForm):
         model = TLocation
         exclude = ("created_at", "updated_at", "t_entry")
         widgets = {
-            "street_address": forms.HiddenInput(
-                {"data-leaflet-target": "streetAddress"}
-            ),
+            "street_address": forms.HiddenInput({"data-leaflet-target": "streetAddress"}),
             "locality": forms.HiddenInput({"data-leaflet-target": "locality"}),
             "region": forms.HiddenInput({"data-leaflet-target": "region"}),
             "country_name": forms.HiddenInput({"data-leaflet-target": "country"}),
