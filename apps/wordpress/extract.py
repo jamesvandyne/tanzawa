@@ -76,7 +76,14 @@ def extract_syndication(soup: BeautifulSoup) -> List[str]:
     return _extract_meta_list(soup, "mf2_syndication")
 
 
-def _get_item_as_string(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> bytes:
+def _get_first_value_for_key(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> Union[bytes, float]:
+    """
+    php arrays get decoded as python dictionaries where the array's index becomes the key in the python dict
+    e.g.
+    b'street-address': {0: b'\xe9\x83\xbd\xe7\xad\x91\xe5\x8c\xba\xe6\x8a\x98\xe6\x9c\xac\xe7\x94\xba201-1'}
+
+    Extract the value for the key 0
+    """
     value = value_dict.get(key)
     if value:
         if isinstance(value, bytes):
@@ -84,8 +91,15 @@ def _get_item_as_string(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -
         try:
             return value[0]
         except KeyError:
-            return value
+            return b""
     return b""
+
+
+def get_string_from_dict(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> str:
+    value = _get_first_value_for_key(value_dict=value_dict, key=key)
+    if isinstance(value, bytes):
+        return value.decode("utf8")
+    return str(value)
 
 
 def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
@@ -109,14 +123,14 @@ def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return {
-            "street_address": _get_item_as_string(properties, b"street-address").decode("utf8"),
-            "locality": _get_item_as_string(properties, b"locality").decode("utf8"),
-            "region": _get_item_as_string(properties, b"region").decode("utf8"),
-            "country_name": _get_item_as_string(properties, b"country-name").decode("utf8"),
-            "postal_code": _get_item_as_string(properties, b"postal-code").decode("utf8"),
+            "street_address": get_string_from_dict(properties, b"street-address"),
+            "locality": get_string_from_dict(properties, b"locality"),
+            "region": get_string_from_dict(properties, b"region"),
+            "country_name": get_string_from_dict(properties, b"country-name"),
+            "postal_code": get_string_from_dict(properties, b"postal-code"),
             "point": Point(
-                _get_item_as_string(properties, b"latitude"),
-                _get_item_as_string(properties, b"longitude"),
+                _get_first_value_for_key(properties, b"latitude"),
+                _get_first_value_for_key(properties, b"longitude"),
             ),
         }
     return {}
@@ -129,8 +143,8 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return {
-            "name": _get_item_as_string(properties, b"name").decode("utf8"),
-            "url": _get_item_as_string(properties, b"url").decode("utf8"),
+            "name": get_string_from_dict(properties, b"name"),
+            "url": get_string_from_dict(properties, b"url"),
         }
     return {}
 
@@ -139,9 +153,9 @@ def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optio
     properties = author.get(b"properties")
     if properties:
         return LinkedPageAuthor(
-            name=_get_item_as_string(properties, b"name").decode("utf8"),
-            url=_get_item_as_string(properties, b"url").decode("utf8"),
-            photo=_get_item_as_string(properties, b"photo").decode("utf8"),
+            name=get_string_from_dict(properties, b"name"),
+            url=get_string_from_dict(properties, b"url"),
+            photo=get_string_from_dict(properties, b"photo"),
         )
     return None
 
@@ -158,9 +172,9 @@ def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
         value_dict = phpserialize.loads(value.text.encode("utf8"))
         properties = value_dict.get(b"properties", {})
         return LinkedPage(
-            url=_get_item_as_string(properties, b"url").decode("utf8"),
-            title=_get_item_as_string(properties, b"name").decode("utf8"),
-            description=_get_item_as_string(properties, b"summary").decode("utf8"),
+            url=get_string_from_dict(properties, b"url"),
+            title=get_string_from_dict(properties, b"name"),
+            description=get_string_from_dict(properties, b"summary"),
             author=_extract_author(properties.get(b"author", {})),
         )
     return None

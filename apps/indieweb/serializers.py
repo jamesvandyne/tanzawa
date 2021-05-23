@@ -109,7 +109,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
                 {
                     url_key: linked_page.url,
                     "title": linked_page.title,
-                    "author": linked_page.author.name,
+                    "author": linked_page.author.name if linked_page.author and linked_page.author.name else "",
                     "summary": linked_page.description,
                 }
             )
