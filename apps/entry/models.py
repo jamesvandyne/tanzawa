@@ -6,7 +6,7 @@ from indieweb.extract import LinkedPage, LinkedPageAuthor
 
 class TEntry(TimestampModel):
 
-    t_post = models.ForeignKey("post.TPost", on_delete=models.CASCADE, related_name="ref_t_entry")
+    t_post = models.OneToOneField("post.TPost", on_delete=models.CASCADE, related_name="ref_t_entry")
 
     p_name = models.CharField(max_length=255, blank=True, default="")
     p_summary = models.CharField(max_length=1024, blank=True, default="")

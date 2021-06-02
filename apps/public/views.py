@@ -54,22 +54,21 @@ class HomeView(ListView):
 def status_detail(request, uuid):
     t_post: TPost = get_object_or_404(
         TPost.objects.filter(m_post_status__key=MPostStatuses.published)
-        .select_related("m_post_kind")
+        .select_related(
+            "m_post_kind",
+            "ref_t_entry",
+            "ref_t_entry__t_reply",
+            "ref_t_entry__t_bookmark",
+            "ref_t_entry__t_checkin",
+            "ref_t_entry__t_location",
+        )
         .prefetch_related("streams"),
         uuid=uuid,
     )
+    t_entry = t_post.ref_t_entry
     webmentions = t_post.ref_t_webmention.filter(approval_status=True)
     detail_template = f"public/entry/{t_post.m_post_kind.key}_item.html"
-    t_entry = (
-        t_post.ref_t_entry.select_related(
-            "t_reply",
-            "t_location",
-            "t_bookmark",
-            "t_checkin",
-        )
-        .prefetch_related("t_syndication")
-        .all()[0]
-    )
+
     context = {
         "t_post": t_post,
         "detail_template": detail_template,

@@ -164,7 +164,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
     guid = soup.find("guid", text=t_wordpress_post.guid)
     t_post = t_wordpress_post.t_post
     if t_post:
-        t_entry = t_post.ref_t_entry.first()
+        t_entry = t_post.ref_t_entry
     else:
         t_entry = None
 
@@ -286,7 +286,7 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
 
     if t_wordpress_post.t_post:
         form_class = UpdateStatusForm
-        form_kwargs = {"instance": t_wordpress_post.t_post.ref_t_entry.first()}
+        form_kwargs = {"instance": t_wordpress_post.t_post.ref_t_entry}
         if form_data["p_name"]:
             form_class = UpdateArticleForm
         if form_data.get("u_in_reply_to"):

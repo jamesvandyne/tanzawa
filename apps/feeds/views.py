@@ -49,10 +49,10 @@ class AllEntriesFeed(Feed):
         return item.post_title
 
     def item_description(self, item: TPost):
-        return item.ref_t_entry.all()[0].p_summary
+        return item.ref_t_entry.p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        t_entry = item.ref_t_entry.all()[0]
+        t_entry = item.ref_t_entry
         e_content = t_entry.e_content
         if item.m_post_kind.key == MPostKinds.reply:
             e_content = f"<blockquote>{t_entry.t_reply.quote}</blockquote>{e_content}"
@@ -94,7 +94,7 @@ class StreamFeed(AllEntriesFeed):
         return (
             TPost.objects.published()
             .filter(streams=obj)
-            .prefetch_related("ref_t_entry")
+            .select_related("ref_t_entry")
             .all()
             .order_by("-dt_published")[:10]
         )
