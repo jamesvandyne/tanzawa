@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('files', '0004_formatted_image_width_height_unique'),
+        ("files", "0004_formatted_image_width_height_unique"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tfile',
-            options={'verbose_name': 'File', 'verbose_name_plural': 'Files'},
+            name="tfile",
+            options={"verbose_name": "File", "verbose_name_plural": "Files"},
         ),
         migrations.AlterModelOptions(
-            name='tfilepost',
-            options={'verbose_name': 'File-Post', 'verbose_name_plural': 'File-Posts'},
+            name="tfilepost",
+            options={"verbose_name": "File-Post", "verbose_name_plural": "File-Posts"},
         ),
         migrations.AlterModelOptions(
-            name='tformattedimage',
-            options={'verbose_name': 'Formatted Image', 'verbose_name_plural': 'Formatted Images'},
+            name="tformattedimage",
+            options={"verbose_name": "Formatted Image", "verbose_name_plural": "Formatted Images"},
         ),
     ]

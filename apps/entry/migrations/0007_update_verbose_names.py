@@ -6,32 +6,32 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0006_tentry_t_post_1x1'),
+        ("entry", "0006_tentry_t_post_1x1"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tbookmark',
-            options={'verbose_name': 'Bookmark', 'verbose_name_plural': 'Bookmarks'},
+            name="tbookmark",
+            options={"verbose_name": "Bookmark", "verbose_name_plural": "Bookmarks"},
         ),
         migrations.AlterModelOptions(
-            name='tcheckin',
-            options={'verbose_name': 'Checkin', 'verbose_name_plural': 'Checkins'},
+            name="tcheckin",
+            options={"verbose_name": "Checkin", "verbose_name_plural": "Checkins"},
         ),
         migrations.AlterModelOptions(
-            name='tentry',
-            options={'verbose_name': 'Entry', 'verbose_name_plural': 'Entries'},
+            name="tentry",
+            options={"verbose_name": "Entry", "verbose_name_plural": "Entries"},
         ),
         migrations.AlterModelOptions(
-            name='tlocation',
-            options={'verbose_name': 'Location', 'verbose_name_plural': 'Locations'},
+            name="tlocation",
+            options={"verbose_name": "Location", "verbose_name_plural": "Locations"},
         ),
         migrations.AlterModelOptions(
-            name='treply',
-            options={'verbose_name': 'Reply', 'verbose_name_plural': 'Replies'},
+            name="treply",
+            options={"verbose_name": "Reply", "verbose_name_plural": "Replies"},
         ),
         migrations.AlterModelOptions(
-            name='tsyndication',
-            options={'verbose_name': 'Syndication URL', 'verbose_name_plural': 'Syndication URLs'},
+            name="tsyndication",
+            options={"verbose_name": "Syndication URL", "verbose_name_plural": "Syndication URLs"},
         ),
     ]

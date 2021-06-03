@@ -6,28 +6,28 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('indieweb', '0004_add_default_scopes'),
+        ("indieweb", "0004_add_default_scopes"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mmicropubscope',
-            options={'verbose_name': 'Micropub Scope', 'verbose_name_plural': 'Micropub Scopes'},
+            name="mmicropubscope",
+            options={"verbose_name": "Micropub Scope", "verbose_name_plural": "Micropub Scopes"},
         ),
         migrations.AlterModelOptions(
-            name='ttoken',
-            options={'verbose_name': 'Token', 'verbose_name_plural': 'Tokens'},
+            name="ttoken",
+            options={"verbose_name": "Token", "verbose_name_plural": "Tokens"},
         ),
         migrations.AlterModelOptions(
-            name='ttokenmicropubscope',
-            options={'verbose_name': 'Token-Micropub Scope'},
+            name="ttokenmicropubscope",
+            options={"verbose_name": "Token-Micropub Scope"},
         ),
         migrations.AlterModelOptions(
-            name='twebmention',
-            options={'verbose_name': 'Webmention Approval', 'verbose_name_plural': 'Webmention Approvals'},
+            name="twebmention",
+            options={"verbose_name": "Webmention Approval", "verbose_name_plural": "Webmention Approvals"},
         ),
         migrations.AlterModelOptions(
-            name='twebmentionsend',
-            options={'verbose_name': 'Sent Webmention', 'verbose_name_plural': 'Sent Webmentions'},
+            name="twebmentionsend",
+            options={"verbose_name": "Sent Webmention", "verbose_name_plural": "Sent Webmentions"},
         ),
     ]

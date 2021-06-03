@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('streams', '0003_alter_mstream_icon'),
+        ("streams", "0003_alter_mstream_icon"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='mstream',
-            options={'verbose_name': 'Stream', 'verbose_name_plural': 'Streams'},
+            name="mstream",
+            options={"verbose_name": "Stream", "verbose_name_plural": "Streams"},
         ),
         migrations.AlterModelOptions(
-            name='tstreampost',
-            options={'verbose_name': 'Stream-Post', 'verbose_name_plural': 'Stream-Posts'},
+            name="tstreampost",
+            options={"verbose_name": "Stream-Post", "verbose_name_plural": "Stream-Posts"},
         ),
     ]
