@@ -42,8 +42,8 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
         return None
 
     data = extruct.extract(response.text)
-    title_keys = ["headline", "title", "name"]
-    desc_keys = ["description", "summary"]
+    # title_keys = ["headline", "title", "name"]
+    # desc_keys = ["description", "summary"]
     soup = BeautifulSoup(response.text, "html.parser")
     linked_page = LinkedPage(
         url=url,
