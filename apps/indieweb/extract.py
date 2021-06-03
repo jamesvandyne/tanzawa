@@ -36,7 +36,8 @@ def extract_description(soup: BeautifulSoup) -> str:
 
 def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
 
-    response = requests.get(url)
+    # Specify a custom User Agent as some sites prevent scraping by blocking the default requests UA.
+    response = requests.get(url, headers={"User-Agent": "Tanzawa"})
     if response.status_code != 200:
         return None
 
@@ -63,17 +64,18 @@ def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
             photo=entry.get("author", {}).get("image"),
         )
         return linked_page
-    for schema in data["json-ld"]:
-        linked_page.title = next(schema[key] for key in title_keys if key in schema) or linked_page.title
-        linked_page.description = next(schema[key] for key in desc_keys if key in schema) or linked_page.description
-        linked_page.author = (
-            LinkedPageAuthor(
-                name=schema["author"][0].get("name", ""),
-                url=schema["author"][0].get("url", ""),
-                photo=schema["author"][0].get("image"),
-            )
-            if "author" in schema
-            else None
-        )
-        return linked_page
+    # FIXME: Json-ld support seems broken on most sites, so disable it until I can write a proper mapping
+    # for schema in data["json-ld"]:
+    #     linked_page.title = next(schema[key] for key in title_keys if key in schema) or linked_page.title
+    #     linked_page.description = next(schema[key] for key in desc_keys if key in schema) or linked_page.description
+    #     linked_page.author = (
+    #         LinkedPageAuthor(
+    #             name=schema["author"][0].get("name", ""),
+    #             url=schema["author"][0].get("url", ""),
+    #             photo=schema["author"][0].get("image"),
+    #         )
+    #         if "author" in schema
+    #         else None
+    #     )
+    #     return linked_page
     return linked_page
