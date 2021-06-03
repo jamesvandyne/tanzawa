@@ -16,6 +16,8 @@ class MPostStatus(TimestampModel):
 
     class Meta:
         db_table = "m_post_status"
+        verbose_name = "Post Status"
+        verbose_name_plural = "Post Statuses"
 
     def __str__(self):
         return self.name
@@ -28,6 +30,8 @@ class MPostKind(TimestampModel):
 
     class Meta:
         db_table = "m_post_kind"
+        verbose_name = "Post Kind"
+        verbose_name_plural = "Post Kinds"
 
     def __str__(self):
         return self.name
@@ -74,6 +78,8 @@ class TPost(TimestampModel):
 
     class Meta:
         db_table = "t_post"
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
 
     def get_absolute_url(self) -> str:
         return reverse("public:post_detail", args=[self.uuid])
