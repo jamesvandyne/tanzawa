@@ -84,7 +84,7 @@ class TPost(TimestampModel):
 
     @cached_property
     def post_title(self) -> str:
-        t_entry = self.ref_t_entry.all()[0]
+        t_entry = self.ref_t_entry
         summary = t_entry.p_summary[:128]
         title = t_entry.p_name or (f"{summary}…" if len(t_entry.p_summary) > 128 else summary)
         if self.m_post_kind.key == MPostKinds.reply:

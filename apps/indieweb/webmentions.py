@@ -22,7 +22,7 @@ def send_webmention(request, t_post: TPost, e_content: str) -> List[TWebmentionS
     t_webmention_sends: List[TWebmentionSend] = []
     refs: Set[str] = mentions["refs"]
     if t_post.m_post_kind.key == MPostKinds.reply:
-        refs.add(t_post.ref_t_entry.all()[0].t_reply.u_in_reply_to)
+        refs.add(t_post.ref_t_entry.t_reply.u_in_reply_to)
 
     for target in refs:
         if target == source_url:

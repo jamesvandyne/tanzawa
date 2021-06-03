@@ -163,7 +163,7 @@ class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
         """
         self.object = self.get_object()
         for t_post in self.object.posts.all():
-            t_entry = t_post.ref_t_entry.all()[0]
+            t_entry = t_post.ref_t_entry
             soup = BeautifulSoup(t_entry.e_content, "html.parser")
             for attachment in soup.select("figure[data-trix-attachment]"):
                 data = json.loads(attachment["data-trix-attachment"])
