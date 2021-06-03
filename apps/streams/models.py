@@ -23,6 +23,8 @@ class MStream(TimestampModel):
 
     class Meta:
         db_table = "m_stream"
+        verbose_name = "Stream"
+        verbose_name_plural = "Streams"
 
     def __str__(self):
         return self.name
@@ -36,3 +38,5 @@ class TStreamPost(TimestampModel):
     class Meta:
         db_table = "t_stream_post"
         unique_together = ("m_stream", "t_post")
+        verbose_name = "Stream-Post"
+        verbose_name_plural = "Stream-Posts"

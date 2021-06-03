@@ -19,6 +19,7 @@ class TFile(TimestampModel):
     class Meta:
         db_table = "t_file"
         verbose_name = "File"
+        verbose_name_plural = "Files"
 
     def get_absolute_url(self):
         return reverse("get_media", args=[self.uuid])
@@ -39,6 +40,7 @@ class TFilePost(TimestampModel):
     class Meta:
         db_table = "t_file_post"
         verbose_name = "File-Post"
+        verbose_name_plural = "File-Posts"
 
 
 class TFormattedImage(TimestampModel):
@@ -53,6 +55,7 @@ class TFormattedImage(TimestampModel):
     class Meta:
         db_table = "t_formatted_image"
         verbose_name = "Formatted Image"
+        verbose_name_plural = "Formatted Images"
         unique_together = ("t_file", "mime_type", "width", "height")
 
     def __str__(self):

@@ -24,6 +24,8 @@ class TWebmention(TimestampModel):
     class Meta:
         db_table = "t_webmention"
         unique_together = ("t_webmention_response", "t_post")
+        verbose_name = "Webmention Approval"
+        verbose_name_plural = "Webmention Approvals"
 
     @classmethod
     def instance_from_webmentionresponse(cls, mention: WebMentionResponse, t_post: TPost) -> "TWebmention":
@@ -58,6 +60,8 @@ class TWebmentionSend(TimestampModel):
     class Meta:
         db_table = "t_webmention_send"
         unique_together = ("target", "t_post")
+        verbose_name = "Sent Webmention"
+        verbose_name_plural = "Sent Webmentions"
 
     def __str__(self):
         return self.target
@@ -70,6 +74,8 @@ class MMicropubScope(TimestampModel):
 
     class Meta:
         db_table = "m_micropub_scope"
+        verbose_name = "Micropub Scope"
+        verbose_name_plural = "Micropub Scopes"
 
     def __str__(self):
         return self.name
@@ -98,6 +104,8 @@ class TToken(TimestampModel):
 
     class Meta:
         db_table = "t_token"
+        verbose_name = "Token"
+        verbose_name_plural = "Tokens"
 
     def __str__(self):
         return f"{self.auth_token}::{self.key}"
@@ -110,6 +118,7 @@ class TTokenMicropubScope(TimestampModel):
     class Meta:
         db_table = "t_token_micropub_scope"
         unique_together = ("t_token", "m_micropub_scope")
+        verbose_name = "Token-Micropub Scope"
 
     def __str__(self):
         return f"{self.t_token}:{self.m_micropub_scope}"

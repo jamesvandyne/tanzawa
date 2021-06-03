@@ -14,6 +14,8 @@ class TEntry(TimestampModel):
 
     class Meta:
         db_table = "t_entry"
+        verbose_name = "Entry"
+        verbose_name_plural = "Entries"
 
     def __str__(self):
         return f"{self.t_post}: {self.p_name}"
@@ -32,6 +34,8 @@ class TReply(TimestampModel):
 
     class Meta:
         db_table = "t_reply"
+        verbose_name = "Reply"
+        verbose_name_plural = "Replies"
 
     def __str__(self):
         return f"{self.t_entry} : {self.u_in_reply_to}"
@@ -59,6 +63,8 @@ class TBookmark(TimestampModel):
 
     class Meta:
         db_table = "t_bookmark"
+        verbose_name = "Bookmark"
+        verbose_name_plural = "Bookmarks"
 
     def __str__(self):
         return f"{self.t_entry} : {self.u_bookmark_of}"
@@ -84,6 +90,8 @@ class TLocation(TimestampModel):
 
     class Meta:
         db_table = "t_location"
+        verbose_name = "Location"
+        verbose_name_plural = "Locations"
 
     @property
     def summary(self):
@@ -100,6 +108,8 @@ class TCheckin(TimestampModel):
 
     class Meta:
         db_table = "t_checkin"
+        verbose_name = "Checkin"
+        verbose_name_plural = "Checkins"
 
 
 class TSyndication(TimestampModel):
@@ -109,3 +119,5 @@ class TSyndication(TimestampModel):
     class Meta:
         db_table = "t_syndication"
         unique_together = ["t_entry", "url"]
+        verbose_name = "Syndication URL"
+        verbose_name_plural = "Syndication URLs"

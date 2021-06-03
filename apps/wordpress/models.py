@@ -14,6 +14,8 @@ class TWordpress(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress"
+        verbose_name = "Wordpress"
+        verbose_name_plural = "Wordpress"
 
     def __str__(self):
         return self.filename
@@ -28,6 +30,8 @@ class TCategory(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_category"
+        verbose_name = "Wordpress Category"
+        verbose_name_plural = "Wordpress Categories"
 
     def __str__(self):
         return self.name
@@ -49,6 +53,8 @@ class TPostFormat(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_post_format"
+        verbose_name = "Wordpress Post Format"
+        verbose_name_plural = "Wordpress Post Formats"
 
     def __str__(self):
         return self.name
@@ -70,6 +76,8 @@ class TPostKind(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_post_kind"
+        verbose_name = "Wordpress Post Kind"
+        verbose_name_plural = "Wordpress Post Kinds"
 
     def __str__(self):
         return self.name
@@ -86,6 +94,8 @@ class TWordpressPost(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_post"
+        verbose_name = "Wordpress Post"
+        verbose_name_plural = "Wordpress Posts"
 
 
 class TWordpressAttachment(TimestampModel):
@@ -98,3 +108,5 @@ class TWordpressAttachment(TimestampModel):
 
     class Meta:
         db_table = "t_wordpress_attachment"
+        verbose_name = "Wordpress Attachment"
+        verbose_name_plural = "Wordpress Attachments"
