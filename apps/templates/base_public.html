@@ -39,6 +39,9 @@
                     </div>
                 </div>
                 <ul data-reveal-target="item" class="mb-2 hidden md:hidden mt-2">
+                    {% if request.user.is_authenticated %}
+                        <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class="w-full inline-block"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
+                    {% endif %}
                     <li class="{% if 'home' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     {% for stream in streams %}
                         <li class="{% if stream.slug in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
@@ -51,6 +54,9 @@
             {% block content_wrapper  %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
                 <ul class="mb-2">
+                    {% if request.user.is_authenticated %}
+                        <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class=" w-36 p-1 mb-2"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
+                    {% endif %}
                     <li class="{% if 'home' in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     {% for stream in streams %}
                         <li class="{% if stream.slug in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
