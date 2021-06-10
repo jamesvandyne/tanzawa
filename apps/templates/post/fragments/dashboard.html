@@ -1,5 +1,8 @@
 {% extends "fragments/content.html" %}
 
+{% block breadcrumbs_block %}
+{% endblock %}
+
 {% block main %}
     <details {% if unread_count and unread_count <= 3 %}open{% endif %}>
         <summary>
