@@ -8,6 +8,10 @@ pytest-freezegun
 pytest-pythonpath
 model-bakery
 mypy
+types-dataclasses
+types-pytz
+types-requests
+typing-extensions
 flake8
 black
 django-debug-toolbar
