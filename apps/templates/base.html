@@ -19,7 +19,7 @@
         <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">
     {% endwith %}
     {% if form %}{{ form.media.css }}{% endif %}
-    <title>{{ page_title }}🏔 Tanzawa</title>
+    <title>{{ page_title }} – {{ request.settings.title }} Admin</title>
     <script src="{% static 'trix/trix.js' %}"></script>
     <script src="{% static 'trix/attachments.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>

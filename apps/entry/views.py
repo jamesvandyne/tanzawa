@@ -397,7 +397,12 @@ class TEntryListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["nav"] = "posts"
+        context.update(
+            {
+                "nav": "posts",
+                "page_title": "Posts",
+            }
+        )
         return context
 
     def render_to_response(self, context: Dict[str, Any], **response_kwargs):

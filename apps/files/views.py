@@ -113,7 +113,7 @@ class FilesList(TurboFrameTemplateResponseMixin, ListView):
         return TFile.objects.all().order_by("-created_at")
 
     def get_context_data(self, *args, object_list=None, **kwargs):
-        return super().get_context_data(*args, object_list=object_list, nav="files")
+        return super().get_context_data(*args, object_list=object_list, nav="files", page_title="Files")
 
 
 @method_decorator(login_required, name="dispatch")

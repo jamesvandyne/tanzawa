@@ -18,5 +18,6 @@ def dashboard(request):
         "webmentions": webmentions,
         "unread_count": webmentions.count(),
         "nav": "dashboard",
+        "page_title": "Dashboard",
     }
     return render(request, "post/dashboard.html", context)
