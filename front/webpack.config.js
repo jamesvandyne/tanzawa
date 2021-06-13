@@ -22,4 +22,31 @@ const publicConfig = {
   }
 };
 
-module.exports = [adminConfig, publicConfig];
+
+const tailwindConfig = {
+  entry: "./css/style.css",
+  output: {
+    path: path.resolve(__dirname, "../static/tailwind/"),
+    filename: "style.css",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          { loader: "css-loader", options: { importLoaders: 1 } },
+          "postcss-loader",
+        ],
+      },
+    ],
+  },
+  // Optional for webpack-dev-server
+  devServer: {
+    watchContentBase: true,
+    contentBase: path.resolve(__dirname, "dist"),
+    open: true,
+  },
+}
+
+module.exports = [adminConfig, publicConfig, tailwindConfig];
