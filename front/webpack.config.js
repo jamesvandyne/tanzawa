@@ -1,4 +1,5 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const adminConfig = {
   entry: ['./src/application.js', '@hotwired/turbo', 'form-request-submit-polyfill'],
@@ -24,17 +25,21 @@ const publicConfig = {
 
 
 const tailwindConfig = {
-  entry: "./css/style.css",
+  entry: "./css/index.js",
   output: {
     path: path.resolve(__dirname, "../static/tailwind/"),
-    filename: "style.css",
   },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "style.css"
+    }),
+  ],
   module: {
     rules: [
       {
         test: /\.css$/,
         use: [
-          "style-loader",
+          MiniCssExtractPlugin.loader,
           { loader: "css-loader", options: { importLoaders: 1 } },
           "postcss-loader",
         ],
