@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+
+
+{% block all_content %}
+    <div class="w-6/12 mx-auto flex-col">
+        <h1 class="text-2xl">Welcome to Tanzawa!</h1>
+        <p class="mt-2">Thank you for installing Tanzawa. To begin we need to create your account.</p>
+        <form method="post" class="mt-2">
+            {% csrf_token %}
+            <div>
+                <h2 class="text-xl">About You</h2>
+                <div class="flex mt-2">
+                    <div class="w-5/12">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                    </div>
+                    <div class="w-5/12 ml-auto">
+                        <label for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}<span class="help-text ml-2">Optional</span></label>
+                        {{ form.last_name }}
+                    </div>
+                </div>
+                <div class="mt-2">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-xl">Account</h2>
+                <div class="mt-2">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div class="mt-2">
+                        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}<span class="help-text ml-2">{{ form.password.help_text }}</span></label>
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="mt-2">
+                <h2 class="text-xl">Blog</h2>
+                <div class="flex mt-2">
+                    <div class="w-5/12">
+                        {{ form.blog_title.label_tag }}
+                        {{ form.blog_title }}
+                    </div>
+                    <div class="w-5/12 ml-auto">
+                        <label for="{{ form.blog_subtitle.id_for_label }}">{{ form.blog_subtitle.label }}<span class="help-text ml-2">Optional</span></label>
+                        {{ form.blog_subtitle }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="green-button mt-4">Create Account</button>
+        </form>
+
+    </div>
+
+{% endblock %}

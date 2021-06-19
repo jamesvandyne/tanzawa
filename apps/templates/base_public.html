@@ -88,7 +88,7 @@
             {% endblock %}
         </div>
         <footer class="w-full text-center">
-            <span class="help-text">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
+            {{ request.settings.footer_snippet|safe }}
         </footer>
     </div>
 </body>
