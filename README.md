@@ -13,7 +13,21 @@ $ docker image build -t tanzawa
 $ cp .env.sample .env
 # Generate a secure secret key and append it to your .env file 
 $ python3 -c "import secrets; print(secrets.token_urlsafe())" | xargs -I{} -n1 echo SECRET_KEY={} >> .env
+$ docker run --rm -p 8000:8000 -v $PWD:/app -it tanzawa bash
 
+# Inside Container
+
+$ cd /app
+
+# Prepare Database
+$ python3 apps/manage.py migrate
+
+# Create your user account
+$ python3 apps/manage.py createsuperuser
+$ python3 apps/manage.py collectstatic
+
+# Run Development Webserver
+$ python3 apps/manage.py runserver 0.0.0.0:8000
 ```
 
 # Sites using Tanzawa
