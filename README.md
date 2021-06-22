@@ -17,7 +17,7 @@ Please refer to the [GeoDjango installation documentation](https://docs.djangopr
 ```
 $ git clone git@github.com:jamesvandyne/tanzawa.git
 $ cd tanzawa
-$ docker image build -t tanzawa
+$ docker image build . -t tanzawa
 ```
 
 Prepare your .env file and generate a secure secret key and append it to your .env file 
