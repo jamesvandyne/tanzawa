@@ -96,7 +96,7 @@ class TLocation(TimestampModel):
     @property
     def summary(self):
         return (
-            ", ".join(filter(None, [self.locality, self.region, self.country_name])) or f"{self.point.x},{self.point.y}"
+            ", ".join(filter(None, [self.locality, self.region, self.country_name])) or f"{self.point.y},{self.point.x}"
         )
 
 

@@ -407,8 +407,8 @@ class TestMicropub:
         assert t_location.country_name == "Japan"
         assert t_location.postal_code == "251-0037"
         assert t_location.locality == "Fujisawa"
-        assert t_location.point.x == 35.31593281000502
-        assert t_location.point.y == 139.4700015160363
+        assert t_location.point.y == 35.31593281000502
+        assert t_location.point.x == 139.4700015160363
 
         download_image_mock.assert_called_with(entry_with_location["properties"]["photo"][0])
 
@@ -458,8 +458,8 @@ class TestMicropub:
         assert t_location.country_name == "Japan"
         assert t_location.postal_code == "251-0037"
         assert t_location.locality == "Fujisawa"
-        assert t_location.point.x == 35.31593281000502
-        assert t_location.point.y == 139.4700015160363
+        assert t_location.point.y == 35.31593281000502
+        assert t_location.point.x == 139.4700015160363
 
         t_checkin: TCheckin = t_entry.t_checkin
 

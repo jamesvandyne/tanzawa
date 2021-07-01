@@ -48,14 +48,16 @@ def get_location(hentry):  # noqa: C901
 
 def location_to_pointfield_input(location: Union[Point, Dict[str, Any]]) -> str:
     if isinstance(location, Point):
-        lat = location.x
-        lon = location.y
+        lat = location.y
+        lon = location.x
     else:
         lat = float(location["location"]["latitude"])
         lon = float(location["location"]["longitude"])
+    # GeoJson coordinates are at longitude / latitude (x,y) order
+    # refs: https://geojson.org/geojson-spec.html#id2
     return json.dumps(
         {
             "type": "Point",
-            "coordinates": [lat, lon],
+            "coordinates": [lon, lat],
         }
     )
