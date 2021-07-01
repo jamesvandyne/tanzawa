@@ -96,7 +96,7 @@ export default class extends Controller {
     serializePoint(latlng) {
         this.serializeTarget.value = JSON.stringify({
             type: "Point",
-            coordinates: [latlng.lat, latlng.lng]
+            coordinates: [latlng.lng, latlng.lat]
         });
     }
 

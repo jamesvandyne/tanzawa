@@ -198,7 +198,7 @@ class SearchView(ListView):
             if q:
                 qs = qs.filter(Q(p_name__icontains=q) | Q(p_summary__icontains=q))
             if lat and lon:
-                point = Point(lat, lon, srid=3857)
+                point = Point(y=lat, x=lon, srid=3857)
                 qs = qs.filter(t_location__point__dwithin=(point, self.convert_km_to_degrees(2)))
         return qs
 
