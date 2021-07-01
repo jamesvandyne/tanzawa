@@ -121,7 +121,7 @@ export default class extends Controller {
     addMarkerFromJson(point) {
         if(point) {
             const feature = JSON.parse(point);
-            this.marker = this._addMarker(feature.coordinates);
+            this.marker = this._addMarker(feature.coordinates.reverse());
             // Center/zoom the map
             this.map.setView(feature.coordinates, this.defaultZoom);
         }
