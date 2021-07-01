@@ -14,9 +14,7 @@ def fix_location_point(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('entry', '0007_update_verbose_names'),
+        ("entry", "0007_update_verbose_names"),
     ]
 
-    operations = [
-        migrations.RunPython(fix_location_point, reverse_code=fix_location_point)
-    ]
+    operations = [migrations.RunPython(fix_location_point, reverse_code=fix_location_point)]
