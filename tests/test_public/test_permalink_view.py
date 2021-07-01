@@ -212,8 +212,8 @@ class TestArticleRendering:
             region="Kanagawa",
             country_name="Japan",
             point=Point(
-                35.31593281000502,
-                139.4700015160363,
+                y=35.31593281000502,
+                x=139.4700015160363,
             ),
         )
 
