@@ -4,6 +4,11 @@ from django.db import migrations
 
 
 def fix_location_point(apps, schema_editor):
+    """
+    Swap location x/y points.
+
+    refs: https://github.com/jamesvandyne/tanzawa/issues/67
+    """
     TLocation = apps.get_model("entry", "TLocation")
 
     for t_location in TLocation.objects.all():
