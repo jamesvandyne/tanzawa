@@ -38,11 +38,12 @@ def send_webmention(request, t_post: TPost, e_content: str) -> List[TWebmentionS
 
             response = ronkyuu.sendWebmention(source_url, target, wm_url)
             t_webmention_send.dt_sent = now()
-            t_webmention_send.save()
-            if response and response.status_code == requests.codes.ok:
+            # Per webmention spec: Any 2xx response code MUST be considered a success.
+            if response and 200 <= response.status_code <= 299:
                 t_webmention_send.success = True
             else:
                 t_webmention_send.success = False
+            t_webmention_send.save()
             t_webmention_sends.append(t_webmention_send)
 
     return t_webmention_sends
