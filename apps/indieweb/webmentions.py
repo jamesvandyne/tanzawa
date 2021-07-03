@@ -1,6 +1,5 @@
 from typing import List, Set
 
-import requests
 import ronkyuu
 from bs4 import BeautifulSoup
 from django.conf import settings
