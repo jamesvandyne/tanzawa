@@ -1,5 +1,6 @@
 import uuid
 
+from core.constants import Visibility, VISIBILITY_CHOICES
 from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -67,6 +68,7 @@ class TPost(TimestampModel):
     p_author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     dt_published = models.DateTimeField(blank=True, null=True)
     dt_updated = models.DateTimeField(blank=True, null=True)
+    visibility = models.SmallIntegerField(choices=VISIBILITY_CHOICES, default=Visibility.PUBLIC)
 
     files = models.ManyToManyField("files.TFile", through="files.TFilePost", through_fields=("t_post", "t_file"))
     streams = models.ManyToManyField(
