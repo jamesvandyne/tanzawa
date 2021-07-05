@@ -61,7 +61,7 @@ class AllEntriesFeed(Feed):
             e_content = (
                 f"Bookmark: "
                 f'<a href="{t_bookmark.u_bookmark_of}"'
-                ">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
+                f">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
                 f"<blockquote>{t_bookmark.quote}</blockquote>{e_content}"
             )
         try:
