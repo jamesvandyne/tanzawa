@@ -6,6 +6,7 @@ from post.models import TPost
 from streams.models import MStream
 from entry.models import TLocation
 from indieweb.constants import MPostKinds
+from settings.models import MSiteSettings
 
 
 class ExtendedRSSFeed(Rss201rev2Feed):
@@ -24,9 +25,12 @@ class ExtendedRSSFeed(Rss201rev2Feed):
 
 
 class AllEntriesFeed(Feed):
-    title = "Tanzawa"
     feed_type = ExtendedRSSFeed
     item_guid_is_permalink = False
+
+    def title(self):
+        title = MSiteSettings.objects.values_list("title", flat=True).first()
+        return title or "Tanzawa"
 
     def link(self):
         return reverse("feeds:feed")
@@ -61,7 +65,7 @@ class AllEntriesFeed(Feed):
             e_content = (
                 f"Bookmark: "
                 f'<a href="{t_bookmark.u_bookmark_of}"'
-                ">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
+                f">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
                 f"<blockquote>{t_bookmark.quote}</blockquote>{e_content}"
             )
         try:
