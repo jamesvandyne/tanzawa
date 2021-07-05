@@ -57,6 +57,7 @@ class CreateEntryView(CreateView):
         context = super().get_context_data(nav="posts", **kwargs)
         if "named_forms" not in context:
             context["named_forms"] = self.get_named_forms()
+        context["page_title"] = "Create Post"
         return context
 
     def form_invalid(self, form, named_forms=None):
@@ -99,6 +100,7 @@ class UpdateEntryView(UpdateView):
         context = super().get_context_data(nav="posts", **kwargs)
         if "named_forms" not in context:
             context["named_forms"] = self.get_named_forms()
+        context["page_title"] = "Edit Post"
         return context
 
     def get_named_forms(self):
