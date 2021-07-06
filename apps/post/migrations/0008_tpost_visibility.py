@@ -7,13 +7,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('post', '0007_update_verbose_names'),
+        ("post", "0007_update_verbose_names"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tpost',
-            name='visibility',
-            field=models.SmallIntegerField(choices=[(1, 'Everyone'), (2, 'Only me'), (3, 'People who know the url')], default=core.constants.Visibility['PUBLIC']),
+            model_name="tpost",
+            name="visibility",
+            field=models.SmallIntegerField(
+                choices=[(1, "Everyone"), (2, "Only me"), (3, "People who know the url")],
+                default=core.constants.Visibility["PUBLIC"],
+            ),
         ),
     ]

@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
+from core.constants import VISIBILITY_CHOICES, Visibility
 from django import forms
 from django.db import transaction
 from django.contrib.gis.forms import OSMWidget, PointField
@@ -30,6 +31,8 @@ class CreateStatusForm(forms.ModelForm):
         required=True,
         empty_label=None,
         initial=MPostStatuses.draft,
+        label="Is Published?",
+        label_suffix="",
     )
     streams = StreamModelMultipleChoiceField(
         MStream.objects.all(),
@@ -37,7 +40,9 @@ class CreateStatusForm(forms.ModelForm):
         required=False,
     )
     dt_published = forms.DateTimeField(required=False, widget=forms.HiddenInput)
-
+    visibility = forms.ChoiceField(
+        choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
+    )
     m_post_kind = MPostKinds.note
 
     class Meta:
@@ -48,9 +53,11 @@ class CreateStatusForm(forms.ModelForm):
         self.p_author = kwargs.pop("p_author")
         autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
-        self.fields["m_post_status"].widget.attrs = {
-            "class": "mb-1",
+        select_attrs = {
+            "class": "mb-1 w-52",
         }
+        self.fields["m_post_status"].widget.attrs = select_attrs
+        self.fields["visibility"].widget.attrs = select_attrs
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
@@ -190,11 +197,16 @@ class UpdateStatusForm(forms.ModelForm):
         required=True,
         empty_label=None,
         initial=MPostStatuses.draft,
+        label="Is Published?",
+        label_suffix="",
     )
     streams = StreamModelMultipleChoiceField(
         MStream.objects.all(),
         label="Which streams should this appear in?",
         required=False,
+    )
+    visibility = forms.ChoiceField(
+        choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
     )
 
     class Meta:
@@ -207,6 +219,11 @@ class UpdateStatusForm(forms.ModelForm):
         self.t_post: TPost = self.instance.t_post
         self.already_published = self.t_post.m_post_status.key == MPostStatuses.published
         self.fields["streams"].initial = self.t_post.streams.values_list("id", flat=True)
+        select_attrs = {
+            "class": "mb-1 w-52",
+        }
+        self.fields["m_post_status"].widget.attrs = select_attrs
+        self.fields["visibility"].widget.attrs = select_attrs
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
 
         if autofocus:
