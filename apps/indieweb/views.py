@@ -139,6 +139,7 @@ def micropub(request):  # noqa: C901 too complex (30)
         ),
         "dt_published": dt_published[0].isoformat() if dt_published else None,
         "streams": serializer.validated_data["properties"]["streams"].values_list("pk", flat=True),
+        "visibility": serializer.validated_data["properties"]["visibility"].value,
     }
     if serializer.validated_data["properties"].get("in_reply_to"):
         linked_page = serializer.validated_data["properties"].get("in_reply_to")

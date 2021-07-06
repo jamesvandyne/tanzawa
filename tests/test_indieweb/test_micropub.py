@@ -2,6 +2,7 @@ from typing import Dict, Any
 from unittest.mock import Mock
 
 import pytest
+from core.constants import Visibility
 from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
 from post.models import TPost
 
@@ -476,3 +477,40 @@ class TestMicropub:
         t_syndication = t_entry.t_syndication.first()
 
         assert t_syndication.url == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
+
+    @pytest.mark.parametrize(
+        "micropub_visibility,visibility",
+        [
+            (None, Visibility.PUBLIC),
+            ("public", Visibility.PUBLIC),
+            ("unlisted", Visibility.UNLISTED),
+            ("private", Visibility.PRIVATE),
+        ],
+    )
+    def test_token_respects_visibility(
+        self,
+        target,
+        client,
+        t_token_access,
+        auth_token,
+        client_id,
+        quill_note,
+        mock_send_webmention,
+        micropub_visibility,
+        visibility,
+    ):
+        """Confirm that our micropub endpoint is respecting the visibility flag"""
+
+        if micropub_visibility:
+            quill_note["visibility"] = micropub_visibility
+
+        client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
+        response = client.post(target, data=quill_note)
+        assert response.status_code == 201
+        assert TEntry.objects.count() == 1
+        assert mock_send_webmention.called
+
+        t_entry: TEntry = TEntry.objects.first()
+        t_post = t_entry.t_post
+
+        assert t_post.visibility == visibility.value
