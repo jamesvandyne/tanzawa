@@ -81,6 +81,7 @@ class CreateStatusForm(forms.ModelForm):
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
+            visibility=self.cleaned_data["visibility"],
             dt_published=self.cleaned_data.get("dt_published") or n
             if self.cleaned_data["m_post_status"].key == MPostStatuses.published
             else None,
@@ -237,6 +238,7 @@ class UpdateStatusForm(forms.ModelForm):
     def prepare_data(self):
         n = now()
         self.t_post.m_post_status = self.cleaned_data["m_post_status"]
+        self.t_post.visibility = self.cleaned_data["visibility"]
         if self.t_post.m_post_status.key == MPostStatuses.published:
             if not self.already_published or self.t_post.dt_published is None:
                 self.t_post.dt_published = n

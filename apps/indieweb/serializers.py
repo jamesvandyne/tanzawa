@@ -78,7 +78,7 @@ class VisibilityField(FlattenedStringField):
 
     def to_internal_value(self, data) -> Visibility:
         value = super().to_internal_value(data)
-        return Visibility(value)
+        return Visibility.from_micropub_property(value)
 
 
 class PhotoField(serializers.Field):
