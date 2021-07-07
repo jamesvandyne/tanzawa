@@ -5,6 +5,7 @@ pytest
 pytest-django
 pytest-cov
 pytest-freezegun
+pytest-lazy-fixture
 pytest-pythonpath
 model-bakery
 mypy

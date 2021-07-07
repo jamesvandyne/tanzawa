@@ -1,9 +1,11 @@
 import uuid
+from typing import Optional
 
 from core.constants import Visibility, VISIBILITY_CHOICES
 from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.functional import cached_property
@@ -57,6 +59,14 @@ class TPostManager(models.Manager):
         return self.get_queryset().filter(
             m_post_status__key=MPostStatuses.draft,
         )
+
+    def visible_for_user(self, user_id: Optional[int]):
+        qs = self.get_queryset()
+        anon_ok_entries = Q(visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
+        if user_id:
+            private_entries = Q(visibility=Visibility.PRIVATE, p_author_id=user_id)
+            return qs.filter(anon_ok_entries | private_entries)
+        return qs.filter(anon_ok_entries)
 
 
 class TPost(TimestampModel):

@@ -53,7 +53,8 @@ class HomeView(ListView):
 
 def status_detail(request, uuid):
     t_post: TPost = get_object_or_404(
-        TPost.objects.filter(m_post_status__key=MPostStatuses.published)
+        TPost.objects.visible_for_user(request.user.id)
+        .filter(m_post_status__key=MPostStatuses.published)
         .select_related(
             "m_post_kind",
             "ref_t_entry",
