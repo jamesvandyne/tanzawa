@@ -1,6 +1,6 @@
 <turbo-frame id="reply-form">
     <div data-controller="url-submit">
-        <form id="reply" action="{% url 'reply_meta' %}" method="post" data-url-submit-target="form">
+        <form id="entry" action="{% url 'reply_meta' %}" method="post" data-url-submit-target="form">
             {% csrf_token %}
             {{ form.url.label }}
             {{ form.url }}

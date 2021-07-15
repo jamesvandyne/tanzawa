@@ -55,6 +55,7 @@ class CreateStatusForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         select_attrs = {
             "class": "mb-1 w-52",
+            "form": "entry",
         }
         self.fields["m_post_status"].widget.attrs = select_attrs
         self.fields["visibility"].widget.attrs = select_attrs
@@ -222,9 +223,12 @@ class UpdateStatusForm(forms.ModelForm):
         self.fields["streams"].initial = self.t_post.streams.values_list("id", flat=True)
         select_attrs = {
             "class": "mb-1 w-52",
+            "form": "entry",
         }
         self.fields["m_post_status"].widget.attrs = select_attrs
+        self.fields["m_post_status"].initial = self.t_post.m_post_status.key
         self.fields["visibility"].widget.attrs = select_attrs
+        self.fields["visibility"].initial = self.t_post.visibility
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
 
         if autofocus:
