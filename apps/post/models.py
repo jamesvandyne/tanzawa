@@ -66,6 +66,9 @@ class TPostManager(models.Manager):
         if user_id:
             private_entries = Q(visibility=Visibility.PRIVATE, p_author_id=user_id)
             return qs.filter(anon_ok_entries | private_entries)
+        else:
+            # Anonymous users can only see published posts
+            qs = qs.filter(m_post_status__key=MPostStatuses.published, dt_published__lte=now())
         return qs.filter(anon_ok_entries)
 
 

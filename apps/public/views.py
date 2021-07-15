@@ -21,7 +21,8 @@ class HomeView(ListView):
 
     def get_queryset(self):
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -92,7 +93,8 @@ class AuthorDetail(ListView):
 
     def get_queryset(self):
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -126,7 +128,8 @@ class StreamView(ListView):
     def get_queryset(self):
 
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -173,7 +176,8 @@ class SearchView(ListView):
 
     def get_queryset(self):
         qs = (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",

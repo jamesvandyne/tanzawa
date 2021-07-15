@@ -1,53 +1,9 @@
 import pytest
 from model_bakery import baker
-from indieweb.constants import MPostKinds, MPostStatuses
+from indieweb.constants import MPostKinds
 import mf2py
 from django.contrib.gis.geos import Point
 from core.constants import Visibility
-
-
-@pytest.fixture
-def m_post_kinds():
-    from post.models import MPostKind
-
-    return MPostKind.objects.all()
-
-
-@pytest.fixture
-def m_post_kind(m_post_kinds):
-    return m_post_kinds[0]  # note
-
-
-@pytest.fixture
-def published_status():
-    from post.models import MPostStatus
-
-    return MPostStatus.objects.get(key=MPostStatuses.published)
-
-
-@pytest.fixture
-def user():
-    return baker.make(
-        "User",
-        username="jamesvandyne",
-        first_name="James",
-        last_name="Van Dyne",
-        email="james@example.test",
-    )
-
-
-@pytest.fixture
-def t_post(m_post_kind, published_status, user):
-    from datetime import datetime
-
-    return baker.make(
-        "post.TPost",
-        m_post_status=published_status,
-        m_post_kind=m_post_kind,
-        p_author=user,
-        dt_published=datetime.now(),
-        uuid="90a0027d-9c74-44e8-895c-6d5611f8eca5",
-    )
 
 
 @pytest.mark.django_db
@@ -315,8 +271,9 @@ class TestPermalinkView:
         return m_post_kinds.get(key=MPostKinds.note)
 
     @pytest.fixture
-    def t_post(self, t_post, author):
+    def t_post(self, t_post, author, visibility):
         t_post.p_author = author
+        t_post.visibility = visibility
         t_post.save()
         return t_post
 
@@ -339,7 +296,7 @@ class TestPermalinkView:
         return baker.make("auth.User", username="Another")
 
     @pytest.mark.parametrize(
-        "visibility,status_code,user",
+        "visibility,status_code,login_user",
         [
             (Visibility.PUBLIC, 200, None),
             (Visibility.PRIVATE, 404, None),
@@ -352,9 +309,10 @@ class TestPermalinkView:
             (Visibility.UNLISTED, 200, pytest.lazy_fixture("another_user")),
         ],
     )
-    def test_respects_visibility(self, client, t_entry, t_post, author, another_user, visibility, status_code, user):
-        if user:
-            client.force_login(user)
-
+    def test_respects_visibility(
+        self, client, t_entry, t_post, author, another_user, visibility, status_code, login_user
+    ):
+        if login_user:
+            client.force_login(login_user)
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == status_code

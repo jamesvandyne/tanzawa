@@ -5,7 +5,7 @@ from django.utils.feedgenerator import Rss201rev2Feed
 from post.models import TPost
 from streams.models import MStream
 from entry.models import TLocation
-from indieweb.constants import MPostKinds
+from indieweb.constants import MPostKinds, MPostStatuses
 from settings.models import MSiteSettings
 
 
@@ -15,18 +15,22 @@ class ExtendedRSSFeed(Rss201rev2Feed):
     """
 
     def root_attributes(self):
-        attrs = super(ExtendedRSSFeed, self).root_attributes()
+        attrs = super().root_attributes()
         attrs["xmlns:content"] = "http://purl.org/rss/1.0/modules/content/"
         return attrs
 
     def add_item_elements(self, handler, item):
-        super(ExtendedRSSFeed, self).add_item_elements(handler, item)
+        super().add_item_elements(handler, item)
         handler.addQuickElement("content:encoded", item["content_encoded"])
 
 
 class AllEntriesFeed(Feed):
     feed_type = ExtendedRSSFeed
     item_guid_is_permalink = False
+
+    def __call__(self, request, *args, **kwargs):
+        self.request = request
+        return super().__call__(request, *args, **kwargs)
 
     def title(self):
         title = MSiteSettings.objects.values_list("title", flat=True).first()
@@ -37,7 +41,8 @@ class AllEntriesFeed(Feed):
 
     def items(self):
         return (
-            TPost.objects.published()
+            TPost.objects.visible_for_user(self.request.user.id)
+            .filter(m_post_status__key=MPostStatuses.published)
             .select_related("m_post_kind")
             .prefetch_related(
                 "ref_t_entry",
@@ -96,8 +101,8 @@ class StreamFeed(AllEntriesFeed):
 
     def items(self, obj):
         return (
-            TPost.objects.published()
-            .filter(streams=obj)
+            TPost.objects.visible_for_user(self.request.user.id)
+            .filter(streams=obj, m_post_status__key=MPostStatuses.published)
             .select_related("ref_t_entry")
             .all()
             .order_by("-dt_published")[:10]
