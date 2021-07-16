@@ -1,0 +1,8 @@
+ <header class="u-bookmark-of">
+    {% if t_bookmark %}
+        <h1 class="p-name text-xl">
+            Bookmark of <a href="{{ t_bookmark.u_bookmark_of }}" class="inline-block  hover:border-b u-url" title="{{ t_bookmark.title }}">{{ t_bookmark.title }}</a>
+        </h1>
+    {% endif %}
+    {% include "entry/fragments/list_timestamp.html" %}
+</header>

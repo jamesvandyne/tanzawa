@@ -473,3 +473,29 @@ TSyndicationModelInlineFormSet = forms.inlineformset_factory(
     form=TSyndicationModelForm,
     extra=1,
 )
+
+
+class PublishStatusVisibilityForm(forms.Form):
+    m_post_status = forms.ModelChoiceField(
+        MPostStatus.objects.all(),
+        to_field_name="key",
+        required=True,
+        empty_label=None,
+        initial=MPostStatuses.draft,
+        label="Is Published?",
+        label_suffix="",
+    )
+    visibility = forms.ChoiceField(
+        choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        select_attrs = {
+            "class": "mb-1 w-52",
+            "form": "entry",
+        }
+        self.fields["m_post_status"].widget.attrs = select_attrs
+        self.fields["m_post_status"].initial = MPostStatuses.draft
+        self.fields["visibility"].widget.attrs = select_attrs
+        self.fields["visibility"].initial = Visibility.PUBLIC
