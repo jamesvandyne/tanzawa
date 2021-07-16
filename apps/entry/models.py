@@ -1,7 +1,20 @@
+from typing import Optional
+from core.constants import Visibility
 from core.models import TimestampModel
 from django.db import models
+from django.db.models import Q
 from django.contrib.gis.db import models as geo_models
 from indieweb.extract import LinkedPage, LinkedPageAuthor
+
+
+class TEntryManager(models.Manager):
+    def visible_for_user(self, user_id: Optional[int]):
+        qs = self.get_queryset()
+        anon_ok_entries = Q(t_post__visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
+        if user_id:
+            private_entries = Q(t_post__visibility=Visibility.PRIVATE, t_post__p_author_id=user_id)
+            return qs.filter(anon_ok_entries | private_entries)
+        return qs.filter(anon_ok_entries)
 
 
 class TEntry(TimestampModel):
@@ -11,6 +24,8 @@ class TEntry(TimestampModel):
     p_name = models.CharField(max_length=255, blank=True, default="")
     p_summary = models.CharField(max_length=1024, blank=True, default="")
     e_content = models.TextField(blank=True, default="")
+
+    objects = TEntryManager()
 
     class Meta:
         db_table = "t_entry"

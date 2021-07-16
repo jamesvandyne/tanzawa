@@ -285,6 +285,9 @@ class CreateReplyView(CreateEntryView):
         context = self.get_context_data(form=form)
         return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)
 
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
+
 
 @method_decorator(login_required, name="dispatch")
 class ExtractReplyMetaView(ExtractLinkedPageMetaView):
@@ -323,6 +326,9 @@ class CreateBookmarkView(CreateEntryView):
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         return TurboFrame("bookmark-form").template("entry/bookmark/_form.html", context).response(self.request)
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
 
 
 @method_decorator(login_required, name="dispatch")

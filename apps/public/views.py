@@ -21,7 +21,8 @@ class HomeView(ListView):
 
     def get_queryset(self):
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -53,7 +54,8 @@ class HomeView(ListView):
 
 def status_detail(request, uuid):
     t_post: TPost = get_object_or_404(
-        TPost.objects.filter(m_post_status__key=MPostStatuses.published)
+        TPost.objects.visible_for_user(request.user.id)
+        .filter(m_post_status__key=MPostStatuses.published)
         .select_related(
             "m_post_kind",
             "ref_t_entry",
@@ -91,7 +93,8 @@ class AuthorDetail(ListView):
 
     def get_queryset(self):
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -125,7 +128,8 @@ class StreamView(ListView):
     def get_queryset(self):
 
         return (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",
@@ -172,7 +176,8 @@ class SearchView(ListView):
 
     def get_queryset(self):
         qs = (
-            TEntry.objects.select_related(
+            TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
                 "t_post",
                 "t_post__m_post_kind",
                 "t_post__p_author",

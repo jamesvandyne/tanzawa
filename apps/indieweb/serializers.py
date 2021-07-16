@@ -1,5 +1,6 @@
 from urllib.parse import urlparse
 from typing import Optional, Dict
+from core.constants import Visibility
 from django.db import transaction
 from django.urls import reverse
 from django.core.validators import URLValidator
@@ -60,11 +61,24 @@ class FlattenedStringField(serializers.Field):
     def to_representation(self, value):
         return value
 
-    def to_internal_value(self, data):
+    def to_internal_value(self, data) -> str:
         if isinstance(data, str):
             return data
         value = "".join([v for v in data])
         return value
+
+
+class VisibilityField(FlattenedStringField):
+    """
+    Converts micropub visibility to Tanzawa visibility IntEnum
+    """
+
+    def to_representation(self, value: Visibility):
+        return value.to_micropub_property()
+
+    def to_internal_value(self, data) -> Visibility:
+        value = super().to_internal_value(data)
+        return Visibility.from_micropub_property(value)
 
 
 class PhotoField(serializers.Field):
@@ -95,6 +109,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     bookmark_of = FlattenedStringField(required=False, validators=[URLValidator])
     location = LocationField(required=False)
     checkin = CheckinField(required=False)
+    visibility = VisibilityField(required=False, default=Visibility.PUBLIC)
 
     def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
         linked_page = extract_reply_details_from_url(url)

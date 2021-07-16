@@ -4,6 +4,8 @@
         <div class="ml-4 flex-grow">
             {% if t_entry.t_post.m_post_kind.key == "reply" %}
                 {% include "entry/fragments/reply_header.html" with t_reply=t_entry.t_reply %}
+            {% elif t_entry.t_post.m_post_kind.key == "bookmark" %}
+                {% include "entry/fragments/bookmark_header.html"  with t_bookmark=t_entry.t_bookmark %}
             {% elif t_entry.t_post.m_post_kind.key == "checkin" %}
                 {% include "entry/fragments/checkin_header.html" with t_checkin=t_entry.t_checkin %}
             {%  else %}
