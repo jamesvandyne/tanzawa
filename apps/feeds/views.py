@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed
 from post.models import TPost
 from streams.models import MStream
+from core.constants import Visibility
 from entry.models import TLocation
 from indieweb.constants import MPostKinds, MPostStatuses
 from settings.models import MSiteSettings
@@ -43,6 +44,7 @@ class AllEntriesFeed(Feed):
         return (
             TPost.objects.visible_for_user(self.request.user.id)
             .filter(m_post_status__key=MPostStatuses.published)
+            .exclude(visibility=Visibility.UNLISTED)
             .select_related("m_post_kind")
             .prefetch_related(
                 "ref_t_entry",
@@ -103,6 +105,7 @@ class StreamFeed(AllEntriesFeed):
         return (
             TPost.objects.visible_for_user(self.request.user.id)
             .filter(streams=obj, m_post_status__key=MPostStatuses.published)
+            .exclude(visibility=Visibility.UNLISTED)
             .select_related("ref_t_entry")
             .all()
             .order_by("-dt_published")[:10]

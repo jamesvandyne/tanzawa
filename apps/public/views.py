@@ -7,6 +7,7 @@ from django.utils.timezone import now
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from entry.models import TEntry
+from core.constants import Visibility
 from indieweb.constants import MPostStatuses
 from post.models import TPost
 from streams.models import MStream
@@ -32,6 +33,7 @@ class HomeView(ListView):
                 "t_checkin",
             )
             .filter(t_post__m_post_status__key=MPostStatuses.published)
+            .exclude(t_post__visibility=Visibility.UNLISTED)
             .annotate(
                 interaction_count=Count(
                     "t_post__ref_t_webmention",
@@ -94,6 +96,7 @@ class AuthorDetail(ListView):
     def get_queryset(self):
         return (
             TEntry.objects.visible_for_user(self.request.user.id)
+            .exclude(t_post__visibility=Visibility.UNLISTED)
             .select_related(
                 "t_post",
                 "t_post__m_post_kind",
@@ -129,6 +132,7 @@ class StreamView(ListView):
 
         return (
             TEntry.objects.visible_for_user(self.request.user.id)
+            .exclude(t_post__visibility=Visibility.UNLISTED)
             .select_related(
                 "t_post",
                 "t_post__m_post_kind",
@@ -177,6 +181,7 @@ class SearchView(ListView):
     def get_queryset(self):
         qs = (
             TEntry.objects.visible_for_user(self.request.user.id)
+            .exclude(t_post__visibility=Visibility.UNLISTED)
             .select_related(
                 "t_post",
                 "t_post__m_post_kind",
