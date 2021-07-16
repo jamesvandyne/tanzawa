@@ -49,13 +49,13 @@ class TestStreamView:
         [
             (Visibility.PUBLIC, True, None),
             (Visibility.PRIVATE, False, None),
-            (Visibility.UNLISTED, True, None),
+            (Visibility.UNLISTED, False, None),
             (Visibility.PUBLIC, True, pytest.lazy_fixture("author")),
             (Visibility.PRIVATE, True, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, True, pytest.lazy_fixture("author")),
+            (Visibility.UNLISTED, False, pytest.lazy_fixture("author")),
             (Visibility.PUBLIC, True, pytest.lazy_fixture("another_user")),
             (Visibility.PRIVATE, False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, True, pytest.lazy_fixture("another_user")),
+            (Visibility.UNLISTED, False, pytest.lazy_fixture("another_user")),
         ],
     )
     def test_respects_visibility(

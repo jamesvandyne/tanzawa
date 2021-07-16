@@ -47,13 +47,13 @@ class TestFeedView:
         [
             (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, None),
             (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, None),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), True, None),
+            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, None),
             (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
             (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
+            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("author")),
             (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("another_user")),
             (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("another_user")),
+            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
             # Draft Status
             (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, None),
             (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, None),
