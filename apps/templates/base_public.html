@@ -30,6 +30,8 @@
             <nav  data-controller="reveal">
                 <div class="flex">
                     <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
+
+                    <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-negroni-900{% endif %} ml-2 leading-8 sm:hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
                             <div class="w-8 bg-negroni-700 h-1"></div>
@@ -43,8 +45,9 @@
                         <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class="w-full inline-block"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
                     {% endif %}
                     <li class="{% if 'home' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if 'trips' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:trips" %}" class="w-full inline-block"><span class="mr-1">✈️</span><span>Trips</span></a></li>
                     {% for stream in streams %}
-                        <li class="{% if stream.slug in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                        <li class="{% if stream.slug in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
                     {% endfor %}
                 </ul>
             </nav>
@@ -52,17 +55,19 @@
         </header>
         <div class="md:flex md:flex-grow">
             {% block content_wrapper  %}
-            <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
-                <ul class="mb-2">
-                    {% if request.user.is_authenticated %}
-                        <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class=" w-36 p-1 mb-2"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
-                    {% endif %}
-                    <li class="{% if 'home' in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    {% for stream in streams %}
-                        <li class="{% if stream.slug in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
-                    {% endfor %}
-                </ul>
-            </nav>
+                {% block stream_nav %}
+                    <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
+                        <ul class="mb-2">
+                            {% if request.user.is_authenticated %}
+                                <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class=" w-36 p-1 mb-2"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
+                            {% endif %}
+                            <li class="{% if 'home' in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:home" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                            {% for stream in streams %}
+                                <li class="{% if stream.slug in selected %}selected{% endif %} w-36 p-1 mb-2"><a href="{% url "public:stream" stream.slug %}"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                {% endblock %}
             <div class="flex-col md:w-11/12 md:flex">
                 {% block content_before %}{% endblock %}
                 <div id="main-container" class="flex-col md:flex">

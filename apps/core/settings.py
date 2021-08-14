@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "post",
     "entry",
     "files",
+    "trips",
     "streams",
     "public",
     "wordpress",

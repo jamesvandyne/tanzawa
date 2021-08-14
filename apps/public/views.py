@@ -1,16 +1,17 @@
 from typing import Union
 from django.views.generic import ListView
-from django.db.models import Count, Q
+from django.db.models import Count, Q, F
 from django.shortcuts import get_object_or_404, render
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from entry.models import TEntry
+from entry.models import TEntry, TLocation
 from core.constants import Visibility
 from indieweb.constants import MPostStatuses
 from post.models import TPost
 from streams.models import MStream
+from trips.models import TTrip
 
 
 from .forms import SearchForm
@@ -220,4 +221,73 @@ class SearchView(ListView):
             form=SearchForm(self.request.GET),
         )
         context["show_map"] = any([getattr(e, "t_location", False) for e in context["object_list"]])
+        return context
+
+
+def trip_detail(request, uuid):
+    t_trip: TTrip = get_object_or_404(
+        (
+            TTrip.objects.visible_for_user(request.user.id).prefetch_related(
+                "posts",
+                "posts__m_post_kind",
+                "posts__p_author",
+                "posts__ref_t_entry",
+                "posts__ref_t_entry__t_location",
+                "posts__ref_t_entry__t_bookmark",
+                "posts__ref_t_entry__t_reply",
+                "posts__ref_t_entry__t_checkin",
+            )
+        ),
+        uuid=uuid,
+    )
+    posts = (
+        TPost.objects.visible_for_user(request.user.id)
+        .filter(m_post_status__key=MPostStatuses.published, trips=t_trip)
+        .select_related(
+            "m_post_kind",
+            "ref_t_entry",
+            "ref_t_entry__t_reply",
+            "ref_t_entry__t_bookmark",
+            "ref_t_entry__t_checkin",
+            "ref_t_entry__t_location",
+        )
+    )
+    if not request.user.is_authenticated:
+        posts = posts.exclude(visibility=Visibility.UNLISTED)
+    context = {"t_trip": t_trip, "t_posts": posts, "selected": ["trips"]}
+    return render(request, "public/trips/trip_detail.html", context=context)
+
+
+class TripListView(ListView):
+    template_name = "public/trips/ttrip_list.html"
+
+    def get_queryset(self):
+        qs = (
+            TTrip.objects.visible_for_user(self.request.user.id)
+            .exclude(visibility=Visibility.UNLISTED)
+            .prefetch_related("t_trip_location")
+        )
+        return qs
+
+    def get_context_data(self, *args, **kwargs):
+
+        context = super().get_context_data(*args, nav="trips", **kwargs)
+        locations = (
+            TLocation.objects.filter(t_entry__t_post__trips__in=context["object_list"])
+            .exclude(t_entry__t_post__visibility=Visibility.UNLISTED)
+            .annotate(trip_id=F("t_entry__t_post__trips__pk"))
+            .values_list("trip_id", "point")
+        )
+        t_location_points = {}
+        for trip_id, point in locations:
+            points = t_location_points.get(trip_id, [])
+            points.append(point)
+            t_location_points[trip_id] = points
+        context.update(
+            {
+                "selected": ["trips"],
+                "streams": MStream.objects.visible(self.request.user),
+                "t_location_points": t_location_points,
+            }
+        )
         return context

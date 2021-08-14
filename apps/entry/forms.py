@@ -4,8 +4,10 @@ from bs4 import BeautifulSoup
 from core.constants import VISIBILITY_CHOICES, Visibility
 from django import forms
 from django.db import transaction
-from django.contrib.gis.forms import OSMWidget, PointField
+from django.contrib.gis.forms import PointField
 from django.utils.timezone import now
+
+from core.forms import TCharField, LeafletWidget
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
@@ -14,17 +16,14 @@ from trix.forms import TrixField
 from trix.utils import extract_attachment_urls
 from streams.models import MStream
 from streams.forms import StreamModelMultipleChoiceField
+from trips.models import TTrip
 
 from .models import TEntry, TReply, TBookmark, TLocation, TCheckin, TSyndication
 
 
-class TCharField(forms.CharField):
-    widget = forms.TextInput(attrs={"class": "input-field"})
-
-
 class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
-    e_content = TrixField(required=True)
+    e_content = TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
@@ -43,6 +42,7 @@ class CreateStatusForm(forms.ModelForm):
     visibility = forms.ChoiceField(
         choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
     )
+    t_trip = forms.ModelChoiceField(TTrip.objects, label="Is this post part of a trip?", required=False)
     m_post_kind = MPostKinds.note
 
     class Meta:
@@ -59,6 +59,7 @@ class CreateStatusForm(forms.ModelForm):
         }
         self.fields["m_post_status"].widget.attrs = select_attrs
         self.fields["visibility"].widget.attrs = select_attrs
+        self.fields["t_trip"].widget.attrs = select_attrs
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
@@ -73,7 +74,7 @@ class CreateStatusForm(forms.ModelForm):
         except MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
-        urls = extract_attachment_urls(self.cleaned_data["e_content"])
+        urls = extract_attachment_urls(self.cleaned_data.get("e_content", ""))
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
@@ -90,7 +91,7 @@ class CreateStatusForm(forms.ModelForm):
         )
         soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
         self.instance = TEntry(
-            e_content=self.cleaned_data["e_content"],
+            e_content=self.cleaned_data.get("e_content", ""),
             p_summary=soup.text[:255].strip(),
             p_name=self.cleaned_data.get("p_name", ""),
         )
@@ -103,6 +104,8 @@ class CreateStatusForm(forms.ModelForm):
             entry = super().save(commit)
             self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
             self.t_post.streams.set(self.cleaned_data["streams"])
+            if self.cleaned_data["t_trip"]:
+                self.t_post.trips.set([self.cleaned_data["t_trip"]])
             return entry
         raise Exception("TPost must not be null")
 
@@ -210,6 +213,7 @@ class UpdateStatusForm(forms.ModelForm):
     visibility = forms.ChoiceField(
         choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
     )
+    t_trip = forms.ModelChoiceField(TTrip.objects, label="Is this post part of a trip?", required=False)
 
     class Meta:
         model = TEntry
@@ -229,6 +233,8 @@ class UpdateStatusForm(forms.ModelForm):
         self.fields["m_post_status"].initial = self.t_post.m_post_status.key
         self.fields["visibility"].widget.attrs = select_attrs
         self.fields["visibility"].initial = self.t_post.visibility
+        self.fields["t_trip"].widget.attrs = select_attrs
+        self.fields["t_trip"].initial = self.t_post.trips.values_list("pk", flat=True).first()
         self.fields["p_name"].widget.attrs.update({"placeholder": "Title"})
 
         if autofocus:
@@ -258,6 +264,10 @@ class UpdateStatusForm(forms.ModelForm):
         self.t_post.save()
         self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
         self.t_post.streams.set(self.cleaned_data["streams"])
+        if self.cleaned_data["t_trip"]:
+            self.t_post.trips.set([self.cleaned_data["t_trip"]])
+        else:
+            self.t_post.trips.clear()
         return self.instance
 
 
@@ -376,13 +386,6 @@ class UpdateBookmarkForm(UpdateStatusForm):
         t_entry = super().save()
         self.t_bookmark.save()
         return t_entry
-
-
-class LeafletWidget(OSMWidget):
-    template_name = "gis/leaflet.html"
-    default_zoom = 5
-    default_lat = 35.45416667
-    default_lon = 139.16333333
 
 
 class TLocationModelForm(forms.ModelForm):

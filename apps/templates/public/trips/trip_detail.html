@@ -1,0 +1,49 @@
+{%  extends "base_public.html" %}
+{% load static utils %}
+
+{% block breadcrumbs_block %}{% endblock %}
+
+{% block content_wrapper %}
+    <div data-controller="trip-map-detail" class="w-full flex flex-grow-1">
+        <div class="w-full h-screen mr-2">
+            {% with t_trip.t_trip_location.first as start_point %}
+            <div id="map"
+                 class="w-full h-screen"
+                 data-trip-map-detail-target="map"
+                data-start-lon="{{ start_point.point.x }}"
+                data-start-lat="{{ start_point.point.y }}"
+                data-default-zoom="4"
+            ></div>
+            {% endwith %}
+        </div>
+        <div class="w-96 mx-2 h-screen overflow-scroll">
+            <h1 class="text-2xl">Trip to {{ t_trip.name }}</h1>
+            <h2 class="help-text">{{ t_trip.d_start }} ~ {{  t_trip.d_end|default_if_none:"" }}</h2>
+            <p>{{ t_trip.p_summary }}</p>
+            <ul class="pt-2 mr-2">
+            {% for t_post in t_posts %}
+                {% with t_entry=t_post.ref_t_entry %}
+                    <li data-trip-map-detail-target="entry"
+                        data-lat="{{ t_entry.t_location.point.y }}"
+                        data-lon="{{ t_entry.t_location.point.x }}"
+                        class="border-b-2 border-bianca-600 {% if not forloop.first %}py-2 my-2{% endif %}"
+                    >
+                        {% if t_entry.t_post.m_post_kind.key == 'article' %}
+                            {% include "public/entry/article_item.html" with t_post=t_entry.t_post %}
+                        {% elif t_entry.t_post.m_post_kind.key == 'note' %}
+                            {% include "public/entry/note_item.html" with t_post=t_entry.t_post %}
+                        {% elif t_entry.t_post.m_post_kind.key == 'reply' %}
+                            {% include "public/entry/reply_item.html" with t_post=t_entry.t_post t_reply=t_entry.t_reply %}
+                        {% elif t_entry.t_post.m_post_kind.key == 'bookmark' %}
+                            {% include "public/entry/bookmark_item.html" with t_post=t_entry.t_post t_bookmark=t_entry.t_bookmark %}
+                        {% elif t_entry.t_post.m_post_kind.key == 'checkin' %}
+                            {% include "public/entry/checkin_item.html" with t_post=t_entry.t_post t_checkin=t_entry.t_checkin %}
+                        {%endif  %}
+                    </li>
+                    {% endwith %}
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+

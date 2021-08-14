@@ -1,0 +1,39 @@
+{% extends "fragments/content.html" %}
+
+
+{% block breadcrumbs %}
+    <a href="{% url "trips" %}" class="underline">Trips</a>
+{% endblock %}
+
+{% block main %}
+    <ul>
+    {% for t_trip in object_list %}
+        <li class="py-2 my-2 md:w-99">
+            <div class="flex-col">
+                <div class="flex">
+                    <div class="inline-block text-2xl h-auto"></div>
+                    <div class="ml-4 flex-grow">
+                        <header>
+                            <h1 class="text-xl">{{ t_trip.name }}</h1>
+                            <h2 class="help-text">{{ t_trip.d_start }} ~ {{  t_trip.d_end }}</h2>
+                        </header>
+                        <main class="content mt-2">
+                            {{ t_trip.p_summary|truncatechars:"140" }}
+                        </main>
+                        <footer class="flex mt-2 pb-2 border-b-2 border-bianca-600">
+                            <a href="{% url 'trip_edit' t_trip.pk %}"><span class="mr-0.5">✏️</span>edit️</a>
+                            <a href="{% url 'public:trip_detail' t_trip.uuid %}" class="ml-auto"><span class="mr-0.5">🔗</span>permalink</a>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+    {% include "fragments/paging.html" %}
+{% endblock %}
+
+
+{% block meta %}
+    <a href="{% url "trip_create" %}" data-turbo-frame="_top" class="green-button"><span class="mr-1">✈️</span><span class="hover:underline">New Trip</span></a>
+{% endblock %}

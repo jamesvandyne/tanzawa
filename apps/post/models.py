@@ -89,6 +89,10 @@ class TPost(TimestampModel):
         through="streams.TStreamPost",
         through_fields=("t_post", "m_stream"),
     )
+    trips = models.ManyToManyField(
+        "trips.TTrip",
+        through="trips.TTripPost",
+    )
     objects = TPostManager()
 
     class Meta:
