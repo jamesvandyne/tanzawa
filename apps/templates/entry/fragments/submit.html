@@ -13,6 +13,12 @@
         {{ form.visibility }}
     </div>
 </section>
+<section class="mb-2">
+    <div class="mt-2">
+        <div>{{ form.t_trip.label_tag }}</div>
+        {{ form.t_trip }}
+    </div>
+</section>
 {% if form.instance.pk %}
 <section>
     <a href="{% url 'public:post_detail' form.instance.t_post.uuid %}" class="ml-auto btn-link" target="_new">View on site</a>

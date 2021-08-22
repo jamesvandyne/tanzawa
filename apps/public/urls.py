@@ -9,5 +9,7 @@ urlpatterns = [
     path("<uuid:uuid>", views.status_detail, name="post_detail"),
     path("author/<str:username>/", views.AuthorDetail.as_view(), name="author"),
     path("search/", views.SearchView.as_view(), name="search"),
+    path("trips/", views.TripListView.as_view(), name="trips"),
+    path("trips/<uuid:uuid>", views.trip_detail, name="trip_detail"),
     path("<slug:stream_slug>/", views.StreamView.as_view(), name="stream"),
 ]

@@ -1,0 +1,51 @@
+{% extends "fragments/content.html" %}
+
+
+{% block breadcrumbs %}
+    <a href="{% url "trips" %}" class="underline">Trips</a> > {{ page_title }}
+{% endblock %}
+
+{% block main %}
+ <form id="trip" action="" method="POST" class="flex-col" data-turbo="false">
+    {% csrf_token %}
+     {{ form.errors }}
+    <div class="pt-2">
+        {{ form.name.label }}
+        {{ form.name }}
+    </div>
+     <div class="pt-2">
+         When did you go?
+         <div>
+             {{ form.d_start }} ~ {{ form.d_end }}
+        </div>
+         <p class="help-text">Dates are optional, but highly recommended.</p>
+     </div>
+    <div class="pt-2">
+        {{ form.p_summary.label }}
+        <p class="help-text">{{ form.p_summary.help_text }}</p>
+        {{ form.p_summary }}
+    </div>
+
+   {% with named_forms.location as location %}
+    <div class="pt-2">
+        {{ location.point.label }}
+        {% if location.errors %}{{ location.errors }}{% endif %}
+        <div id="startingPoint" class="flex-col" data-controller="leaflet">
+            {% for hidden in location.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <div class="mt-2">
+                {{ location.point }}
+            </div>
+        </div>
+    </div>
+    {% endwith %}
+
+
+</form>
+{% endblock %}
+
+
+{% block meta %}
+    {% include "trips/fragments/submit.html" %}
+{% endblock %}
