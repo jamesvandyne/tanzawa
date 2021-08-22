@@ -289,7 +289,7 @@ class TripListView(ListView):
                 "selected": ["trips"],
                 "streams": MStream.objects.visible(self.request.user),
                 "t_location_points": t_location_points,
-                "title": "Trips"
+                "title": "Trips",
             }
         )
         return context
