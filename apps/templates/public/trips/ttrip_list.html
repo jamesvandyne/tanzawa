@@ -15,7 +15,7 @@
                             <h2 class="help-text">{{ t_trip.d_start }} ~ {{  t_trip.d_end|default_if_none:"" }}</h2>
                         </header>
                         <main class="content flex mt-2">
-                            <p class="w-50">{{ t_trip.p_summary|truncatechars:"140" }}</p>
+                            <p class="w-50">{{ t_trip.p_summary }}</p>
                             <div class="w-96 ml-auto" data-controller="trip-map-list">
                                 <a href="{% url 'public:trip_detail' t_trip.uuid %}" title="See the full trip">
                                 {% with t_trip.t_trip_location.first as start_point %}

@@ -254,7 +254,8 @@ def trip_detail(request, uuid):
     )
     if not request.user.is_authenticated:
         posts = posts.exclude(visibility=Visibility.UNLISTED)
-    context = {"t_trip": t_trip, "t_posts": posts, "selected": ["trips"]}
+    posts = posts.order_by("dt_published")
+    context = {"t_trip": t_trip, "t_posts": posts, "selected": ["trips"], "title": t_trip.name}
     return render(request, "public/trips/trip_detail.html", context=context)
 
 
@@ -288,6 +289,7 @@ class TripListView(ListView):
                 "selected": ["trips"],
                 "streams": MStream.objects.visible(self.request.user),
                 "t_location_points": t_location_points,
+                "title": "Trips",
             }
         )
         return context
