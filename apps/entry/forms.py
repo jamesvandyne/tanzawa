@@ -24,7 +24,7 @@ class TCharField(forms.CharField):
 
 class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
-    e_content = TrixField(required=True)
+    e_content = TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all(),
         to_field_name="key",
@@ -73,7 +73,7 @@ class CreateStatusForm(forms.ModelForm):
         except MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
-        urls = extract_attachment_urls(self.cleaned_data["e_content"])
+        urls = extract_attachment_urls(self.cleaned_data.get("e_content", ""))
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
@@ -90,7 +90,7 @@ class CreateStatusForm(forms.ModelForm):
         )
         soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
         self.instance = TEntry(
-            e_content=self.cleaned_data["e_content"],
+            e_content=self.cleaned_data.get("e_content", ""),
             p_summary=soup.text[:255].strip(),
             p_name=self.cleaned_data.get("p_name", ""),
         )
