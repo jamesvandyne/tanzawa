@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Dict, List
 from django.views.generic import ListView
 from django.db.models import Count, Q, F
 from django.shortcuts import get_object_or_404, render
@@ -278,7 +278,7 @@ class TripListView(ListView):
             .annotate(trip_id=F("t_entry__t_post__trips__pk"))
             .values_list("trip_id", "point")
         )
-        t_location_points = {}
+        t_location_points: Dict[int, List[Point]] = {}
         for trip_id, point in locations:
             points = t_location_points.get(trip_id, [])
             points.append(point)
