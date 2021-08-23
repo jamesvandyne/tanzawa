@@ -8,7 +8,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from entry.models import TEntry, TLocation
 from core.constants import Visibility
-from indieweb.constants import MPostStatuses
+from indieweb.constants import MPostStatuses, MPostKinds
 from post.models import TPost
 from streams.models import MStream
 from trips.models import TTrip
@@ -293,3 +293,15 @@ class TripListView(ListView):
             }
         )
         return context
+
+
+def cluster_map(request):
+
+    posts = TPost.objects.visible_for_user(request.user.id).filter(
+        m_post_status__key=MPostStatuses.published, m_post_kind__key=MPostKinds.checkin
+    )
+    if not request.user.is_authenticated:
+        posts = posts.exclude(visibility=Visibility.UNLISTED)
+    posts = posts.values("uuid", "ref_t_entry__t_checkin__name", "ref_t_entry__t_location__point")
+    context = {"t_posts": posts, "selected": ["maps"], "title": "Checkin Cluster Map"}
+    return render(request, "public/maps/cluster.html", context=context)

@@ -11,5 +11,6 @@ urlpatterns = [
     path("search/", views.SearchView.as_view(), name="search"),
     path("trips/", views.TripListView.as_view(), name="trips"),
     path("trips/<uuid:uuid>", views.trip_detail, name="trip_detail"),
+    path("maps/cluster", views.cluster_map, name="cluster_map"),
     path("<slug:stream_slug>/", views.StreamView.as_view(), name="stream"),
 ]

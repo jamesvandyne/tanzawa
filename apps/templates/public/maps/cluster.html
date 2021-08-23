@@ -1,0 +1,24 @@
+{%  extends "base_public.html" %}
+{% load static utils %}
+
+{% block breadcrumbs_block %}{% endblock %}
+
+{% block content_wrapper %}
+    <div data-controller="cluster-map" class="w-full flex flex-grow-1">
+        <div id="map"
+             class="w-full h-screen"
+             data-cluster-map-target="map"
+        ></div>
+        <ul class="hidden">
+            {% for t_post_dict in t_posts %}
+            <li data-cluster-map-target="entry"
+                data-lat="{{ t_post_dict.ref_t_entry__t_location__point.y }}"
+                data-lon="{{ t_post_dict.ref_t_entry__t_location__point.x }}"
+                data-name="{{ t_post_dict.ref_t_entry__t_checkin__name }}"
+                data-bookmark="{% url 'public:post_detail' t_post_dict.uuid %}"
+            ></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
