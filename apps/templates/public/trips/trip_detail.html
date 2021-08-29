@@ -5,7 +5,7 @@
 
 {% block content_wrapper %}
     <div data-controller="trip-map-detail" class="w-full flex flex-col md:flex-row">
-        <div class="w-full md:h-screen mr-2">
+        <div class="w-full md:h-screen">
             {% with t_trip.t_trip_location.first as start_point %}
             <div id="map"
                  class="w-full h-44  md:h-screen"
@@ -16,11 +16,11 @@
             ></div>
             {% endwith %}
         </div>
-        <div class="w-96 mx-2 h-screen overflow-scroll">
-            <h1 class="text-2xl">Trip to {{ t_trip.name }}</h1>
-            <h2 class="help-text">{{ t_trip.d_start }} ~ {{  t_trip.d_end|default_if_none:"" }}</h2>
-            <p>{{ t_trip.p_summary }}</p>
-            <ul class="pt-2 mr-2">
+        <div class="w-full md:w-96 md:mx-2 h-screen overflow-scroll">
+            <h1 class="text-2xl ml-2 md:ml-0">Trip to {{ t_trip.name }}</h1>
+            <h2 class="help-text ml-2 md:ml-0">{{ t_trip.d_start }} ~ {{  t_trip.d_end|default_if_none:"" }}</h2>
+            <p class="mx-2 md:ml-0">{{ t_trip.p_summary }}</p>
+            <ul class="pt-2 mx-2 md:mx-0">
             {% for t_post in t_posts %}
                 {% with t_entry=t_post.ref_t_entry %}
                     <li data-trip-map-detail-target="entry"

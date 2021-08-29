@@ -1523,6 +1523,16 @@ main.content blockquote {
     height: 100vh;
   }
 
+  .md\:mx-0 {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
+  .md\:mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
   .md\:ml-0 {
     margin-left: 0px;
   }
