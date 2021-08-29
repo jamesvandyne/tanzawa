@@ -819,6 +819,10 @@ video {
   margin-right: 0px;
 }
 
+.ml-0 {
+  margin-left: 0px;
+}
+
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -1481,10 +1485,6 @@ main.content blockquote {
 }
 
 @media (min-width: 640px) {
-  .sm\:hidden {
-    display: none;
-  }
-
   .sm\:flex-col {
     flex-direction: column;
   }
@@ -1507,12 +1507,24 @@ main.content blockquote {
     display: none;
   }
 
+  .md\:flex-row {
+    flex-direction: row;
+  }
+
   .md\:flex-grow {
     flex-grow: 1;
   }
 
   .md\:order-first {
     order: -9999;
+  }
+
+  .md\:h-screen {
+    height: 100vh;
+  }
+
+  .md\:ml-0 {
+    margin-left: 0px;
   }
 
   .md\:ml-auto {
@@ -1525,6 +1537,10 @@ main.content blockquote {
 
   .md\:text-left {
     text-align: left;
+  }
+
+  .md\:w-96 {
+    width: 24rem;
   }
 
   .md\:w-99 {
