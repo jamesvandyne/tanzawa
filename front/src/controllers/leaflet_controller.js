@@ -68,7 +68,6 @@ export default class extends Controller {
     }
 
     searchResultSelected(event) {
-        console.log(event);
         this.resetTarget.classList.remove(["hidden"]);
         this._addMarker(event.marker.getLatLng());
         this.serializePoint(event.marker.getLatLng());
@@ -184,7 +183,34 @@ export default class extends Controller {
         } else {
             this.resetTarget.classList.add(["hidden"]);
         }
-
     }
+
+    async getMyLocation(event) {
+        event.preventDefault();
+        navigator.geolocation.getCurrentPosition(pos => this.getLocationSuccess(pos), (err) => {
+            console.log("Error!");
+        });
+    }
+
+    async getLocationSuccess(position) {
+        const coords = position.coords;
+        const latlng = [coords.latitude, coords.longitude];
+        this._addMarker(latlng);
+        this.serializePoint(latlng);
+        this.resetTarget.classList.remove(["hidden"]);
+        this.map.setView(Object.values(latlng));
+        // lookup closest address to point
+        try {
+            const mapLocation = await this.reverse({lat: latlng[0], lng: latlng[1]});
+            if(mapLocation.length) {
+                this.updateAddressForm(mapLocation[0].raw.address);
+            } else {
+                this.updateAddressForm({});
+            }
+        } catch (e) {
+            this.updateAddressForm({});
+        }
+    }
+
 
 }

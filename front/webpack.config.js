@@ -8,7 +8,7 @@ const adminConfig = {
     path: path.resolve(__dirname, '../static/js/'),
   },
   optimization: {
-    minimize: true,
+    minimize: false,
   }
 };
 
