@@ -5,7 +5,18 @@ import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
 
 export default class extends Controller {
     static get targets() {
-        return ["map", "serialize", "streetAddress", "locality", "region", "country", "postalCode", "reset","remove", "summary"]
+        return ["map",
+                "serialize",
+                "streetAddress",
+                "locality",
+                "region",
+                "country",
+                "postalCode",
+                "reset",
+                "remove",
+                "summary",
+                "currentLocation",
+        ];
     }
 
     connect() {
@@ -149,6 +160,7 @@ export default class extends Controller {
         this.addMarkerFromJson(this.initial_values.point);
         this.updateSummaryText();
         this.resetTarget.classList.add(["hidden"]);
+        this.currentLocationTarget.classList.remove(["hidden"]);
         if(this.initial_values.point) {
             this.removeTarget.classList.remove(["hidden"]);
         } else {
@@ -198,6 +210,7 @@ export default class extends Controller {
         this._addMarker(latlng);
         this.serializePoint(latlng);
         this.resetTarget.classList.remove(["hidden"]);
+        this.currentLocationTarget.classList.add(["hidden"]);
         this.map.setView(Object.values(latlng));
         // lookup closest address to point
         try {
