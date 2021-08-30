@@ -190,6 +190,7 @@ export default class extends Controller {
         event.preventDefault();
 
         this.removeTarget.classList.add(["hidden"]);
+        this.currentLocationTarget.classList.remove(["hidden"]);
         if(this.initial_values.point) {
             this.resetTarget.classList.remove(["hidden"]);
         } else {
