@@ -10,6 +10,7 @@
     <div class="flex mt-2">
         {% if not disabled %}<button class="hidden outline-button text-xs" data-leaflet-target="reset" data-action="click->leaflet#reset">{% translate "Reset" %}</button>{% endif %}
         {% if not disabled %}<button class="hidden px-3 py-1 text-negroni-800 text-xs mr-2" data-leaflet-target="remove" data-action="click->leaflet#removeLocation">{% translate "Remove Location" %}</button>{% endif %}
+        {% if not disabled %}<button class="outline-button text-xs" data-leaflet-target="currentLocation" data-action="click->leaflet#getMyLocation">{% translate "Get My Location" %}</button>{% endif %}
         <span data-leaflet-target="summary" class="help-text ml-auto"></span>
     </div>
     {% if display_raw %}<p>{% translate "Debugging window (serialized value)" %}</p>{% endif %}
