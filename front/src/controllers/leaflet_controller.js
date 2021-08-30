@@ -208,14 +208,15 @@ export default class extends Controller {
     async getLocationSuccess(position) {
         const coords = position.coords;
         const latlng = [coords.latitude, coords.longitude];
+        const latlngDict = {lat: latlng[0], lng: latlng[1]};
         this._addMarker(latlng);
-        this.serializePoint(latlng);
+        this.serializePoint(latlngDict);
         this.resetTarget.classList.remove(["hidden"]);
         this.currentLocationTarget.classList.add(["hidden"]);
         this.map.setView(Object.values(latlng));
         // lookup closest address to point
         try {
-            const mapLocation = await this.reverse({lat: latlng[0], lng: latlng[1]});
+            const mapLocation = await this.reverse(latlngDict);
             if(mapLocation.length) {
                 this.updateAddressForm(mapLocation[0].raw.address);
             } else {
