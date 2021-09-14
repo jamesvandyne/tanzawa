@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from entry.forms import (
     CreateArticleForm,
@@ -17,6 +16,7 @@ from entry.forms import (
     TLocationModelForm,
     TSyndicationModelForm,
 )
+from turbo_response import TurboFrame
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -238,9 +238,13 @@ def review_webmention(request, pk: int, approval: bool):
 
         t_webmention_response.save()
         t_web_mention.save()
-    # TODO: Once we have turbo enabled - add a ajax handler
-
-    return redirect(reverse("post:dashboard"))
+    # import pdb; pdb.set_trace()
+    webmentions = TWebmention.objects.filter(approval_status=None).reverse()
+    context = {
+        "webmentions": webmentions,
+        "unread_count": webmentions.count(),
+    }
+    return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
 
 
 @login_required

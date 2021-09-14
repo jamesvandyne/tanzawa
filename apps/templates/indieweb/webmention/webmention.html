@@ -35,8 +35,8 @@
         </div>
         {% if not public  %}
         <span class="pl-4 inline-block flex-col ml-auto justify-between">
-            <a href="{% url 'indieweb:webmention_approve' t_webmention.id %}" title="Approve webmention" class="text-4xl block">👍</a>
-            <a href="{% url 'indieweb:webmention_disapprove' t_webmention.id %}" title="Disapprove webmention" class="text-4xl block mt-2">👎</a>
+            <a href="{% url 'indieweb:webmention_approve' t_webmention.id %}" title="Approve webmention" class="text-4xl block" data-turbo-frame="webmentions">👍</a>
+            <a href="{% url 'indieweb:webmention_disapprove' t_webmention.id %}" title="Disapprove webmention" class="text-4xl block mt-2" data-turbo-frame="webmentions">👎</a>
         </span>
         {% endif %}
     </div>
