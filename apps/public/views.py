@@ -67,11 +67,11 @@ def status_detail(request, uuid):
             "ref_t_entry__t_checkin",
             "ref_t_entry__t_location",
         )
-        .prefetch_related("streams"),
+        .prefetch_related("streams", "ref_t_entry__t_syndication"),
         uuid=uuid,
     )
     t_entry = t_post.ref_t_entry
-    webmentions = t_post.ref_t_webmention.filter(approval_status=True)
+    webmentions = t_post.ref_t_webmention.filter(approval_status=True).select_related("t_post", "t_webmention_response")
     detail_template = f"public/entry/{t_post.m_post_kind.key}_item.html"
 
     context = {
