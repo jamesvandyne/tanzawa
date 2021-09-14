@@ -238,8 +238,9 @@ def review_webmention(request, pk: int, approval: bool):
 
         t_webmention_response.save()
         t_web_mention.save()
-    # import pdb; pdb.set_trace()
-    webmentions = TWebmention.objects.filter(approval_status=None).reverse()
+    webmentions = (
+        TWebmention.objects.filter(approval_status=None).select_related("t_post", "t_webmention_response").reverse()
+    )
     context = {
         "webmentions": webmentions,
         "unread_count": webmentions.count(),
