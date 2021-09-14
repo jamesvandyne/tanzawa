@@ -23,14 +23,16 @@
                 </a>
             </div>
             <main class="content">
-                <p>{{ mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize|truncatechars_html:140 }}</p>
+                {% with content=mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize %}
+                <p>{% if public %}{{ content|truncatechars_html:1024 }}{% else %}{{ content|truncatechars_html:140 }}{% endif %}</p>
+                {% endwith %}
             </main>
             <div class="flex text-sm pt-1">
                 <div class="mr-auto">
                 {% for type in mention.comment_type %}
                     <span class="rounded-full mr-1 py-0.5 px-1 w-min small border-negroni-700 border border-2 text-negroni-700 font-bold">{{ type }}</span>
                 {% endfor %}
-                <a href="{{ t_webmention.t_post.get_absolute_url }}" target="_blank" class="ml-auto"><span class="help-text">view post</span></a>
+                {% if not public  %}<a href="{{ t_webmention.t_post.get_absolute_url }}" target="_blank" class="ml-auto"><span class="help-text">view post</span></a>{% endif %}
                 </div>
             </div>
         </div>
