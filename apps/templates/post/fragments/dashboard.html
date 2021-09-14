@@ -4,8 +4,10 @@
 {% endblock %}
 
 {% block main %}
+    <turbo-frame id="webmentions">
     {% include "indieweb/fragments/webmentions.html" %}
-    <details {% if drafts %}open{% endif %}>
+    </turbo-frame>
+    <details {% if drafts %}open{% endif %} class="mt-2">
         <summary>Drafts</summary>
         {% include "entry/fragments/post_list.html" with object_list=drafts %}
     </details>

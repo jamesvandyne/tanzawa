@@ -1,7 +1,7 @@
 {% load utils %}
 {% with t_webmention.microformat_data as mention %}
     {% with mention.author.name as author_name %}
-<li class="pt-4">
+<li {% if not forloop.first %}class="pt-4"{% endif %}>
     <div class="flex">
         <div class="flex-col">
             <div class="h-card p-author flex items-center">
