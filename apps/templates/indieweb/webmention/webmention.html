@@ -1,7 +1,7 @@
 {% load utils %}
 {% with t_webmention.microformat_data as mention %}
     {% with mention.author.name as author_name %}
-<li class="pt-4">
+<li {% if not forloop.first %}class="pt-4"{% endif %}>
     <div class="flex">
         <div class="flex-col">
             <div class="h-card p-author flex items-center">
@@ -23,20 +23,23 @@
                 </a>
             </div>
             <main class="content">
-                <p>{{ mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize|truncatechars_html:140 }}</p>
+                {% with content=mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize %}
+                <p>{% if public %}{{ content|truncatechars_html:1024 }}{% else %}{{ content|truncatechars_html:140 }}{% endif %}</p>
+                {% endwith %}
             </main>
             <div class="flex text-sm pt-1">
                 <div class="mr-auto">
                 {% for type in mention.comment_type %}
                     <span class="rounded-full mr-1 py-0.5 px-1 w-min small border-negroni-700 border border-2 text-negroni-700 font-bold">{{ type }}</span>
                 {% endfor %}
+                {% if not public  %}<a href="{{ t_webmention.t_post.get_absolute_url }}" target="_blank" class="ml-auto"><span class="help-text">view post</span></a>{% endif %}
                 </div>
             </div>
         </div>
         {% if not public  %}
         <span class="pl-4 inline-block flex-col ml-auto justify-between">
-            <a href="{% url 'indieweb:webmention_approve' t_webmention.id %}" title="Approve webmention" class="text-4xl block">👍</a>
-            <a href="{% url 'indieweb:webmention_disapprove' t_webmention.id %}" title="Disapprove webmention" class="text-4xl block mt-2">👎</a>
+            <a href="{% url 'indieweb:webmention_approve' t_webmention.id %}" title="Approve webmention" class="text-4xl block" data-turbo-frame="webmentions">👍</a>
+            <a href="{% url 'indieweb:webmention_disapprove' t_webmention.id %}" title="Disapprove webmention" class="text-4xl block mt-2" data-turbo-frame="webmentions">👎</a>
         </span>
         {% endif %}
     </div>
