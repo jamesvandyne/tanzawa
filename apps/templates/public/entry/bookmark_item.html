@@ -25,9 +25,7 @@
         </div>
     </header>
     <main class="e-content mb-2 pt-2 content max-w-prose">
-        <blockquote>
-            {{ t_bookmark.quote|linebreaksbr }}
-        </blockquote>
+        <blockquote>{{ t_bookmark.quote|linebreaksbr }}</blockquote>
         {{ t_entry.e_content|safe }}
     </main>
     {% include "public/fragments/post_footer.html" %}

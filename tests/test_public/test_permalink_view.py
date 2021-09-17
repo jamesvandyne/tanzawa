@@ -60,7 +60,13 @@ class TestReplyRendering:
                         "value": "James",
                     }
                 ],
-                "content": [{"html": "<h1>Content here</h1>", "value": "Content here"}],
+                "content": [
+                    {
+                        "html": "<blockquote>I started working on replies in Tanzawa.</blockquote>\n"
+                        "        <h1>Content here</h1>",
+                        "value": "I started working on replies in Tanzawa. Content here",
+                    }
+                ],
                 "url": ["http://testserver/90a0027d-9c74-44e8-895c-6d5611f8eca5"],
             },
         }
@@ -129,7 +135,13 @@ class TestBookmarkRendering:
                         "value": "James",
                     }
                 ],
-                "content": [{"html": "<h1>Content here</h1>", "value": "Content here"}],
+                "content": [
+                    {
+                        "html": "<blockquote>I started working on replies in Tanzawa.</blockquote>\n"
+                        "        <h1>Content here</h1>",
+                        "value": "I started working on replies in Tanzawa. Content here",
+                    }
+                ],
                 "url": ["http://testserver/90a0027d-9c74-44e8-895c-6d5611f8eca5"],
             },
         }
