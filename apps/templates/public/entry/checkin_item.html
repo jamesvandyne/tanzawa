@@ -5,14 +5,13 @@
 <div class="flex-col h-entry">
     <header>
         <h1 class="p-name text-2xl">
-            Checkin to
-            <span class="u-checkin h-card">
-                <a href="{{ t_checkin.url }}" class="p-name u-url">{{ t_checkin.name }}</a>
-                <data class="hidden p-latitude">{{ t_entry.t_location.point.y }}</data>
-                <data class="hidden p-longitude">{{ t_entry.t_location.point.x }}</data>
-                </span>
-            </span>
+            Checkin to <a href="{{ t_checkin.url }}">{{ t_checkin.name }}</a>
         </h1>
+        <span class="u-checkin h-card hidden">
+            <a href="{{ t_checkin.url }}" class="p-name u-url">{{ t_checkin.name }}</a>
+            <data class="p-latitude">{{ t_entry.t_location.point.y }}</data>
+            <data class="p-longitude">{{ t_entry.t_location.point.x }}</data>
+        </span>
         <div>
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
             {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
