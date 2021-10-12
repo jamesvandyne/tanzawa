@@ -57,6 +57,8 @@ class AllEntriesFeed(Feed):
         )
 
     def item_title(self, item: TPost):
+        if item.m_post_kind.key in (MPostKinds.checkin, MPostKinds.note):
+            return None
         return item.post_title
 
     def item_description(self, item: TPost):
@@ -75,6 +77,8 @@ class AllEntriesFeed(Feed):
                 f">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
                 f"<blockquote>{t_bookmark.quote}</blockquote>{e_content}"
             )
+        elif item.m_post_kind.key == MPostKinds.checkin:
+            e_content = f"{item.post_title}<br/>{e_content}"
         try:
             e_content = f"{e_content}<br/>Location: {t_entry.t_location.summary}"
         except TLocation.DoesNotExist:
