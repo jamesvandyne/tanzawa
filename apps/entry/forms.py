@@ -151,7 +151,9 @@ class CreateReplyForm(CreateStatusForm):
         self.fields["e_content"].label = "My Response"
         self.t_reply: Optional[TReply] = None
         for key, val in self.initial.items():
-            if not val:
+            if val:
+                continue
+            if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
@@ -337,7 +339,9 @@ class CreateBookmarkForm(CreateStatusForm):
         self.fields["e_content"].label = "Comment"
         self.t_bookmark: Optional[TBookmark] = None
         for key, val in self.initial.items():
-            if not val:
+            if val:
+                continue
+            if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
