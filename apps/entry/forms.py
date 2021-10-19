@@ -25,7 +25,7 @@ class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -151,7 +151,9 @@ class CreateReplyForm(CreateStatusForm):
         self.fields["e_content"].label = "My Response"
         self.t_reply: Optional[TReply] = None
         for key, val in self.initial.items():
-            if not val:
+            if val:
+                continue
+            if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
@@ -197,7 +199,7 @@ class UpdateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -337,7 +339,9 @@ class CreateBookmarkForm(CreateStatusForm):
         self.fields["e_content"].label = "Comment"
         self.t_bookmark: Optional[TBookmark] = None
         for key, val in self.initial.items():
-            if not val:
+            if val:
+                continue
+            if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
     def prepare_data(self):
@@ -480,7 +484,7 @@ TSyndicationModelInlineFormSet = forms.inlineformset_factory(
 
 class PublishStatusVisibilityForm(forms.Form):
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
