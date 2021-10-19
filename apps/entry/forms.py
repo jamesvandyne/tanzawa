@@ -25,7 +25,7 @@ class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -197,7 +197,7 @@ class UpdateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -480,7 +480,7 @@ TSyndicationModelInlineFormSet = forms.inlineformset_factory(
 
 class PublishStatusVisibilityForm(forms.Form):
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all(),
+        MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
