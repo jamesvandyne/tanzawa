@@ -33,6 +33,14 @@
 
                     <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-negroni-900{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
                     <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-negroni-900{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
+                    {% for plugin in request.plugins %}
+                        {% if plugin.has_public_top_nav %}
+                            <span class="ml-2 leading-8 hidden md:inline-block">
+                            {{ plugin.public_top_nav_icon }}
+                            {{ plugin.public_top_nav_content }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
                             <div class="w-8 bg-negroni-700 h-1"></div>
