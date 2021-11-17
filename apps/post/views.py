@@ -1,9 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from entry.models import TEntry
 from indieweb.models import TWebmention
 
 from .models import TPost
-from entry.models import TEntry
 
 
 @login_required

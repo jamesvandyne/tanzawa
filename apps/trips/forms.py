@@ -1,9 +1,8 @@
+from core.constants import VISIBILITY_CHOICES, Visibility
+from core.forms import LeafletWidget, TCharField, TDateField, TTextArea
 from django import forms
 from django.contrib.gis.forms import PointField
 from django.utils.timezone import now
-from core.constants import VISIBILITY_CHOICES, Visibility
-
-from core.forms import TCharField, TDateField, TTextArea, LeafletWidget
 from trips.models import TTrip, TTripLocation
 
 

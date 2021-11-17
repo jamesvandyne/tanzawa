@@ -24,3 +24,4 @@ types-pytz==0.1.0
 types-requests==0.1.9
 typing-extensions==3.7.4.3
 mkdocs==1.2.2
+isort==5.7.0

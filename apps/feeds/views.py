@@ -1,13 +1,13 @@
+from core.constants import Visibility
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
-from post.models import TPost
-from streams.models import MStream
-from core.constants import Visibility
 from entry.models import TLocation
 from indieweb.constants import MPostKinds, MPostStatuses
+from post.models import TPost
 from settings.models import MSiteSettings
+from streams.models import MStream
 
 
 class ExtendedRSSFeed(Rss201rev2Feed):

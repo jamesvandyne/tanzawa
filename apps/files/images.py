@@ -1,11 +1,11 @@
 import io
 import mimetypes
 from pathlib import Path
-from typing import Tuple, Union, Optional
+from typing import Optional, Tuple, Union
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image, ImageOps
 from django.utils.timezone import now
+from PIL import Image, ImageOps
 
 from .models import TFile
 

@@ -1,16 +1,17 @@
-from typing import Dict, Any, Optional
-from django.db import transaction
+from typing import Any, Dict, Optional
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
-from django.urls import reverse
-from django.views.generic import ListView, CreateView, UpdateView, FormView
-from indieweb.constants import MPostStatuses, MPostKinds
-from indieweb.webmentions import send_webmention
+from django.views.generic import CreateView, FormView, ListView, UpdateView
+from indieweb.constants import MPostKinds, MPostStatuses
 from indieweb.extract import extract_reply_details_from_url
+from indieweb.webmentions import send_webmention
 from post.models import MPostKind
 from turbo_response import TurboFrame, redirect_303
 

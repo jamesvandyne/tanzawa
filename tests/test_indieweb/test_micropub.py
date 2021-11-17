@@ -1,9 +1,9 @@
-from typing import Dict, Any
+from typing import Any, Dict
 from unittest.mock import Mock
 
 import pytest
 from core.constants import Visibility
-from entry.models import TEntry, TReply, TBookmark, TLocation, TCheckin
+from entry.models import TBookmark, TCheckin, TEntry, TLocation, TReply
 from post.models import TPost
 
 
@@ -415,7 +415,7 @@ class TestMicropub:
 
     @pytest.fixture
     def download_image_mock(self, monkeypatch):
-        from indieweb.utils import download_image, DataImage
+        from indieweb.utils import DataImage, download_image
 
         m = Mock(download_image, autospec=True)
         with open("tests/fixtures/1px.png", "rb") as photo:

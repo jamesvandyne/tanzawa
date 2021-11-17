@@ -1,7 +1,8 @@
 import uuid
 
-from django.db import models
 from core.models import TimestampModel
+from django.db import models
+
 from .upload import wordpress_upload_to
 
 

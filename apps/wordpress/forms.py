@@ -1,23 +1,22 @@
 from typing import List
 from urllib.parse import urlparse
+
+from bs4 import BeautifulSoup
 from django import forms
 from django.db import transaction
-from bs4 import BeautifulSoup
-
 from post.models import TPost
+from streams.forms import StreamModelChoiceField
+from streams.models import MStream
 
+from .extract import extract_categories, extract_post_format, extract_post_kind
 from .models import (
-    TWordpress,
     TCategory,
     TPostFormat,
     TPostKind,
+    TWordpress,
     TWordpressAttachment,
     TWordpressPost,
 )
-from .extract import extract_categories, extract_post_kind, extract_post_format
-
-from streams.models import MStream
-from streams.forms import StreamModelChoiceField
 
 
 class WordpressUploadForm(forms.ModelForm):

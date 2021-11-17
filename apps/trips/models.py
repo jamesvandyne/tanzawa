@@ -1,11 +1,12 @@
-from typing import Optional
 import uuid
-from django.db import models
+from typing import Optional
+
+from core.constants import VISIBILITY_CHOICES, Visibility
+from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as geo_models
+from django.db import models
 from django.urls import reverse
-from core.constants import Visibility, VISIBILITY_CHOICES
-from core.models import TimestampModel
 
 
 class TTripManager(models.Manager):

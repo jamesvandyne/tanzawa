@@ -1,10 +1,10 @@
 from django.contrib import admin
 
 from .models import (
-    TWordpress,
-    TPostKind,
     TCategory,
     TPostFormat,
+    TPostKind,
+    TWordpress,
     TWordpressAttachment,
     TWordpressPost,
 )
