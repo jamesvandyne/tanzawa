@@ -1,20 +1,17 @@
-from django.conf import settings
-from django.utils import module_loading
+from .core import plugin_pool
 
 
 class PluginMiddleware:
-
+    """
+    Makes the plugin pool available on the request.
+    """
     def __init__(self, get_response):
         self.get_response = get_response
-        self.plugins = []
-        # init each plugin
-        for plugin_path in settings.PLUGINS:
-            plugin = module_loading.import_string(plugin_path)
-            self.plugins.append(plugin.get_plugin())
+        self.plugins = plugin_pool.get_all_plugins()
 
     def __call__(self, request):
         # Store the plugins on the request object so we can access them when rendering.
-        request.plugins = self.plugins
+        request.plugin_pool = plugin_pool
         response = self.get_response(request)
 
         # TODO: Add post response hooks to plugin

@@ -1,0 +1,21 @@
+{% extends "fragments/content.html" %}
+
+{% block main %}
+    <ul>
+    {% for plugin in available_plugins %}
+        <li class="flex {% if not forloop.last %}border-bottom{% endif %}">
+            <div class="">
+            {% if plugin.is_enabled %}
+                <a class="outline-button text-xs" href="{% url 'plugins:plugin_disable' plugin.identifier %}">Disable</a>
+            {% else %}
+                <a href="{% url 'plugins:plugin_enable' plugin.identifier %}" class="outline-button text-xs">Enable</a>
+            {% endif %}
+            </div>
+            <div class="flex-col ml-2">
+                <h1 class="text-xl">{{ plugin.name }}</h1>
+                <p class="mt-2">{{ plugin.description }}</p>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

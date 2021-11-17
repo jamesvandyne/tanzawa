@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-
+from plugins.core import plugin_pool
 urlpatterns = [
     path("a/", include("entry.urls")),
     path("a/", include("post.urls", namespace="post")),
     path("a/", include("files.admin_urls")),
     path("a/", include("trips.urls")),
+    path("a/", include("plugins.urls")),
     path("a/wordpress/", include("wordpress.urls", namespace="wordpress")),
     path("a/", include("indieweb.urls", namespace="indieweb")),
     path("files/", include("files.urls")),
@@ -31,8 +32,17 @@ urlpatterns = [
     path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
-    path("", include("public.urls", namespace="public")),
 ]
+
+# Include any plugin urls after core urls.
+plugin_urls = [path("", include(plugin_urls)) for plugin_urls in plugin_pool.urls()]
+urlpatterns.extend(plugin_urls)
+
+# Public urls are last so "slug-like" urls in plugins are not matched to the stream-list view.
+urlpatterns.append(
+    path("", include("public.urls", namespace="public")),
+)
+
 
 handler404 = views.handle404
 
