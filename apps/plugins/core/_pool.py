@@ -1,9 +1,7 @@
 from operator import attrgetter
-
 from typing import Iterable
+
 from django.utils.module_loading import autodiscover_modules
-
-
 from plugins.application import activation
 from plugins.core import Plugin
 from plugins.models import MPlugin

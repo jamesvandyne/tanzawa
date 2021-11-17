@@ -1,7 +1,6 @@
-from plugins.core import plugin_pool
-
-from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.shortcuts import redirect, render
+from plugins.core import plugin_pool
 
 
 def plugin_list(request):

@@ -5,6 +5,7 @@ class PluginMiddleware:
     """
     Makes the plugin pool available on the request.
     """
+
     def __init__(self, get_response):
         self.get_response = get_response
         self.plugins = plugin_pool.get_all_plugins()

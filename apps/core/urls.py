@@ -16,9 +16,10 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from plugins.core import plugin_pool
 
 from . import views
-from plugins.core import plugin_pool
+
 urlpatterns = [
     path("a/", include("entry.urls")),
     path("a/", include("post.urls", namespace="post")),

@@ -1,8 +1,9 @@
-import sys
 import importlib
-from plugins.core import Plugin
-from django.urls import clear_url_caches
+import sys
+
 from django.conf import settings
+from django.urls import clear_url_caches
+from plugins.core import Plugin
 
 
 def _reload_urlconf(urlconf=None):

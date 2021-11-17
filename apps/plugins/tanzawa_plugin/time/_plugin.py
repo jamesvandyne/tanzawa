@@ -1,6 +1,5 @@
-from plugins.core import Plugin
-
 from django.utils import timezone
+from plugins.core import Plugin
 
 
 class CurrentTimePlugin(Plugin):

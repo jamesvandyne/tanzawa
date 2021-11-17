@@ -1,6 +1,7 @@
 from abc import abstractmethod
-from typing import Protocol, Optional
 from enum import Enum
+from typing import Optional, Protocol
+
 from plugins.models import MPlugin
 
 
