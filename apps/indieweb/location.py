@@ -1,7 +1,8 @@
 import json
-from typing import Dict, Any, Union
-from mf2util import string_type, LOCATION_PROPERTIES
+from typing import Any, Dict, Union
+
 from django.contrib.gis.geos import Point
+from mf2util import LOCATION_PROPERTIES, string_type
 
 
 # TODO: Refactor to pass too complex (11)

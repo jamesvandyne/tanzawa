@@ -1,14 +1,14 @@
 from datetime import datetime
-from typing import Dict, List, Tuple, Union, Optional
-from bs4 import BeautifulSoup
+from typing import Dict, List, Optional, Tuple, Union
+
 import phpserialize
-from django.utils.timezone import make_aware
 import pytz
+from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
+from django.utils.timezone import make_aware
+from entry.models import TEntry
 from indieweb.extract import LinkedPage, LinkedPageAuthor
 from post.models import MPostStatuses
-
-from entry.models import TEntry
 
 
 def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:

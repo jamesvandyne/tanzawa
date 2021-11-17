@@ -1,18 +1,18 @@
-from typing import Union, Dict, List
-from django.views.generic import ListView
-from django.db.models import Count, Q, F
+from typing import Dict, List, Union
+
+from core.constants import Visibility
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
+from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, render
 from django.utils.functional import cached_property
 from django.utils.timezone import now
-from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
+from django.views.generic import ListView
 from entry.models import TEntry, TLocation
-from core.constants import Visibility
-from indieweb.constants import MPostStatuses, MPostKinds
+from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import TPost
 from streams.models import MStream
 from trips.models import TTrip
-
 
 from .forms import SearchForm
 

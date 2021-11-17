@@ -1,9 +1,9 @@
 import json
 
 from bs4 import BeautifulSoup
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q
-from django.urls import reverse_lazy
 from django.http import (
     FileResponse,
     HttpResponse,
@@ -12,12 +12,12 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, DeleteView
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import DeleteView, DetailView, ListView
 from PIL import Image
-from turbo_response.mixins import TurboFrameTemplateResponseMixin, HttpResponseSeeOther
+from turbo_response.mixins import HttpResponseSeeOther, TurboFrameTemplateResponseMixin
 
 from .constants import PICTURE_FORMATS
 from .forms import MediaUploadForm

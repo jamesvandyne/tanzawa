@@ -6,8 +6,8 @@ from django import forms
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from .images import rotate_image
 from .exif import extract_exif, get_location, scrub_exif
+from .images import rotate_image
 from .models import TFile
 
 

@@ -1,18 +1,19 @@
+from typing import Dict, Optional
 from urllib.parse import urlparse
-from typing import Optional, Dict
+
 from core.constants import Visibility
+from django.core.validators import URLValidator
 from django.db import transaction
 from django.urls import reverse
-from django.core.validators import URLValidator
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
 from streams.models import MStream
 
 from . import constants
-from .models import TToken
 from .extract import extract_reply_details_from_url
 from .location import get_location
-from .utils import download_image, DataImage
+from .models import TToken
+from .utils import DataImage, download_image
 
 
 class ContentField(serializers.Field):

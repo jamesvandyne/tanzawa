@@ -2,23 +2,22 @@ from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from core.constants import VISIBILITY_CHOICES, Visibility
+from core.forms import LeafletWidget, TCharField
 from django import forms
-from django.db import transaction
 from django.contrib.gis.forms import PointField
+from django.db import transaction
 from django.utils.timezone import now
-
-from core.forms import TCharField, LeafletWidget
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import MPostKind, MPostStatus, TPost
+from streams.forms import StreamModelMultipleChoiceField
+from streams.models import MStream
+from trips.models import TTrip
 from trix.forms import TrixField
 from trix.utils import extract_attachment_urls
-from streams.models import MStream
-from streams.forms import StreamModelMultipleChoiceField
-from trips.models import TTrip
 
-from .models import TEntry, TReply, TBookmark, TLocation, TCheckin, TSyndication
+from .models import TBookmark, TCheckin, TEntry, TLocation, TReply, TSyndication
 
 
 class CreateStatusForm(forms.ModelForm):

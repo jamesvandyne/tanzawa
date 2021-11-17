@@ -1,5 +1,6 @@
-from typing import Dict, Any
 import logging
+from typing import Any, Dict
+
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -16,27 +17,26 @@ from entry.forms import (
     TLocationModelForm,
     TSyndicationModelForm,
 )
-from turbo_response import TurboFrame
+from files.forms import MediaUploadForm
 from rest_framework import status
+from rest_framework.authentication import get_authorization_header
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.authentication import get_authorization_header
-from files.forms import MediaUploadForm
+from turbo_response import TurboFrame
 
-
-from .forms import IndieAuthAuthorizationForm
-from .models import TWebmention
 from .constants import MPostStatuses
+from .forms import IndieAuthAuthorizationForm
 from .location import location_to_pointfield_input
-from .webmentions import send_webmention
-from .utils import extract_base64_images, save_and_get_tag, render_attachment
+from .models import TWebmention
 from .serializers import (
-    MicropubSerializer,
     IndieAuthAuthorizationSerializer,
+    IndieAuthTokenRevokeSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
-    IndieAuthTokenRevokeSerializer,
+    MicropubSerializer,
 )
+from .utils import extract_base64_images, render_attachment, save_and_get_tag
+from .webmentions import send_webmention
 
 logger = logging.getLogger(__name__)
 

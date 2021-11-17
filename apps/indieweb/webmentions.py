@@ -4,8 +4,9 @@ import ronkyuu
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.utils.timezone import now
-from post.models import TPost
 from indieweb.constants import MPostKinds
+from post.models import TPost
+
 from .models import TWebmentionSend
 
 

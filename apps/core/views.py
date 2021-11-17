@@ -1,10 +1,8 @@
 from typing import Optional
 
-from django.http import HttpResponsePermanentRedirect, HttpResponseNotFound
+from django.http import HttpResponseNotFound, HttpResponsePermanentRedirect
 from django.urls import reverse
-
-
-from wordpress.models import TWordpressPost, TCategory
+from wordpress.models import TCategory, TWordpressPost
 
 
 def handle404(request, exception):

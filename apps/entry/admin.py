@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TEntry, TReply, TLocation, TCheckin, TBookmark, TSyndication
+from .models import TBookmark, TCheckin, TEntry, TLocation, TReply, TSyndication
 
 admin.site.register(TEntry)
 admin.site.register(TReply)

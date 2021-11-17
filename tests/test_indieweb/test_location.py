@@ -1,4 +1,5 @@
 import json
+
 import pytest
 from django.contrib.gis.geos import Point
 

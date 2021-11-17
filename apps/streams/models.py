@@ -1,6 +1,6 @@
-from django.db import models
+from core.constants import VISIBILITY_CHOICES, Visibility
 from core.models import TimestampModel
-from core.constants import Visibility, VISIBILITY_CHOICES
+from django.db import models
 
 
 class MStreamManager(models.Manager):

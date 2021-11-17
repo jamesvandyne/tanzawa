@@ -17,3 +17,4 @@ flake8
 black
 django-debug-toolbar
 mkdocs
+isort

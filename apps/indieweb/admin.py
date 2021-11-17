@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import MMicropubScope, TToken, TWebmention, TWebmentionSend, TTokenMicropubScope
+from .models import (
+    MMicropubScope,
+    TToken,
+    TTokenMicropubScope,
+    TWebmention,
+    TWebmentionSend,
+)
 
 
 class TWebmentionSendAdmin(admin.ModelAdmin):

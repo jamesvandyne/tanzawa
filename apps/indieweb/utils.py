@@ -1,15 +1,18 @@
+import base64
 import json
+import logging
 import re
-import requests
 from dataclasses import dataclass
 from itertools import chain
-import logging
-from PIL import Image
-from bs4.element import Tag
 from typing import List, Optional, Union
-import base64
-from django.template.loader import render_to_string
+
+import requests
 from bs4 import BeautifulSoup
+from bs4.element import Tag
+from django.template.loader import render_to_string
+from files.forms import MediaUploadForm
+from files.images import bytes_as_upload_image
+from files.models import TFile
 from mf2util import (
     _find_all_entries,
     classify_comment,
@@ -17,10 +20,7 @@ from mf2util import (
     interpret_entry,
     parse_author,
 )
-from files.forms import MediaUploadForm
-from files.models import TFile
-from files.images import bytes_as_upload_image
-
+from PIL import Image
 
 IMG_DATA_PATTERN = re.compile(r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$")
 
