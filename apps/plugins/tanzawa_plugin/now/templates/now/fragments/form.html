@@ -1,0 +1,22 @@
+{% extends "fragments/content.html" %}
+
+
+{% block breadcrumbs %}
+    <a href="{% url "plugins:plugin_list" %}" class="underline">Plugins</a> > {{ page_title }}
+{% endblock %}
+
+{% block main %}
+ <form id="now" action="{% url "plugin_now_admin:update_now" %}" method="POST" class="flex-col" data-turbo="false">
+    {% csrf_token %}
+     {{ form.errors }}
+    <div class="{% if form.errors %}pt-2{% endif %}">
+        {{ form.content.label }}
+        {{ form.content }}
+    </div>
+</form>
+{% endblock %}
+
+
+{% block meta %}
+    {% include "now/fragments/submit.html" %}
+{% endblock %}
