@@ -1,26 +1,9 @@
 import importlib
 import pathlib
 from abc import abstractmethod
-from enum import Enum
 from typing import Optional, Protocol, TypeVar
 
 from plugins.models import MPlugin
-
-
-class DisplaySize(Enum):
-
-    X_SMALL = "xsmall"
-    SMALL = "small"
-    REGULAR = "regular"
-    LARGE = "large"
-    X_LARGE = "xlarge"
-
-
-class Slot(Enum):
-    TOP = "top"
-    LEFT = "left"
-    RIGHT = "right"
-    BOTTOM = "bottom"
 
 
 class Plugin(Protocol):
@@ -30,8 +13,6 @@ class Plugin(Protocol):
     description: str
     # A unique namespaced identifier for the plugin
     identifier: str
-    default_size: DisplaySize = DisplaySize.REGULAR
-    default_slot = Slot.TOP
 
     @property
     def public_has_top_nav(self) -> bool:
