@@ -4,6 +4,7 @@ from django.db import models
 
 class TNow(TimestampModel):
     content = models.TextField(blank=True, default="", help_text="What are you focusing on _now_?")
+    files = models.ManyToManyField("files.TFile", through="TFileNow")
 
     class Meta:
         verbose_name = "Now"
