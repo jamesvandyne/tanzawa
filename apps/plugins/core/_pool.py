@@ -3,8 +3,9 @@ from typing import Iterable
 
 from django.utils.module_loading import autodiscover_modules
 from plugins.application import activation
-from plugins.core import Plugin
 from plugins.models import MPlugin
+
+from .plugin import Plugin
 
 
 class PluginPool:
@@ -84,6 +85,14 @@ class PluginPool:
         for plugin in self.enabled_plugins():
             if plugin.urls:
                 yield plugin.urls
+
+    def admin_urls(self) -> Iterable[str]:
+        """
+        Yields the import path to admin_urls.py for each enabled plugin.
+        """
+        for plugin in self.enabled_plugins():
+            if plugin.admin_urls:
+                yield plugin.admin_urls
 
     def enabled_plugins(self) -> Iterable[Plugin]:
         """

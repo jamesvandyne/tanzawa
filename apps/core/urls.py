@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from django.utils import text
 from plugins.core import plugin_pool
 
 from . import views
@@ -38,6 +39,13 @@ urlpatterns = [
 # Include any plugin urls after core urls.
 plugin_urls = [path("", include(plugin_urls)) for plugin_urls in plugin_pool.urls()]
 urlpatterns.extend(plugin_urls)
+
+plugin_admin_urls = [
+    path(f"a/plugins/{text.slugify(plugin.name)}/", include(plugin.admin_urls))
+    for plugin in plugin_pool.enabled_plugins()
+    if plugin.admin_urls
+]
+urlpatterns.extend(plugin_admin_urls)
 
 # Public urls are last so "slug-like" urls in plugins are not matched to the stream-list view.
 urlpatterns.append(

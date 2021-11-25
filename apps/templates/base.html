@@ -43,6 +43,8 @@
                     <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "posts" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✏️</span><span>Posts</span></a></li>
                     <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
                     <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
+                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugins:plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
+
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
                  <div data-reveal-target="item" class="mb-2 hidden md:hidden mt-2">
@@ -57,6 +59,7 @@
                     <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "posts" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✏️</span><span>Posts</span></a></li>
                     <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
                     <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
+                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugins:plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>

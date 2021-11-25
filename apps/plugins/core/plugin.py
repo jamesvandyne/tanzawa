@@ -1,6 +1,8 @@
+import importlib
+import pathlib
 from abc import abstractmethod
 from enum import Enum
-from typing import Optional, Protocol
+from typing import Optional, Protocol, TypeVar
 
 from plugins.models import MPlugin
 
@@ -49,7 +51,8 @@ class Plugin(Protocol):
     def is_enabled(self) -> bool:
         return MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first() or False
 
-    def _plugin_module(self) -> str:
+    @property
+    def plugin_module(self) -> str:
         """Return the python module path to the plugin's module"""
         return ".".join(self.__module__.split(".")[:-1])
 
@@ -57,9 +60,22 @@ class Plugin(Protocol):
     def urls(self) -> Optional[str]:
         """Return the path to the _public_ url configuration for a plugin"""
         # TODO: Make this check for a urls.py and return None if not exists
-        return f"{self._plugin_module()}.urls"
+        return f"{self.plugin_module}.urls"
 
     @property
     def admin_urls(self) -> Optional[str]:
         """Return the path to the _admin_ url configuration for a plugin"""
-        return f"{self._plugin_module()}.admin_urls"
+        return f"{self.plugin_module}.admin_urls"
+
+    @property
+    def has_migrations(self):
+        """Check if a plugin has migration directory.
+
+        Uses pathlib instead of importlib to avoid importing modules.
+        """
+
+        migration_module = pathlib.Path(importlib.util.find_spec(self.__module__).origin).parent / "migrations"
+        return migration_module.is_dir()
+
+
+TanzawaPlugin = TypeVar("TanzawaPlugin", bound=Plugin)
