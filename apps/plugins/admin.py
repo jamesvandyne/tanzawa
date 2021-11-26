@@ -1,3 +1,3 @@
-from .core import plugin_pool
+from .pool import plugin_pool
 
 plugin_pool.discover_plugins()

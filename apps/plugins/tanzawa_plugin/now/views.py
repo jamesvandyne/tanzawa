@@ -42,7 +42,7 @@ class PublicViewNow(generic.TemplateView):
 
         self.now: Optional[models.TNow] = models.TNow.objects.first()
         if not self.now:
-            self.now: models.TNow = models.TNow.objects.create()
+            self.now = models.TNow.objects.create()
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

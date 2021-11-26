@@ -1,19 +1,13 @@
-import importlib
+import abc
 import pathlib
 from abc import abstractmethod
-from typing import Optional, Protocol, TypeVar
+from importlib import util as importlib_util
+from typing import Optional, Protocol
 
 from plugins.models import MPlugin
 
 
-class Plugin(Protocol):
-    """"""
-
-    name: str
-    description: str
-    # A unique namespaced identifier for the plugin
-    identifier: str
-
+class TopNavProtocol(Protocol):
     @property
     def public_has_top_nav(self) -> bool:
         """Does this plugin have public facing top nav?"""
@@ -28,6 +22,13 @@ class Plugin(Protocol):
     def public_top_nav_content(self) -> str:
         """Return html to be output on the page after the top nav icon"""
         raise NotImplementedError
+
+
+class Plugin(abc.ABC, TopNavProtocol):
+    name: str
+    description: str
+    # A unique namespaced identifier for the plugin
+    identifier: str
 
     def is_enabled(self) -> bool:
         return MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first() or False
@@ -49,14 +50,14 @@ class Plugin(Protocol):
         return f"{self.plugin_module}.admin_urls"
 
     @property
-    def has_migrations(self):
+    def has_migrations(self) -> bool:
         """Check if a plugin has migration directory.
 
         Uses pathlib instead of importlib to avoid importing modules.
         """
+        module_spec = importlib_util.find_spec(self.__module__)
+        if not module_spec or not module_spec.origin:
+            return False
 
-        migration_module = pathlib.Path(importlib.util.find_spec(self.__module__).origin).parent / "migrations"
+        migration_module = pathlib.Path(module_spec.origin).parent / "migrations"
         return migration_module.is_dir()
-
-
-TanzawaPlugin = TypeVar("TanzawaPlugin", bound=Plugin)

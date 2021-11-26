@@ -1,10 +1,10 @@
-from plugins import core
+from plugins import plugin, pool
 
 __description__ = "Give your site a now page."
 __identifier__ = "blog.tanzawa.plugins.nowpage"
 
 
-class NowPlugin(core.Plugin):
+class NowPlugin(plugin.Plugin):
     """Give your site a now page."""
 
     name = "Now"
@@ -24,8 +24,8 @@ class NowPlugin(core.Plugin):
         return "Now"
 
 
-def get_plugin() -> core.TanzawaPlugin:
+def get_plugin() -> plugin.Plugin:
     return NowPlugin()
 
 
-core.plugin_pool.register_plugin(get_plugin())
+pool.plugin_pool.register_plugin(get_plugin())

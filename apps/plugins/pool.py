@@ -4,8 +4,7 @@ from typing import Iterable
 from django.utils.module_loading import autodiscover_modules
 from plugins.application import activation
 from plugins.models import MPlugin
-
-from .plugin import Plugin
+from plugins.plugin import Plugin
 
 
 class PluginPool:
