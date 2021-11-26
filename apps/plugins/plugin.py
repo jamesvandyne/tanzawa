@@ -39,6 +39,14 @@ class Plugin(abc.ABC, TopNavProtocol):
         return ".".join(self.__module__.split(".")[:-1])
 
     @property
+    def settings_url(self) -> str:
+        """The main URL for configuring the plugin.
+
+        Plugins that do not provide any configuration via the admin should return a blank string.
+        """
+        return ""
+
+    @property
     def urls(self) -> Optional[str]:
         """Return the path to the _public_ url configuration for a plugin"""
         # TODO: Make this check for a urls.py and return None if not exists

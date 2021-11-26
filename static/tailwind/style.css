@@ -635,10 +635,6 @@ video {
   border-bottom-width: 2px;
 }
 
-.border-l-2 {
-  border-left-width: 2px;
-}
-
 .border-b-4 {
   border-bottom-width: 4px;
 }
@@ -693,6 +689,10 @@ video {
 
 .self-center {
   align-self: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
 }
 
 .justify-center {
@@ -815,10 +815,6 @@ video {
   margin-right: auto;
 }
 
-.mt-0 {
-  margin-top: 0px;
-}
-
 .mr-0 {
   margin-right: 0px;
 }
@@ -865,10 +861,6 @@ video {
 
 .mt-4 {
   margin-top: 1rem;
-}
-
-.mb-4 {
-  margin-bottom: 1rem;
 }
 
 .ml-4 {

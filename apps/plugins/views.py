@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import redirect, render
+from django.views.decorators import http
 from plugins import pool
 
 
@@ -15,6 +16,7 @@ def plugin_list(request):
 
 
 @auth_decorators.login_required
+@http.require_POST
 def enable_plugin(request, identifier: str):
     plugin = pool.plugin_pool.get_plugin(identifier)
     if not plugin:
@@ -26,6 +28,7 @@ def enable_plugin(request, identifier: str):
 
 
 @auth_decorators.login_required
+@http.require_POST
 def disable_plugin(request, identifier: str):
     plugin = pool.plugin_pool.get_plugin(identifier)
     if not plugin:
