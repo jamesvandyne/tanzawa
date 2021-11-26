@@ -183,3 +183,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
 PLUGINS = env.list("PLUGINS", default=["plugins.plugins.time"])
+
+PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
