@@ -25,7 +25,7 @@ class NowPlugin(plugin.Plugin):
 
     def public_top_nav_icon(self) -> str:
         """Return an emoji that will be displayed next to the top nav item."""
-        return "🔛"
+        return "👉"
 
     def public_top_nav_content(self) -> str:
         """Return html to be output on the page after the top nav icon"""
