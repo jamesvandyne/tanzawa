@@ -1,3 +1,5 @@
+# Custom Plugins 
+
 As Tanzawa Plugins are regular Django applications, developing a Tanzawa Plugin has the same ergonomics as Django development.  
 
 
@@ -143,21 +145,21 @@ urlpatterns = [
 
 ```
 
- ## Migrations
+## Migrations
  
- Tanzawa will automatically run migrations on two occasions:
+Tanzawa will automatically run migrations on two occasions:
  
- 1. When the plugin is activated.
- 2. When the server starts (to allow for automatic upgrades of the DB schema in the future).
+1. When the plugin is activated.
+2. When the server starts (to allow for automatic upgrades of the DB schema in the future).
  
- To disable automatically migrating when starting the server, set
- `PLUGINS_RUN_MIGRATIONS_STARTUP` to `False` in your `.env` file.
+To disable automatically migrating when starting the server, set
+`PLUGINS_RUN_MIGRATIONS_STARTUP` to `False` in your `.env` file.
  
- ### Creating Migrations
+### Creating Migrations
  
- ### Running Migrations Manually
+### Running Migrations Manually
  
  
- ## Templates
+## Templates
  
- Templates are regular Django templates and should be placed in a `templates/<plugin-app-name>` directory inside of your plugin.
+Templates are regular Django templates and should be placed in a `templates/<plugin-app-name>` directory inside of your plugin.
