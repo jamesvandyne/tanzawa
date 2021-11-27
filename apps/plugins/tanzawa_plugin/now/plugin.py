@@ -1,4 +1,4 @@
-from django import urls
+from django import template, urls
 from django.template.loader import render_to_string
 from plugins import plugin, pool
 
@@ -23,13 +23,15 @@ class NowPlugin(plugin.Plugin):
     def has_public_top_nav(self):
         return True
 
-    def public_top_nav_icon(self) -> str:
-        """Return an emoji that will be displayed next to the top nav item."""
-        return "👉"
-
-    def public_top_nav_content(self) -> str:
-        """Return html to be output on the page after the top nav icon"""
-        return "Now"
+    def render_navigation(
+        self,
+        *,
+        context: template.Context,
+        render_location: str,
+    ) -> str:
+        """Render the public facing navigation menu item."""
+        t = context.template.engine.get_template("now/navigation.html")
+        return t.render(context=context)
 
 
 def get_plugin() -> plugin.Plugin:
