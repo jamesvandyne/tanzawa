@@ -1,6 +1,5 @@
 import abc
 import pathlib
-from abc import abstractmethod
 from importlib import util as importlib_util
 from typing import Optional, Protocol
 
@@ -12,16 +11,6 @@ class TopNavProtocol(Protocol):
     def public_has_top_nav(self) -> bool:
         """Does this plugin have public facing top nav?"""
         return False
-
-    @abstractmethod
-    def public_top_nav_icon(self) -> str:
-        """Return an emoji that will be displayed next to the top nav item."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def public_top_nav_content(self) -> str:
-        """Return html to be output on the page after the top nav icon"""
-        raise NotImplementedError
 
 
 class Plugin(abc.ABC, TopNavProtocol):
@@ -44,6 +33,15 @@ class Plugin(abc.ABC, TopNavProtocol):
 
         Plugins that do not provide any configuration via the admin should return a blank string.
         """
+        return ""
+
+    def render_navigation(
+        self,
+        *,
+        context,
+        render_location: str,
+    ) -> str:
+        """Render the public facing navigation menu item."""
         return ""
 
     @property
