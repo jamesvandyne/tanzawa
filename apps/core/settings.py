@@ -182,6 +182,8 @@ LOGIN_REDIRECT_URL = "post:dashboard"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
-PLUGINS = env.list("PLUGINS", default=["plugins.plugins.time"])
+PLUGINS = env.list("PLUGINS", default=[])
+
+INSTALLED_APPS.extend(PLUGINS)
 
 PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
