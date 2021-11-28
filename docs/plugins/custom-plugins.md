@@ -157,7 +157,26 @@ To disable automatically migrating when starting the server, set
  
 ### Creating Migrations
  
+ If your plugin is not enabled, first enable the plugin.
+ 
+ ```
+$ python3 apps/manage.py enable_plugin blog.tanzawa.plugins.nowpage
+```
+
+Once the plugin is enabled you can make migrations as usual.
+
+```
+$ python3 apps/manage.py makemigrations now
+```
+ 
 ### Running Migrations Manually
+ 
+After a plugin is enabled you can run migrations as if it were a regular django application.
+
+```
+$ python3 apps/manage.py migrate now
+`
+```  
  
  
 ## Templates
