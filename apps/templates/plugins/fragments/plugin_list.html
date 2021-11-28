@@ -1,0 +1,40 @@
+{% extends "fragments/content.html" %}
+
+{% block breadcrumbs %}
+    <a href="{% url "plugins:plugin_list" %}" class="underline">Plugins</a>
+{% endblock %}
+
+{% block main %}
+    <p>Selectively enable or disable functionality on your Tanzawa website.<br/>
+        Learn how to make your own plugins in the <a href="https://jamesvandyne.github.io/tanzawa/" class="underline">developer documentation</a>.
+    </p>
+    <h1 class="mt-2 text-xl">Available Plugins</h1>
+    <ul class="mt-2">
+    {% for plugin in available_plugins %}
+        <li class="flex {% if not forloop.last %}border-bottom{% endif %}">
+            <div class="flex flex-col mr-2 w-96">
+                <h2 class="">{{ plugin.name }}</h2>
+                <p class="mt-2 text-sm">{{ plugin.description }}</p>
+            </div>
+            <div class="flex flex-col">
+            {% if plugin.is_enabled and plugin.settings_url %}
+                <a href="{{ plugin.settings_url }}" class="mt-2 outline-button text-sm">Settings</a>
+            {% endif %}
+            <div class="flex flex-col flex-grow justify-end">
+            {% if plugin.is_enabled %}
+                <form  method="post" action="{% url 'plugins:plugin_disable' plugin.identifier %}" class="{% if plugin.settings_url %} justify-end{% endif %}">
+                    {% csrf_token %}
+                    <button type="submit" class="px-3 py-1 text-negroni-800 text-xs mr-2" href="">Disable</button>
+                </form>
+            {% else %}
+                <form  method="post" action="{% url 'plugins:plugin_enable' plugin.identifier %}">
+                    {% csrf_token %}
+                    <button type="submit" class="px-3 py-1 text-negroni-800 text-xs mr-2" href="">Enable</button>
+                </form>
+            {% endif %}
+            </div>
+            </div>
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

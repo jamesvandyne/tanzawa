@@ -1,2 +1,10 @@
 site_name: Tanzawa Documentation
 theme: readthedocs
+nav:
+  - index.md
+  - customization.md
+  - 'Plugins':
+    - plugins/overview.md
+    - plugins/custom-plugins.md
+  - 'Community':
+    - sites-using-tanzawa.md

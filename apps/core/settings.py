@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "streams",
     "public",
     "wordpress",
+    "plugins",
 ]
 
 MIDDLEWARE = [
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "settings.middleware.SettingsMiddleware",
     "webmention.middleware.webmention_middleware",
+    "plugins.middleware.PluginMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -178,3 +180,10 @@ SPATIALITE_LIBRARY_PATH = env.str("SPATIALITE_LIBRARY_PATH", default=None)
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "post:dashboard"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+
+PLUGINS = env.list("PLUGINS", default=[])
+
+INSTALLED_APPS.extend(PLUGINS)
+
+PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
