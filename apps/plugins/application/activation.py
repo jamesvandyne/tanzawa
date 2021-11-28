@@ -23,8 +23,7 @@ def _reload_urlconf(urlconf=None) -> None:
         importlib.reload(sys.modules[urlconf])
 
 
-def _install_app(plugin: "Plugin", app_path: str) -> None:
-    app_name = app_path.split(".")[-1]
+def install_app(app_path: str) -> None:
     apps_ready = False
     models_ready = False
 
@@ -48,10 +47,6 @@ def _install_app(plugin: "Plugin", app_path: str) -> None:
             apps_ready = True
             models_ready = True
 
-    # Run migrations.
-    if plugin.has_migrations and not getattr(migrations, "MIGRATION_OPERATION_IN_PROGRESS", False):
-        management.call_command("migrate", app_name, interactive=False)
-
 
 def _uninstall_app(app_name: str) -> None:
     apps.app_configs = OrderedDict()
@@ -66,7 +61,13 @@ def activate_plugin(plugin: "Plugin") -> None:
 
     This will enable any URLs it has defined and run migrations.
     """
-    _install_app(plugin, plugin.plugin_module)
+    install_app(plugin.plugin_module)
+
+    # Run migrations.
+    if plugin.has_migrations and not getattr(migrations, "MIGRATION_OPERATION_IN_PROGRESS", False):
+        app_name = plugin.plugin_module.split(".")[-1]
+        management.call_command("migrate", app_name, interactive=False)
+
     _reload_urlconf()
     utils.get_app_template_dirs.cache_clear()
 
@@ -77,5 +78,6 @@ def deactivate_plugin(plugin: "Plugin") -> None:
 
     This will remove any URLs a plugin has added to the URL tree.
     """
-    _reload_urlconf()
     _uninstall_app(plugin.plugin_module)
+    _reload_urlconf()
+    utils.get_app_template_dirs.cache_clear()

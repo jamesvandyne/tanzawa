@@ -10,6 +10,7 @@ class PluginsConfig(apps.AppConfig):
 
     def ready(self):
         global _initial_load
+
         if _initial_load and settings.PLUGINS_RUN_MIGRATIONS_STARTUP:
             _initial_load = False
             from plugins import pool

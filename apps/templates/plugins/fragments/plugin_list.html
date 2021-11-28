@@ -17,7 +17,7 @@
                 <p class="mt-2 text-sm">{{ plugin.description }}</p>
             </div>
             <div class="flex flex-col">
-            {% if plugin.settings_url %}
+            {% if plugin.is_enabled and plugin.settings_url %}
                 <a href="{{ plugin.settings_url }}" class="mt-2 outline-button text-sm">Settings</a>
             {% endif %}
             <div class="flex flex-col flex-grow justify-end">

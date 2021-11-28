@@ -1,6 +1,7 @@
 from operator import attrgetter
 from typing import Iterable, Optional
 
+from django.core import exceptions
 from django.utils.module_loading import autodiscover_modules
 from plugins.application import activation
 from plugins.models import MPlugin
@@ -12,21 +13,22 @@ class PluginPool:
     def __init__(self):
         self.plugins = {}
         self.discovered = False
-        self.registery = {}
 
-    def _clear_cached(self):
+    def _clear_cached(self) -> None:
         if "registered_plugins" in self.__dict__:
             del self.__dict__["registered_plugins"]
 
-    def discover_plugins(self):
+    def discover_plugins(self) -> None:
 
         if self.discovered:
             return
 
-        autodiscover_modules("tanzawa_plugin", register_to=self.registery)
+        autodiscover_modules("tanzawa_plugin")
+        for plugin_ in self.plugins.values():
+            activation.install_app(plugin_.plugin_module)
         self.discovered = True
 
-    def get_all_plugins(self):
+    def get_all_plugins(self) -> Iterable[plugin.Plugin]:
         self.discover_plugins()
         plugins = sorted(self.plugins.values(), key=attrgetter("name"))
         return plugins
@@ -39,26 +41,14 @@ class PluginPool:
                 return plugin_
         return None
 
-    def register_plugin(self, plugin_):
-
-        # TODO: Add class validation
-        # if not issubclass(plugin, CMSPluginBase):
-        #     raise ImproperlyConfigured(
-        #         "CMS Plugins must be subclasses of CMSPluginBase, %r is not."
-        #         % plugin
-        #     )
+    def register_plugin(self, plugin_: plugin.Plugin) -> plugin.Plugin:
+        if not issubclass(plugin_.__class__, plugin.Plugin):
+            raise exceptions.ImproperlyConfigured("Tanzawa Plugins must be subclasses of Plugin, %r is not." % plugin)
         plugin_name = plugin_.name
-        # if plugin_name in self.plugins:
-        #     raise PluginAlreadyRegistered(
-        #         "Cannot register %r, a plugin with this name (%r) is already "
-        #         "registered." % (plugin, plugin_name)
-        #     )
-
-        plugin_.value = plugin_name
         self.plugins[plugin_name] = plugin_
         return plugin_
 
-    def enable(self, plugin_: plugin.Plugin):
+    def enable(self, plugin_: plugin.Plugin) -> None:
         """
         Marks a plugin as enabled before activating it.
         """
@@ -68,7 +58,7 @@ class PluginPool:
             MPlugin.new(identifier=plugin_.identifier, enabled=True)
         activation.activate_plugin(plugin_)
 
-    def disable(self, plugin_: plugin.Plugin):
+    def disable(self, plugin_: plugin.Plugin) -> None:
         """
         Marks a plugin as disabled before deactivating it.
         """
