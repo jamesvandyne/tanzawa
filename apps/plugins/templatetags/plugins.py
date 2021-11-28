@@ -7,7 +7,7 @@ register = template.Library()
 class RenderPlugin(template.Node):
     def __init__(self, *, plugin: template.Variable, render_location: str):
         self.plugin = plugin
-        self.render_location = render_location
+        self.render_location = render_location[1:-1]  # trim quotes
 
     def render(self, context):
         plugin_variable = self.plugin.resolve(context=context)
@@ -18,6 +18,7 @@ class RenderPlugin(template.Node):
             raise template.TemplateSyntaxError(f"Plugin {plugin_variable} is not enabled.")
 
         # TODO: Add support for rendering different locations
+        context["render_location"] = self.render_location
         return plugin_.render_navigation(context=context, render_location=self.render_location)
 
 
