@@ -2,6 +2,7 @@ from operator import attrgetter
 from typing import Iterable, Optional
 
 from django.core import exceptions
+from django.db import utils
 from django.utils.module_loading import autodiscover_modules
 from plugins.application import activation
 from plugins.models import MPlugin
@@ -89,7 +90,12 @@ class PluginPool:
         Yields enabled Plugin instances
         """
         self.discover_plugins()
-        enabled = MPlugin.objects.enabled().values_list("identifier", flat=True)
+        try:
+            enabled = list(MPlugin.objects.enabled().values_list("identifier", flat=True))
+        except utils.OperationalError:
+            # MPlugin table hasn't been migrated yet
+            return
+
         for plugin_ in self.plugins.values():
             if plugin_.identifier in enabled:
                 yield plugin_
