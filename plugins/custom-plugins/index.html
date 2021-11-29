@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../../img/favicon.ico">
+  <title>Custom Plugins - Tanzawa Documentation</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../../css/theme.css" />
+  <link rel="stylesheet" href="../../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Custom Plugins";
+    var mkdocs_page_input_path = "plugins/custom-plugins.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href="../.." class="icon icon-home"> Tanzawa Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../..">Getting Started</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../customization/">Customization</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Plugins</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../overview/">Plugins</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Custom Plugins</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#plugin-interface">Plugin Interface</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#name">Name</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#identifier">Identifier</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#description">Description</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#settings-url">Settings URL</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#top-navigation">Top Navigation</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#has_public_top_nav">has_public_top_nav</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#render_navigation">render_navigation</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#registering-your-plugin">Registering Your Plugin</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#admin-views">Admin Views</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#public-views">Public Views</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#migrations">Migrations</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#creating-migrations">Creating Migrations</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#templates">Templates</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Community</span></p>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../sites-using-tanzawa/">Sites Using Tanzawa</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../..">Tanzawa Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Plugins &raquo;</li>
+        
+      
+    
+    <li>Custom Plugins</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="custom-plugins">Custom Plugins</h1>
+<p>As Tanzawa Plugins are regular Django applications, developing a Tanzawa Plugin has the same ergonomics as Django development.  </p>
+<h2 id="requirements">Requirements</h2>
+<p>In order for your Plugin to be seen by Tanzawa, it must have:</p>
+<ol>
+<li>A <code>Plugin</code> class that inherits from <code>apps.plugins.plugin.Plugin</code>. This is the interface between Tanzawa and a plugin.</li>
+<li>A <code>tanzawa_plugin.py</code> or <code>tanzawa_plugin</code> python package that instantiates the plugin and registers it with the Tanzawa Plugin Pool.  </li>
+</ol>
+<p>If your application lives outside of Tanzawa itself, you must install it manually by adding the package name to the <code>PLUGINS</code> environment variable.</p>
+<h2 id="plugin-interface">Plugin Interface</h2>
+<p>Each Plugin is required to provide some base information to Tanzawa so users can understand the plugin's functionality.</p>
+<h3 id="name">Name</h3>
+<p>The name of the plugin. This is the main identifier for the user, so try to make it as simple and self-descriptive as possible.</p>
+<h3 id="identifier">Identifier</h3>
+<p>A reverse-url style unique identifier for the plugin. This is stored in the database to let Tanzawa know which plugins are active and is not shown the user.</p>
+<p>e.g. The bundled "Now page" plugin's identifier is <code>blog.tanzawa.plugins.nowpage</code>.</p>
+<h3 id="description">Description</h3>
+<p>Provide an easy to understand description of what your plugin provides. This should be a plain text string,
+but can also be rendered HTML using Django templates if you want to provide links.</p>
+<pre><code class="language-python">from django.template.loader import render_to_string
+...
+    @property
+    def description(self):
+        return render_to_string(&quot;now/description.html&quot;)
+
+</code></pre>
+<h3 id="settings-url">Settings URL</h3>
+<p>Each plugin can provide a single URL that acts as the user's entry point to configure the plugin. This
+is the "settings" link that is displayed next to each plugin in the admin.</p>
+<pre><code class="language-python">from django import urls
+...
+    @property
+    def settings_url(self):
+        return urls.reverse_lazy(&quot;plugin_now_admin:update_now&quot;)
+</code></pre>
+<h3 id="top-navigation">Top Navigation</h3>
+<p>Providing top navigation requires two settings: <code>has_public_top_nav</code> and <code>render_navigation</code>.</p>
+<h4 id="has_public_top_nav">has_public_top_nav</h4>
+<p>A boolean value indicating if a plugin is providing top menu items.</p>
+<h4 id="render_navigation">render_navigation</h4>
+<p>A function that renders the actual navigation. It has two inputs: <code>context</code> and <code>render_location</code>.</p>
+<ul>
+<li><code>context</code> is a regular django context containing the entire context for that page.</li>
+<li><code>nav</code> contains the id of the currently selected page. Use this variable to decide if your navigation is selected and should indicate as such e.g. underlined.</li>
+<li><code>render_location</code> is the name of the location that Tanzawa is rendering. This could be used to provide different layouts depending on the location. </li>
+</ul>
+<pre><code class="language-python">from django import template
+...
+
+    def render_navigation(
+        self,
+        *,
+        context: template.Context,
+        render_location: str,
+    ) -&gt; str:
+        &quot;&quot;&quot;Render the public facing navigation menu item.&quot;&quot;&quot;
+        t = context.template.engine.get_template(&quot;now/navigation.html&quot;)
+        return t.render(context=context)
+</code></pre>
+<p>Example top navigation template for desktop display.</p>
+<pre><code class="language-djangotemplate">&lt;a href=&quot;{% url &quot;plugin_now:now&quot; %}&quot; class=&quot;ml-2 leading-8 hidden md:inline-block{% if nav == &quot;now&quot; %} border-b-4 border-negroni-900{% endif %}&quot;&gt;
+    &lt;span class=&quot;mr-1&quot;&gt;👉&lt;/span&gt;Now
+&lt;/a&gt;
+</code></pre>
+<h2 id="registering-your-plugin">Registering Your Plugin</h2>
+<pre><code class="language-python">from plugins import plugin, pool
+
+class NowPlugin(plugin.Plugin):
+    ...
+
+def get_plugin() -&gt; plugin.Plugin:
+    return NowPlugin()
+
+pool.plugin_pool.register_plugin(get_plugin())
+</code></pre>
+<h2 id="admin-views">Admin Views</h2>
+<p>Views in the admin should be contained in <code>admin_urls.py</code>. Each view should be protected with the
+Django <code>@login_required</code> decorator to ensure anonymous users cannot change settings or access sensitive data.</p>
+<pre><code class="language-python">from django.urls import path
+
+from . import views
+
+app_name = &quot;plugin_now_admin&quot;
+
+urlpatterns = [
+    path(&quot;edit/&quot;, views.UpdateNowAdmin.as_view(), name=&quot;update_now&quot;),
+]
+</code></pre>
+<p>The admin views will be automatically included at <code>/a/plugins/slugified-plugin-name/</code>.</p>
+<h2 id="public-views">Public Views</h2>
+<p>Views that should be publicly accessible should be contained in <code>urls.py</code>. Note as plugin urls are included
+ before stream urls, if your public urls match a user's stream, your plugin will take precedence. </p>
+<pre><code class="language-python">from django.urls import path
+
+from . import views
+
+app_name = &quot;plugin_now&quot;
+
+urlpatterns = [
+    path(&quot;now/&quot;, views.PublicViewNow.as_view(), name=&quot;now&quot;),
+]
+
+</code></pre>
+<h2 id="migrations">Migrations</h2>
+<p>Tanzawa will automatically run migrations on two occasions:</p>
+<ol>
+<li>When the plugin is activated.</li>
+<li>When the server starts (to allow for automatic upgrades of the DB schema in the future).</li>
+</ol>
+<p>To disable automatically migrating when starting the server, set
+<code>PLUGINS_RUN_MIGRATIONS_STARTUP</code> to <code>False</code> in your <code>.env</code> file.</p>
+<h3 id="creating-migrations">Creating Migrations</h3>
+<p>If your plugin is not enabled, first enable the plugin.</p>
+<p>```
+$ python3 apps/manage.py enable_plugin blog.tanzawa.plugins.nowpage</p>
+<pre><code>
+Once the plugin is enabled you can make migrations as usual.
+
+</code></pre>
+<p>$ python3 apps/manage.py makemigrations now</p>
+<pre><code>
+### Running Migrations Manually
+
+After a plugin is enabled you can run migrations as if it were a regular django application.
+
+</code></pre>
+<p>$ python3 apps/manage.py migrate now
+`
+```  </p>
+<h2 id="templates">Templates</h2>
+<p>Templates are regular Django templates and should be placed in a <code>templates/&lt;plugin-app-name&gt;</code> directory inside of your plugin.</p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../sites-using-tanzawa/" class="btn btn-neutral float-right" title="Sites Using Tanzawa">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../overview/" class="btn btn-neutral" title="Plugins"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../../sites-using-tanzawa/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
