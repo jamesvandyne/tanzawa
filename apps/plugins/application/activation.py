@@ -1,4 +1,7 @@
 import importlib
+import logging
+import os
+import signal
 import sys
 import time
 from collections import OrderedDict
@@ -13,6 +16,9 @@ from django.urls import clear_url_caches
 
 if TYPE_CHECKING:
     from plugins.core import Plugin
+
+
+logger = logging.getLogger(__name__)
 
 
 def _reload_urlconf(urlconf=None) -> None:
@@ -67,9 +73,14 @@ def activate_plugin(plugin: "Plugin") -> None:
     if plugin.has_migrations and not getattr(migrations, "MIGRATION_OPERATION_IN_PROGRESS", False):
         app_name = plugin.plugin_module.split(".")[-1]
         management.call_command("migrate", app_name, interactive=False)
-
     _reload_urlconf()
     utils.get_app_template_dirs.cache_clear()
+
+
+def restart_parent_process():
+    """After enabling or disabling a plugin we must gracefully restart our server process."""
+    logger.info("Restarting requested from %s", os.getpid())
+    os.kill(os.getppid(), signal.SIGHUP)
 
 
 def deactivate_plugin(plugin: "Plugin") -> None:
