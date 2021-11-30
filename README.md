@@ -39,14 +39,14 @@ $ docker run --rm -p 8000:8000 -v $PWD:/app -it tanzawa bash
 
 ```
 $ cd /app
-$ python3 apps/manage.py migrate
-$ python3 apps/manage.py createsuperuser
+$ python3 tanzawa/manage.py migrate
+$ python3 tanzawa/manage.py createsuperuser
 ```
 
 Run Development Web server
 
 ```
-$ python3 apps/manage.py runserver 0.0.0.0:8000
+$ python3 tanzawa/manage.py runserver 0.0.0.0:8000
 ```
 
 Confirm you can login using your account by opening the Tanzawa Dashboard at [https://127.0.0.1:8000/a/]().

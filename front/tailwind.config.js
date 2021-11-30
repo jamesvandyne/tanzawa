@@ -1,7 +1,7 @@
 module.exports = {
   purge: [
-     '../apps/**/*.html',
-      '../apps/**/forms.py',
+     '../tanzawa/**/*.html',
+      '../tanzawa/**/forms.py',
       'src/**/*.js',
    ],
   darkMode: false, // or 'media' or 'class'
