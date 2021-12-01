@@ -15,7 +15,7 @@
   "devDependencies": {
     "@stimulus/webpack-helpers": "^2.0.0",
     "css-loader": "^6.5.1",
-    "eslint": "^7.20.0",
+    "eslint": "^8.3.0",
     "mini-css-extract-plugin": "^2.4.5",
     "postcss": "^8.2.2",
     "postcss-cli": "^9.0.2",
