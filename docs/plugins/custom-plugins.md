@@ -7,7 +7,7 @@ As Tanzawa Plugins are regular Django applications, developing a Tanzawa Plugin 
 
 In order for your Plugin to be seen by Tanzawa, it must have:
 
-1. A `Plugin` class that inherits from `apps.plugins.plugin.Plugin`. This is the interface between Tanzawa and a plugin.
+1. A `Plugin` class that inherits from `tanzawa.plugins.plugin.Plugin`. This is the interface between Tanzawa and a plugin.
 2. A `tanzawa_plugin.py` or `tanzawa_plugin` python package that instantiates the plugin and registers it with the Tanzawa Plugin Pool.  
 
 If your application lives outside of Tanzawa itself, you must install it manually by adding the package name to the `PLUGINS` environment variable.
