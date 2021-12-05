@@ -99,7 +99,7 @@ def micropub(request):  # noqa: C901 too complex (30)
         body = normalize[request.content_type.split(";")[0]](request)
     except KeyError:
         return Response(
-            data={"message": f"Invalid content-type: {request.content_type}"},
+            data={"message": "Invalid content-type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
 
