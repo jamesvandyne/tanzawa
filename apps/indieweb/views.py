@@ -18,6 +18,8 @@ from entry.forms import (
     TSyndicationModelForm,
 )
 from files.forms import MediaUploadForm
+from indieweb.application import webmentions
+from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
 from rest_framework.authentication import get_authorization_header
 from rest_framework.decorators import api_view
@@ -26,7 +28,6 @@ from turbo_response import TurboFrame
 
 from .constants import MPostStatuses
 from .forms import IndieAuthAuthorizationForm
-from .location import location_to_pointfield_input
 from .models import TWebmention
 from .serializers import (
     IndieAuthAuthorizationSerializer,
@@ -36,7 +37,6 @@ from .serializers import (
     MicropubSerializer,
 )
 from .utils import extract_base64_images, render_attachment, save_and_get_tag
-from .webmentions import send_webmention
 
 logger = logging.getLogger(__name__)
 
@@ -217,7 +217,7 @@ def micropub(request):  # noqa: C901 too complex (30)
                 named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            send_webmention(request, entry.t_post, entry.e_content)
+            webmentions.send_webmention(request, entry.t_post, entry.e_content)
 
         response = Response(status=status.HTTP_201_CREATED)
         response["Location"] = request.build_absolute_uri(entry.t_post.get_absolute_url())

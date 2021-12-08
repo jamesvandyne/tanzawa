@@ -5,13 +5,13 @@ from core.constants import Visibility
 from django.core.validators import URLValidator
 from django.db import transaction
 from django.urls import reverse
+from indieweb.application import extract
+from indieweb.application import location as indieweb_location
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
 from streams.models import MStream
 
 from . import constants
-from .extract import extract_reply_details_from_url
-from .location import get_location
 from .models import TToken
 from .utils import DataImage, download_image
 
@@ -35,12 +35,12 @@ class LocationField(serializers.Field):
         if isinstance(data, list):
             if isinstance(data[0], str):
                 # lat/long only form data
-                location = get_location({"properties": {"geo": data}})
+                location = indieweb_location.get_location({"properties": {"geo": data}})
             else:
                 # already microformatted
-                location = get_location(data[0])
+                location = indieweb_location.get_location(data[0])
         else:
-            location = get_location(data)
+            location = indieweb_location.get_location(data)
         return location
 
 
@@ -113,7 +113,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     visibility = VisibilityField(required=False, default=Visibility.PUBLIC)
 
     def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
-        linked_page = extract_reply_details_from_url(url)
+        linked_page = extract.extract_reply_details_from_url(url)
         link_dict = {
             url_key: url,
             "title": url,

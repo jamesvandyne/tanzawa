@@ -5,7 +5,7 @@ from core.models import TimestampModel
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models import Q
-from indieweb.extract import LinkedPage, LinkedPageAuthor
+from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 
 
 class TEntryManager(models.Manager):
