@@ -18,7 +18,7 @@ from entry.forms import (
     TSyndicationModelForm,
 )
 from files.forms import MediaUploadForm
-from indieweb.application import webmentions
+from indieweb.application import webmentions as webmention_app
 from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
 from rest_framework.authentication import get_authorization_header
@@ -27,6 +27,7 @@ from rest_framework.response import Response
 from turbo_response import TurboFrame
 
 from .constants import MPostStatuses
+from .domain import webmention as webmention_domain
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .serializers import (
@@ -41,7 +42,7 @@ from .utils import extract_base64_images, render_attachment, save_and_get_tag
 logger = logging.getLogger(__name__)
 
 
-def form_to_mf2(request):
+def _form_to_mf2(request):
     """ """
     properties = {}
     post = request.POST
@@ -52,10 +53,10 @@ def form_to_mf2(request):
             continue
         properties[key] = post.getlist(key) + post.getlist(key + "[]")
     mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
-    return normalize_properties_to_underscore(mf)
+    return __normalize_properties_to_underscore(mf)
 
 
-def normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
+def __normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
     """convert microformat2 property keys that use a hyphen to an underscore so DRF can serialize them"""
     properties = {}
     for key, value in data.get("properties", {}).items():
@@ -63,8 +64,8 @@ def normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
     return {"type": data["type"], "properties": properties}
 
 
-def normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
-    h_entry = normalize_properties_to_underscore(data)
+def _normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
+    h_entry = __normalize_properties_to_underscore(data)
     return h_entry
 
 
@@ -76,9 +77,9 @@ def micropub(request):  # noqa: C901 too complex (30)
     structure as if they were posted via the web interface and uses those forms to process it.
     """
     normalize = {
-        "application/json": lambda r: normalize_properties(r.data),
-        "application/x-www-form-urlencoded": form_to_mf2,
-        "multipart/form-data": form_to_mf2,
+        "application/json": lambda r: _normalize_properties(r.data),
+        "application/x-www-form-urlencoded": _form_to_mf2,
+        "multipart/form-data": _form_to_mf2,
     }
 
     # authenticate
@@ -217,7 +218,7 @@ def micropub(request):  # noqa: C901 too complex (30)
                 named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            webmentions.send_webmention(request, entry.t_post, entry.e_content)
+            webmention_app.send_webmention(request, entry.t_post, entry.e_content)
 
         response = Response(status=status.HTTP_201_CREATED)
         response["Location"] = request.build_absolute_uri(entry.t_post.get_absolute_url())
@@ -230,20 +231,13 @@ def micropub(request):  # noqa: C901 too complex (30)
 @login_required
 def review_webmention(request, pk: int, approval: bool):
     t_web_mention: TWebmention = get_object_or_404(TWebmention.objects.select_related(), pk=pk)
-    t_webmention_response = t_web_mention.t_webmention_response
 
-    with transaction.atomic():
-        t_web_mention.approval_status = approval
-        t_webmention_response.reviewed = True
+    webmention_app.moderate_webmention(t_web_mention=t_web_mention, approval=approval)
 
-        t_webmention_response.save()
-        t_web_mention.save()
-    webmentions = (
-        TWebmention.objects.filter(approval_status=None).select_related("t_post", "t_webmention_response").reverse()
-    )
+    webmentions = webmention_domain.pending_moderation()
     context = {
         "webmentions": webmentions,
-        "unread_count": webmentions.count(),
+        "unread_count": len(webmentions),
     }
     return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
 

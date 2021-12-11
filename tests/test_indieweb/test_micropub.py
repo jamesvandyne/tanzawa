@@ -36,7 +36,7 @@ class TestMicropub:
         from indieweb.application.webmentions import send_webmention
 
         m = Mock(autospec=send_webmention)
-        monkeypatch.setattr("indieweb.views.webmentions.send_webmention", m)
+        monkeypatch.setattr("indieweb.views.webmention_app.send_webmention", m)
         return m
 
     def test_token_create(

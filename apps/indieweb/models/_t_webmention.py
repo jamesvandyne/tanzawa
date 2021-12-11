@@ -47,3 +47,7 @@ class TWebmention(TimestampModel):
         self.approval_status = None
         self.microformat_data = microformat_data
         self.save()
+
+    def set_approval(self, *, approved: bool) -> None:
+        self.approval_status = approved
+        self.save()
