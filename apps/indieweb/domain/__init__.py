@@ -1,3 +1,3 @@
-from . import webmention
+from . import indieauth, webmention
 
-__all__ = ("webmention",)
+__all__ = ("webmention", "indieauth")

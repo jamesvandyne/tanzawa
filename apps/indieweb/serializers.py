@@ -151,8 +151,6 @@ class HEntryPropertiesSerializer(serializers.Serializer):
 
 class MicropubSerializer(serializers.Serializer):
     type = serializers.CharField(required=True)
-    access_token = serializers.CharField(required=True)
-    action = serializers.CharField(required=False, initial="create")
     url = serializers.URLField(required=False)
     properties = HEntryPropertiesSerializer(required=True)
 
@@ -162,20 +160,6 @@ class MicropubSerializer(serializers.Serializer):
             return constants.Microformats(v)
         except ValueError:
             raise serializers.ValidationError(f" {value} is an unsupported h-type")
-
-    def validate_access_token(self, value):
-        try:
-            return TToken.objects.get(key=value)
-        except TToken.DoesNotExist:
-            raise serializers.ValidationError("Token not found.")
-
-    def validate(self, data):
-        action = data.get("action")
-        if action:
-            t_token: TToken = data["access_token"]
-            if not t_token.micropub_scope.filter(key__exact=action).exists():
-                raise serializers.ValidationError(f"Token does not have {action} permissions")
-        return data
 
 
 class CreateMicropubSerializer(MicropubSerializer):

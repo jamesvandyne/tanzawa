@@ -84,7 +84,7 @@ class TestMicropub:
         quill_note["action"] = "delete"
         response = client.post(target, data=quill_note)
         assert response.status_code == 400
-        assert response.json() == {"non_field_errors": ["Token does not have delete permissions"]}
+        assert response.json() == {"message": "Scope permission denied"}
 
     @pytest.mark.freeze_time("2021-02-13 12:30:59")
     def test_handles_embeded_base64_images(

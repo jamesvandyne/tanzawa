@@ -1,5 +1,4 @@
 import logging
-from typing import Any, Dict
 
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
@@ -18,6 +17,7 @@ from entry.forms import (
     TSyndicationModelForm,
 )
 from files.forms import MediaUploadForm
+from indieweb.application import micropub as micropub_app
 from indieweb.application import webmentions as webmention_app
 from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
@@ -27,6 +27,7 @@ from rest_framework.response import Response
 from turbo_response import TurboFrame
 
 from .constants import MPostStatuses
+from .domain import indieauth as authentication_domain
 from .domain import webmention as webmention_domain
 from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
@@ -42,77 +43,42 @@ from .utils import extract_base64_images, render_attachment, save_and_get_tag
 logger = logging.getLogger(__name__)
 
 
-def _form_to_mf2(request):
-    """ """
-    properties = {}
-    post = request.POST
-    for key in post.keys():
-        if key.endswith("[]"):
-            key = key[:-2]
-        if key == "access_token":
-            continue
-        properties[key] = post.getlist(key) + post.getlist(key + "[]")
-    mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
-    return __normalize_properties_to_underscore(mf)
-
-
-def __normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
-    """convert microformat2 property keys that use a hyphen to an underscore so DRF can serialize them"""
-    properties = {}
-    for key, value in data.get("properties", {}).items():
-        properties[key.replace("-", "_")] = value
-    return {"type": data["type"], "properties": properties}
-
-
-def _normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
-    h_entry = __normalize_properties_to_underscore(data)
-    return h_entry
-
-
-# TODO: Refactor into a CBV and break logical components into
 @api_view(["GET", "POST"])
 def micropub(request):  # noqa: C901 too complex (30)
     """
     Micropub endpoint takes a micropub request, prepares images / data into the same
     structure as if they were posted via the web interface and uses those forms to process it.
     """
-    normalize = {
-        "application/json": lambda r: _normalize_properties(r.data),
-        "application/x-www-form-urlencoded": _form_to_mf2,
-        "multipart/form-data": _form_to_mf2,
-    }
 
     # authenticate
-    auth = get_authorization_header(request)
+    # TODO: Move indieauth into standard DRF/Django Middleware
     try:
-        token = auth.split()[1].decode()
-    except IndexError:
-        token = request.POST.get("access_token")
-    except UnicodeError:
-        msg = _("Invalid token header. Token string should not contain invalid characters.")
-        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+        token = authentication_domain.authenticate_request(request=request)
+    except authentication_domain.TokenNotFound:
+        return Response(
+            data={"message": "Invalid request. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    except authentication_domain.InvalidToken:
+        return Response(data={"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+    except authentication_domain.PermissionDenied:
+        return Response(data={"message": "Scope permission denied"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not token:
-        msg = _("Invalid request. No credentials provided.")
-        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
     # normalize before sending to serializer
     try:
-        body = normalize[request.content_type.split(";")[0]](request)
-    except KeyError:
+        body = micropub_app.normalize_request(
+            content_type=request.content_type,
+            request_data=request.data,
+            post_data=request.POST,
+        )
+    except micropub_app.UnknownContentType:
         return Response(
             data={"message": "Invalid content-type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-
-    props = body["properties"]
-    if not body.get("access_token"):
-        body["access_token"] = token
-    body["type"] = body["type"][0]  # type is a list but needs to be a string
-    if not body.get("action"):
-        body["action"] = request.data.get("action", "create")
+    else:
+        props = body["properties"]
 
     serializer = MicropubSerializer(data=body)
-
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -205,7 +171,7 @@ def micropub(request):  # noqa: C901 too complex (30)
     if named_forms.get("checkin"):
         form_class = CreateCheckinForm
 
-    form = form_class(data=form_data, p_author=serializer.validated_data["access_token"].user)
+    form = form_class(data=form_data, p_author=authentication_domain.queries.get_user_for_token(key=token))
 
     if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
