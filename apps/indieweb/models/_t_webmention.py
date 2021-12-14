@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional
 
 from core.models import TimestampModel
-from django.db import models
+from django.db import models, transaction
 from picklefield import PickledObjectField
 from webmention.models import WebMentionResponse
 
@@ -48,6 +48,9 @@ class TWebmention(TimestampModel):
         self.microformat_data = microformat_data
         self.save()
 
+    @transaction.atomic
     def set_approval(self, *, approved: bool) -> None:
         self.approval_status = approved
+        self.t_webmention_response.reviewed = True
+        self.t_webmention_response.save()
         self.save()

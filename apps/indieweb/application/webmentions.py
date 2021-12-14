@@ -5,7 +5,6 @@ import mf2py
 import ronkyuu
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.db import transaction
 from django.utils.timezone import now
 from files.utils import extract_uuid_from_url
 from indieweb import models as indieweb_models
@@ -79,12 +78,8 @@ def send_webmention(request, t_post: TPost, e_content: str) -> List[indieweb_mod
     return t_webmention_sends
 
 
-@transaction.atomic
 def moderate_webmention(t_web_mention: indieweb_models.TWebmention, approval: bool) -> None:
-    t_webmention_response = t_web_mention.t_webmention_response
     t_web_mention.set_approval(approved=approval)
-    t_webmention_response.reviewed = True
-    t_webmention_response.save()
 
 
 def _extract_microformat_data(*, webmention: webmention_models.WebMentionResponse):
