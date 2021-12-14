@@ -45,23 +45,6 @@ def create_moderation_record_for_webmention(webmention: webmention_models.WebMen
         )
 
 
-def _extract_microformat_data(*, webmention: webmention_models.WebMentionResponse):
-    # make sure that we encode emoji and such properly
-    cleaned_response = webmention.response_body
-    parsed = mf2py.parse(doc=cleaned_response)
-    mf_data = utils.interpret_comment(
-        parsed,
-        webmention.source,
-        [webmention.response_to],
-    )
-    return mf_data
-
-
-def _find_a_tags(e_content: str) -> List[str]:
-    soup = BeautifulSoup(e_content, "html.parser")
-    return [a["href"] for a in soup.select("a")]
-
-
 def send_webmention(request, t_post: TPost, e_content: str) -> List[indieweb_models.TWebmentionSend]:
     source_url = request.build_absolute_uri(t_post.get_absolute_url())
     mentions = ronkyuu.findMentions(source_url, exclude_domains=settings.ALLOWED_HOSTS, content=e_content)
@@ -102,3 +85,20 @@ def moderate_webmention(t_web_mention: indieweb_models.TWebmention, approval: bo
     t_web_mention.set_approval(approved=approval)
     t_webmention_response.reviewed = True
     t_webmention_response.save()
+
+
+def _extract_microformat_data(*, webmention: webmention_models.WebMentionResponse):
+    # make sure that we encode emoji and such properly
+    cleaned_response = webmention.response_body
+    parsed = mf2py.parse(doc=cleaned_response)
+    mf_data = utils.interpret_comment(
+        parsed,
+        webmention.source,
+        [webmention.response_to],
+    )
+    return mf_data
+
+
+def _find_a_tags(e_content: str) -> List[str]:
+    soup = BeautifulSoup(e_content, "html.parser")
+    return [a["href"] for a in soup.select("a")]
