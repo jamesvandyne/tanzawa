@@ -1,7 +1,6 @@
 from django import forms
-from django.db import transaction
 
-from .models import MMicropubScope, TToken
+from .models import MMicropubScope
 
 
 class MMicropubCheckboxWidget(forms.CheckboxSelectMultiple):
@@ -20,14 +19,3 @@ class IndieAuthAuthorizationForm(forms.Form):
         required=True,
         widget=MMicropubCheckboxWidget,
     )
-
-    @transaction.atomic
-    def save(self, user) -> TToken:
-        t_token = TToken.objects.create(
-            user=user,
-            auth_token=TToken.generate_key(),
-            key="",
-            client_id=self.cleaned_data["client_id"],
-        )
-        t_token.micropub_scope.set(self.cleaned_data["scope"])
-        return t_token

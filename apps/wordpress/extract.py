@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
 from django.utils.timezone import make_aware
 from entry.models import TEntry
-from indieweb.extract import LinkedPage, LinkedPageAuthor
+from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 from post.models import MPostStatuses
 
 

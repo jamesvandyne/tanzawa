@@ -7,7 +7,7 @@ from django.contrib.gis.geos import Point
 class TestLocationToPointField:
     @pytest.fixture
     def target(self):
-        from indieweb.location import location_to_pointfield_input
+        from indieweb.application.location import location_to_pointfield_input
 
         return location_to_pointfield_input
 

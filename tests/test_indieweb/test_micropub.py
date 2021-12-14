@@ -33,10 +33,10 @@ class TestMicropub:
 
     @pytest.fixture
     def mock_send_webmention(self, monkeypatch):
-        from indieweb.webmentions import send_webmention
+        from indieweb.application.webmentions import send_webmention
 
         m = Mock(autospec=send_webmention)
-        monkeypatch.setattr("indieweb.views.send_webmention", m)
+        monkeypatch.setattr("indieweb.views.webmention_app.send_webmention", m)
         return m
 
     def test_token_create(
@@ -84,7 +84,7 @@ class TestMicropub:
         quill_note["action"] = "delete"
         response = client.post(target, data=quill_note)
         assert response.status_code == 400
-        assert response.json() == {"non_field_errors": ["Token does not have delete permissions"]}
+        assert response.json() == {"message": "Scope permission denied"}
 
     @pytest.mark.freeze_time("2021-02-13 12:30:59")
     def test_handles_embeded_base64_images(
@@ -184,7 +184,7 @@ class TestMicropub:
 
     @pytest.fixture
     def parsed_linked_page(self):
-        from indieweb.extract import LinkedPage, LinkedPageAuthor
+        from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 
         return LinkedPage(
             url="https://jamesvandyne.com/2021/03/02/2021-09.html",
@@ -199,11 +199,11 @@ class TestMicropub:
 
     @pytest.fixture
     def mock_extract_reply(self, monkeypatch, parsed_linked_page):
-        from indieweb.extract import extract_reply_details_from_url
+        from indieweb.application.extract import extract_reply_details_from_url
 
         m = Mock(extract_reply_details_from_url, autospec=True)
         m.return_value = parsed_linked_page
-        monkeypatch.setattr("indieweb.serializers.extract_reply_details_from_url", m)
+        monkeypatch.setattr("indieweb.serializers.extract.extract_reply_details_from_url", m)
         return m
 
     def test_post_replies_mf2(

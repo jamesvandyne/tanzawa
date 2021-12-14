@@ -1,12 +1,10 @@
 import logging
-from typing import Any, Dict
 
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext_lazy as _
 from entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -18,100 +16,67 @@ from entry.forms import (
     TSyndicationModelForm,
 )
 from files.forms import MediaUploadForm
+from indieweb.application import micropub as micropub_app
+from indieweb.application import webmentions as webmention_app
+from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
-from rest_framework.authentication import get_authorization_header
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from turbo_response import TurboFrame
 
 from .constants import MPostStatuses
+from .domain import indieauth as authentication_domain
+from .domain import webmention as webmention_domain
 from .forms import IndieAuthAuthorizationForm
-from .location import location_to_pointfield_input
 from .models import TWebmention
 from .serializers import (
     IndieAuthAuthorizationSerializer,
-    IndieAuthTokenRevokeSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
     MicropubSerializer,
 )
 from .utils import extract_base64_images, render_attachment, save_and_get_tag
-from .webmentions import send_webmention
 
 logger = logging.getLogger(__name__)
 
 
-def form_to_mf2(request):
-    """ """
-    properties = {}
-    post = request.POST
-    for key in post.keys():
-        if key.endswith("[]"):
-            key = key[:-2]
-        if key == "access_token":
-            continue
-        properties[key] = post.getlist(key) + post.getlist(key + "[]")
-    mf = {"type": [f'h-{post.get("h", "")}'], "properties": properties}
-    return normalize_properties_to_underscore(mf)
-
-
-def normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
-    """convert microformat2 property keys that use a hyphen to an underscore so DRF can serialize them"""
-    properties = {}
-    for key, value in data.get("properties", {}).items():
-        properties[key.replace("-", "_")] = value
-    return {"type": data["type"], "properties": properties}
-
-
-def normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
-    h_entry = normalize_properties_to_underscore(data)
-    return h_entry
-
-
-# TODO: Refactor into a CBV and break logical components into
 @api_view(["GET", "POST"])
 def micropub(request):  # noqa: C901 too complex (30)
     """
     Micropub endpoint takes a micropub request, prepares images / data into the same
     structure as if they were posted via the web interface and uses those forms to process it.
     """
-    normalize = {
-        "application/json": lambda r: normalize_properties(r.data),
-        "application/x-www-form-urlencoded": form_to_mf2,
-        "multipart/form-data": form_to_mf2,
-    }
 
     # authenticate
-    auth = get_authorization_header(request)
+    # TODO: Move indieauth into standard DRF/Django Middleware
     try:
-        token = auth.split()[1].decode()
-    except IndexError:
-        token = request.POST.get("access_token")
-    except UnicodeError:
-        msg = _("Invalid token header. Token string should not contain invalid characters.")
-        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+        token = authentication_domain.authenticate_request(request=request)
+    except authentication_domain.TokenNotFound:
+        return Response(
+            data={"message": "Invalid request. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    except authentication_domain.InvalidToken:
+        return Response(data={"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+    except authentication_domain.PermissionDenied:
+        return Response(data={"message": "Scope permission denied"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not token:
-        msg = _("Invalid request. No credentials provided.")
-        return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
     # normalize before sending to serializer
     try:
-        body = normalize[request.content_type.split(";")[0]](request)
-    except KeyError:
+        body = micropub_app.normalize_request(
+            content_type=request.content_type,
+            request_data=request.data,
+            post_data=request.POST,
+        )
+    except micropub_app.UnknownContentType:
         return Response(
             data={"message": "Invalid content-type"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    else:
+        props = body["properties"]
 
-    props = body["properties"]
-    if not body.get("access_token"):
-        body["access_token"] = token
-    body["type"] = body["type"][0]  # type is a list but needs to be a string
-    if not body.get("action"):
-        body["action"] = request.data.get("action", "create")
-
+    # TODO: Layerize / refactor this view from here below. Will require layerizing entry app first.
     serializer = MicropubSerializer(data=body)
-
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -204,7 +169,7 @@ def micropub(request):  # noqa: C901 too complex (30)
     if named_forms.get("checkin"):
         form_class = CreateCheckinForm
 
-    form = form_class(data=form_data, p_author=serializer.validated_data["access_token"].user)
+    form = form_class(data=form_data, p_author=authentication_domain.queries.get_user_for_token(key=token))
 
     if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
@@ -217,7 +182,7 @@ def micropub(request):  # noqa: C901 too complex (30)
                 named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            send_webmention(request, entry.t_post, entry.e_content)
+            webmention_app.send_webmention(request, entry.t_post, entry.e_content)
 
         response = Response(status=status.HTTP_201_CREATED)
         response["Location"] = request.build_absolute_uri(entry.t_post.get_absolute_url())
@@ -230,20 +195,13 @@ def micropub(request):  # noqa: C901 too complex (30)
 @login_required
 def review_webmention(request, pk: int, approval: bool):
     t_web_mention: TWebmention = get_object_or_404(TWebmention.objects.select_related(), pk=pk)
-    t_webmention_response = t_web_mention.t_webmention_response
 
-    with transaction.atomic():
-        t_web_mention.approval_status = approval
-        t_webmention_response.reviewed = True
+    webmention_app.moderate_webmention(t_web_mention=t_web_mention, approval=approval)
 
-        t_webmention_response.save()
-        t_web_mention.save()
-    webmentions = (
-        TWebmention.objects.filter(approval_status=None).select_related("t_post", "t_webmention_response").reverse()
-    )
+    webmentions = webmention_domain.pending_moderation()
     context = {
         "webmentions": webmentions,
-        "unread_count": webmentions.count(),
+        "unread_count": len(webmentions),
     }
     return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
 
@@ -275,31 +233,27 @@ def indieauth_authorize(request):
     if request.method == "POST":
         form = IndieAuthAuthorizationForm(request.POST)
         if form.is_valid():
-            t_token = form.save(request.user)
+            t_token = authentication_domain.operations.create_token_for_user(
+                user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
+            )
             redirect_uri = (
                 f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
             )
             return redirect(redirect_uri)
-        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
 
+        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
         return render(request, "indieweb/indieauth/authorization.html", context=context)
 
 
 @api_view(["POST", "GET"])
 def token_endpoint(request):
     if request.method == "GET":
-        auth = get_authorization_header(request)
         try:
-            token = auth.split()[1]
-        except IndexError:
-            msg = _("Invalid token header. No credentials provided.")
-            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            data = {"token": token.decode()}
-        except UnicodeError:
-            msg = _("Invalid token header. Token string should not contain invalid characters.")
-            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+            data = {"token": authentication_domain.extract_auth_token_from_request(request=request)}
+        except authentication_domain.InvalidToken:
+            return Response(
+                data={"message": "Invalid token header. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = IndieAuthTokenVerificationSerializer(data=data)
         if serializer.is_valid():
@@ -308,10 +262,13 @@ def token_endpoint(request):
 
     else:
         if request.POST.get("action", "") == "revoke":
-            serializer = IndieAuthTokenRevokeSerializer(data=request.POST)
-        else:
-            serializer = IndieAuthTokenSerializer(data=request.POST)
+            authentication_domain.revoke_token(key=request.POST.get("token", ""))
+            return Response(status=status.HTTP_200_OK)
+
+        serializer = IndieAuthTokenSerializer(data=request.POST)
         if serializer.is_valid():
-            serializer.save(request.user)
+            # Exchange our auth_token for a new token
+            t_token = serializer.validated_data["t_token"]
+            t_token.set_key(key=serializer.validated_data["access_token"])
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

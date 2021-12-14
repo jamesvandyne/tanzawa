@@ -4,7 +4,7 @@ import pytest
 import pytz
 from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
-from indieweb.extract import LinkedPage, LinkedPageAuthor
+from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 
 
 @pytest.fixture

@@ -30,7 +30,7 @@ from entry.forms import (
 from entry.models import TCheckin, TLocation
 from files.forms import MediaUploadForm
 from files.images import bytes_as_upload_image
-from indieweb.location import location_to_pointfield_input
+from indieweb.application.location import location_to_pointfield_input
 from indieweb.utils import download_image, render_attachment
 from turbo_response import TurboFrame, redirect_303
 

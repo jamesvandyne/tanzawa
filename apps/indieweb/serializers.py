@@ -3,15 +3,14 @@ from urllib.parse import urlparse
 
 from core.constants import Visibility
 from django.core.validators import URLValidator
-from django.db import transaction
 from django.urls import reverse
+from indieweb.application import extract
+from indieweb.application import location as indieweb_location
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
 from streams.models import MStream
 
 from . import constants
-from .extract import extract_reply_details_from_url
-from .location import get_location
 from .models import TToken
 from .utils import DataImage, download_image
 
@@ -35,12 +34,12 @@ class LocationField(serializers.Field):
         if isinstance(data, list):
             if isinstance(data[0], str):
                 # lat/long only form data
-                location = get_location({"properties": {"geo": data}})
+                location = indieweb_location.get_location({"properties": {"geo": data}})
             else:
                 # already microformatted
-                location = get_location(data[0])
+                location = indieweb_location.get_location(data[0])
         else:
-            location = get_location(data)
+            location = indieweb_location.get_location(data)
         return location
 
 
@@ -113,7 +112,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     visibility = VisibilityField(required=False, default=Visibility.PUBLIC)
 
     def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
-        linked_page = extract_reply_details_from_url(url)
+        linked_page = extract.extract_reply_details_from_url(url)
         link_dict = {
             url_key: url,
             "title": url,
@@ -151,8 +150,6 @@ class HEntryPropertiesSerializer(serializers.Serializer):
 
 class MicropubSerializer(serializers.Serializer):
     type = serializers.CharField(required=True)
-    access_token = serializers.CharField(required=True)
-    action = serializers.CharField(required=False, initial="create")
     url = serializers.URLField(required=False)
     properties = HEntryPropertiesSerializer(required=True)
 
@@ -162,20 +159,6 @@ class MicropubSerializer(serializers.Serializer):
             return constants.Microformats(v)
         except ValueError:
             raise serializers.ValidationError(f" {value} is an unsupported h-type")
-
-    def validate_access_token(self, value):
-        try:
-            return TToken.objects.get(key=value)
-        except TToken.DoesNotExist:
-            raise serializers.ValidationError("Token not found.")
-
-    def validate(self, data):
-        action = data.get("action")
-        if action:
-            t_token: TToken = data["access_token"]
-            if not t_token.micropub_scope.filter(key__exact=action).exists():
-                raise serializers.ValidationError(f"Token does not have {action} permissions")
-        return data
 
 
 class CreateMicropubSerializer(MicropubSerializer):
@@ -229,13 +212,6 @@ class IndieAuthTokenSerializer(serializers.Serializer):
             data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
 
-    @transaction.atomic
-    def save(self, user):
-        t_token = self.validated_data["t_token"]
-        t_token.auth_token = ""
-        t_token.key = self.validated_data["access_token"]
-        t_token.save()
-
 
 class IndieAuthTokenVerificationSerializer(serializers.Serializer):
     token = serializers.CharField(write_only=True)
@@ -255,18 +231,3 @@ class IndieAuthTokenVerificationSerializer(serializers.Serializer):
         data["client_id"] = t_token.client_id
         data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
-
-
-class IndieAuthTokenRevokeSerializer(serializers.Serializer):
-    token = serializers.CharField(write_only=True)
-
-    def validate_token(self, value):
-        try:
-            return TToken.objects.get(key=value)
-        except TToken.DoesNotExist:
-            return None
-
-    def save(self, user):
-        t_token = self.validated_data["token"]
-        if t_token:
-            t_token.delete()

@@ -9,9 +9,9 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 from django.views.generic import CreateView, FormView, ListView, UpdateView
+from indieweb.application import extract as indieweb_extract
+from indieweb.application import webmentions
 from indieweb.constants import MPostKinds, MPostStatuses
-from indieweb.extract import extract_reply_details_from_url
-from indieweb.webmentions import send_webmention
 from post.models import MPostKind
 from turbo_response import TurboFrame, redirect_303
 
@@ -45,7 +45,7 @@ class CreateEntryView(CreateView):
                 named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            send_webmention(self.request, entry.t_post, entry.e_content)
+            webmentions.send_webmention(self.request, entry.t_post, entry.e_content)
 
         permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": entry.t_post})
         messages.success(
@@ -119,7 +119,7 @@ class UpdateEntryView(UpdateView):
     def form_valid(self, form, named_forms=None):
         form.prepare_data()
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            send_webmention(self.request, form.instance.t_post, self.original_content)
+            webmentions.send_webmention(self.request, form.instance.t_post, self.original_content)
 
         with transaction.atomic():
             entry = form.save()
@@ -129,7 +129,7 @@ class UpdateEntryView(UpdateView):
                 named_form.save()
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
-            send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+            webmentions.send_webmention(self.request, form.instance.t_post, form.instance.e_content)
 
         permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": form.instance.t_post})
         messages.success(
@@ -183,7 +183,7 @@ class ExtractLinkedPageMetaView(FormView):
         }
 
     def form_valid(self, form):
-        linked_page = extract_reply_details_from_url(form.cleaned_data["url"])
+        linked_page = indieweb_extract.extract_reply_details_from_url(form.cleaned_data["url"])
         initial = {
             self.url_key: form.cleaned_data["url"],
             "title": form.cleaned_data["url"],
@@ -364,7 +364,7 @@ def status_detail(request, pk: int):
 @login_required
 def status_delete(request, pk: int):
     status = get_object_or_404(models.TEntry.objects, pk=pk)
-    send_webmention(request, status.t_post, status.e_content)
+    webmentions.send_webmention(request, status.t_post, status.e_content)
     status.delete()
     # TODO: Should we also delete the t_post ?
     messages.success(request, "Status Deleted")
@@ -427,7 +427,7 @@ class TEntryListView(ListView):
 @login_required
 def article_delete(request, pk: int):
     status = get_object_or_404(models.TEntry.objects, pk=pk)
-    send_webmention(request, status.t_post, status.e_content)
+    webmentions.send_webmention(request, status.t_post, status.e_content)
     status.delete()
     # TODO: Should we also delete the t_post ?
     messages.success(request, "Article Deleted")
