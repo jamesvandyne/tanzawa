@@ -3,7 +3,6 @@ from urllib.parse import urlparse
 
 from core.constants import Visibility
 from django.core.validators import URLValidator
-from django.db import transaction
 from django.urls import reverse
 from indieweb.application import extract
 from indieweb.application import location as indieweb_location
@@ -213,13 +212,6 @@ class IndieAuthTokenSerializer(serializers.Serializer):
             data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
 
-    @transaction.atomic
-    def save(self, user):
-        t_token = self.validated_data["t_token"]
-        t_token.auth_token = ""
-        t_token.key = self.validated_data["access_token"]
-        t_token.save()
-
 
 class IndieAuthTokenVerificationSerializer(serializers.Serializer):
     token = serializers.CharField(write_only=True)
@@ -239,18 +231,3 @@ class IndieAuthTokenVerificationSerializer(serializers.Serializer):
         data["client_id"] = t_token.client_id
         data["scope"] = " ".join(t_token.micropub_scope.values_list("key", flat=True))
         return data
-
-
-class IndieAuthTokenRevokeSerializer(serializers.Serializer):
-    token = serializers.CharField(write_only=True)
-
-    def validate_token(self, value):
-        try:
-            return TToken.objects.get(key=value)
-        except TToken.DoesNotExist:
-            return None
-
-    def save(self, user):
-        t_token = self.validated_data["token"]
-        if t_token:
-            t_token.delete()

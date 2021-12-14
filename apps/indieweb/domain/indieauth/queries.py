@@ -22,3 +22,7 @@ def get_token_with_scope(*, key: str, action: str) -> TToken:
 
 def get_user_for_token(*, key: str):
     return TToken.objects.select_related("user").get(key__exact=key).user
+
+
+def get_new_token() -> str:
+    return TToken.generate_key()

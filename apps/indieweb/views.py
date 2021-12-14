@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext_lazy as _
 from entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -21,7 +20,6 @@ from indieweb.application import micropub as micropub_app
 from indieweb.application import webmentions as webmention_app
 from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
-from rest_framework.authentication import get_authorization_header
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from turbo_response import TurboFrame
@@ -33,7 +31,6 @@ from .forms import IndieAuthAuthorizationForm
 from .models import TWebmention
 from .serializers import (
     IndieAuthAuthorizationSerializer,
-    IndieAuthTokenRevokeSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
     MicropubSerializer,
@@ -78,6 +75,7 @@ def micropub(request):  # noqa: C901 too complex (30)
     else:
         props = body["properties"]
 
+    # TODO: Layerize / refactor this view from here below. Will require layerizing entry app first.
     serializer = MicropubSerializer(data=body)
     if not serializer.is_valid():
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -235,31 +233,27 @@ def indieauth_authorize(request):
     if request.method == "POST":
         form = IndieAuthAuthorizationForm(request.POST)
         if form.is_valid():
-            t_token = form.save(request.user)
+            t_token = authentication_domain.operations.create_token_for_user(
+                user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
+            )
             redirect_uri = (
                 f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
             )
             return redirect(redirect_uri)
-        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
 
+        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
         return render(request, "indieweb/indieauth/authorization.html", context=context)
 
 
 @api_view(["POST", "GET"])
 def token_endpoint(request):
     if request.method == "GET":
-        auth = get_authorization_header(request)
         try:
-            token = auth.split()[1]
-        except IndexError:
-            msg = _("Invalid token header. No credentials provided.")
-            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            data = {"token": token.decode()}
-        except UnicodeError:
-            msg = _("Invalid token header. Token string should not contain invalid characters.")
-            return Response(data={"message": msg}, status=status.HTTP_400_BAD_REQUEST)
+            data = {"token": authentication_domain.extract_auth_token_from_request(request=request)}
+        except authentication_domain.InvalidToken:
+            return Response(
+                data={"message": "Invalid token header. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer = IndieAuthTokenVerificationSerializer(data=data)
         if serializer.is_valid():
@@ -268,10 +262,13 @@ def token_endpoint(request):
 
     else:
         if request.POST.get("action", "") == "revoke":
-            serializer = IndieAuthTokenRevokeSerializer(data=request.POST)
-        else:
-            serializer = IndieAuthTokenSerializer(data=request.POST)
+            authentication_domain.revoke_token(key=request.POST.get("token", ""))
+            return Response(status=status.HTTP_200_OK)
+
+        serializer = IndieAuthTokenSerializer(data=request.POST)
         if serializer.is_valid():
-            serializer.save(request.user)
+            # Exchange our auth_token for a new token
+            t_token = serializer.validated_data["t_token"]
+            t_token.set_key(key=serializer.validated_data["access_token"])
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

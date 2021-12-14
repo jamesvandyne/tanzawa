@@ -32,6 +32,23 @@ class TToken(TimestampModel):
     def __str__(self):
         return f"{self.auth_token}::{self.key}"
 
+    @classmethod
+    def new(cls, *, user, auth_token: str, client_id: str, key: str = ""):
+        return cls.objects.create(
+            user=user,
+            auth_token=auth_token,
+            key=key,
+            client_id=client_id,
+        )
+
+    def set_key(self, *, key: str):
+        """Set our final authorization key.
+        Once key is set the initial auth token is invalid, so we clear it as well.
+        """
+        self.key = key
+        self.auth_token = ""
+        self.save()
+
 
 class TTokenMicropubScope(TimestampModel):
     t_token = models.ForeignKey(TToken, on_delete=models.CASCADE)
