@@ -1,10 +1,9 @@
 module.exports = {
-  purge: [
+  content: [
      '../apps/**/*.html',
       '../apps/**/forms.py',
       'src/**/*.js',
    ],
-  darkMode: false, // or 'media' or 'class'
   theme: {
     colors: {
       'white': '#ffffff',
@@ -52,9 +51,6 @@ module.exports = {
         '99': '45rem',
       },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [],
 }
