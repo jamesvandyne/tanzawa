@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+.theme-platinum {
+  --color-primary: #DDDDDD;
+  --color-secondary: #999CFC;
+  /* ... */
+}
+
+
+.selected {
+  @apply border-r-4  bg-secondary;
+}
+
