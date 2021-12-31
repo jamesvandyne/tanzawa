@@ -16,23 +16,23 @@
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint"/>
     <link href="{{ absolute_url }}{% url 'indieweb:micropub' %}" rel="micropub"/>
     <link href="{{ absolute_url }}{% url 'micropub_media' %}" rel="micropub_media"/>
-    <link href="{% static 'tailwind/style.css' %}?=1" rel="stylesheet">
+    <link href="{% static 'themes/platinum/style.css' %}" rel="stylesheet">
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
     <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
     <script src="{% static 'js/public.js' %}"></script>
     {% block head %}{% endblock %}
 </head>
-<body class="bg-bianca-500">
+<body class="bg-primary">
     <div class="min-h-screen flex flex-col">
         <header class="p-2">
             {% block header %}
             <nav  data-controller="reveal">
                 <div class="flex">
-                    <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
+                    <h1 class="text-secondary text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
 
-                    <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-negroni-900{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
-                    <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-negroni-900{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
+                    <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
+                    <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
 
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
@@ -51,16 +51,16 @@
                     {% if request.user.is_authenticated %}
                         <li class="p-1 mb-2"><a href="{% url "post:dashboard" %}" class="w-full inline-block"><span class="mr-1">🖥</span><span>Dashboard</span></a></li>
                     {% endif %}
-                    <li class="{% if 'home' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    <li class="{% if 'trips' in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:trips" %}" class="w-full inline-block"><span class="mr-1">✈️</span><span>Trips</span></a></li>
-                    <li class="{% if 'maps' in selected %}border-l-4 border-negroni-900{% endif %}"><a href="{% url "public:cluster_map" %}" class="w-full inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a></li>
+                    <li class="{% if 'home' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if 'trips' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:trips" %}" class="w-full inline-block"><span class="mr-1">✈️</span><span>Trips</span></a></li>
+                    <li class="{% if 'maps' in selected %}border-l-4 border-secondary{% endif %}"><a href="{% url "public:cluster_map" %}" class="w-full inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
                             {% render_plugin plugin.identifier "NAV.TOP.MOBILE" %}
                         {% endif %}
                     {% endfor %}
                     {% for stream in streams %}
-                        <li class="{% if stream.slug in selected %}border-l-4 border-negroni-900{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
+                        <li class="{% if stream.slug in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:stream" stream.slug %}" class="w-full inline-block"><span class="mr-1">{{ stream.icon }}</span><span>{{ stream.name }}</span></a></li>
                     {% endfor %}
                 </ul>
             </nav>
