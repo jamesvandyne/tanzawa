@@ -16,7 +16,7 @@
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint"/>
     <link href="{{ absolute_url }}{% url 'indieweb:micropub' %}" rel="micropub"/>
     <link href="{{ absolute_url }}{% url 'micropub_media' %}" rel="micropub_media"/>
-    <link href="{% static 'themes/platinum/style.css' %}" rel="stylesheet">
+    <link href="{% static request.settings.theme|default:"tailwind"|add:"/style.css" %}" rel="stylesheet"/>
     <link rel="webmention" href="{{ absolute_url }}{% url "webmention:receive" %}"/>
     {% endwith %}
     <link href="{% static 'leaflet/leaflet.css' %}" rel="stylesheet">
