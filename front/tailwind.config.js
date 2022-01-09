@@ -9,6 +9,12 @@ module.exports = {
       'white': '#ffffff',
       'transparent': 'transparent',
       'current': 'currentColor',
+      'primary': {
+        DEFAULT: "#fbf7ef", // bg-bianca-500
+      },
+      'secondary': {
+          DEFAULT: "#78695b", // negroni-900
+      },
       'bianca': {
         '50': '#fffffe',
         '100': '#fffefd',

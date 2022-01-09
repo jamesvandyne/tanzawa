@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.selected {
+  @apply border-r-4  border-secondary;
+}
+

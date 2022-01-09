@@ -1,18 +1,20 @@
 module.exports = {
   content: [
-    '../../../apps/templates/base_public.html',
-    '../../../apps/templates/public/**/*.html',
-    '../../../src/public_controllers/*.js',
+    './../../../../apps/templates/base_public.html',
+    '../../../../apps/templates/public/**/*.html',
+    '../../../../src/public_controllers/*.js',
   ],
   theme: {
     colors: {
       'white': '#ffffff',
       'transparent': 'transparent',
       'current': 'currentColor',
-      'primary': "#ddddd",
+      'primary': "#dddddd",
       'secondary': "#999CFC",
       },
     extend: {
+       colors: {
+       } ,
       spacing: {
         '99': '45rem',
       },
