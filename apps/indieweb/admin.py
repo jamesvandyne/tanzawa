@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     MMicropubScope,
+    TRelMe,
     TToken,
     TTokenMicropubScope,
     TWebmention,
@@ -18,3 +19,4 @@ admin.site.register(TWebmentionSend, TWebmentionSendAdmin)
 admin.site.register(TToken)
 admin.site.register(MMicropubScope)
 admin.site.register(TTokenMicropubScope)
+admin.site.register(TRelMe)

@@ -1,4 +1,4 @@
-{% load static plugins %}
+{% load static plugins indieweb %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -8,10 +8,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% if title %}{{ title }} - {% endif %}🏔 {{ request.settings.title }}</title>
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
-    <link rel="alternate" type="application/rss+xml" title="🏔Tanzawa" href="{{ absolute_url }}{% url 'feeds:feed' %}">
+    <link rel="alternate" type="application/rss+xml" title="🏔{{ request.settings.title }}" href="{{ absolute_url }}{% url 'feeds:feed' %}">
     {% if stream %}
-    <link rel="alternate" type="application/rss+xml" title="🏔Tanzawa - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'feeds:stream_feed' stream.slug %}">
+    <link rel="alternate" type="application/rss+xml" title="🏔{{ request.settings.title }} - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'feeds:stream_feed' stream.slug %}">
     {% endif %}
+    {% render_relme %}
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint"/>
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint"/>
     <link href="{{ absolute_url }}{% url 'indieweb:micropub' %}" rel="micropub"/>
