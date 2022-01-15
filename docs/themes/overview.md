@@ -1,8 +1,7 @@
-# Themes
-
+# Overview
 Themes allow you to customize the color scheme used by your website.
 
-## Install Location
+## Theme location
 
 Themes live in `front/src/themes/`.  Each theme must be contained in its own directory. 
 
