@@ -9,7 +9,7 @@
   
   
   <link rel="shortcut icon" href="../../img/favicon.ico">
-  <title>Overview - Tanzawa Documentation</title>
+  <title>Rel-me - Tanzawa Documentation</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
   <link rel="stylesheet" href="../../css/theme.css" />
@@ -18,8 +18,8 @@
   
   <script>
     // Current page data
-    var mkdocs_page_name = "Overview";
-    var mkdocs_page_input_path = "themes/overview.md";
+    var mkdocs_page_name = "Rel-me";
+    var mkdocs_page_input_path = "indieweb/relme.md";
     var mkdocs_page_url = null;
   </script>
   
@@ -55,8 +55,12 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Indieweb</span></p>
-                <ul>
-                    <li class="toctree-l1"><a class="reference internal" href="../../indieweb/relme/">Rel-me</a>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Rel-me</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#registering-urls">Registering URLs</a>
+    </li>
+    </ul>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Plugins</span></p>
@@ -67,18 +71,8 @@
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Theming</span></p>
-                <ul class="current">
-                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Overview</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#theme-location">Theme location</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#how-to-create-a-theme">How to create a theme</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#building-your-theme">Building your theme</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#activating-your-theme">Activating your theme</a>
-    </li>
-    </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../../themes/overview/">Overview</a>
                     </li>
                 </ul>
                 <p class="caption"><span class="caption-text">Community</span></p>
@@ -107,11 +101,11 @@
     
       
         
-          <li>Theming &raquo;</li>
+          <li>Indieweb &raquo;</li>
         
       
     
-    <li>Overview</li>
+    <li>Rel-me</li>
     <li class="wy-breadcrumbs-aside">
       
     </li>
@@ -123,73 +117,11 @@
           <div role="main">
             <div class="section">
               
-                <h1 id="overview">Overview</h1>
-<p>Themes allow you to customize the color scheme used by your website.</p>
-<h2 id="theme-location">Theme location</h2>
-<p>Themes live in <code>front/src/themes/</code>.  Each theme must be contained in its own directory. </p>
-<p>Distribution files must be in <code>front/src/themes/&lt;themename&gt;/static/&lt;themename&gt;/</code>.</p>
-<p>The distribution stylesheet must be named <code>style.css</code> and be at the root of the static directory i.e. <code>front/src/themes/&lt;themename&gt;/static/&lt;themename&gt;/style.css</code></p>
-<h2 id="how-to-create-a-theme">How to create a theme</h2>
-<p>Create a <code>tailwind.config.js</code> in your new theme directory. </p>
-<p>To generate the appropriate styles, set the <code>content</code> value of your tailwind config as follows:</p>
-<pre><code>  content: [
-    './../../../../apps/templates/base_public.html',
-    './../../../../apps/templates/registration/login.html',
-    '../../../../apps/templates/public/**/*.html',
-    '../../../../src/public_controllers/*.js',
-  ]
-</code></pre>
-<p>Setup your theme and define the following colors:</p>
-<pre><code>  theme: {
-    colors: {
-      'white': '#ffffff',
-      'black': '#000000',
-      'transparent': 'transparent',
-      'current': 'currentColor',
-      'primary': {
-        DEFAULT: '#dddddd',  // main background color
-        '600': '#CCCCCC',  // button color
-        '800': '#BFBFBF', // button border color
-      },
-      'secondary': {
-        DEFAULT: '#999CFC',  // selection underline / site name color 
-        '600': '#97948f',  // footer/line between posts
-        '800': '#7476d6',  
-        '900': '#1a1c64',
-      },
-      },
-    extend: {
-      spacing: {
-        '99': '45rem',
-      },
-    },
-    variants: {
-      extend: {},
-    },
-  },
-</code></pre>
-<p>Inside your style.css, in addition to the tailwind base classes, define the following classes:</p>
-<pre><code class="language-css">@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
-.selected {
-  @apply border-r-4  border-secondary;
-}
-
-.primary-button {
-    @apply rounded bg-primary-600 border-primary-800 px-3 py-1 border;
-}
-</code></pre>
-<h2 id="building-your-theme">Building your theme</h2>
-<p>Tanzawa themes require Tailwind 3.0. From your theme's root directory, run the following command to build your theme.</p>
-<pre><code>$ npx tailwindcss -i ./style.css -o ./static/&lt;themename&gt;/style.css
-</code></pre>
-<p>Add <code>--watch</code> at the end of the command during development of your theme to automatically recompile the theme as you make changes to the css.</p>
-<h2 id="activating-your-theme">Activating your theme</h2>
-<p>Activate your theme in the Django admin by visiting <code>admin/settings/msitesettings/1/change/</code>, selecting your theme from the dropdown, and saving.</p>
-<p>Note in production usages of Tanzawa, you must start the django server and run <code>manage.py collectstatic</code> management command after uploading your theme to allow access to the new theme assets and styles.</p>
+                <h1 id="rel-me">Rel-me</h1>
+<p><a href="https://indieweb.org/rel-me">rel-me</a> is a way to identify yourself as the same person on another website or service from your own domain.</p>
+<p>Tanzawa allows you to register as many rel-me links as you'd like. All relme links will be listed in your <code>&lt;head&gt;</code> block of your website.</p>
+<h2 id="registering-urls">Registering URLs</h2>
+<p>To register rel-me urls, open <code>/admin/indieweb/trelme/add/</code> or from the Dashboard click Settings -&gt; Relme (located under Indieweb) -&gt; Add Relme. </p>
               
             </div>
           </div>
@@ -197,10 +129,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../../sites-using-tanzawa/" class="btn btn-neutral float-right" title="Sites Using Tanzawa">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../../plugins/overview/" class="btn btn-neutral float-right" title="Plugins">Next <span class="icon icon-circle-arrow-right"></span></a>
       
       
-        <a href="../../plugins/custom-plugins/" class="btn btn-neutral" title="Custom Plugins"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../customization/" class="btn btn-neutral" title="Customization"><span class="icon icon-circle-arrow-left"></span> Previous</a>
       
     </div>
   
@@ -226,10 +158,10 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../../plugins/custom-plugins/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../../customization/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../../sites-using-tanzawa/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../../plugins/overview/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
