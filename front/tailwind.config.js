@@ -15,6 +15,8 @@ module.exports = {
       'secondary': {
           DEFAULT: "#78695b", // negroni-900
           '600': '#e2ded7',  // bianca-600
+          '700': '#b8a18c', // 'negroni-700
+          '900': '#78695b'  // negroni-900
       },
       'bianca': {
         '50': '#fffffe',

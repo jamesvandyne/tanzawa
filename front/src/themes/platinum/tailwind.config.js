@@ -1,6 +1,7 @@
 module.exports = {
   content: [
     './../../../../apps/templates/base_public.html',
+    './../../../../apps/templates/registration/login.html',
     '../../../../apps/templates/public/**/*.html',
     '../../../../src/public_controllers/*.js',
   ],
@@ -23,8 +24,6 @@ module.exports = {
       },
       },
     extend: {
-       colors: {
-       } ,
       spacing: {
         '99': '45rem',
       },

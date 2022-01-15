@@ -777,13 +777,13 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-border-opacity: 1;
   border-color: rgb(26 175 68 / var(--tw-border-opacity));
 }
-.border-negroni-700 {
-  --tw-border-opacity: 1;
-  border-color: rgb(184 161 140 / var(--tw-border-opacity));
-}
 .border-secondary-600 {
   --tw-border-opacity: 1;
   border-color: rgb(226 222 215 / var(--tw-border-opacity));
+}
+.border-negroni-700 {
+  --tw-border-opacity: 1;
+  border-color: rgb(184 161 140 / var(--tw-border-opacity));
 }
 .bg-bianca-500 {
   --tw-bg-opacity: 1;
@@ -956,6 +956,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-negroni-800 {
   --tw-text-opacity: 1;
   color: rgb(147 128 112 / var(--tw-text-opacity));
+}
+.text-secondary-900 {
+  --tw-text-opacity: 1;
+  color: rgb(120 105 91 / var(--tw-text-opacity));
 }
 .text-negroni-700 {
   --tw-text-opacity: 1;
