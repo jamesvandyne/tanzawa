@@ -90,3 +90,4 @@ Add `--watch` at the end of the command during development of your theme to auto
 
 Activate your theme in the Django admin by visiting `admin/settings/msitesettings/1/change/`, selecting your theme from the dropdown, and saving.
  
+Note in production usages of Tanzawa, you must start the django server and run `manage.py collectstatic` management command after uploading your theme to allow access to the new theme assets and styles.
