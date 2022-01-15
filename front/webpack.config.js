@@ -52,6 +52,8 @@ const tailwindConfig = {
     contentBase: path.resolve(__dirname, "dist"),
     open: true,
   },
-}
+};
+
+
 
 module.exports = [adminConfig, publicConfig, tailwindConfig];

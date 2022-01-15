@@ -159,9 +159,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [
-    BASE_DIR / "../static/",
-]
+
+THEMES_ROOT = BASE_DIR / "../front/src/themes"
+THEMES = [path.stem for path in THEMES_ROOT.iterdir() if path.is_dir()]
+THEME_STATICFILE_DIRS = [path for path in THEMES_ROOT.glob("**/static") if path.is_dir()]
+STATICFILES_DIRS = [BASE_DIR / "../static/", *THEME_STATICFILE_DIRS]
+
 STATIC_ROOT = env.path("STATIC_ROOT")
 MEDIA_ROOT = env.path("MEDIA_ROOT")
 

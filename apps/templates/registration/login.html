@@ -5,8 +5,8 @@
 
 {% block content_wrapper %}
     <div class="flex justify-center h-screen flex-grow">
-        <div class="rounded border-negroni-700 border px-20 py-10 self-center shadow">
-            <h1 class="text-negroni-900 text-4xl text-center"><a href="{% url "public:home" %}" class="block flex justify-center"><span class="mr-1">🏔</span>Tanzawa</a></h1>
+        <div class="rounded border-secondary border px-20 py-10 self-center shadow">
+            <h1 class="text-secondary-900 text-4xl text-center"><a href="{% url "public:home" %}" class="block flex justify-center"><span class="mr-1">🏔</span>Tanzawa</a></h1>
             <form method="post" class="flex-col pt-4">
                 {% if form.errors %}
                     <h1 class="p-2 rounded">username or password incorrect</h1>
@@ -25,7 +25,7 @@
                     <input id="{{ form.password.id_for_label }}" autocomplete="current-password" name="password" type="password" class="input-field" placeholder="password"/>
                 </div>
                 <div class="text-center">
-                    <button class="green-button mt-4 shadow" type="submit">login</button>
+                    <button class="primary-button mt-4" type="submit">login</button>
                 </div>
         </form>
         </div>

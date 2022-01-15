@@ -1,15 +1,23 @@
 module.exports = {
-  purge: [
+  content: [
      '../apps/**/*.html',
       '../apps/**/forms.py',
       'src/**/*.js',
    ],
-  darkMode: false, // or 'media' or 'class'
   theme: {
     colors: {
       'white': '#ffffff',
       'transparent': 'transparent',
       'current': 'currentColor',
+      'primary': {
+        DEFAULT: "#fbf7ef", // bg-bianca-500
+      },
+      'secondary': {
+          DEFAULT: "#78695b", // negroni-900
+          '600': '#e2ded7',  // bianca-600
+          '700': '#b8a18c', // 'negroni-700
+          '900': '#78695b'  // negroni-900
+      },
       'bianca': {
         '50': '#fffffe',
         '100': '#fffefd',
@@ -52,9 +60,6 @@ module.exports = {
         '99': '45rem',
       },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [],
 }

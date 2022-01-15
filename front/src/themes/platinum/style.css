@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.selected {
+  @apply border-r-4  border-secondary;
+}
+
+.primary-button {
+    @apply rounded bg-primary-600 border-primary-800 px-3 py-1 border;
+}
