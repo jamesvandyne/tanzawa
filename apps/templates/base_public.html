@@ -44,9 +44,9 @@
                     {% endfor %}
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
-                            <div class="w-8 bg-negroni-700 h-1"></div>
-                            <div class="w-8 bg-negroni-700 h-1 mt-1"></div>
-                            <div class="w-8 bg-negroni-700 h-1 mt-1"></div>
+                            <div class="w-8 bg-secondary h-1"></div>
+                            <div class="w-8 bg-secondary h-1 mt-1"></div>
+                            <div class="w-8 bg-secondary h-1 mt-1"></div>
                         </button>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                     {% endif %}
                     <li class="{% if 'home' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     <li class="{% if 'trips' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:trips" %}" class="w-full inline-block"><span class="mr-1">✈️</span><span>Trips</span></a></li>
-                    <li class="{% if 'maps' in selected %}border-l-4 border-secondary{% endif %}"><a href="{% url "public:cluster_map" %}" class="w-full inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a></li>
+                    <li class="{% if 'maps' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:cluster_map" %}" class="w-full inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
                             {% render_plugin plugin.identifier "NAV.TOP.MOBILE" %}
