@@ -29,7 +29,12 @@
         <header class="max-w mx-auto p-2">
              <nav  data-controller="reveal">
                 <div class="flex">
-                    <h1 class="text-negroni-900 text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }} Admin</a></h1>
+                    <h1 class="text-negroni-900 text-2xl">
+                        <a href="{% url "public:home" %}">
+                            {% if request.settings.icon %}
+                                <span class="mr-1">{{ request.settings.icon }}</span>
+                            {% endif %}{{ request.settings.title }} Admin
+                        </a>
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
                             <div class="w-8 bg-negroni-700 h-1"></div>

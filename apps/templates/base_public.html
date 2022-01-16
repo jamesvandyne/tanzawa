@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% if title %}{{ title }} - {% endif %}🏔 {{ request.settings.title }}</title>
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
-    <link rel="alternate" type="application/rss+xml" title="🏔{{ request.settings.title }}" href="{{ absolute_url }}{% url 'feeds:feed' %}">
+    <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }}" href="{{ absolute_url }}{% url 'feeds:feed' %}">
     {% if stream %}
-    <link rel="alternate" type="application/rss+xml" title="🏔{{ request.settings.title }} - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'feeds:stream_feed' stream.slug %}">
+    <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }} - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'feeds:stream_feed' stream.slug %}">
     {% endif %}
     {% render_relme %}
     <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint"/>
@@ -33,8 +33,13 @@
             {% block header %}
             <nav  data-controller="reveal">
                 <div class="flex">
-                    <h1 class="text-secondary text-2xl"><a href="{% url "public:home" %}"><span class="mr-1">🏔</span>{{ request.settings.title }}</a></h1>
-
+                    <h1 class="text-secondary text-2xl">
+                        <a href="{% url "public:home" %}">
+                            {% if request.settings.icon %}
+                                <span class="mr-1">{{ request.settings.icon }}</span>
+                            {% endif %}{{ request.settings.title }}
+                        </a>
+                    </h1>
                     <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
                     <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
 
@@ -109,8 +114,8 @@
             </div>
             {% endblock %}
         </div>
-        <footer class="w-full text-center">
-            <span class="help-text">Made with care in Yokohama by <a href="https://jamesvandyne.com">@jamesvandyne</a></span>
+        <footer class="w-full">
+            {{ request.settings.footer_snippet|safe }}
         </footer>
     </div>
 </body>
