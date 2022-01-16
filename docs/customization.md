@@ -1,9 +1,18 @@
 # Customization
 
-### Site Name
+### Site Settings
 
 1. Visit the Django Settings by visiting `/admin/` or opening the Tanzawa Dashboard and clicking `Settings`.
 2. Click the "Site Settings" and add a record.
+
+From the Site Settings screen you can set:
+
+1. Site title
+2. Site subtitle
+3. Site emoji
+4. Active Theme
+5. Footer HTML content 
+
 
 ### Add Streams / Modifying the Navigation
 
