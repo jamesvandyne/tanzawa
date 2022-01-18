@@ -170,11 +170,11 @@ ResponseTypeChoices = [("id", "id"), ("code", "id+authorization")]
 
 class IndieAuthAuthorizationSerializer(serializers.Serializer):
 
-    me = serializers.URLField(required=True)
+    me = serializers.URLField(required=False)
     client_id = serializers.URLField(required=True)
     redirect_uri = serializers.URLField(required=True)
     state = serializers.CharField(required=True)
-    scope = serializers.CharField(required=True)
+    scope = serializers.CharField(required=False)
     response_type = serializers.ChoiceField(choices=ResponseTypeChoices, required=False, initial="id")
 
     def validate(self, data):

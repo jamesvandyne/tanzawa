@@ -122,3 +122,59 @@ class TestIndieAuthTokenRevoke:
         response = client.post(target, data=post_data)
         assert response.status_code == 400
         assert TToken.objects.filter(key=auth_token).exists() is True
+
+
+@pytest.mark.django_db
+class TestIndieAuthAuthorize:
+    @pytest.fixture
+    def target(self):
+        return "/a/indieauth/authorize"
+
+    @pytest.fixture
+    def post_data(self, auth_token, client_id):
+        return {
+            "response_type": "code",
+            "me": "https://jamesvandyne.com",
+            "redirect_uri": "https://indielogin.com/redirect/indieauth",
+            "client_id": "https://indielogin.com/",
+            "state": "808693bfa8c6bd1c586ea0f7",
+            "code_challenge": "NJlpogsr_MNS0FVGkzF",
+            "code_challenge_method": "S256",
+        }
+
+    @pytest.fixture
+    def ninka_mock(self, monkeypatch):
+        from ninka.indieauth import discoverAuthEndpoints
+
+        m = mock.Mock(discoverAuthEndpoints, autospec=True)
+        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        return m
+
+    def test_auth_only(self, target, client, ninka_mock, user, post_data):
+        """
+        Confirm that the endpoint works for authorization only requests. i.e. no scope
+        """
+        ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
+        client.force_login(user=user)
+        response = client.post(target, data=post_data)
+        assert response.status_code == 302
+
+        assert response.url == "https://indielogin.com/redirect/indieauth?state=808693bfa8c6bd1c586ea0f7"
+        assert TToken.objects.count() == 0
+
+    def test_returns_code_with_scope(self, target, client, ninka_mock, user, post_data):
+        """
+        Confirm that the endpoint works for authorization only requests. i.e. no scope/me
+        """
+        post_data["scope"] = "create"
+        ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
+        client.force_login(user=user)
+        response = client.post(target, data=post_data)
+        assert response.status_code == 302
+        t_token = TToken.objects.first()
+        assert t_token is not None
+
+        assert (
+            response.url
+            == f"https://indielogin.com/redirect/indieauth?state=808693bfa8c6bd1c586ea0f7&code={t_token.auth_token}"
+        )
