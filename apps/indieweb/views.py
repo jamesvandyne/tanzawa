@@ -219,7 +219,7 @@ def indieauth_authorize(request):
         if not serializer.is_valid():
             return HttpResponseBadRequest(serializer.errors.values())
 
-        scopes = serializer.validated_data["scope"].split(" ")
+        scopes = serializer.validated_data.get("scope", "").split(" ")
         form = IndieAuthAuthorizationForm(
             initial={
                 "scope": scopes,
