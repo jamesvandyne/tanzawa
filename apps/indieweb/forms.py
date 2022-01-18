@@ -16,6 +16,6 @@ class IndieAuthAuthorizationForm(forms.Form):
     scope = forms.ModelMultipleChoiceField(
         MMicropubScope.objects,
         to_field_name="key",
-        required=True,
+        required=False,
         widget=MMicropubCheckboxWidget,
     )

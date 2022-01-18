@@ -208,7 +208,11 @@ def review_webmention(request, pk: int, approval: bool):
 
 @login_required
 def indieauth_authorize(request):
+    """
+    Implements the IndieAuth Authorization Request
 
+    refs: https://indieauth.spec.indieweb.org/#authorization-request
+    """
     if request.method == "GET":
         serializer = IndieAuthAuthorizationSerializer(data=request.GET)
 
@@ -233,12 +237,15 @@ def indieauth_authorize(request):
     if request.method == "POST":
         form = IndieAuthAuthorizationForm(request.POST)
         if form.is_valid():
-            t_token = authentication_domain.operations.create_token_for_user(
-                user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
-            )
-            redirect_uri = (
-                f"{form.cleaned_data['redirect_uri']}?code={t_token.auth_token}&state={form.cleaned_data['state']}"
-            )
+            redirect_uri = f"{form.cleaned_data['redirect_uri']}?state={form.cleaned_data['state']}"
+            if form.cleaned_data["scope"]:
+                # If the client omits this value, the authorization server MUST NOT
+                # issue an access token for this authorization code. Only the user's profile URL
+                # may be returned without any scope requested.
+                t_token = authentication_domain.operations.create_token_for_user(
+                    user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
+                )
+                redirect_uri = f"{redirect_uri}&code={t_token.auth_token}"
             return redirect(redirect_uri)
 
         context = {"form": form, "client_id": form.cleaned_data["client_id"]}
