@@ -1,7 +1,14 @@
 from typing import Optional
 
-from django.http import HttpResponseNotFound, HttpResponsePermanentRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseNotFound,
+    HttpResponsePermanentRedirect,
+)
 from django.urls import reverse
+from django.views.decorators.cache import cache_control
+from django.views.decorators.http import require_GET
 from wordpress.models import TCategory, TWordpressPost
 
 
@@ -25,3 +32,19 @@ def handle404(request, exception):
                 # Redirect to stream page
                 return HttpResponsePermanentRedirect(reverse("public:stream", args=[t_category.m_stream.slug]))
     return HttpResponseNotFound()
+
+
+@require_GET
+@cache_control(max_age=60 * 60 * 24, immutable=True, public=True)  # one day
+def favicon(request: HttpRequest) -> HttpResponse:
+
+    return HttpResponse(
+        (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+            + '<text y=".9em" font-size="90">'
+            + request.settings.icon
+            + "</text>"
+            + "</svg>"
+        ),
+        content_type="image/svg+xml",
+    )

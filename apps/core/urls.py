@@ -34,6 +34,7 @@ urlpatterns = [
     path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
+    path("favicon.ico", views.favicon),
 ]
 
 # Include any plugin urls after core urls.
