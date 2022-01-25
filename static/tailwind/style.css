@@ -494,13 +494,13 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-left: auto;
   margin-right: auto;
 }
-.my-2 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+}
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 .mb-1 {
   margin-bottom: 0.25rem;
@@ -576,6 +576,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .table {
   display: table;
+}
+.grid {
+  display: grid;
 }
 .hidden {
   display: none;
@@ -696,6 +699,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .grid-flow-col {
   grid-auto-flow: column;
 }
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
 .flex-col {
   flex-direction: column;
 }
@@ -713,6 +719,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .justify-between {
   justify-content: space-between;
+}
+.gap-2 {
+  gap: 0.5rem;
 }
 .gap-4 {
   gap: 1rem;
@@ -797,6 +806,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-bg-opacity: 1;
   background-color: rgb(251 247 239 / var(--tw-bg-opacity));
 }
+.bg-secondary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(120 105 91 / var(--tw-bg-opacity));
+}
 .bg-malachite-800 {
   --tw-bg-opacity: 1;
   background-color: rgb(20 140 54 / var(--tw-bg-opacity));
@@ -804,10 +817,6 @@ Ensure the default browser behavior of the `hidden` attribute.
 .bg-malachite-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(200 250 214 / var(--tw-bg-opacity));
-}
-.bg-secondary {
-  --tw-bg-opacity: 1;
-  background-color: rgb(120 105 91 / var(--tw-bg-opacity));
 }
 .bg-bianca-900 {
   --tw-bg-opacity: 1;

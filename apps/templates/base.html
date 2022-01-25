@@ -35,6 +35,7 @@
                                 <span class="mr-1">{{ request.settings.icon }}</span>
                             {% endif %}{{ request.settings.title }} Admin
                         </a>
+                    </h1>
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
                             <div class="w-8 bg-negroni-700 h-1"></div>
@@ -52,12 +53,9 @@
 
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
-                 <div data-reveal-target="item" class="mb-2 hidden md:hidden mt-2">
-                     {% include "fragments/create_post_menu.html" %}
-                 </div>
             </nav>
         </header>
-        <div class="flex">
+        <div class="md:flex">
             <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
                 <ul class="mb-2" data-controller="select" data-select-selected-class="selected">
                     <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "post:dashboard" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🏡</span><span>Home</span></a></li>
@@ -68,6 +66,14 @@
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
+            {% if nav == "dashboard" %}
+                <div class="mx-auto mx-2 grid grid-cols-2 gap-2 md:hidden">
+                    <a href="{% url "status_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
+                    <a href="{% url "article_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a>
+                    <a href="{% url "reply_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">📤️</span><span class="hover:underline">New Reply</span></a>
+                    <a href="{% url "bookmark_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">🔖️</span><span class="hover:underline">New Bookmark</span></a>
+                </div>
+            {% endif %}
             <div id="content" class="w-11/12 flex flex-col">
                 {% block content %}
                 {% include "fragments/content.html" %}
