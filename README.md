@@ -74,3 +74,4 @@ Streams are how you categorize posts in Tanzawa. By default Tanzawa creates stre
 Is your site running Tanzawa? Open a pull request and add your site below.
 
 * [James Van Dyne](https://jamesvandyne.com)
+* [Ricardo Mendes](https://blog.rmendes.net)
