@@ -206,7 +206,7 @@ def review_webmention(request, pk: int, approval: bool):
     return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
 
 
-@login_required
+@csrf_exempt
 def indieauth_authorize(request):
     """
     Implements the IndieAuth Authorization Request
@@ -234,22 +234,22 @@ def indieauth_authorize(request):
         }
         return render(request, "indieweb/indieauth/authorization.html", context=context)
 
-    if request.method == "POST":
-        form = IndieAuthAuthorizationForm(request.POST)
-        if form.is_valid():
-            redirect_uri = f"{form.cleaned_data['redirect_uri']}?state={form.cleaned_data['state']}"
-            if form.cleaned_data["scope"]:
-                # If the client omits this value, the authorization server MUST NOT
-                # issue an access token for this authorization code. Only the user's profile URL
-                # may be returned without any scope requested.
-                t_token = authentication_domain.operations.create_token_for_user(
-                    user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
-                )
-                redirect_uri = f"{redirect_uri}&code={t_token.auth_token}"
-            return redirect(redirect_uri)
 
-        context = {"form": form, "client_id": form.cleaned_data["client_id"]}
-        return render(request, "indieweb/indieauth/authorization.html", context=context)
+@login_required
+@require_POST
+def indieauth_authorize_request(request):
+    """
+    Save a request for authorization.
+    """
+    form = IndieAuthAuthorizationForm(request.POST)
+    if form.is_valid():
+        redirect_uri = f"{form.cleaned_data['redirect_uri']}?state={form.cleaned_data['state']}"
+        t_token = authentication_domain.operations.create_token_for_user(
+            user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
+        )
+        redirect_uri = f"{redirect_uri}&code={t_token.auth_token}"
+        return redirect(redirect_uri)
+    return redirect("indieweb:indieauth_authorize")
 
 
 @api_view(["POST", "GET"])

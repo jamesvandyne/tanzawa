@@ -23,5 +23,10 @@ urlpatterns = [
         views.indieauth_authorize,
         name="indieauth_authorize",
     ),
+    path(
+        "indieauth/authorize_request",
+        views.indieauth_authorize_request,
+        name="indieauth_authorize_request",
+    ),
     path("indieauth/token", views.token_endpoint, name="indieauth_token"),
 ]
