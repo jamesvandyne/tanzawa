@@ -189,7 +189,7 @@ class IndieAuthAuthorizationSerializer(serializers.Serializer):
 
 
 class IndieAuthTokenSerializer(serializers.Serializer):
-    me = serializers.URLField()
+    me = serializers.URLField(required=False)
     client_id = serializers.URLField(write_only=True)
     redirect_uri = serializers.URLField(write_only=True)
     code = serializers.CharField(write_only=True)
