@@ -1,5 +1,7 @@
 import binascii
+import datetime
 import os
+from typing import Optional
 
 from core.models import TimestampModel
 from django.contrib.auth import get_user_model
@@ -13,6 +15,7 @@ class TToken(TimestampModel):
     auth_token = models.CharField(max_length=40, blank=True)
     key = models.CharField(max_length=40, blank=True)
     client_id = models.URLField()
+    exchanged_at = models.DateTimeField(blank=True, null=True)
 
     micropub_scope = models.ManyToManyField(
         MMicropubScope,
@@ -47,6 +50,10 @@ class TToken(TimestampModel):
         """
         self.key = key
         self.auth_token = ""
+        self.save()
+
+    def set_exchanged_at(self, *, exchanged_at: Optional[datetime.datetime] = None) -> None:
+        self.exchanged_at = exchanged_at
         self.save()
 
 
