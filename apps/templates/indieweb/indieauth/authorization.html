@@ -7,7 +7,7 @@
     <div class="flex justify-center h-screen flex-grow" xmlns="http://www.w3.org/1999/html">
         <div class="rounded border-negroni-700 border px-20 py-10 self-center shadow">
             <h1 class="text-negroni-900 text-4xl text-center"><a href="{% url "public:home" %}" class="block flex justify-center"><span class="mr-1">🏔</span>Tanzawa</a></h1>
-            <form method="post" class="flex-col pt-4">
+            <form method="post" action="{% url 'indieweb:indieauth_authorize_request' %}" class="flex-col pt-4">
                 {% csrf_token %}
                 {{ form.client_id }}
                 {{ form.redirect_uri }}

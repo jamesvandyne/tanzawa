@@ -43,6 +43,7 @@ class TestIndieAuthExchangeToken:
         t_token.refresh_from_db()
         assert t_token.auth_token == ""
         assert t_token.key == data["access_token"]
+        assert t_token.exchanged_at is not None
 
     def test_used_token_invalid(self, target, client, ninka_mock, post_data):
         ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
@@ -133,6 +134,43 @@ class TestIndieAuthAuthorize:
     @pytest.fixture
     def post_data(self, auth_token, client_id):
         return {
+            "grant_type": "authorization_code",
+            "me": "https://b6260560dd45.ngrok.io/",
+            "code": auth_token,
+            "redirect_uri": "https://ownyourswarm.p3k.io/auth/callback",
+            "client_id": client_id,
+        }
+
+    @pytest.fixture
+    def ninka_mock(self, monkeypatch):
+        from ninka.indieauth import discoverAuthEndpoints
+
+        m = mock.Mock(discoverAuthEndpoints, autospec=True)
+        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        return m
+
+    def test_returns_me_for_auth(self, target, client, ninka_mock, post_data, t_token):
+        """
+        Confirm that the authorization works for authorization only requests and marks token used
+        """
+        ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
+        response = client.post(target, data=post_data)
+        assert response.status_code == 200
+        assert response.json() == {"me": f"http://testserver/author/{t_token.user.username}/"}
+
+        t_token.refresh_from_db()
+        assert t_token.exchanged_at is not None
+
+
+@pytest.mark.django_db
+class TestIndieAuthAuthorizeRequest:
+    @pytest.fixture
+    def target(self):
+        return "/a/indieauth/authorize_request"
+
+    @pytest.fixture
+    def post_data(self, auth_token, client_id):
+        return {
             "response_type": "code",
             "me": "https://jamesvandyne.com",
             "redirect_uri": "https://indielogin.com/redirect/indieauth",
@@ -150,29 +188,33 @@ class TestIndieAuthAuthorize:
         monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
-    def test_auth_only(self, target, client, ninka_mock, user, post_data):
+    def test_returns_code_no_scope(self, target, client, ninka_mock, user, post_data):
         """
-        Confirm that the endpoint works for authorization only requests. i.e. no scope
+        Confirm that we can create token requests for authorization only requests. i.e. no scope
         """
         ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
         client.force_login(user=user)
         response = client.post(target, data=post_data)
         assert response.status_code == 302
+        assert TToken.objects.count() == 1
+        t_token = TToken.objects.first()
 
-        assert response.url == "https://indielogin.com/redirect/indieauth?state=808693bfa8c6bd1c586ea0f7"
-        assert TToken.objects.count() == 0
+        assert (
+            response.url
+            == f"https://indielogin.com/redirect/indieauth?state=808693bfa8c6bd1c586ea0f7&code={t_token.auth_token}"
+        )
 
     def test_returns_code_with_scope(self, target, client, ninka_mock, user, post_data):
         """
-        Confirm that the endpoint works for authorization only requests. i.e. no scope/me
+        Confirm that we can create token requests i.e. creation/deletion scope etc..
         """
         post_data["scope"] = "create"
         ninka_mock.return_value = {"redirect_uri": [post_data["redirect_uri"]]}
         client.force_login(user=user)
         response = client.post(target, data=post_data)
         assert response.status_code == 302
+        assert TToken.objects.count() == 1
         t_token = TToken.objects.first()
-        assert t_token is not None
 
         assert (
             response.url

@@ -189,7 +189,7 @@ class IndieAuthAuthorizationSerializer(serializers.Serializer):
 
 
 class IndieAuthTokenSerializer(serializers.Serializer):
-    me = serializers.URLField()
+    me = serializers.URLField(required=False)
     client_id = serializers.URLField(write_only=True)
     redirect_uri = serializers.URLField(write_only=True)
     code = serializers.CharField(write_only=True)
@@ -203,7 +203,9 @@ class IndieAuthTokenSerializer(serializers.Serializer):
                 if data["redirect_uri"] not in response["redirect_uri"]:
                     raise serializers.ValidationError("Redirect uri not found on client app")
         try:
-            t_token = TToken.objects.get(auth_token=data["code"], client_id=data["client_id"])
+            t_token = TToken.objects.get(
+                auth_token=data["code"], client_id=data["client_id"], exchanged_at__isnull=True
+            )
         except TToken.DoesNotExist:
             raise serializers.ValidationError("Token not found")
         else:
