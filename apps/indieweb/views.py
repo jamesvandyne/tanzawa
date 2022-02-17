@@ -3,8 +3,12 @@ import logging
 from bs4 import BeautifulSoup
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 from entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -214,25 +218,43 @@ def indieauth_authorize(request):
     refs: https://indieauth.spec.indieweb.org/#authorization-request
     """
     if request.method == "GET":
-        serializer = IndieAuthAuthorizationSerializer(data=request.GET)
+        return _indieauth_authorize_form(request)
+    elif request.method == "POST":
+        serializer = IndieAuthTokenSerializer(data=request.POST)
+        if serializer.is_valid():
+            t_token = serializer.validated_data["t_token"]
+            with transaction.atomic():
+                t_token.set_key(key=serializer.validated_data["access_token"])
+                t_token.set_exchanged_at(exchanged_at=timezone.now())
+            return JsonResponse(
+                data={"me": request.build_absolute_uri(reverse("public:author", args=[t_token.user.username]))},
+                status=status.HTTP_200_OK,
+            )
+        return JsonResponse(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if not serializer.is_valid():
-            return HttpResponseBadRequest(serializer.errors.values())
 
-        scopes = serializer.validated_data.get("scope", "").split(" ")
-        form = IndieAuthAuthorizationForm(
-            initial={
-                "scope": scopes,
-                "redirect_uri": serializer.validated_data["redirect_uri"],
-                "client_id": serializer.validated_data["client_id"],
-                "state": serializer.validated_data["state"],
-            }
-        )
-        context = {
-            "form": form,
-            "client_id": serializer.validated_data.get("client_id"),
+@login_required
+@require_GET
+def _indieauth_authorize_form(request):
+    serializer = IndieAuthAuthorizationSerializer(data=request.GET)
+
+    if not serializer.is_valid():
+        return HttpResponseBadRequest(serializer.errors.values())
+
+    scopes = serializer.validated_data.get("scope", "").split(" ")
+    form = IndieAuthAuthorizationForm(
+        initial={
+            "scope": scopes,
+            "redirect_uri": serializer.validated_data["redirect_uri"],
+            "client_id": serializer.validated_data["client_id"],
+            "state": serializer.validated_data["state"],
         }
-        return render(request, "indieweb/indieauth/authorization.html", context=context)
+    )
+    context = {
+        "form": form,
+        "client_id": serializer.validated_data.get("client_id"),
+    }
+    return render(request, "indieweb/indieauth/authorization.html", context=context)
 
 
 @login_required
@@ -276,6 +298,8 @@ def token_endpoint(request):
         if serializer.is_valid():
             # Exchange our auth_token for a new token
             t_token = serializer.validated_data["t_token"]
-            t_token.set_key(key=serializer.validated_data["access_token"])
+            with transaction.atomic():
+                t_token.set_key(key=serializer.validated_data["access_token"])
+                t_token.set_exchanged_at(exchanged_at=timezone.now())
             return Response(data=serializer.data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
