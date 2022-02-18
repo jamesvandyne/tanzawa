@@ -36,7 +36,7 @@ class TestIndieAuthExchangeToken:
 
         data = response.json()
 
-        assert data["me"] == post_data["me"]
+        assert data["me"] == f"http://testserver/author/{t_token.user.username}/"
         assert len(data["access_token"]) == 40
         assert data["scope"] == "create update"
 
