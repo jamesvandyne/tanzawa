@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
@@ -227,7 +226,7 @@ def indieauth_authorize(request):
                 t_token.set_key(key=serializer.validated_data["access_token"])
                 t_token.set_exchanged_at(exchanged_at=timezone.now())
             return JsonResponse(
-                data={"me": request.build_absolute_uri(reverse("public:author", args=[t_token.user.username]))},
+                data={"me": authentication_domain.queries.get_me_url(request=request, t_token=t_token)},
                 status=status.HTTP_200_OK,
             )
         return JsonResponse(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -293,7 +292,6 @@ def token_endpoint(request):
         if request.POST.get("action", "") == "revoke":
             authentication_domain.revoke_token(key=request.POST.get("token", ""))
             return Response(status=status.HTTP_200_OK)
-
         serializer = IndieAuthTokenSerializer(data=request.POST)
         if serializer.is_valid():
             # Exchange our auth_token for a new token
@@ -301,5 +299,7 @@ def token_endpoint(request):
             with transaction.atomic():
                 t_token.set_key(key=serializer.validated_data["access_token"])
                 t_token.set_exchanged_at(exchanged_at=timezone.now())
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
+            response_data = serializer.data
+            response_data.update({"me": authentication_domain.queries.get_me_url(request=request, t_token=t_token)})
+            return Response(data=response_data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

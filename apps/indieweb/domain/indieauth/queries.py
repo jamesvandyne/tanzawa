@@ -1,3 +1,4 @@
+from django.urls import reverse
 from indieweb.models import TToken
 
 
@@ -26,3 +27,7 @@ def get_user_for_token(*, key: str):
 
 def get_new_token() -> str:
     return TToken.generate_key()
+
+
+def get_me_url(*, request, t_token: TToken) -> str:
+    return request.build_absolute_uri(reverse("public:author", args=[t_token.user.username]))
