@@ -17,11 +17,16 @@ build {
   sources = [
     "source.docker.ubuntu"
   ]
+  provisioner "file" {
+    source="setup/weekly_update.sh"
+    destination= "/tmp/weekly_update.sh"
+  }
   provisioner "shell" {
     environment_vars = []
     scripts = [
       "setup/base_install.sh"
     ]
   }
+
 
 }
