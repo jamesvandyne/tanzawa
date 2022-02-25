@@ -12,17 +12,35 @@ source "docker" "ubuntu" {
   commit = true
 }
 
+variable "server_name" {
+  default = env("SERVER_NAME")
+}
+
 build {
   name = "Base Tanzawa Server"
   sources = [
     "source.docker.ubuntu"
   ]
   provisioner "file" {
-    source="setup/weekly_update.sh"
-    destination= "/tmp/weekly_update.sh"
+    sources = [
+      "setup/weekly_update.sh",
+      "templates/nginx.conf",
+      "templates/uwsgi_params",
+    ]
+    destination = "/tmp/"
   }
   provisioner "shell" {
-    environment_vars = []
+    environment_vars = [
+      "SERVER_NAME=${var.server_name}"
+    ]
+    inline = [
+      "mkdir -p /opt/tanzawa",
+      # Prepare Server Name include
+      "echo \"server_name $SERVER_NAME;\" >> /opt/tanzawa/server_name"
+
+    ]
+  }
+  provisioner "shell" {
     scripts = [
       "setup/base_install.sh"
     ]
