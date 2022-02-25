@@ -35,6 +35,12 @@ build {
     ]
   }
 
-
+  post-processors {
+    post-processor "docker-tag" {
+      repository = "jamesvandyne/tanzawa"
+      tags       = ["latest"]
+    }
+    post-processor "docker-push" {}
+  }
 }
 
