@@ -12,7 +12,8 @@ source "docker" "ubuntu" {
   image  = "python:3"
   commit = true
   changes = [
-    "ENTRYPOINT [\"uwsgi --emperor /etc/uwsgi/vassals --uid www-data --gid www-data\"]"
+    "ENTRYPOINT [\"\"]",
+    "CMD [\"uwsgi\", \"--emperor\", \"/etc/uwsgi/vassals\", \"--uid\", \"www-data\", \"--gid\", \"www-data\"]",
   ]
 }
 
