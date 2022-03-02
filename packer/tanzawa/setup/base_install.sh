@@ -41,4 +41,4 @@ npm run build
 
 # Collect static
 cd /opt/tanzawa/tanzawa/
-python3 manage.py apps/collectstatic --noinput
+python3 apps/manage.py collectstatic --noinput
