@@ -13,8 +13,11 @@ mkdir -p /etc/uwsgi/vassals/
 mv /tmp/uwsgi.ini /etc/uwsgi/vassals/tanzawa.ini
 
 # Setup directories
-mkdir /var/run/tanzawa/
-chown www-data:www-data /var/run/tanzawa
+mkdir -p /var/run/tanzawa/
+mkdir -p /opt/tanzawa/data/
+mkdir -p /opt/tanzawa/static/
+chown www-data:www-data /var/run/tanzawa/
+chown www-data:www-data /opt/tanzawa/data/
 
 # Install Python deps
 pip install -U pip
@@ -37,5 +40,5 @@ npm install
 npm run build
 
 # Collect static
-cd /opt/tanzawa/tanzawa/apps
-python3 manage.py collectstatic
+cd /opt/tanzawa/tanzawa/
+python3 manage.py apps/collectstatic --noinput
