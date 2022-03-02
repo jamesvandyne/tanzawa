@@ -12,5 +12,5 @@ TIME_ZONE=UTC
 
 # collect static/media in the project root.
 # production uses should probably be somewhere else
-STATIC_ROOT=/opt/tanzawa/data/static/
+STATIC_ROOT=/opt/tanzawa/static/
 MEDIA_ROOT=/opt/tanzawa/data/media/
