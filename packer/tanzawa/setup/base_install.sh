@@ -16,8 +16,10 @@ mv /tmp/uwsgi.ini /etc/uwsgi/vassals/tanzawa.ini
 mkdir -p /var/run/tanzawa/
 mkdir -p /opt/tanzawa/data/
 mkdir -p /opt/tanzawa/static/
+mkdir -p /opt/tanzawa/data/media/
 chown www-data:www-data /var/run/tanzawa/
 chown www-data:www-data /opt/tanzawa/data/
+chown www-data:www-data /opt/tanzawa/data/media/
 
 # Install Python deps
 pip install -U pip
@@ -29,7 +31,7 @@ rm -rf /var/lib/apt/lists/*
 # Prepare env file
 # TODO: This should be fed in by Docker / not rely on the .env file
 python3 -c "import secrets; print(secrets.token_urlsafe())" | xargs -I{} -n1 echo SECRET_KEY={} >> /tmp/env
-mv /tmp/env /opt/tanzawa/tanzawa/.env
+mv /tmp/env /opt/tanzawa/data/env
 
 
 # Install frontend deps
