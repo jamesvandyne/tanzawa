@@ -12,15 +12,23 @@ source "docker" "ubuntu" {
   commit = true
 }
 
+source "digitalocean" "example" {
+  image        = "ubuntu-20-04-x64"
+  region       = "nyc3"
+  size         = "s-1vcpu-1gb"
+  ssh_username = "root"
+}
+
+
 variable "server_name" {
   default = env("SERVER_NAME")
 }
 
+
 build {
-  name = "Base Tanzawa Server"
-  sources = [
-    "source.docker.ubuntu"
-  ]
+  name = "Tanzawa Droplet"
+  sources = ["source.digitalocean.example"]
+  # sources = ["source.docker.ubuntu"]
   provisioner "file" {
     sources = [
       "setup/weekly_update.sh",
