@@ -26,6 +26,7 @@ build {
       "setup/weekly_update.sh",
       "templates/nginx.conf",
       "templates/uwsgi_params",
+      "templates/docker-compose.yml",
     ]
     destination = "/tmp/"
   }
@@ -45,6 +46,4 @@ build {
       "setup/base_install.sh"
     ]
   }
-
-
 }

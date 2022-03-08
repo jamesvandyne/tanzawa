@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  web:
+    image: jamesvandyne/tanzawa
+    restart: always
+    volumes:
+      - /opt/tanzawa/staticfiles:/opt/tanzawa/static
+      - /var/run/tanzawa:/var/run/tanzawa
+      - /opt/tanzawa/data:/opt/tanzawa/data
+    environment:
+      - ENV_FILE=/opt/tanzawa/data/env
