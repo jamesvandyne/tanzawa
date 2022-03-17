@@ -9,4 +9,5 @@ services:
       - /var/run/tanzawa:/var/run/tanzawa
       - /opt/tanzawa/data:/opt/tanzawa/data
     environment:
+      # TODO: Figure out the best way for Docker-compose and env files to coexist in Tanzawa
       - ENV_FILE=/opt/tanzawa/data/env
