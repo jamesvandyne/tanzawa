@@ -5,6 +5,7 @@ from core.models import TimestampModel
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models import Q
+from indieweb import constants as indieweb_constants
 from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 
 
@@ -35,6 +36,26 @@ class TEntry(TimestampModel):
 
     def __str__(self):
         return f"{self.t_post}: {self.p_name}"
+
+    @property
+    def is_checkin(self) -> bool:
+        return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.checkin
+
+    @property
+    def is_note(self) -> bool:
+        return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.note
+
+    @property
+    def is_article(self) -> bool:
+        return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.article
+
+    @property
+    def is_bookmark(self) -> bool:
+        return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.bookmark
+
+    @property
+    def is_reply(self) -> bool:
+        return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.reply
 
 
 class TReply(TimestampModel):

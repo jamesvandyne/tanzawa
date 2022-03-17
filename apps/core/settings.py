@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "rest_framework",
     "webmention",
+    "meta",
     "core",
     "settings",
     "indieweb",
