@@ -191,3 +191,6 @@ PLUGINS = env.list("PLUGINS", default=[])
 INSTALLED_APPS.extend(PLUGINS)
 
 PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
+
+META_SITE_DOMAIN = env.str("DOMAIN_NAME", default="example.com")
+META_SITE_PROTOCOL = env.str("PROTOCOL", default="https")
