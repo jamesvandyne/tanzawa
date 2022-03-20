@@ -27,6 +27,9 @@ $ cp .env.sample .env
 $ python3 -c "import secrets; print(secrets.token_urlsafe())" | xargs -I{} -n1 echo SECRET_KEY={} >> .env
 ```
 
+Edit the `DOMAIN_NAME` setting in your .env file to match the domain where you'll be running Tanzawa.
+
+
 ## First Run
 
 Start a container and open a shell.
