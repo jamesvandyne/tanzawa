@@ -1,5 +1,16 @@
 # Customization
 
+### Environment Variables
+
+You can adjust the values below in your `.env` to modify certain behaviors of Tanzawa. 
+
+
+|Setting name|Values|Description|
+|---|---|---|
+|OPEN_GRAPH_USE_OPEN_GRAPH|`True`, `False`|Render OpenGraph properties in head|
+|OPEN_GRAPH_USE_TWITTER|`True`, `False`|Render Twitter properties in head|
+|OPEN_GRAPH_USE_FACEBOOK|`True`, `False`|Render Facebook properties in head|
+
 ### Site Settings
 
 1. Visit the Django Settings by visiting `/admin/` or opening the Tanzawa Dashboard and clicking `Settings`.

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "rest_framework",
     "webmention",
+    "meta",
     "core",
     "settings",
     "indieweb",
@@ -190,3 +191,12 @@ PLUGINS = env.list("PLUGINS", default=[])
 INSTALLED_APPS.extend(PLUGINS)
 
 PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
+
+
+# Open Graph Settings
+
+META_SITE_DOMAIN = env.str("DOMAIN_NAME", default="example.com")
+META_SITE_PROTOCOL = env.str("PROTOCOL", default="https")
+OPEN_GRAPH_USE_OPEN_GRAPH = env.bool("OPEN_GRAPH_USE_OPEN_GRAPH", default=True)
+OPEN_GRAPH_USE_TWITTER = env.bool("OPEN_GRAPH_USE_TWITTER", default=True)
+OPEN_GRAPH_USE_FACEBOOK = env.bool("OPEN_GRAPH_USE_FACEBOOK", default=True)

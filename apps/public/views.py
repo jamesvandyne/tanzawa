@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.views.generic import ListView
+from entry import application as entry_application
 from entry.models import TEntry, TLocation
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import TPost
@@ -85,6 +86,7 @@ def status_detail(request, uuid):
         "title": t_entry.p_name if t_entry.p_name else t_entry.p_summary[:140],
         "streams": MStream.objects.visible(request.user),
         "public": True,
+        "meta": entry_application.get_open_graph_meta_for_entry(request, t_entry),
         "open_interactions": request.GET.get("o"),
     }
     return render(request, "public/post/post_detail.html", context=context)
