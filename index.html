@@ -141,6 +141,7 @@ $ docker image build . -t tanzawa
 <pre><code>$ cp .env.sample .env
 $ python3 -c &quot;import secrets; print(secrets.token_urlsafe())&quot; | xargs -I{} -n1 echo SECRET_KEY={} &gt;&gt; .env
 </code></pre>
+<p>Edit the <code>DOMAIN_NAME</code> setting in your .env file to match the domain where you'll be running Tanzawa.</p>
 <h2 id="first-run">First Run</h2>
 <p>Start a container and open a shell.</p>
 <pre><code>$ docker run --rm -p 8000:8000 -v $PWD:/app -it tanzawa bash
@@ -209,5 +210,5 @@ $ python3 apps/manage.py createsuperuser
 
 <!--
 MkDocs version : 1.2.2
-Build Date UTC : 2022-01-16 08:34:55.673135+00:00
+Build Date UTC : 2022-03-21 00:43:10.952778+00:00
 -->
