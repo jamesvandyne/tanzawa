@@ -32,10 +32,11 @@
     document.addEventListener('trix-initialize', function(e) {
         const trix = e.target;
         const toolBar = trix.toolbarElement;
-
+        {% block trix_init %}
         // Attachment of the button to the toolBar
         const selectFileButton = getSelectFileButton();
         toolBar.querySelector('.trix-button-group--file-tools').appendChild(selectFileButton);
+        {% endblock %}
     });
 }());
 </script>
