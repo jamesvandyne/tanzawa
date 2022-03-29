@@ -1,6 +1,6 @@
 {% with named_forms.syndication as syndication %}
 <div class="pt-2" data-controller="formset">
-    <details open>
+    <details {{ open|default:"open" }}>
         <summary>Where was this post syndicated?</summary>
             {{ syndication.management_form }}
             <div data-formset-target="forms">

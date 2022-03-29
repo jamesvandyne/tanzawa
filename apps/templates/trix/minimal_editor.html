@@ -1,0 +1,12 @@
+{% extends "trix/editor.html" %}
+
+{% block trix_init %}
+    const selectFileButton = getSelectFileButton();
+    const attachmentButton = toolBar.querySelector(".trix-button--icon-attach");
+    // move attachment to the far left
+    toolBar.firstElementChild.prepend(attachmentButton);
+    // hide all buttons that aren't attachment
+    toolBar.querySelectorAll("*:not([class$=trix-button--icon-attach])").forEach(button => button.classList.add("hidden"));
+    // remove the grouper element to prevent vertical lines from remaining
+    toolBar.querySelectorAll(".trix-button-group").forEach(group => group.parentElement.removeChild(group));
+{% endblock %}
