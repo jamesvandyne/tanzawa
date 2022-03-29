@@ -34,6 +34,9 @@ class CreateEntryView(CreateView):
             "syndication": forms.TSyndicationModelInlineFormSet(self.request.POST or None, prefix="syndication"),
         }
 
+    def get_redirect_url(self, entry) -> str:
+        return resolve_url(self.redirect_url, pk=entry.pk)
+
     def form_valid(self, form, named_forms=None):
         form.prepare_data()
 
@@ -52,7 +55,7 @@ class CreateEntryView(CreateView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(resolve_url(self.redirect_url, pk=entry.pk))
+        return redirect_303(self.get_redirect_url(entry=entry))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(nav="posts", **kwargs)
@@ -449,3 +452,17 @@ def edit_post(request, pk: int):
         return redirect(reverse("checkin_edit", args=[pk]))
     messages.error(request, "Unknown post type")
     return redirect(resolve_url("posts"))
+
+
+class QuickEntry(CreateStatusView):
+    """
+    Mobile optimized post only view.
+    """
+
+    template_name = "entry/note/quick.html"
+    turbo_template_name = "entry/note/_quick.html"
+    form_class = forms.QuickCreateStatusForm
+
+    def get_redirect_url(self, entry):
+        # Facilitate another quick post by redirecting to an empty quick entry form
+        return reverse("status_quick")

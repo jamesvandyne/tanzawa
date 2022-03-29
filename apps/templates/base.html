@@ -56,6 +56,7 @@
             </nav>
         </header>
         <div class="md:flex">
+            {% block left_nav %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
                 <ul class="mb-2" data-controller="select" data-select-selected-class="selected">
                     <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "post:dashboard" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🏡</span><span>Home</span></a></li>
@@ -68,13 +69,14 @@
             </nav>
             {% if nav == "dashboard" %}
                 <div class="mx-auto mx-2 grid grid-cols-2 gap-2 md:hidden">
-                    <a href="{% url "status_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
+                    <a href="{% url "status_quick" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
                     <a href="{% url "article_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a>
                     <a href="{% url "reply_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">📤️</span><span class="hover:underline">New Reply</span></a>
                     <a href="{% url "bookmark_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">🔖️</span><span class="hover:underline">New Bookmark</span></a>
                 </div>
             {% endif %}
-            <div id="content" class="w-11/12 flex flex-col">
+            {% endblock %}
+            <div id="content" class="w-full md:w-11/12 flex flex-col">
                 {% block content %}
                 {% include "fragments/content.html" %}
                 {% endblock %}

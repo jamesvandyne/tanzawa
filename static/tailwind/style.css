@@ -625,14 +625,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 .w-28 {
   width: 7rem;
 }
-.w-11\/12 {
-  width: 91.666667%;
-}
 .w-full {
   width: 100%;
 }
 .w-36 {
   width: 9rem;
+}
+.w-11\/12 {
+  width: 91.666667%;
 }
 .w-32 {
   width: 8rem;
@@ -695,6 +695,11 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .list-disc {
   list-style-type: disc;
+}
+.appearance-none {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
 }
 .grid-flow-col {
   grid-auto-flow: column;
@@ -862,6 +867,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 .py-0\.5 {
   padding-top: 0.125rem;
@@ -1206,6 +1215,18 @@ main.content blockquote {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
+}
+
+
+.peer:checked ~ .peer-checked\:bg-secondary {
+  --tw-bg-opacity: 1;
+  background-color: rgb(120 105 91 / var(--tw-bg-opacity));
+}
+
+
+.peer:checked ~ .peer-checked\:text-primary {
+  --tw-text-opacity: 1;
+  color: rgb(251 247 239 / var(--tw-text-opacity));
 }
 
 

@@ -1,0 +1,56 @@
+<form  id="entry" method="POST" class="flex-col" data-turbo="false">
+    {{ form.errors }}
+    {% for named_form in named_forms %}
+        {{ named_form.errors }}
+    {% endfor %}
+    <span class="font-serif">
+    {% csrf_token %}
+    {{ form.e_content }}
+    </span>
+    <section>
+        <div class="mx-2 mt-2">
+            {# TODO: Extract these segmented controls to a proper widget #}
+            {{ form.m_post_status.label_tag }}
+            <div class="grid grid-flow-col border border-secondary rounded text-secondary-900 text-center mt-2">
+                {% for choice in form.m_post_status %}
+                    <div>
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}" class="inline-block peer-checked:bg-secondary peer-checked:text-primary w-full px-2">{{ choice.choice_label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mx-2 mt-2">
+            {{ form.visibility.label_tag }}
+            <div class="grid grid-flow-col border border-secondary rounded text-secondary-900 text-center mt-2">
+                {% for choice in form.visibility %}
+                    <div>
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}" class="inline-block peer-checked:bg-secondary peer-checked:text-primary w-full px-2">{{ choice.choice_label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <section class="mx-2">
+        <div class="mt-2">
+            <div>{{ form.t_trip.label_tag }}</div>
+            {{ form.t_trip }}
+        </div>
+    </section>
+    <div class="pt-2 mx-2">
+        <details>
+            <summary>{{ form.streams.label }}</summary>
+            <div class="flex">
+                {{ form.streams }}
+            </div>
+        </details>
+    </div>
+    <div class=" mx-2">
+        {% include "entry/fragments/location_form.html" with open="closed" %}
+        {% include "entry/fragments/syndication_form.html" with open="closed" %}
+    </div>
+    <div class="mt-2 mx-2">
+        <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border w-full" name="m_post_status" value="published" form="entry" data-turbo="false">Publish</button>
+    </div>
+</form>

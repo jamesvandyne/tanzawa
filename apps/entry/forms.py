@@ -16,6 +16,7 @@ from streams.models import MStream
 from trips.models import TTrip
 from trix.forms import TrixField
 from trix.utils import extract_attachment_urls
+from trix.widgets import MinimalTrixEditor
 
 from .models import TBookmark, TCheckin, TEntry, TLocation, TReply, TSyndication
 
@@ -505,3 +506,29 @@ class PublishStatusVisibilityForm(forms.Form):
         self.fields["m_post_status"].initial = MPostStatuses.draft
         self.fields["visibility"].widget.attrs = select_attrs
         self.fields["visibility"].initial = Visibility.PUBLIC
+
+
+class QuickCreateStatusForm(CreateStatusForm):
+    e_content = TrixField(widget=MinimalTrixEditor)
+    visibility = forms.ChoiceField(
+        choices=VISIBILITY_CHOICES,
+        initial=Visibility.PUBLIC.value,
+        label="Who should see this post?",
+        widget=forms.RadioSelect,
+    )
+    m_post_status = forms.ModelChoiceField(
+        MPostStatus.objects.all().order_by("name"),
+        to_field_name="key",
+        required=True,
+        empty_label=None,
+        label="Is Published?",
+        label_suffix="",
+        widget=forms.RadioSelect,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        select_attrs = {"class": "peer appearance-none hidden"}
+        self.fields["m_post_status"].initial = MPostStatuses.published
+        self.fields["m_post_status"].widget.attrs = select_attrs
+        self.fields["visibility"].widget.attrs = select_attrs
