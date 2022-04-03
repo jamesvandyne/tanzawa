@@ -1,6 +1,5 @@
 from django.urls import path
-
-from . import views
+from interfaces.dashboard.entry import views
 
 urlpatterns = [
     path("article/create/", views.CreateArticleView.as_view(), name="article_create"),

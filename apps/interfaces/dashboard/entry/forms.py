@@ -3,6 +3,14 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.forms import LeafletWidget, TCharField
+from data.entry.models import (
+    TBookmark,
+    TCheckin,
+    TEntry,
+    TLocation,
+    TReply,
+    TSyndication,
+)
 from django import forms
 from django.contrib.gis.forms import PointField
 from django.db import transaction
@@ -17,8 +25,6 @@ from trips.models import TTrip
 from trix.forms import TrixField
 from trix.utils import extract_attachment_urls
 from trix.widgets import MinimalTrixEditor
-
-from .models import TBookmark, TCheckin, TEntry, TLocation, TReply, TSyndication
 
 
 class CreateStatusForm(forms.ModelForm):

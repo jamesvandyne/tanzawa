@@ -4,9 +4,9 @@ from typing import Dict, List, Optional, Tuple, Union
 import phpserialize
 import pytz
 from bs4 import BeautifulSoup
+from data.entry.models import TEntry
 from django.contrib.gis.geos import Point
 from django.utils.timezone import make_aware
-from entry.models import TEntry
 from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 from post.models import MPostStatuses
 

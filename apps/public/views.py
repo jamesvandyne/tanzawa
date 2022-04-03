@@ -1,6 +1,8 @@
 from typing import Dict, List, Union
 
+from application import entry as entry_application
 from core.constants import Visibility
+from data.entry.models import TEntry, TLocation
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db.models import Count, F, Q
@@ -8,8 +10,6 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.views.generic import ListView
-from entry import application as entry_application
-from entry.models import TEntry, TLocation
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import TPost
 from streams.models import MStream

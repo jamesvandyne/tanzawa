@@ -27,3 +27,4 @@ mypy-extensions==0.4.3
 mkdocs==1.2.2
 isort==5.10.0
 django-meta==2.0.0
+factory_boy==3.2.1

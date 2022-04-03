@@ -8,7 +8,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
-from entry.forms import (
+from files.forms import MediaUploadForm
+from indieweb.application import micropub as micropub_app
+from indieweb.application import webmentions as webmention_app
+from indieweb.application.location import location_to_pointfield_input
+from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
     CreateCheckinForm,
@@ -18,10 +22,6 @@ from entry.forms import (
     TLocationModelForm,
     TSyndicationModelForm,
 )
-from files.forms import MediaUploadForm
-from indieweb.application import micropub as micropub_app
-from indieweb.application import webmentions as webmention_app
-from indieweb.application.location import location_to_pointfield_input
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

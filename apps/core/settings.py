@@ -60,17 +60,19 @@ INSTALLED_APPS = [
     "webmention",
     "meta",
     "core",
+    "data",
+    "data.entry",
     "settings",
     "indieweb",
     "trix",
     "post",
-    "entry",
     "files",
     "trips",
     "streams",
     "public",
     "wordpress",
     "plugins",
+    "interfaces",
 ]
 
 MIDDLEWARE = [

@@ -59,3 +59,10 @@ def t_post(m_post_kind, published_status, user):
         dt_published=datetime.now(),
         uuid="90a0027d-9c74-44e8-895c-6d5611f8eca5",
     )
+
+
+@pytest.fixture
+def factory():
+    from tests import factories
+
+    return factories

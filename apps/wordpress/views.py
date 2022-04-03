@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from bs4 import BeautifulSoup
+from data.entry.models import TCheckin, TLocation
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,7 +13,11 @@ from django.template.defaultfilters import linebreaks_filter, safe
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView
-from entry.forms import (
+from files.forms import MediaUploadForm
+from files.images import bytes_as_upload_image
+from indieweb.application.location import location_to_pointfield_input
+from indieweb.utils import download_image, render_attachment
+from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
     CreateCheckinForm,
@@ -27,11 +32,6 @@ from entry.forms import (
     UpdateReplyForm,
     UpdateStatusForm,
 )
-from entry.models import TCheckin, TLocation
-from files.forms import MediaUploadForm
-from files.images import bytes_as_upload_image
-from indieweb.application.location import location_to_pointfield_input
-from indieweb.utils import download_image, render_attachment
 from turbo_response import TurboFrame, redirect_303
 
 from . import extract

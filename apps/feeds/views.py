@@ -1,9 +1,9 @@
 from core.constants import Visibility
+from data.entry import models as entry_models
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
-from entry.models import TLocation
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import TPost
 from settings.models import MSiteSettings
@@ -136,7 +136,7 @@ class AllEntriesFeed(Feed):
             e_content = f"{item.post_title}<br/>{e_content}"
         try:
             e_content = f"{e_content}<br/>Location: {t_entry.t_location.summary}"
-        except TLocation.DoesNotExist:
+        except entry_models.TLocation.DoesNotExist:
             pass
         return {"content_encoded": e_content}
 
