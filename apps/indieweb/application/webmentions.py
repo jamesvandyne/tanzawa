@@ -4,14 +4,14 @@ from typing import List, Set
 import mf2py
 import ronkyuu
 from bs4 import BeautifulSoup
+from data.post import models as post_models
+from data.post.models import TPost
 from django.conf import settings
 from django.utils.timezone import now
+from domain.post import queries as post_queries
 from files.utils import extract_uuid_from_url
 from indieweb import models as indieweb_models
 from indieweb.constants import MPostKinds
-from post import models as post_models
-from post import queries as post_queries
-from post.models import TPost
 from webmention import models as webmention_models
 
 from .. import utils

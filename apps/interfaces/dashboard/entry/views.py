@@ -1,6 +1,7 @@
 from typing import Any, Dict, Optional
 
 from data.entry import models
+from data.post import models as post_models
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -14,7 +15,6 @@ from indieweb.application import extract as indieweb_extract
 from indieweb.application import webmentions
 from indieweb.constants import MPostKinds, MPostStatuses
 from interfaces.dashboard.entry import forms
-from post.models import MPostKind
 from turbo_response import TurboFrame, redirect_303
 
 
@@ -385,7 +385,7 @@ class TEntryListView(ListView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.m_post_kind_key:
-            self.m_post_kind = get_object_or_404(MPostKind, key=self.m_post_kind_key)
+            self.m_post_kind = get_object_or_404(post_models.MPostKind, key=self.m_post_kind_key)
 
     def get_template_names(self):
         if self.request.turbo.frame:

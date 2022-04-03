@@ -4,7 +4,7 @@ from unittest.mock import Mock
 import pytest
 from core.constants import Visibility
 from data.entry.models import TBookmark, TCheckin, TEntry, TLocation, TReply
-from post.models import TPost
+from data.post.models import TPost
 
 
 @pytest.mark.django_db

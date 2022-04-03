@@ -6,7 +6,7 @@ from picklefield import PickledObjectField
 from webmention.models import WebMentionResponse
 
 if TYPE_CHECKING:
-    from post import models as post_models
+    from data.post import models as post_models
 
 
 class TWebmention(TimestampModel):

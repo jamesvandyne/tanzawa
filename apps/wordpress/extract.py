@@ -5,10 +5,10 @@ import phpserialize
 import pytz
 from bs4 import BeautifulSoup
 from data.entry.models import TEntry
+from data.post.models import MPostStatuses
 from django.contrib.gis.geos import Point
 from django.utils.timezone import make_aware
 from indieweb.application.extract import LinkedPage, LinkedPageAuthor
-from post.models import MPostStatuses
 
 
 def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:

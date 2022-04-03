@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def m_post_kinds():
-    from post.models import MPostKind
+    from data.post.models import MPostKind
 
     return MPostKind.objects.all()
 
@@ -24,14 +24,14 @@ def m_post_kind(m_post_kinds):
 
 @pytest.fixture
 def published_status():
-    from post.models import MPostStatus
+    from data.post.models import MPostStatus
 
     return MPostStatus.objects.get(key=MPostStatuses.published)
 
 
 @pytest.fixture
 def draft_status():
-    from post.models import MPostStatus
+    from data.post.models import MPostStatus
 
     return MPostStatus.objects.get(key=MPostStatuses.draft)
 

@@ -1,8 +1,8 @@
 from data.entry import models as entry_models
-from post.models import TPost
+from data.post import models as post_models
 
 
-def get_encoded_content(post: TPost) -> str:
+def get_encoded_content(post: post_models.TPost) -> str:
     """
     Get the encoded content suitable for an RSS feed.
     """

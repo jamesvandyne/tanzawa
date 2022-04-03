@@ -3,16 +3,10 @@ from typing import List, Optional
 from bs4 import BeautifulSoup
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.forms import LeafletWidget, TCharField
-from data.entry.models import (
-    TBookmark,
-    TCheckin,
-    TEntry,
-    TLocation,
-    TReply,
-    TSyndication,
-)
-from data.streams.models import MStream
-from data.trips.models import TTrip
+from data.entry import models as entry_models
+from data.post import models as post_models
+from data.streams import models as stream_models
+from data.trips import models as trip_models
 from django import forms
 from django.contrib.gis.forms import PointField
 from django.db import transaction
@@ -22,14 +16,13 @@ from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
 from interfaces.common import forms as common_forms
-from post.models import MPostKind, MPostStatus, TPost
 
 
 class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = common_forms.TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all().order_by("name"),
+        post_models.MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -38,7 +31,7 @@ class CreateStatusForm(forms.ModelForm):
         label_suffix="",
     )
     streams = common_forms.StreamModelMultipleChoiceField(
-        MStream.objects.all(),
+        stream_models.MStream.objects.all(),
         label="Which streams should this appear in?",
         required=False,
     )
@@ -46,11 +39,11 @@ class CreateStatusForm(forms.ModelForm):
     visibility = forms.ChoiceField(
         choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
     )
-    t_trip = forms.ModelChoiceField(TTrip.objects, label="Is this post part of a trip?", required=False)
+    t_trip = forms.ModelChoiceField(trip_models.TTrip.objects, label="Is this post part of a trip?", required=False)
     m_post_kind = MPostKinds.note
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("p_name", "e_content")
 
     def __init__(self, *args, **kwargs):
@@ -68,14 +61,14 @@ class CreateStatusForm(forms.ModelForm):
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
 
-        self.t_post: Optional[TPost] = None
-        self.t_entry: Optional[TEntry] = None
+        self.t_post: Optional[post_models.TPost] = None
+        self.t_entry: Optional[entry_models.TEntry] = None
         self.file_attachment_uuids: List[str] = []
 
     def clean(self):
         try:
-            self.cleaned_data["m_post_kind"] = MPostKind.objects.get(key=self.m_post_kind)
-        except MPostKind.DoesNotExist:
+            self.cleaned_data["m_post_kind"] = post_models.MPostKind.objects.get(key=self.m_post_kind)
+        except post_models.MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
         urls = trix_queries.extract_attachment_urls(self.cleaned_data.get("e_content", ""))
@@ -83,7 +76,7 @@ class CreateStatusForm(forms.ModelForm):
 
     def prepare_data(self):
         n = now()
-        self.t_post = TPost(
+        self.t_post = post_models.TPost(
             m_post_status=self.cleaned_data["m_post_status"],
             m_post_kind=self.cleaned_data["m_post_kind"],
             p_author=self.p_author,
@@ -94,14 +87,14 @@ class CreateStatusForm(forms.ModelForm):
             dt_updated=n,
         )
         soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
-        self.instance = TEntry(
+        self.instance = entry_models.TEntry(
             e_content=self.cleaned_data.get("e_content", ""),
             p_summary=soup.text[:255].strip(),
             p_name=self.cleaned_data.get("p_name", ""),
         )
 
     @transaction.atomic
-    def save(self, commit=True) -> TEntry:
+    def save(self, commit=True) -> entry_models.TEntry:
         if self.t_post:
             self.t_post.save()
             self.instance.t_post = self.t_post
@@ -118,7 +111,7 @@ class CreateArticleForm(CreateStatusForm):
     m_post_kind = MPostKinds.article
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("p_name", "e_content")
 
 
@@ -126,7 +119,7 @@ class CreateCheckinForm(CreateStatusForm):
     m_post_kind = MPostKinds.checkin
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("e_content",)
 
 
@@ -146,14 +139,14 @@ class CreateReplyForm(CreateStatusForm):
     )
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("p_name", "e_content")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_reply: Optional[TReply] = None
+        self.t_reply: Optional[entry_models.TReply] = None
         for key, val in self.initial.items():
             if val:
                 continue
@@ -162,7 +155,7 @@ class CreateReplyForm(CreateStatusForm):
 
     def prepare_data(self):
         super().prepare_data()
-        self.t_reply = TReply(
+        self.t_reply = entry_models.TReply(
             u_in_reply_to=self.cleaned_data["u_in_reply_to"],
             title=self.cleaned_data["title"],
             quote=self.cleaned_data["summary"],
@@ -171,7 +164,7 @@ class CreateReplyForm(CreateStatusForm):
             author_photo=self.cleaned_data["author_photo_url"],
         )
 
-    def save(self, commit=True) -> TEntry:
+    def save(self, commit=True) -> entry_models.TEntry:
         t_entry = super().save()
         if self.t_reply:
             self.t_reply.t_entry = t_entry
@@ -203,7 +196,7 @@ class UpdateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
     e_content = common_forms.TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all().order_by("name"),
+        post_models.MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -212,23 +205,23 @@ class UpdateStatusForm(forms.ModelForm):
         label_suffix="",
     )
     streams = common_forms.StreamModelMultipleChoiceField(
-        MStream.objects.all(),
+        stream_models.MStream.objects.all(),
         label="Which streams should this appear in?",
         required=False,
     )
     visibility = forms.ChoiceField(
         choices=VISIBILITY_CHOICES, initial=Visibility.PUBLIC.value, label="Who should see this post?"
     )
-    t_trip = forms.ModelChoiceField(TTrip.objects, label="Is this post part of a trip?", required=False)
+    t_trip = forms.ModelChoiceField(trip_models.TTrip.objects, label="Is this post part of a trip?", required=False)
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("e_content",)
 
     def __init__(self, *args, **kwargs):
         autofocus = kwargs.pop("autofocus", "e_content")
         super().__init__(*args, **kwargs)
-        self.t_post: TPost = self.instance.t_post
+        self.t_post: post_models.TPost = self.instance.t_post
         self.already_published = self.t_post.m_post_status.key == MPostStatuses.published
         self.fields["streams"].initial = self.t_post.streams.values_list("id", flat=True)
         select_attrs = {
@@ -279,13 +272,13 @@ class UpdateStatusForm(forms.ModelForm):
 
 class UpdateArticleForm(UpdateStatusForm):
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("p_name", "e_content")
 
 
 class UpdateCheckinForm(UpdateStatusForm):
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("e_content",)
 
 
@@ -303,7 +296,7 @@ class UpdateReplyForm(UpdateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_reply: TReply = self.instance.t_reply
+        self.t_reply: entry_models.TReply = self.instance.t_reply
         self.fields["summary"].initial = self.t_reply.quote
         self.fields["title"].initial = self.t_reply.title
         self.fields["u_in_reply_to"].initial = self.t_reply.u_in_reply_to
@@ -312,7 +305,7 @@ class UpdateReplyForm(UpdateStatusForm):
         super().prepare_data()
         self.t_reply.quote = self.cleaned_data["summary"]
 
-    def save(self, commit=True) -> TEntry:
+    def save(self, commit=True) -> entry_models.TEntry:
         t_entry = super().save()
         self.t_reply.save()
         return t_entry
@@ -334,14 +327,14 @@ class CreateBookmarkForm(CreateStatusForm):
     )
 
     class Meta:
-        model = TEntry
+        model = entry_models.TEntry
         fields = ("p_name", "e_content")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "Comment"
-        self.t_bookmark: Optional[TBookmark] = None
+        self.t_bookmark: Optional[entry_models.TBookmark] = None
         for key, val in self.initial.items():
             if val:
                 continue
@@ -350,7 +343,7 @@ class CreateBookmarkForm(CreateStatusForm):
 
     def prepare_data(self):
         super().prepare_data()
-        self.t_bookmark = TBookmark(
+        self.t_bookmark = entry_models.TBookmark(
             u_bookmark_of=self.cleaned_data["u_bookmark_of"],
             title=self.cleaned_data["title"],
             quote=self.cleaned_data["summary"],
@@ -359,7 +352,7 @@ class CreateBookmarkForm(CreateStatusForm):
             author_photo=self.cleaned_data["author_photo_url"],
         )
 
-    def save(self, commit=True) -> TEntry:
+    def save(self, commit=True) -> entry_models.TEntry:
         t_entry = super().save()
         if self.t_bookmark:
             self.t_bookmark.t_entry = t_entry
@@ -381,7 +374,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_bookmark: TBookmark = self.instance.t_bookmark
+        self.t_bookmark: entry_models.TBookmark = self.instance.t_bookmark
         self.fields["summary"].initial = self.t_bookmark.quote
         self.fields["title"].initial = self.t_bookmark.title
         self.fields["u_bookmark_of"].initial = self.t_bookmark.u_bookmark_of
@@ -390,7 +383,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
         super().prepare_data()
         self.t_bookmark.quote = self.cleaned_data["summary"]
 
-    def save(self, commit=True) -> TEntry:
+    def save(self, commit=True) -> entry_models.TEntry:
         t_entry = super().save()
         self.t_bookmark.save()
         return t_entry
@@ -400,7 +393,7 @@ class TLocationModelForm(forms.ModelForm):
     point = PointField(widget=LeafletWidget, required=False)
 
     class Meta:
-        model = TLocation
+        model = entry_models.TLocation
         exclude = ("created_at", "updated_at", "t_entry")
         widgets = {
             "street_address": forms.HiddenInput({"data-leaflet-target": "streetAddress"}),
@@ -413,14 +406,14 @@ class TLocationModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def prepare_data(self, t_entry: TEntry):
+    def prepare_data(self, t_entry: entry_models.TEntry):
         self.instance.t_entry = t_entry
 
     def save(self, commit=True):
         if self.cleaned_data["point"]:
             super().save(commit=commit)
         elif self.instance.pk:
-            # TLocation.point is non-nullable, so must be deleted if a user unsets the location
+            # entry_models.TLocation.point is non-nullable, so must be deleted if a user unsets the location
             self.instance.delete()
         return self.instance
 
@@ -434,21 +427,21 @@ class TCheckinModelForm(forms.ModelForm):
     )
 
     class Meta:
-        model = TCheckin
+        model = entry_models.TCheckin
         fields = ("name", "url")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"class": "input-field"}
 
-    def prepare_data(self, t_entry: TEntry):
+    def prepare_data(self, t_entry: entry_models.TEntry):
         self.instance.t_entry = t_entry
         self.instance.t_location = t_entry.t_location
 
 
 class TSyndicationModelForm(forms.ModelForm):
     class Meta:
-        model = TSyndication
+        model = entry_models.TSyndication
         fields = ("url",)
 
     def __init__(self, *args, **kwargs):
@@ -459,7 +452,7 @@ class TSyndicationModelForm(forms.ModelForm):
         }
         self.fields["url"].label = ""
 
-    def prepare_data(self, t_entry: TEntry):
+    def prepare_data(self, t_entry: entry_models.TEntry):
         self.instance.t_entry = t_entry
 
 
@@ -472,14 +465,14 @@ class TSyndicationModelFormSet(forms.BaseInlineFormSet):
             "data-action": "formset#toggleText",
         }
 
-    def prepare_data(self, t_entry: TEntry):
+    def prepare_data(self, t_entry: entry_models.TEntry):
         for form in self.forms:
             form.prepare_data(t_entry)
 
 
 TSyndicationModelInlineFormSet = forms.inlineformset_factory(
-    TEntry,
-    TSyndication,
+    entry_models.TEntry,
+    entry_models.TSyndication,
     formset=TSyndicationModelFormSet,
     form=TSyndicationModelForm,
     extra=1,
@@ -488,7 +481,7 @@ TSyndicationModelInlineFormSet = forms.inlineformset_factory(
 
 class PublishStatusVisibilityForm(forms.Form):
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all().order_by("name"),
+        post_models.MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,
@@ -521,7 +514,7 @@ class QuickCreateStatusForm(CreateStatusForm):
         widget=forms.RadioSelect,
     )
     m_post_status = forms.ModelChoiceField(
-        MPostStatus.objects.all().order_by("name"),
+        post_models.MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
         required=True,
         empty_label=None,

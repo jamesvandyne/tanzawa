@@ -1,6 +1,5 @@
 from django.urls import path
-
-from . import views
+from interfaces.dashboard.top import views
 
 app_name = "post"
 

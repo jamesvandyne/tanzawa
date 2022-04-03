@@ -3,6 +3,7 @@ from typing import Dict, List, Union
 from application import entry as entry_application
 from core.constants import Visibility
 from data.entry.models import TEntry, TLocation
+from data.post.models import TPost
 from data.streams.models import MStream
 from data.trips.models import TTrip
 from django.contrib.gis.geos import Point
@@ -13,7 +14,6 @@ from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.views.generic import ListView
 from indieweb.constants import MPostKinds, MPostStatuses
-from post.models import TPost
 
 from .forms import SearchForm
 
