@@ -66,7 +66,6 @@ INSTALLED_APPS = [
     "data.streams",
     "data.trips",
     "indieweb",
-    "trix",
     "post",
     "files",
     "public",

@@ -1,7 +1,7 @@
 from django.db import transaction
+from domain.trix import queries as trix_queries
 from files import models as files_models
 from files import utils as files_utils
-from trix import utils as trix_utils
 
 from . import models
 
@@ -11,7 +11,7 @@ def update_now(*, t_now: models.TNow, content: str) -> None:
     """
     Update A Now Page.
     """
-    urls = trix_utils.extract_attachment_urls(content)
+    urls = trix_queries.extract_attachment_urls(content)
     file_attachment_uuids = [files_utils.extract_uuid_from_url(url) for url in urls]
     matching_files = files_models.TFile.objects.filter(uuid__in=file_attachment_uuids)
 

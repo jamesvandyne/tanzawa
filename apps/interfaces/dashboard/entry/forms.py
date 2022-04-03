@@ -17,19 +17,17 @@ from django import forms
 from django.contrib.gis.forms import PointField
 from django.db import transaction
 from django.utils.timezone import now
+from domain.trix import queries as trix_queries
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
-from interfaces.common.forms import StreamModelMultipleChoiceField
+from interfaces.common import forms as common_forms
 from post.models import MPostKind, MPostStatus, TPost
-from trix.forms import TrixField
-from trix.utils import extract_attachment_urls
-from trix.widgets import MinimalTrixEditor
 
 
 class CreateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
-    e_content = TrixField(required=False)
+    e_content = common_forms.TrixField(required=False)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
@@ -39,7 +37,7 @@ class CreateStatusForm(forms.ModelForm):
         label="Is Published?",
         label_suffix="",
     )
-    streams = StreamModelMultipleChoiceField(
+    streams = common_forms.StreamModelMultipleChoiceField(
         MStream.objects.all(),
         label="Which streams should this appear in?",
         required=False,
@@ -80,7 +78,7 @@ class CreateStatusForm(forms.ModelForm):
         except MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
-        urls = extract_attachment_urls(self.cleaned_data.get("e_content", ""))
+        urls = trix_queries.extract_attachment_urls(self.cleaned_data.get("e_content", ""))
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
@@ -203,7 +201,7 @@ class ExtractMetaForm(forms.Form):
 
 class UpdateStatusForm(forms.ModelForm):
     p_name = TCharField(required=False, label="Title")
-    e_content = TrixField(required=True)
+    e_content = common_forms.TrixField(required=True)
     m_post_status = forms.ModelChoiceField(
         MPostStatus.objects.all().order_by("name"),
         to_field_name="key",
@@ -213,7 +211,7 @@ class UpdateStatusForm(forms.ModelForm):
         label="Is Published?",
         label_suffix="",
     )
-    streams = StreamModelMultipleChoiceField(
+    streams = common_forms.StreamModelMultipleChoiceField(
         MStream.objects.all(),
         label="Which streams should this appear in?",
         required=False,
@@ -250,7 +248,7 @@ class UpdateStatusForm(forms.ModelForm):
         self.file_attachment_uuids: List[str] = []
 
     def clean(self):
-        urls = extract_attachment_urls(self.cleaned_data["e_content"])
+        urls = trix_queries.extract_attachment_urls(self.cleaned_data["e_content"])
         self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
 
     def prepare_data(self):
@@ -515,7 +513,7 @@ class PublishStatusVisibilityForm(forms.Form):
 
 
 class QuickCreateStatusForm(CreateStatusForm):
-    e_content = TrixField(widget=MinimalTrixEditor)
+    e_content = common_forms.TrixField(widget=common_forms.MinimalTrixEditor)
     visibility = forms.ChoiceField(
         choices=VISIBILITY_CHOICES,
         initial=Visibility.PUBLIC.value,

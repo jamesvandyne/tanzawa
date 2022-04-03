@@ -3,7 +3,7 @@ from django import forms
 from django.template.loader import render_to_string
 from files.constants import PICTURE_FORMATS
 
-from .widgets import TrixEditor
+from ..widgets import TrixEditor
 
 
 class TrixField(forms.CharField):
