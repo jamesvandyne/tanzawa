@@ -1,6 +1,5 @@
+from data.streams.models import MStream, TStreamPost
 from django.contrib import admin
-
-from .models import MStream, TStreamPost
 
 
 class MStreamAdmin(admin.ModelAdmin):

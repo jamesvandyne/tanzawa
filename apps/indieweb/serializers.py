@@ -2,13 +2,13 @@ from typing import Dict, Optional
 from urllib.parse import urlparse
 
 from core.constants import Visibility
+from data.streams.models import MStream
 from django.core.validators import URLValidator
 from django.urls import reverse
 from indieweb.application import extract
 from indieweb.application import location as indieweb_location
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
-from streams.models import MStream
 
 from . import constants
 from .models import TToken

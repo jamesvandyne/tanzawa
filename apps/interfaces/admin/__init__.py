@@ -1,1 +1,1 @@
-from . import _entry, _settings
+from . import _entry, _settings, _streams

@@ -1,3 +1,4 @@
+from data.streams.models import MStream
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -5,7 +6,6 @@ from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
 from domain.feeds import queries as feed_queries
 from domain.posts import queries as post_queries
 from post.models import TPost
-from streams.models import MStream
 
 
 class ExtendedRSSFeed(Rss201rev2Feed):

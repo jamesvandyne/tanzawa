@@ -11,6 +11,7 @@ from data.entry.models import (
     TReply,
     TSyndication,
 )
+from data.streams.models import MStream
 from django import forms
 from django.contrib.gis.forms import PointField
 from django.db import transaction
@@ -18,9 +19,8 @@ from django.utils.timezone import now
 from files.models import TFile
 from files.utils import extract_uuid_from_url
 from indieweb.constants import MPostKinds, MPostStatuses
+from interfaces.common.forms import StreamModelMultipleChoiceField
 from post.models import MPostKind, MPostStatus, TPost
-from streams.forms import StreamModelMultipleChoiceField
-from streams.models import MStream
 from trips.models import TTrip
 from trix.forms import TrixField
 from trix.utils import extract_attachment_urls

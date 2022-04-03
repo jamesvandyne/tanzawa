@@ -1,6 +1,5 @@
+from data.streams.models import MStream
 from django import forms
-
-from .models import MStream
 
 
 class StreamCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
