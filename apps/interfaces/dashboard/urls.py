@@ -4,6 +4,7 @@ from plugins import pool
 
 urlpatterns = [
     path("", include("interfaces.dashboard.entry.urls")),
+    path("", include("interfaces.dashboard.trips.urls")),
 ]
 
 # Include any plugin urls after core urls.

@@ -8,7 +8,6 @@ urlpatterns = [
     path("a/", include("interfaces.dashboard.urls")),
     path("a/", include("post.urls", namespace="post")),
     path("a/", include("files.admin_urls")),
-    path("a/", include("trips.urls")),
     path("a/", include("plugins.urls")),
     path("a/wordpress/", include("wordpress.urls", namespace="wordpress")),
     path("a/", include("indieweb.urls", namespace="indieweb")),

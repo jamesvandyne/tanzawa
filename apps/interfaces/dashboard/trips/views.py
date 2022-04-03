@@ -1,3 +1,4 @@
+from data.trips.models import TTrip
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, resolve_url
@@ -5,8 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import ProcessFormView, SingleObjectTemplateResponseMixin
-from trips.forms import TLocationModelForm, TTripModelForm
-from trips.models import TTrip
+from interfaces.dashboard.trips.forms import TLocationModelForm, TTripModelForm
 from turbo_response import redirect_303
 
 

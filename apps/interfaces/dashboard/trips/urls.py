@@ -1,6 +1,5 @@
 from django.urls import path
-
-from . import views
+from interfaces.dashboard.trips import views
 
 urlpatterns = [
     path("trips/", views.TripListView.as_view(), name="trips"),

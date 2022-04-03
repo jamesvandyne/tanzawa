@@ -20,7 +20,7 @@ class TTripManager(models.Manager):
 
 
 class TTrip(TimestampModel):
-
+    id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=128)
     uuid = models.UUIDField(default=uuid.uuid4)
     p_author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
@@ -46,6 +46,7 @@ class TTrip(TimestampModel):
 
 
 class TTripLocation(TimestampModel):
+    id = models.BigAutoField(primary_key=True)
     t_trip = models.ForeignKey(TTrip, on_delete=models.CASCADE, related_name="t_trip_location")
     street_address = models.CharField(max_length=128, blank=True, default="")
     locality = models.CharField(max_length=128, blank=True, default="")
@@ -70,7 +71,7 @@ class TTripLocation(TimestampModel):
 
 
 class TTripPost(TimestampModel):
-
+    id = models.BigAutoField(primary_key=True)
     t_trip = models.ForeignKey(TTrip, on_delete=models.CASCADE)
     t_post = models.ForeignKey("post.TPost", on_delete=models.CASCADE)
 
