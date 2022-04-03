@@ -1,11 +1,9 @@
-from core.constants import Visibility
-from data.entry import models as entry_models
-from data.settings.models import MSiteSettings
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
-from indieweb.constants import MPostKinds, MPostStatuses
+from domain.feeds import queries as feed_queries
+from domain.posts import queries as post_queries
 from post.models import TPost
 from streams.models import MStream
 
@@ -89,30 +87,16 @@ class AllEntriesFeed(Feed):
         return super().__call__(request, *args, **kwargs)
 
     def title(self):
-        title = MSiteSettings.objects.values_list("title", flat=True).first()
-        return title or "Tanzawa"
+        return self.request.settings.title or "Tanzawa"
 
     def link(self):
         return reverse("feeds:feed")
 
     def items(self):
-        return (
-            TPost.objects.visible_for_user(self.request.user.id)
-            .filter(m_post_status__key=MPostStatuses.published)
-            .exclude(visibility=Visibility.UNLISTED)
-            .select_related("m_post_kind")
-            .prefetch_related(
-                "ref_t_entry",
-                "ref_t_entry__t_reply",
-                "ref_t_entry__t_location",
-                "ref_t_entry__t_checkin",
-            )
-            .all()
-            .order_by("-dt_published")[:10]
-        )
+        return post_queries.get_public_posts_for_user(user=self.request.user)[:10]
 
     def item_title(self, item: TPost):
-        if item.m_post_kind.key in (MPostKinds.checkin, MPostKinds.note):
+        if item.ref_t_entry.is_note or item.ref_t_entry.is_checkin:
             return None
         return item.post_title
 
@@ -120,25 +104,8 @@ class AllEntriesFeed(Feed):
         return item.ref_t_entry.p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        t_entry = item.ref_t_entry
-        e_content = t_entry.e_content
-        if item.m_post_kind.key == MPostKinds.reply:
-            e_content = f"<blockquote>{t_entry.t_reply.quote}</blockquote>{e_content}"
-        elif item.m_post_kind.key == MPostKinds.bookmark:
-            t_bookmark = t_entry.t_bookmark
-            e_content = (
-                f"Bookmark: "
-                f'<a href="{t_bookmark.u_bookmark_of}"'
-                f">{t_bookmark.title or t_bookmark.u_bookmark_of}</a>"
-                f"<blockquote>{t_bookmark.quote}</blockquote>{e_content}"
-            )
-        elif item.m_post_kind.key == MPostKinds.checkin:
-            e_content = f"{item.post_title}<br/>{e_content}"
-        try:
-            e_content = f"{e_content}<br/>Location: {t_entry.t_location.summary}"
-        except entry_models.TLocation.DoesNotExist:
-            pass
-        return {"content_encoded": e_content}
+        content_encoded = feed_queries.get_encoded_content(post=item)
+        return {"content_encoded": content_encoded}
 
     def item_guid(self, obj: TPost) -> str:
         return obj.uuid
@@ -161,11 +128,4 @@ class StreamFeed(AllEntriesFeed):
         return get_object_or_404(MStream.objects.visible(request.user), slug=stream_slug)
 
     def items(self, obj):
-        return (
-            TPost.objects.visible_for_user(self.request.user.id)
-            .filter(streams=obj, m_post_status__key=MPostStatuses.published)
-            .exclude(visibility=Visibility.UNLISTED)
-            .select_related("ref_t_entry")
-            .all()
-            .order_by("-dt_published")[:10]
-        )
+        return post_queries.get_public_posts_for_user(self.request.user, stream=obj)[:10]

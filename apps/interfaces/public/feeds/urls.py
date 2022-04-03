@@ -1,6 +1,5 @@
 from django.urls import path
-
-from . import views
+from interfaces.public.feeds import views
 
 app_name = "feeds"
 

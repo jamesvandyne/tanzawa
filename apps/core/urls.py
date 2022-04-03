@@ -13,7 +13,6 @@ urlpatterns = [
     path("a/wordpress/", include("wordpress.urls", namespace="wordpress")),
     path("a/", include("indieweb.urls", namespace="indieweb")),
     path("files/", include("files.urls")),
-    path("", include("feeds.urls", namespace="feeds")),
     path("webmention/", include("webmention.urls")),
     path("admin/", admin.site.urls),
     path("auth/", include("django.contrib.auth.urls")),
@@ -23,7 +22,7 @@ urlpatterns = [
 
 # Public urls are last so "slug-like" urls in plugins are not matched to the stream-list view.
 urlpatterns.append(
-    path("", include("public.urls", namespace="public")),
+    path("", include("interfaces.public.urls")),
 )
 
 
