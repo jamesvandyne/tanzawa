@@ -1,12 +1,12 @@
 from core.constants import Visibility
 from data.entry import models as entry_models
+from data.settings.models import MSiteSettings
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
 from indieweb.constants import MPostKinds, MPostStatuses
 from post.models import TPost
-from settings.models import MSiteSettings
 from streams.models import MStream
 
 

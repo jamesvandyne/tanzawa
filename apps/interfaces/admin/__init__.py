@@ -1,1 +1,1 @@
-from . import _entry
+from . import _entry, _settings

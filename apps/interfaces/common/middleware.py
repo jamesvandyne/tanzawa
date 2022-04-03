@@ -1,4 +1,4 @@
-from .models import MSiteSettings
+from data.settings.models import MSiteSettings
 
 
 class SettingsMiddleware:

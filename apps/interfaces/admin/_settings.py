@@ -1,12 +1,7 @@
+from data.settings.models import MSiteSettings
 from django import forms
-from django.conf import settings
 from django.contrib import admin
-
-from .models import MSiteSettings
-
-THEME_CHOICES = [
-    ["", "Tanzawa"],
-] + [(theme, theme.title()) for theme in settings.THEMES]
+from domain.settings import queries
 
 
 class MSiteSettingsAdminForm(forms.ModelForm):
@@ -14,7 +9,11 @@ class MSiteSettingsAdminForm(forms.ModelForm):
         model = MSiteSettings
         fields = "__all__"
 
-    theme = forms.ChoiceField(choices=THEME_CHOICES, required=False)
+    theme = forms.ChoiceField(choices=[], required=False)
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["theme"].choices = queries.get_theme_choices()
 
 
 class MSiteSettingsAdmin(admin.ModelAdmin):

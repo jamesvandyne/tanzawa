@@ -62,7 +62,7 @@ INSTALLED_APPS = [
     "core",
     "data",
     "data.entry",
-    "settings",
+    "data.settings",
     "indieweb",
     "trix",
     "post",
@@ -85,7 +85,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "settings.middleware.SettingsMiddleware",
+    "interfaces.common.middleware.SettingsMiddleware",
     "webmention.middleware.webmention_middleware",
     "plugins.middleware.PluginMiddleware",
 ]
