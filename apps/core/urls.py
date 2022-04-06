@@ -20,7 +20,7 @@ urlpatterns = [
 
 # Public urls are last so "slug-like" urls in plugins are not matched to the stream-list view.
 urlpatterns.append(
-    path("", include("interfaces.public.urls")),
+    path("", include("interfaces.public.urls", namespace="public")),
 )
 
 

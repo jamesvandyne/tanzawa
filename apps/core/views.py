@@ -27,7 +27,7 @@ def handle404(request, exception):
         if t_category:
             if request.path.endswith("feed"):
                 # Redirect stream feeds
-                return HttpResponsePermanentRedirect(reverse("feeds:stream_feed", args=[t_category.m_stream.slug]))
+                return HttpResponsePermanentRedirect(reverse("public:stream_feed", args=[t_category.m_stream.slug]))
             else:
                 # Redirect to stream page
                 return HttpResponsePermanentRedirect(reverse("public:stream", args=[t_category.m_stream.slug]))

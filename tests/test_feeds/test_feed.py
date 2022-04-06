@@ -8,7 +8,7 @@ from django.urls import reverse
 class TestFeedView:
     @pytest.fixture
     def target_url(self):
-        return reverse("feeds:feed")
+        return reverse("public:feed")
 
     @pytest.mark.parametrize(
         "visibility,publish_status,should_show",

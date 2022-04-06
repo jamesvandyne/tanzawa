@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "data.post",
     "indieweb",
     "files",
-    "public",
     "wordpress",
     "plugins",
     "interfaces",

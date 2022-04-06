@@ -9,9 +9,9 @@
     <title>{% if title %}{{ title }} - {% endif %}{{ request.settings.title }}</title>
     <link rel="apple-touch-icon-precomposed" href="{% static 'img/apple-touch-icon-precomposed.png' %}"/>
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
-    <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }}" href="{{ absolute_url }}{% url 'feeds:feed' %}">
+    <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }}" href="{{ absolute_url }}{% url 'public:feed' %}">
     {% if stream %}
-        <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }} - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'feeds:stream_feed' stream.slug %}">
+        <link rel="alternate" type="application/rss+xml" title="{% if request.settings.icon %}{{ request.settings.icon }} {% endif %}{{ request.settings.title }} - {{ stream.name }} Feed" href="{{ absolute_url }}{% url 'public:stream_feed' stream.slug %}">
     {% endif %}
     {# django-meta open graph meta tags #}
     {% include 'meta/meta.html' %}
