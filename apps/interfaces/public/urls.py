@@ -30,5 +30,11 @@ urlpatterns = [
             "interfaces.public.maps.urls",
         ),
     ),
+    path(
+        "",
+        include(
+            "interfaces.public.files.urls",
+        ),
+    ),
     path("", include("interfaces.public.streams.urls")),
 ]

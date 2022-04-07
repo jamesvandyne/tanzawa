@@ -1,6 +1,5 @@
+from data.files.models import TFile, TFilePost, TFormattedImage
 from django.contrib import admin
-
-from .models import TFile, TFilePost, TFormattedImage
 
 
 class TFileAdmin(admin.ModelAdmin):

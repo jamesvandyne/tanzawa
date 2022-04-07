@@ -1,7 +1,7 @@
+from data.files import models as files_models
 from django.db import transaction
+from domain.files import utils as files_utils
 from domain.trix import queries as trix_queries
-from files import models as files_models
-from files import utils as files_utils
 
 from . import models
 

@@ -1,9 +1,8 @@
 from core.models import TimestampModel
+from data.files._upload import format_upload_to, upload_to
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.urls import reverse
-
-from .upload import format_upload_to, upload_to
 
 
 class TFile(TimestampModel):

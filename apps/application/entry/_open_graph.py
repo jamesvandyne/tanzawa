@@ -3,7 +3,7 @@ from typing import Optional
 
 from data.entry import models
 from django.conf import settings
-from files.domain import images
+from domain.files import images
 from meta import views as meta_views
 
 

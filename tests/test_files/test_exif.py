@@ -13,7 +13,7 @@ def image():
 class TestScrubExif:
     @pytest.fixture
     def target(self):
-        from files.exif import scrub_exif
+        from domain.images.exif import scrub_exif
 
         return scrub_exif
 
@@ -36,7 +36,7 @@ class TestScrubExif:
 class TestExtractsLocation:
     @pytest.fixture
     def target(self):
-        from files.exif import get_location
+        from domain.images.exif import get_location
 
         return get_location
 

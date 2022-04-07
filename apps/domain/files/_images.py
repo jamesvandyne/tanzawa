@@ -1,7 +1,7 @@
 from typing import Optional
 
+from data.files import models
 from data.post import models as post_models
-from files import models
 
 
 def get_representative_image(post: post_models.TPost) -> Optional[models.TFile]:

@@ -3,11 +3,10 @@ import mimetypes
 from pathlib import Path
 from typing import Optional, Tuple, Union
 
+from data.files.models import TFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.timezone import now
 from PIL import Image, ImageOps
-
-from .models import TFile
 
 
 def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
@@ -33,7 +32,6 @@ def convert_image_format(  # noqa: C901
 ) -> Union[Tuple[SimpleUploadedFile, int, int], Tuple[None, None, None]]:
     image = Image.open(t_file.file)
     new_image_data = io.BytesIO()
-
     ext = mimetypes.guess_extension(target_mime)
     if not ext:
         # unknown mimetype, can't convert

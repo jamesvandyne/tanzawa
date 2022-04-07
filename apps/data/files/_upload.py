@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from django.utils.timezone import now
 
 if TYPE_CHECKING:
-    from .models import TFile, TFormattedImage
+    from data.files.models import TFile, TFormattedImage
 
 MAIN_DIRECTORY = Path("uploads/")
 DATE_DIRECTORY = "%Y/%m/%d"
