@@ -4,18 +4,17 @@ from typing import List, Set
 import mf2py
 import ronkyuu
 from bs4 import BeautifulSoup
+from data.indieweb import models as indieweb_models
+from data.indieweb.constants import MPostKinds
 from data.post import models as post_models
 from data.post.models import TPost
 from django.conf import settings
 from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
+from domain.indieweb import utils
+from domain.indieweb import webmention as webmention_domain
 from domain.post import queries as post_queries
-from indieweb import models as indieweb_models
-from indieweb.constants import MPostKinds
 from webmention import models as webmention_models
-
-from .. import utils
-from ..domain import webmention as webmention_domain
 
 logger = logging.getLogger(__name__)
 

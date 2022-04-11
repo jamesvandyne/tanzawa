@@ -1,4 +1,4 @@
-from indieweb import models
+from data.indieweb import models
 
 
 def get_webmention(*, webmention_id: int, t_post_id: int) -> models.TWebmention:

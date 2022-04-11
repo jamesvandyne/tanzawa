@@ -1,6 +1,9 @@
 from typing import Any, Dict, Optional
 
+from application.indieweb import extract as indieweb_extract
+from application.indieweb import webmentions
 from data.entry import models
+from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,9 +14,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
 from django.views.generic import CreateView, FormView, ListView, UpdateView
-from indieweb.application import extract as indieweb_extract
-from indieweb.application import webmentions
-from indieweb.constants import MPostKinds, MPostStatuses
 from interfaces.dashboard.entry import forms
 from turbo_response import TurboFrame, redirect_303
 

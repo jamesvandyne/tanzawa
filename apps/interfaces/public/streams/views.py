@@ -1,11 +1,11 @@
 from core.constants import Visibility
 from data.entry.models import TEntry
+from data.indieweb.constants import MPostStatuses
 from data.streams.models import MStream
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils.functional import cached_property
 from django.views.generic import ListView
-from indieweb.constants import MPostStatuses
 
 
 class StreamView(ListView):

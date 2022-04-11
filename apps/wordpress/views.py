@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+from application.indieweb.location import location_to_pointfield_input
 from bs4 import BeautifulSoup
 from data.entry.models import TCheckin, TLocation
 from django import forms
@@ -14,8 +15,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView
 from domain.images.images import bytes_as_upload_image
-from indieweb.application.location import location_to_pointfield_input
-from indieweb.utils import download_image, render_attachment
+from domain.indieweb.utils import download_image, render_attachment
 from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,

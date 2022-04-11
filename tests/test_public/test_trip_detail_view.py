@@ -1,6 +1,6 @@
 import pytest
 from core.constants import Visibility
-from indieweb.constants import MPostKinds
+from data.indieweb.constants import MPostKinds
 from model_bakery import baker
 
 

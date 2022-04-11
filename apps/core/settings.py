@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "webmention",
     "meta",
     "core",
+    # Data layer
     "data",
     "data.entry",
     "data.settings",
@@ -67,7 +68,7 @@ INSTALLED_APPS = [
     "data.trips",
     "data.post",
     "data.files",
-    "indieweb",
+    "data.indieweb",
     "wordpress",
     "plugins",
     "interfaces",
@@ -111,6 +112,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "indieweb": "interfaces.common.templatetags.indieweb",
+            },
         },
     },
 ]

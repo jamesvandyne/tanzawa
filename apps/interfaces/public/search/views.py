@@ -2,12 +2,12 @@ from typing import Union
 
 from core.constants import Visibility
 from data.entry.models import TEntry
+from data.indieweb.constants import MPostStatuses
 from data.streams.models import MStream
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db.models import Count, Q
 from django.views.generic import ListView
-from indieweb.constants import MPostStatuses
 from interfaces.public.search.forms import SearchForm
 
 

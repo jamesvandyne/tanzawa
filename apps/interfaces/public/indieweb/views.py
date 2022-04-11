@@ -1,16 +1,18 @@
 import logging
 
+from application.indieweb import micropub as micropub_app
+from application.indieweb import webmentions as webmention_app
+from application.indieweb.location import location_to_pointfield_input
 from bs4 import BeautifulSoup
-from django.contrib.auth.decorators import login_required
+from data.indieweb.constants import MPostStatuses
 from django.db import transaction
-from django.http import HttpResponseBadRequest, JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_GET, require_POST
-from indieweb.application import micropub as micropub_app
-from indieweb.application import webmentions as webmention_app
-from indieweb.application.location import location_to_pointfield_input
+from domain.indieweb import indieauth
+from domain.indieweb.utils import (
+    extract_base64_images,
+    render_attachment,
+    save_and_get_tag,
+)
 from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -25,20 +27,12 @@ from interfaces.public.files.forms import MediaUploadForm
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from turbo_response import TurboFrame
 
-from .constants import MPostStatuses
-from .domain import indieauth as authentication_domain
-from .domain import webmention as webmention_domain
-from .forms import IndieAuthAuthorizationForm
-from .models import TWebmention
 from .serializers import (
-    IndieAuthAuthorizationSerializer,
     IndieAuthTokenSerializer,
     IndieAuthTokenVerificationSerializer,
     MicropubSerializer,
 )
-from .utils import extract_base64_images, render_attachment, save_and_get_tag
 
 logger = logging.getLogger(__name__)
 
@@ -53,14 +47,14 @@ def micropub(request):  # noqa: C901 too complex (30)
     # authenticate
     # TODO: Move indieauth into standard DRF/Django Middleware
     try:
-        token = authentication_domain.authenticate_request(request=request)
-    except authentication_domain.TokenNotFound:
+        token = indieauth.authenticate_request(request=request)
+    except indieauth.TokenNotFound:
         return Response(
             data={"message": "Invalid request. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
         )
-    except authentication_domain.InvalidToken:
+    except indieauth.InvalidToken:
         return Response(data={"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
-    except authentication_domain.PermissionDenied:
+    except indieauth.PermissionDenied:
         return Response(data={"message": "Scope permission denied"}, status=status.HTTP_400_BAD_REQUEST)
 
     # normalize before sending to serializer
@@ -172,7 +166,7 @@ def micropub(request):  # noqa: C901 too complex (30)
     if named_forms.get("checkin"):
         form_class = CreateCheckinForm
 
-    form = form_class(data=form_data, p_author=authentication_domain.queries.get_user_for_token(key=token))
+    form = form_class(data=form_data, p_author=indieauth.queries.get_user_for_token(key=token))
 
     if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
         form.prepare_data()
@@ -195,90 +189,12 @@ def micropub(request):  # noqa: C901 too complex (30)
     return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
 
 
-@login_required
-def review_webmention(request, pk: int, approval: bool):
-    t_web_mention: TWebmention = get_object_or_404(TWebmention.objects.select_related(), pk=pk)
-
-    webmention_app.moderate_webmention(t_web_mention=t_web_mention, approval=approval)
-
-    webmentions = webmention_domain.pending_moderation()
-    context = {
-        "webmentions": webmentions,
-        "unread_count": len(webmentions),
-    }
-    return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
-
-
-@csrf_exempt
-def indieauth_authorize(request):
-    """
-    Implements the IndieAuth Authorization Request
-
-    refs: https://indieauth.spec.indieweb.org/#authorization-request
-    """
-    if request.method == "GET":
-        return _indieauth_authorize_form(request)
-    elif request.method == "POST":
-        serializer = IndieAuthTokenSerializer(data=request.POST)
-        if serializer.is_valid():
-            t_token = serializer.validated_data["t_token"]
-            with transaction.atomic():
-                t_token.set_key(key=serializer.validated_data["access_token"])
-                t_token.set_exchanged_at(exchanged_at=timezone.now())
-            return JsonResponse(
-                data={"me": authentication_domain.queries.get_me_url(request=request, t_token=t_token)},
-                status=status.HTTP_200_OK,
-            )
-        return JsonResponse(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@login_required
-@require_GET
-def _indieauth_authorize_form(request):
-    serializer = IndieAuthAuthorizationSerializer(data=request.GET)
-
-    if not serializer.is_valid():
-        return HttpResponseBadRequest(serializer.errors.values())
-
-    scopes = serializer.validated_data.get("scope", "").split(" ")
-    form = IndieAuthAuthorizationForm(
-        initial={
-            "scope": scopes,
-            "redirect_uri": serializer.validated_data["redirect_uri"],
-            "client_id": serializer.validated_data["client_id"],
-            "state": serializer.validated_data["state"],
-        }
-    )
-    context = {
-        "form": form,
-        "client_id": serializer.validated_data.get("client_id"),
-    }
-    return render(request, "indieweb/indieauth/authorization.html", context=context)
-
-
-@login_required
-@require_POST
-def indieauth_authorize_request(request):
-    """
-    Save a request for authorization.
-    """
-    form = IndieAuthAuthorizationForm(request.POST)
-    if form.is_valid():
-        redirect_uri = f"{form.cleaned_data['redirect_uri']}?state={form.cleaned_data['state']}"
-        t_token = authentication_domain.operations.create_token_for_user(
-            user=request.user, client_id=form.cleaned_data["client_id"], scope=form.cleaned_data["scope"]
-        )
-        redirect_uri = f"{redirect_uri}&code={t_token.auth_token}"
-        return redirect(redirect_uri)
-    return redirect("indieweb:indieauth_authorize")
-
-
 @api_view(["POST", "GET"])
 def token_endpoint(request):
     if request.method == "GET":
         try:
-            data = {"token": authentication_domain.extract_auth_token_from_request(request=request)}
-        except authentication_domain.InvalidToken:
+            data = {"token": indieauth.extract_auth_token_from_request(request=request)}
+        except indieauth.InvalidToken:
             return Response(
                 data={"message": "Invalid token header. No credentials provided."}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -290,7 +206,7 @@ def token_endpoint(request):
 
     else:
         if request.POST.get("action", "") == "revoke":
-            authentication_domain.revoke_token(key=request.POST.get("token", ""))
+            indieauth.revoke_token(key=request.POST.get("token", ""))
             return Response(status=status.HTTP_200_OK)
         serializer = IndieAuthTokenSerializer(data=request.POST)
         if serializer.is_valid():
@@ -300,6 +216,6 @@ def token_endpoint(request):
                 t_token.set_key(key=serializer.validated_data["access_token"])
                 t_token.set_exchanged_at(exchanged_at=timezone.now())
             response_data = serializer.data
-            response_data.update({"me": authentication_domain.queries.get_me_url(request=request, t_token=t_token)})
+            response_data.update({"me": indieauth.queries.get_me_url(request=request, t_token=t_token)})
             return Response(data=response_data, status=status.HTTP_200_OK)
         return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

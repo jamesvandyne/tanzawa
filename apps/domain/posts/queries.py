@@ -1,10 +1,10 @@
 from typing import Optional
 
 from core.constants import Visibility
+from data.indieweb.constants import MPostStatuses
 from data.post import models as post_models
 from data.streams import models as stream_models
 from django.contrib.auth import models as auth_models
-from indieweb.constants import MPostStatuses
 
 
 def get_public_posts_for_user(user: Optional[auth_models.User], stream: Optional[stream_models.MStream] = None):

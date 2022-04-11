@@ -5,6 +5,7 @@ from core.constants import VISIBILITY_CHOICES, Visibility
 from core.forms import LeafletWidget, TCharField
 from data.entry import models as entry_models
 from data.files.models import TFile
+from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from data.streams import models as stream_models
 from data.trips import models as trip_models
@@ -14,7 +15,6 @@ from django.db import transaction
 from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
 from domain.trix import queries as trix_queries
-from indieweb.constants import MPostKinds, MPostStatuses
 from interfaces.common import forms as common_forms
 
 

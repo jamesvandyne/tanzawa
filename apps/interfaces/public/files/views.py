@@ -7,7 +7,6 @@ from django.http import (
     HttpResponseForbidden,
     HttpResponseNotAllowed,
     JsonResponse,
-    HttpResponseNotFound
 )
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt

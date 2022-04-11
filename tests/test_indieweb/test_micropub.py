@@ -11,7 +11,7 @@ from data.post.models import TPost
 class TestMicropub:
     @pytest.fixture
     def target(self):
-        return "/a/micropub/"
+        return "/micropub/"
 
     @pytest.fixture
     def entry_data(self):
@@ -33,10 +33,10 @@ class TestMicropub:
 
     @pytest.fixture
     def mock_send_webmention(self, monkeypatch):
-        from indieweb.application.webmentions import send_webmention
+        from application.indieweb.webmentions import send_webmention
 
         m = Mock(autospec=send_webmention)
-        monkeypatch.setattr("indieweb.views.webmention_app.send_webmention", m)
+        monkeypatch.setattr("interfaces.public.indieweb.views.webmention_app.send_webmention", m)
         return m
 
     def test_token_create(
@@ -96,7 +96,9 @@ class TestMicropub:
         client_id,
         mock_send_webmention,
     ):
-        """A post made from the article poster on Quill"""
+        """
+        A post made from the article poster on Quill.
+        """
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
 
         data = {
@@ -184,7 +186,7 @@ class TestMicropub:
 
     @pytest.fixture
     def parsed_linked_page(self):
-        from indieweb.application.extract import LinkedPage, LinkedPageAuthor
+        from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 
         return LinkedPage(
             url="https://jamesvandyne.com/2021/03/02/2021-09.html",
@@ -199,11 +201,11 @@ class TestMicropub:
 
     @pytest.fixture
     def mock_extract_reply(self, monkeypatch, parsed_linked_page):
-        from indieweb.application.extract import extract_reply_details_from_url
+        from application.indieweb.extract import extract_reply_details_from_url
 
         m = Mock(extract_reply_details_from_url, autospec=True)
         m.return_value = parsed_linked_page
-        monkeypatch.setattr("indieweb.serializers.extract.extract_reply_details_from_url", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.extract.extract_reply_details_from_url", m)
         return m
 
     def test_post_replies_mf2(
@@ -415,7 +417,7 @@ class TestMicropub:
 
     @pytest.fixture
     def download_image_mock(self, monkeypatch):
-        from indieweb.utils import DataImage, download_image
+        from domain.indieweb.utils import DataImage, download_image
 
         m = Mock(download_image, autospec=True)
         with open("tests/fixtures/1px.png", "rb") as photo:
@@ -425,7 +427,7 @@ class TestMicropub:
                 encoding="none",
                 tag=None,
             )
-        monkeypatch.setattr("indieweb.serializers.download_image", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.download_image", m)
         return m
 
     def test_post_with_checkin(

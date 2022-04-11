@@ -1,18 +1,17 @@
 from typing import Dict, Optional
 from urllib.parse import urlparse
 
+from application.indieweb import extract
+from application.indieweb import location as indieweb_location
 from core.constants import Visibility
+from data.indieweb import constants
+from data.indieweb.models import TToken
 from data.streams.models import MStream
 from django.core.validators import URLValidator
 from django.urls import reverse
-from indieweb.application import extract
-from indieweb.application import location as indieweb_location
+from domain.indieweb.utils import DataImage, download_image
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
-
-from . import constants
-from .models import TToken
-from .utils import DataImage, download_image
 
 
 class ContentField(serializers.Field):

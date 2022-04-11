@@ -36,5 +36,9 @@ urlpatterns = [
             "interfaces.public.files.urls",
         ),
     ),
+    path(
+        "",
+        include("interfaces.public.indieweb.urls"),
+    ),
     path("", include("interfaces.public.streams.urls")),
 ]

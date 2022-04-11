@@ -16,8 +16,8 @@
       href="https://unpkg.com/leaflet-geosearch@3.0.0/dist/geosearch.css"
     />
     {% with request.scheme|add:"://"|add:request.get_host as absolute_url %}
-        <link href="{{ absolute_url }}{% url  'indieweb:indieauth_authorize' %}" rel="authorization_endpoint">
-        <link href="{{ absolute_url }}{% url  'indieweb:indieauth_token' %}" rel="token_endpoint">
+        <link href="{{ absolute_url }}{% url  'indieauth_authorize' %}" rel="authorization_endpoint">
+        <link href="{{ absolute_url }}{% url  'indieauth_token' %}" rel="token_endpoint">
     {% endwith %}
     {% if form %}{{ form.media.css }}{% endif %}
     <title>{{ page_title }} – {{ request.settings.title }} Admin</title>

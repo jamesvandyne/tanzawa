@@ -1,8 +1,8 @@
 from core.constants import Visibility
 from data.entry.models import TEntry
+from data.indieweb.constants import MPostStatuses
 from django.db.models import Count, Q
 from django.views.generic import ListView
-from indieweb.constants import MPostStatuses
 
 
 class AuthorDetail(ListView):

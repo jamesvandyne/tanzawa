@@ -1,7 +1,7 @@
 from typing import Iterable
 
+from data.indieweb import models
 from django.db import transaction
-from indieweb import models
 from rest_framework import authentication
 
 from . import queries

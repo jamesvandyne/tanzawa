@@ -1,4 +1,4 @@
-from . import queries
+from . import queries, serializers
 from .operations import (
     InvalidToken,
     PermissionDenied,
@@ -16,4 +16,5 @@ __all__ = (
     "authenticate_request",
     "extract_auth_token_from_request",
     "revoke_token",
+    "serializers",
 )

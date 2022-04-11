@@ -1,6 +1,4 @@
-from django.contrib import admin
-
-from .models import (
+from data.indieweb.models import (
     MMicropubScope,
     TRelMe,
     TToken,
@@ -8,6 +6,7 @@ from .models import (
     TWebmention,
     TWebmentionSend,
 )
+from django.contrib import admin
 
 
 class TWebmentionSendAdmin(admin.ModelAdmin):

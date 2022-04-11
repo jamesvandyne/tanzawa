@@ -1,5 +1,5 @@
 import pytest
-from indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostStatuses
 from model_bakery import baker
 
 

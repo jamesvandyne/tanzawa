@@ -2,6 +2,7 @@ from typing import Dict, List
 
 from core.constants import Visibility
 from data.entry.models import TLocation
+from data.indieweb.constants import MPostStatuses
 from data.post.models import TPost
 from data.streams.models import MStream
 from data.trips.models import TTrip
@@ -9,7 +10,6 @@ from django.contrib.gis.geos import Point
 from django.db.models import F
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
-from indieweb.constants import MPostStatuses
 
 
 def trip_detail(request, uuid):
