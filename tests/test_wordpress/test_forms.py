@@ -1,12 +1,12 @@
 import pytest
-from django.core.files.uploadedfile import SimpleUploadedFile
-from wordpress.models import (
+from data.wordpress.models import (
     TCategory,
     TPostFormat,
     TPostKind,
     TWordpressAttachment,
     TWordpressPost,
 )
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 @pytest.mark.django_db
@@ -14,7 +14,7 @@ from wordpress.models import (
 class TestWordpressUploadFrom:
     @pytest.fixture
     def target(self):
-        from wordpress.forms import WordpressUploadForm
+        from interfaces.dashboard.wordpress.forms import WordpressUploadForm
 
         return WordpressUploadForm
 

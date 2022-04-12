@@ -1,5 +1,6 @@
 from typing import Optional
 
+from data.wordpress.models import TCategory, TWordpressPost
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -9,7 +10,6 @@ from django.http import (
 from django.urls import reverse
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
-from wordpress.models import TCategory, TWordpressPost
 
 
 def handle404(request, exception):

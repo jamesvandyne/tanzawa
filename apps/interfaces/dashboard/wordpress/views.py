@@ -4,6 +4,13 @@ from pathlib import Path
 from application.indieweb.location import location_to_pointfield_input
 from bs4 import BeautifulSoup
 from data.entry.models import TCheckin, TLocation
+from data.wordpress.models import (
+    TCategory,
+    TPostKind,
+    TWordpress,
+    TWordpressAttachment,
+    TWordpressPost,
+)
 from django import forms
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -16,6 +23,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView
 from domain.images.images import bytes_as_upload_image
 from domain.indieweb.utils import download_image, render_attachment
+from domain.wordpress import extract
 from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -31,18 +39,13 @@ from interfaces.dashboard.entry.forms import (
     UpdateReplyForm,
     UpdateStatusForm,
 )
+from interfaces.dashboard.wordpress.forms import (
+    TCategoryModelForm,
+    TPostKindModelForm,
+    WordpressUploadForm,
+)
 from interfaces.public.files.forms import MediaUploadForm
 from turbo_response import TurboFrame, redirect_303
-
-from . import extract
-from .forms import TCategoryModelForm, TPostKindModelForm, WordpressUploadForm
-from .models import (
-    TCategory,
-    TPostKind,
-    TWordpress,
-    TWordpressAttachment,
-    TWordpressPost,
-)
 
 logger = logging.getLogger(__name__)
 

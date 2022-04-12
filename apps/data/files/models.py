@@ -21,7 +21,7 @@ class TFile(TimestampModel):
         verbose_name_plural = "Files"
 
     def get_absolute_url(self):
-        return reverse("get_media", args=[self.uuid])
+        return reverse("public:get_media", args=[self.uuid])
 
     def __str__(self):
         return self.filename

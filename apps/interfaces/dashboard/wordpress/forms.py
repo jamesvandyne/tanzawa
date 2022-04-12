@@ -4,12 +4,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from data.post.models import TPost
 from data.streams.models import MStream
-from django import forms
-from django.db import transaction
-from interfaces.common.forms import StreamModelChoiceField
-
-from .extract import extract_categories, extract_post_format, extract_post_kind
-from .models import (
+from data.wordpress.models import (
     TCategory,
     TPostFormat,
     TPostKind,
@@ -17,6 +12,14 @@ from .models import (
     TWordpressAttachment,
     TWordpressPost,
 )
+from django import forms
+from django.db import transaction
+from domain.wordpress.extract import (
+    extract_categories,
+    extract_post_format,
+    extract_post_kind,
+)
+from interfaces.common.forms import StreamModelChoiceField
 
 
 class WordpressUploadForm(forms.ModelForm):

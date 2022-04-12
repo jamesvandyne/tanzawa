@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .models import TWordpress
+    from data.wordpress.models import TWordpress
 
 MAIN_DIRECTORY = Path("wordpress/")
 

@@ -2,8 +2,8 @@
 
 import uuid
 
+import data.wordpress.upload
 import django.db.models.deletion
-import wordpress.upload
 from django.db import migrations, models
 
 
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 (
                     "export_file",
-                    models.FileField(upload_to=wordpress.upload.wordpress_upload_to),
+                    models.FileField(upload_to=data.wordpress.upload.wordpress_upload_to),
                 ),
                 ("filename", models.CharField(max_length=128)),
                 ("link", models.URLField()),
