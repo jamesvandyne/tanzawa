@@ -1,9 +1,8 @@
+from data.plugins import activation, pool
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import redirect, render
 from django.views.decorators import http
-from plugins import pool
-from plugins.application import activation
 
 
 @auth_decorators.login_required
@@ -22,11 +21,11 @@ def enable_plugin(request, identifier: str):
     plugin = pool.plugin_pool.get_plugin(identifier)
     if not plugin:
         messages.error(request, "Plugin not found.")
-        return redirect("plugins:plugin_list")
+        return redirect("plugin_list")
     pool.plugin_pool.enable(plugin)
     messages.success(request, f"{plugin.name} enabled.")
     activation.restart_parent_process()
-    return redirect("plugins:plugin_list")
+    return redirect("plugin_list")
 
 
 @auth_decorators.login_required
@@ -35,8 +34,8 @@ def disable_plugin(request, identifier: str):
     plugin = pool.plugin_pool.get_plugin(identifier)
     if not plugin:
         messages.error(request, "Plugin not found.")
-        return redirect("plugins:plugin_list")
+        return redirect("plugin_list")
     pool.plugin_pool.disable(plugin)
     messages.success(request, f"{plugin.name} disabled.")
     activation.restart_parent_process()
-    return redirect("plugins:plugin_list")
+    return redirect("plugin_list")

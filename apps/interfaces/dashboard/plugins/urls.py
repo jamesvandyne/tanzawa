@@ -1,8 +1,5 @@
 from django.urls import path, re_path
-
-from . import views
-
-app_name = "plugins"
+from interfaces.dashboard.plugins import views
 
 urlpatterns = [
     path("plugins/", views.plugin_list, name="plugin_list"),

@@ -1,13 +1,12 @@
+from importlib import import_module
 from operator import attrgetter
 from typing import Iterable, Optional
 
+from data.plugins import activation, plugin
+from data.plugins.models import MPlugin
 from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
-from plugins.application import activation
-from plugins.models import MPlugin
-
-from . import plugin
 
 
 class PluginPool:
@@ -23,6 +22,8 @@ class PluginPool:
 
         if self.discovered:
             return
+        # Load our plugins module so we can discover our plugins automatically.
+        import_module("tanzawa_plugin")
 
         autodiscover_modules("tanzawa_plugin")
         for plugin_ in self.plugins.values():

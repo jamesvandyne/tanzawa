@@ -1,4 +1,4 @@
-from . import pool
+from data.plugins import pool
 
 
 class PluginMiddleware:

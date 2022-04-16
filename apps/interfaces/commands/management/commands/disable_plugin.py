@@ -1,10 +1,9 @@
+from data.plugins import pool
 from django.core.management.base import BaseCommand, CommandError
-
-from ... import pool
 
 
 class Command(BaseCommand):
-    help = "Enable a plugin"
+    help = "Disable a plugin"
 
     def add_arguments(self, parser):
         parser.add_argument("identifier", type=str)
@@ -15,5 +14,5 @@ class Command(BaseCommand):
         if not plugin:
             raise CommandError('Plugin "%s" does not exist' % identifier)
 
-        pool.plugin_pool.enable(plugin_=plugin)
-        self.stdout.write(self.style.SUCCESS('Enabled "%s"' % plugin.name))
+        pool.plugin_pool.disable(plugin_=plugin)
+        self.stdout.write(self.style.SUCCESS('Disabled "%s"' % plugin.name))

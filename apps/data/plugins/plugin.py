@@ -3,7 +3,7 @@ import pathlib
 from importlib import util as importlib_util
 from typing import Optional, Protocol
 
-from plugins.models import MPlugin
+from .models import MPlugin
 
 
 class TopNavProtocol(Protocol):

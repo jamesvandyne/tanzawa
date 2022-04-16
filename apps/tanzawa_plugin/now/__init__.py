@@ -1,4 +1,4 @@
-from plugins import pool
+from data.plugins import pool
 
 from .plugin import get_plugin
 

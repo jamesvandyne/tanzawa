@@ -2,4 +2,4 @@ from django import apps
 
 
 class NowConfig(apps.AppConfig):
-    name = "plugins.tanzawa_plugin.now"
+    name = "tanzawa_plugin.now"

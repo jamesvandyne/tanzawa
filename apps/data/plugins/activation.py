@@ -16,7 +16,7 @@ from django.urls import clear_url_caches
 
 if TYPE_CHECKING:
     # Prevents AppRegistryNotReady errors during start up.
-    from plugins.plugin import Plugin
+    from data.plugins.plugin import Plugin
 
 
 logger = logging.getLogger(__name__)
