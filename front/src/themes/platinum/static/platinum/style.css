@@ -786,6 +786,15 @@ Ensure the default browser behavior of the `hidden` attribute.
   padding-bottom: 0.25rem;
 }
 
+main.content blockquote {
+  margin-bottom: 1rem;
+  max-width: 65ch;
+  border-left-width: 2px;
+  --tw-border-opacity: 1;
+  border-color: rgb(153 156 252 / var(--tw-border-opacity));
+  padding-left: 0.5rem;
+}
+
 .hover\:underline:hover {
   -webkit-text-decoration-line: underline;
           text-decoration-line: underline;

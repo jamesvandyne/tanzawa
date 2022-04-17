@@ -11,3 +11,7 @@
 .primary-button {
     @apply rounded bg-primary-600 border-primary-800 px-3 py-1 border;
 }
+
+main.content blockquote {
+    @apply border-l-2 border-secondary mb-4 pl-2 max-w-prose;
+}
