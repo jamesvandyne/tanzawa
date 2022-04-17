@@ -1,10 +1,10 @@
+from application.feeds import content as feed_content
 from data.post.models import TPost
 from data.streams.models import MStream
 from django.contrib.syndication.views import Feed
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.feedgenerator import Rss201rev2Feed, rfc2822_date
-from domain.feeds import queries as feed_queries
 from domain.posts import queries as post_queries
 
 
@@ -104,7 +104,7 @@ class AllEntriesFeed(Feed):
         return item.ref_t_entry.p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        content_encoded = feed_queries.get_encoded_content(post=item)
+        content_encoded = feed_content.get_encoded_content(post=item)
         return {"content_encoded": content_encoded}
 
     def item_guid(self, obj: TPost) -> str:
