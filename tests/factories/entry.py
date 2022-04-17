@@ -9,4 +9,4 @@ class StatusEntry(factory.django.DjangoModelFactory):
     p_name = ""
     p_summary = "Content here"
     e_content = "<h1>Content here</h1>"
-    t_post = factory.SubFactory("tests.factories.StatusPost")
+    t_post = factory.SubFactory("tests.factories.PublishedNotePost")

@@ -10,3 +10,4 @@ class User(factory.django.DjangoModelFactory):
         model = auth_models.User
 
     username = factory.LazyFunction(fake.pystr)
+    email = "james@example.test"
