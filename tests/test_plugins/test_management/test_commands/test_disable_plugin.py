@@ -7,7 +7,7 @@ from model_bakery import baker
 
 @pytest.mark.django_db
 class TestDisablePlugin:
-    @mock.patch("plugins.application.activation.management")
+    @mock.patch("data.plugins.activation.management")
     def test_can_disable_plugin(self, management_mock):
         identifier = "blog.tanzawa.plugins.nowpage"
         m_plugin = baker.make("plugins.MPlugin", identifier=identifier, enabled=True)
@@ -18,7 +18,7 @@ class TestDisablePlugin:
         m_plugin.refresh_from_db()
         assert m_plugin.enabled is False
 
-    @mock.patch("plugins.application.activation.management")
+    @mock.patch("data.plugins.activation.management")
     def test_errs_if_not_found(self, management_mock):
         identifier = "com.example.hoge"
 

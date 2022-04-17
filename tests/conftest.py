@@ -1,5 +1,5 @@
 import pytest
-from indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostStatuses
 from model_bakery import baker
 
 
@@ -12,7 +12,7 @@ def client():
 
 @pytest.fixture
 def m_post_kinds():
-    from post.models import MPostKind
+    from data.post.models import MPostKind
 
     return MPostKind.objects.all()
 
@@ -24,14 +24,14 @@ def m_post_kind(m_post_kinds):
 
 @pytest.fixture
 def published_status():
-    from post.models import MPostStatus
+    from data.post.models import MPostStatus
 
     return MPostStatus.objects.get(key=MPostStatuses.published)
 
 
 @pytest.fixture
 def draft_status():
-    from post.models import MPostStatus
+    from data.post.models import MPostStatus
 
     return MPostStatus.objects.get(key=MPostStatuses.draft)
 
@@ -59,3 +59,10 @@ def t_post(m_post_kind, published_status, user):
         dt_published=datetime.now(),
         uuid="90a0027d-9c74-44e8-895c-6d5611f8eca5",
     )
+
+
+@pytest.fixture
+def factory():
+    from tests import factories
+
+    return factories

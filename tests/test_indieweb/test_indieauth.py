@@ -1,14 +1,14 @@
 from unittest import mock
 
 import pytest
-from indieweb.models import TToken
+from data.indieweb.models import TToken
 
 
 @pytest.mark.django_db
 class TestIndieAuthExchangeToken:
     @pytest.fixture
     def target(self):
-        return "/a/indieauth/token"
+        return "/indieauth/token"
 
     @pytest.fixture
     def post_data(self, auth_token, client_id):
@@ -25,7 +25,7 @@ class TestIndieAuthExchangeToken:
         from ninka.indieauth import discoverAuthEndpoints
 
         m = mock.Mock(discoverAuthEndpoints, autospec=True)
-        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
     def test_valid(self, target, client, ninka_mock, post_data, t_token):
@@ -66,7 +66,7 @@ class TestIndieAuthExchangeToken:
 class TestVerifyIndieAuthToken:
     @pytest.fixture
     def target(self):
-        return "/a/indieauth/token"
+        return "/indieauth/token"
 
     def test_valid(self, target, client, t_token_access, auth_token, client_id):
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
@@ -94,7 +94,7 @@ class TestVerifyIndieAuthToken:
 class TestIndieAuthTokenRevoke:
     @pytest.fixture
     def target(self):
-        return "/a/indieauth/token"
+        return "/indieauth/token"
 
     @pytest.fixture
     def post_data(self, auth_token, client_id):
@@ -108,7 +108,7 @@ class TestIndieAuthTokenRevoke:
         from ninka.indieauth import discoverAuthEndpoints
 
         m = mock.Mock(discoverAuthEndpoints, autospec=True)
-        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
     def test_valid(self, target, client, ninka_mock, post_data, t_token_access, auth_token):
@@ -146,7 +146,7 @@ class TestIndieAuthAuthorize:
         from ninka.indieauth import discoverAuthEndpoints
 
         m = mock.Mock(discoverAuthEndpoints, autospec=True)
-        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
     def test_returns_me_for_auth(self, target, client, ninka_mock, post_data, t_token):
@@ -185,7 +185,7 @@ class TestIndieAuthAuthorizeRequest:
         from ninka.indieauth import discoverAuthEndpoints
 
         m = mock.Mock(discoverAuthEndpoints, autospec=True)
-        monkeypatch.setattr("indieweb.serializers.discoverAuthEndpoints", m)
+        monkeypatch.setattr("interfaces.public.indieweb.serializers.discoverAuthEndpoints", m)
         return m
 
     def test_returns_code_no_scope(self, target, client, ninka_mock, user, post_data):

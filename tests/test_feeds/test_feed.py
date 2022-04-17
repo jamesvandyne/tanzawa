@@ -1,8 +1,6 @@
 import pytest
 from core.constants import Visibility
 from django.urls import reverse
-from indieweb.constants import MPostKinds
-from model_bakery import baker
 
 
 @pytest.mark.django_db
@@ -10,76 +8,98 @@ from model_bakery import baker
 class TestFeedView:
     @pytest.fixture
     def target_url(self):
-        return reverse("feeds:feed")
-
-    @pytest.fixture
-    def m_post_kind(self, m_post_kinds):
-        return m_post_kinds.get(key=MPostKinds.note)
-
-    @pytest.fixture
-    def t_post(self, t_post, author, visibility, publish_status):
-        t_post.p_author = author
-        t_post.visibility = visibility
-        t_post.m_post_status = publish_status
-        t_post.save()
-        return t_post
-
-    @pytest.fixture
-    def t_entry(self, t_post, m_post_kind, author):
-        return baker.make(
-            "entry.TEntry",
-            t_post=t_post,
-            p_name="",
-            p_summary="Content here",
-            e_content="<h1>Content here</h1>",
-        )
-
-    @pytest.fixture
-    def author(self):
-        return baker.make("auth.User", username="Author")
-
-    @pytest.fixture
-    def another_user(self):
-        return baker.make("auth.User", username="Another")
+        return reverse("public:feed")
 
     @pytest.mark.parametrize(
-        "visibility,publish_status,should_show,login_user",
+        "visibility,publish_status,should_show",
         [
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, None),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, None),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, None),
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, "published", True),
+            (Visibility.PRIVATE, "published", True),
+            (Visibility.UNLISTED, "published", False),
             # Draft Status
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, "draft", False),
+            (Visibility.PRIVATE, "draft", False),
+            (Visibility.UNLISTED, "draft", False),
         ],
     )
-    def test_respects_visibility(
+    def test_respects_visibility_for_author(
         self,
         client,
         target_url,
-        t_entry,
-        t_post,
-        author,
-        another_user,
+        factory,
         visibility,
         publish_status,
         should_show,
-        login_user,
     ):
-        if login_user:
-            client.force_login(login_user)
+        if publish_status == "published":
+            t_post = factory.PublishedNotePost(visibility=visibility)
+        else:
+            t_post = factory.DraftNotePost(visibility=visibility)
+        t_entry = factory.StatusEntry(t_post=t_post)
+
+        # Login as author
+        client.force_login(t_post.p_author)
+        response = client.get(target_url)
+        assert should_show == (t_entry.p_summary in response.content.decode("utf-8"))
+
+    @pytest.mark.parametrize(
+        "visibility,publish_status,should_show",
+        [
+            (Visibility.PUBLIC, "published", True),
+            (Visibility.PRIVATE, "published", False),
+            (Visibility.UNLISTED, "published", False),
+            # Draft Status
+            (Visibility.PUBLIC, "draft", False),
+            (Visibility.PRIVATE, "draft", False),
+            (Visibility.UNLISTED, "draft", False),
+        ],
+    )
+    def test_respects_visibility_another_user(
+        self,
+        client,
+        target_url,
+        factory,
+        visibility,
+        publish_status,
+        should_show,
+    ):
+        if publish_status == "published":
+            t_post = factory.PublishedNotePost(visibility=visibility)
+        else:
+            t_post = factory.DraftNotePost(visibility=visibility)
+        t_entry = factory.StatusEntry(t_post=t_post)
+
+        user = factory.User()
+        client.force_login(user)
+        response = client.get(target_url)
+        assert should_show == (t_entry.p_summary in response.content.decode("utf-8"))
+
+    @pytest.mark.parametrize(
+        "visibility,publish_status,should_show",
+        [
+            (Visibility.PUBLIC, "published", True),
+            (Visibility.PRIVATE, "published", False),
+            (Visibility.UNLISTED, "published", False),
+            (Visibility.PUBLIC, "draft", False),
+            (Visibility.PRIVATE, "draft", False),
+            (Visibility.UNLISTED, "draft", False),
+        ],
+    )
+    def test_respects_visibility_for_anonymous_users(
+        self,
+        client,
+        target_url,
+        factory,
+        visibility,
+        publish_status,
+        should_show,
+    ):
+        # Create an entry
+        if publish_status == "published":
+            t_post = factory.PublishedNotePost(visibility=visibility)
+        else:
+            t_post = factory.DraftNotePost(visibility=visibility)
+        t_entry = factory.StatusEntry(t_post=t_post)
+
         response = client.get(target_url)
         assert should_show == (t_entry.p_summary in response.content.decode("utf-8"))

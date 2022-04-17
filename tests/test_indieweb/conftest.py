@@ -14,7 +14,7 @@ def client_id():
 
 @pytest.fixture
 def m_micropub_scope():
-    from indieweb.models import MMicropubScope
+    from data.indieweb.models import MMicropubScope
 
     return MMicropubScope.objects.all()
 

@@ -1,5 +1,6 @@
 from typing import Optional
 
+from data.wordpress.models import TCategory, TWordpressPost
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -9,7 +10,6 @@ from django.http import (
 from django.urls import reverse
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
-from wordpress.models import TCategory, TWordpressPost
 
 
 def handle404(request, exception):
@@ -27,7 +27,7 @@ def handle404(request, exception):
         if t_category:
             if request.path.endswith("feed"):
                 # Redirect stream feeds
-                return HttpResponsePermanentRedirect(reverse("feeds:stream_feed", args=[t_category.m_stream.slug]))
+                return HttpResponsePermanentRedirect(reverse("public:stream_feed", args=[t_category.m_stream.slug]))
             else:
                 # Redirect to stream page
                 return HttpResponsePermanentRedirect(reverse("public:stream", args=[t_category.m_stream.slug]))

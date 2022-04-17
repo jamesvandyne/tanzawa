@@ -1,7 +1,7 @@
 import pytest
 from core.constants import Visibility
+from data.indieweb.constants import MPostKinds
 from django.urls import reverse
-from indieweb.constants import MPostKinds
 from model_bakery import baker
 
 
@@ -10,7 +10,7 @@ from model_bakery import baker
 class TestStreamFeedView:
     @pytest.fixture
     def target_url(self):
-        return reverse("feeds:stream_feed", args=["mine"])
+        return reverse("public:stream_feed", args=["mine"])
 
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):

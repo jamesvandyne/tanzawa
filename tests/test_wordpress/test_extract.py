@@ -2,9 +2,9 @@ from datetime import datetime
 
 import pytest
 import pytz
+from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
-from indieweb.application.extract import LinkedPage, LinkedPageAuthor
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ def bookmark_xml_soup():
 class TestExtractEntry:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_entry
+        from domain.wordpress.extract import extract_entry
 
         return extract_entry
 
@@ -49,7 +49,7 @@ class TestExtractEntry:
 class TestExtractCategories:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_categories
+        from domain.wordpress.extract import extract_categories
 
         return extract_categories
 
@@ -61,7 +61,7 @@ class TestExtractCategories:
 class TestExtractPostKind:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_post_kind
+        from domain.wordpress.extract import extract_post_kind
 
         return extract_post_kind
 
@@ -73,7 +73,7 @@ class TestExtractPostKind:
 class TestExtractPostFormat:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_post_format
+        from domain.wordpress.extract import extract_post_format
 
         return extract_post_format
 
@@ -85,7 +85,7 @@ class TestExtractPostFormat:
 class TestExtractPublishedDate:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_published_date
+        from domain.wordpress.extract import extract_published_date
 
         return extract_published_date
 
@@ -98,7 +98,7 @@ class TestExtractPublishedDate:
 class TestExtractPhoto:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_photo
+        from domain.wordpress.extract import extract_photo
 
         return extract_photo
 
@@ -112,7 +112,7 @@ class TestExtractPhoto:
 class TestExtractSyndication:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_syndication
+        from domain.wordpress.extract import extract_syndication
 
         return extract_syndication
 
@@ -124,7 +124,7 @@ class TestExtractSyndication:
 class TestExtractLocation:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_location
+        from domain.wordpress.extract import extract_location
 
         return extract_location
 
@@ -143,7 +143,7 @@ class TestExtractLocation:
 class TestExtractCheckin:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_checkin
+        from domain.wordpress.extract import extract_checkin
 
         return extract_checkin
 
@@ -158,7 +158,7 @@ class TestExtractCheckin:
 class TestExtractReply:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_in_reply_to
+        from domain.wordpress.extract import extract_in_reply_to
 
         return extract_in_reply_to
 
@@ -179,7 +179,7 @@ class TestExtractReply:
 class TestExtractBookmark:
     @pytest.fixture
     def target(self):
-        from wordpress.extract import extract_bookmark
+        from domain.wordpress.extract import extract_bookmark
 
         return extract_bookmark
 

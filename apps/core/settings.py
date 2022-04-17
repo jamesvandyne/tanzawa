@@ -48,6 +48,7 @@ CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
 # Application definition
 
 INSTALLED_APPS = [
+    "interfaces.commands",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -60,17 +61,18 @@ INSTALLED_APPS = [
     "webmention",
     "meta",
     "core",
-    "settings",
-    "indieweb",
-    "trix",
-    "post",
-    "entry",
-    "files",
-    "trips",
-    "streams",
-    "public",
-    "wordpress",
-    "plugins",
+    # Data layer
+    "data",
+    "data.entry",
+    "data.settings",
+    "data.streams",
+    "data.trips",
+    "data.post",
+    "data.files",
+    "data.indieweb",
+    "data.wordpress",
+    "data.plugins",
+    "interfaces",
 ]
 
 MIDDLEWARE = [
@@ -83,9 +85,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "settings.middleware.SettingsMiddleware",
+    "interfaces.common.middleware.settings.SettingsMiddleware",
     "webmention.middleware.webmention_middleware",
-    "plugins.middleware.PluginMiddleware",
+    "interfaces.common.middleware.plugins.PluginMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -111,6 +113,10 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "indieweb": "interfaces.common.templatetags.indieweb",
+                "plugins": "interfaces.common.templatetags.plugins",
+            },
         },
     },
 ]

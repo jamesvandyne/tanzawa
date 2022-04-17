@@ -1,7 +1,7 @@
 {% extends "fragments/content.html" %}
 
 {% block breadcrumbs %}
-    <a href="{% url "plugins:plugin_list" %}" class="underline">Plugins</a>
+    <a href="{% url "plugin_list" %}" class="underline">Plugins</a>
 {% endblock %}
 
 {% block main %}
@@ -22,12 +22,12 @@
             {% endif %}
             <div class="flex flex-col flex-grow justify-end">
             {% if plugin.is_enabled %}
-                <form  method="post" action="{% url 'plugins:plugin_disable' plugin.identifier %}" class="{% if plugin.settings_url %} justify-end{% endif %}">
+                <form  method="post" action="{% url 'plugin_disable' plugin.identifier %}" class="{% if plugin.settings_url %} justify-end{% endif %}">
                     {% csrf_token %}
                     <button type="submit" class="px-3 py-1 text-negroni-800 text-xs mr-2" href="">Disable</button>
                 </form>
             {% else %}
-                <form  method="post" action="{% url 'plugins:plugin_enable' plugin.identifier %}">
+                <form  method="post" action="{% url 'plugin_enable' plugin.identifier %}">
                     {% csrf_token %}
                     <button type="submit" class="px-3 py-1 text-negroni-800 text-xs mr-2" href="">Enable</button>
                 </form>

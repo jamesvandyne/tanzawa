@@ -2,7 +2,7 @@
 {% if not request.turbo.frame %}
 <turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded flex">
 {% endif %}
-    <img src="{% url 'get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
+    <img src="{% url 'public:get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
     <div class="ml-2 flex flex-col" style="width: 300px">
         {# actions #}
         <div class="flex">
