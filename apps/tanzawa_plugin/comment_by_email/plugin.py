@@ -17,7 +17,7 @@ class CommentByEmail(plugin.Plugin):
 
     @property
     def description(self):
-        return """Invite users to reply to your posts by email."""
+        return """Invite users to comment to your posts privately by email."""
 
     @property
     def has_feed_hooks(self):
