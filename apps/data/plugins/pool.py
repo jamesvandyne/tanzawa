@@ -101,5 +101,10 @@ class PluginPool:
             if plugin_.identifier in enabled:
                 yield plugin_
 
+    def feed_plugins(self) -> Iterable[plugin.Plugin]:
+        for enabled_plugin in self.enabled_plugins():
+            if enabled_plugin.has_feed_hooks:
+                yield enabled_plugin
+
 
 plugin_pool = PluginPool()

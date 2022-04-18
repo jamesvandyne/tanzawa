@@ -7,7 +7,7 @@ As Tanzawa Plugins are regular Django applications, developing a Tanzawa Plugin 
 
 In order for your Plugin to be seen by Tanzawa, it must have:
 
-1. A `Plugin` class that inherits from `apps.plugins.plugin.Plugin`. This is the interface between Tanzawa and a plugin.
+1. A `Plugin` class that inherits from `data.plugins.plugin.Plugin`. This is the interface between Tanzawa and a plugin.
 2. A `tanzawa_plugin.py` or `tanzawa_plugin` python package that instantiates the plugin and registers it with the Tanzawa Plugin Pool.  
 
 If your application lives outside of Tanzawa itself, you must install it manually by adding the package name to the `PLUGINS` environment variable.
@@ -44,7 +44,7 @@ from django.template.loader import render_to_string
 ### Settings URL
 
 Each plugin can provide a single URL that acts as the user's entry point to configure the plugin. This
-is the "settings" link that is displayed next to each plugin in the admin.
+is the "settings" link that is displayed next to each plugin in the admin. Should return None if not configurable.
 
 ```python
 from django import urls
@@ -91,6 +91,35 @@ Example top navigation template for desktop display.
 <a href="{% url "plugin_now:now" %}" class="ml-2 leading-8 hidden md:inline-block{% if nav == "now" %} border-b-4 border-negroni-900{% endif %}">
     <span class="mr-1">👉</span>Now
 </a>
+```
+
+### Feed Hooks
+
+Allow plugins to add content before or after each entry in a feed.
+
+#### has_feed_hooks
+
+A boolean value indicating if a plugin is hooking into the feed content generation.
+
+
+#### feed_before_content
+
+Called for each post in a feed. Input is a single `post` object of type `data.posts.TPost`.
+
+
+#### feed_after_content
+
+Called for each post in a feed. Input is a single `post` object of type `data.posts.TPost`.
+
+Example implementation using a template to render content.
+
+```python
+from django import template
+...
+
+    def feed_after_content(self, post: Optional[post_models.TPost] = None) -> str:
+        template = loader.get_template("comment_by_email/feed.html")
+        return template.render(context={"post": post})
 ```
 
 ## Registering Your Plugin

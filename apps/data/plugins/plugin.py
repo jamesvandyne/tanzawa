@@ -3,6 +3,8 @@ import pathlib
 from importlib import util as importlib_util
 from typing import Optional, Protocol
 
+from data.post import models as post_models
+
 from .models import MPlugin
 
 
@@ -13,7 +15,28 @@ class TopNavProtocol(Protocol):
         return False
 
 
-class Plugin(abc.ABC, TopNavProtocol):
+class FeedHook(Protocol):
+    @property
+    def has_feed_hooks(self) -> bool:
+        """
+        Plugins which use the the feed hook should return True
+        """
+        return False
+
+    def feed_before_content(self, post: Optional[post_models.TPost] = None) -> str:
+        """
+        Returns any content that should be displayed before the post.
+        """
+        return ""
+
+    def feed_after_content(self, post: Optional[post_models.TPost] = None) -> str:
+        """
+        Returns any content that should be displayed after the post.
+        """
+        return ""
+
+
+class Plugin(abc.ABC, TopNavProtocol, FeedHook):
     name: str
     description: str
     # A unique namespaced identifier for the plugin
