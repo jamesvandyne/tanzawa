@@ -1,5 +1,5 @@
 asgiref==3.3.2
-Django==3.2.12
+Django==3.2.13
 pytz==2020.5
 sqlparse==0.4.1
 django-webmention==2.0.2
