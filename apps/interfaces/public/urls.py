@@ -31,7 +31,7 @@ urlpatterns = [
         ),
     ),
     path(
-        "",
+        "files/",
         include(
             "interfaces.public.files.urls",
         ),
