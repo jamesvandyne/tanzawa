@@ -11,7 +11,7 @@
     <h1 class="mt-2 text-xl">Available Plugins</h1>
     <ul class="mt-2">
     {% for plugin in available_plugins %}
-        <li class="flex {% if not forloop.last %}border-bottom{% endif %}">
+        <li class="flex {% if not forloop.first %}mt-2{% endif %}">
             <div class="flex flex-col mr-2 w-96">
                 <h2 class="">{{ plugin.name }}</h2>
                 <p class="mt-2 text-sm">{{ plugin.description }}</p>
