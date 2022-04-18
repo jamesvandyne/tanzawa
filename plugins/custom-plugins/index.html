@@ -85,6 +85,16 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#feed-hooks">Feed Hooks</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#has_feed_hooks">has_feed_hooks</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#feed_before_content">feed_before_content</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#feed_after_content">feed_after_content</a>
+    </li>
+        </ul>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#registering-your-plugin">Registering Your Plugin</a>
@@ -156,7 +166,7 @@
 <h2 id="requirements">Requirements</h2>
 <p>In order for your Plugin to be seen by Tanzawa, it must have:</p>
 <ol>
-<li>A <code>Plugin</code> class that inherits from <code>apps.plugins.plugin.Plugin</code>. This is the interface between Tanzawa and a plugin.</li>
+<li>A <code>Plugin</code> class that inherits from <code>data.plugins.plugin.Plugin</code>. This is the interface between Tanzawa and a plugin.</li>
 <li>A <code>tanzawa_plugin.py</code> or <code>tanzawa_plugin</code> python package that instantiates the plugin and registers it with the Tanzawa Plugin Pool.  </li>
 </ol>
 <p>If your application lives outside of Tanzawa itself, you must install it manually by adding the package name to the <code>PLUGINS</code> environment variable.</p>
@@ -179,7 +189,7 @@ but can also be rendered HTML using Django templates if you want to provide link
 </code></pre>
 <h3 id="settings-url">Settings URL</h3>
 <p>Each plugin can provide a single URL that acts as the user's entry point to configure the plugin. This
-is the "settings" link that is displayed next to each plugin in the admin.</p>
+is the "settings" link that is displayed next to each plugin in the admin. Should return None if not configurable.</p>
 <pre><code class="language-python">from django import urls
 ...
     @property
@@ -214,6 +224,22 @@ is the "settings" link that is displayed next to each plugin in the admin.</p>
 <pre><code class="language-djangotemplate">&lt;a href=&quot;{% url &quot;plugin_now:now&quot; %}&quot; class=&quot;ml-2 leading-8 hidden md:inline-block{% if nav == &quot;now&quot; %} border-b-4 border-negroni-900{% endif %}&quot;&gt;
     &lt;span class=&quot;mr-1&quot;&gt;👉&lt;/span&gt;Now
 &lt;/a&gt;
+</code></pre>
+<h3 id="feed-hooks">Feed Hooks</h3>
+<p>Allow plugins to add content before or after each entry in a feed.</p>
+<h4 id="has_feed_hooks">has_feed_hooks</h4>
+<p>A boolean value indicating if a plugin is hooking into the feed content generation.</p>
+<h4 id="feed_before_content">feed_before_content</h4>
+<p>Called for each post in a feed. Input is a single <code>post</code> object of type <code>data.posts.TPost</code>.</p>
+<h4 id="feed_after_content">feed_after_content</h4>
+<p>Called for each post in a feed. Input is a single <code>post</code> object of type <code>data.posts.TPost</code>.</p>
+<p>Example implementation using a template to render content.</p>
+<pre><code class="language-python">from django import template
+...
+
+    def feed_after_content(self, post: Optional[post_models.TPost] = None) -&gt; str:
+        template = loader.get_template(&quot;comment_by_email/feed.html&quot;)
+        return template.render(context={&quot;post&quot;: post})
 </code></pre>
 <h2 id="registering-your-plugin">Registering Your Plugin</h2>
 <pre><code class="language-python">from plugins import plugin, pool
