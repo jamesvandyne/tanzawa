@@ -3,10 +3,16 @@
 {% block trix_init %}
     const selectFileButton = getSelectFileButton();
     const attachmentButton = toolBar.querySelector(".trix-button--icon-attach");
-    // move attachment to the far left
+    const linkButton = toolBar.querySelector(".trix-button--icon-link");
+
+    // move link/attachment to the far left
+    toolBar.firstElementChild.prepend(linkButton);
     toolBar.firstElementChild.prepend(attachmentButton);
-    // hide all buttons that aren't attachment
-    toolBar.querySelectorAll("*:not([class$=trix-button--icon-attach])").forEach(button => button.classList.add("hidden"));
+
+    // hide all buttons that aren't attachment/link
+    toolBar.querySelectorAll(".trix-button").forEach(button => button.classList.add("hidden"));
+    attachmentButton.classList.remove("hidden");
+    linkButton.classList.remove("hidden");
     // remove the grouper element to prevent vertical lines from remaining
     toolBar.querySelectorAll(".trix-button-group").forEach(group => group.parentElement.removeChild(group));
 {% endblock %}
