@@ -2,6 +2,7 @@ module.exports = {
   content: [
      '../apps/**/*.html',
       '../apps/**/forms.py',
+    '../apps/**/forms/**/*.py',
       'src/**/*.js',
    ],
   theme: {
