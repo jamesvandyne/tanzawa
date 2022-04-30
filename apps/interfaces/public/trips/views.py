@@ -1,15 +1,11 @@
-from typing import Dict, List
-
 from core.constants import Visibility
-from data.entry.models import TLocation
 from data.indieweb.constants import MPostStatuses
 from data.post.models import TPost
 from data.streams.models import MStream
 from data.trips.models import TTrip
-from django.contrib.gis.geos import Point
-from django.db.models import F
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
+from domain.trips import queries
 
 
 def trip_detail(request, uuid):
@@ -51,27 +47,11 @@ class TripListView(ListView):
     template_name = "public/trips/ttrip_list.html"
 
     def get_queryset(self):
-        qs = (
-            TTrip.objects.visible_for_user(self.request.user.id)
-            .exclude(visibility=Visibility.UNLISTED)
-            .prefetch_related("t_trip_location")
-        )
-        return qs
+        return queries.get_public_trips_for_user(user_id=self.request.user.id)
 
     def get_context_data(self, *args, **kwargs):
-
         context = super().get_context_data(*args, nav="trips", **kwargs)
-        locations = (
-            TLocation.objects.filter(t_entry__t_post__trips__in=context["object_list"])
-            .exclude(t_entry__t_post__visibility=Visibility.UNLISTED)
-            .annotate(trip_id=F("t_entry__t_post__trips__pk"))
-            .values_list("trip_id", "point")
-        )
-        t_location_points: Dict[int, List[Point]] = {}
-        for trip_id, point in locations:
-            points = t_location_points.get(trip_id, [])
-            points.append(point)
-            t_location_points[trip_id] = points
+        t_location_points = queries.get_points_for_trips(trips=context["object_list"])
         context.update(
             {
                 "selected": ["trips"],
