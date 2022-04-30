@@ -15,6 +15,7 @@ def get_public_trips_for_user(user_id: Optional[int]):
         trip_models.TTrip.objects.visible_for_user(user_id)
         .exclude(visibility=constants.Visibility.UNLISTED)
         .prefetch_related("t_trip_location")
+        .order_by("-d_start")
     )
 
 
