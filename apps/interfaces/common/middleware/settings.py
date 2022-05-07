@@ -1,4 +1,4 @@
-from data.settings.models import MSiteSettings
+from domain.settings import queries
 
 
 class SettingsMiddleware:
@@ -11,7 +11,7 @@ class SettingsMiddleware:
     def __call__(self, request):
         # Code to be executed for each request before
         # the view (and later middleware) are called.
-        request.settings = MSiteSettings.objects.first() or MSiteSettings()
+        request.settings = queries.get_site_settings()
         response = self.get_response(request)
 
         # Code to be executed for each request/response after
