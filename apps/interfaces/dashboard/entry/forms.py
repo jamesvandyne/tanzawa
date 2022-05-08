@@ -14,6 +14,7 @@ from django.contrib.gis.forms import PointField
 from django.db import transaction
 from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
+from domain.settings import queries as settings_queries
 from domain.trix import queries as trix_queries
 from interfaces.common import forms as common_forms
 
@@ -61,6 +62,10 @@ class CreateStatusForm(forms.ModelForm):
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
 
+        # Pre-fill the active trip.
+        active_trip = settings_queries.get_active_trip()
+        if active_trip:
+            self.fields["t_trip"].initial = active_trip.id
         self.t_post: Optional[post_models.TPost] = None
         self.t_entry: Optional[entry_models.TEntry] = None
         self.file_attachment_uuids: List[str] = []

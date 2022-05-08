@@ -13,6 +13,7 @@ from domain.indieweb.utils import (
     render_attachment,
     save_and_get_tag,
 )
+from domain.settings import queries as settings_queries
 from interfaces.dashboard.entry.forms import (
     CreateArticleForm,
     CreateBookmarkForm,
@@ -93,6 +94,8 @@ def micropub(request):  # noqa: C901 too complex (30)
     # Create entry form data
     named_forms = {}
     dt_published = serializer.validated_data["properties"].get("published", None)
+    # Respect the active trip setting
+    active_trip = settings_queries.get_active_trip()
     form_data = {
         "p_name": serializer.validated_data["properties"].get("name", ""),
         "e_content": serializer.validated_data["properties"].get("content", ""),
@@ -102,6 +105,7 @@ def micropub(request):  # noqa: C901 too complex (30)
         "dt_published": dt_published[0].isoformat() if dt_published else None,
         "streams": serializer.validated_data["properties"]["streams"].values_list("pk", flat=True),
         "visibility": serializer.validated_data["properties"]["visibility"].value,
+        "t_trip": active_trip.id if active_trip else None,
     }
     if serializer.validated_data["properties"].get("in_reply_to"):
         linked_page = serializer.validated_data["properties"].get("in_reply_to")
