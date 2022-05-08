@@ -440,7 +440,13 @@ class TestMicropub:
         mock_send_webmention,
         checkin_entry,
         download_image_mock,
+        factory,
     ):
+
+        # Create an active trip
+        trip = factory.Trip()
+        factory.Settings(active_trip=trip)
+
         client.credentials(HTTP_AUTHORIZATION=f"Bearer {auth_token}")
         response = client.post(target, data=checkin_entry, format="json")
         assert response.status_code == 201
@@ -479,6 +485,9 @@ class TestMicropub:
         t_syndication = t_entry.t_syndication.first()
 
         assert t_syndication.url == "https://www.swarmapp.com/user/89277993/checkin/5feffd52060f7b279432fca3"
+
+        # Assert active trip
+        assert t_post.trips.first() == trip
 
     @pytest.mark.parametrize(
         "micropub_visibility,visibility",

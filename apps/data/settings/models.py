@@ -18,6 +18,13 @@ class MSiteSettings(TimestampModel):
         ),
         help_text="Add an html snippet that will appear in the footer of your site.",
     )
+    active_trip = models.ForeignKey(
+        "trips.TTrip",
+        blank=True,
+        null=True,
+        help_text="Prefills the selected trip when creating a new post.",
+        on_delete=models.SET_NULL,
+    )
 
     class Meta:
         verbose_name = "Site Settings"
