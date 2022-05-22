@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import secrets
 from pathlib import Path
+from typing import List
 
 import django
 import environ
@@ -33,12 +35,30 @@ else:
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str("SECRET_KEY")
+def get_secret_key() -> str:
+    secret_key = env.str("SECRET_KEY", default="")
+    if secret_key:
+        return secret_key
+    else:
+        return secrets.token_urlsafe()
+
+
+SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+
+def get_allowed_hosts() -> List[str]:
+    """
+    Get all hosts that are allowed to connect to Tanzawa.
+    """
+    allowed_hosts = env.list("ALLOWED_HOSTS", default=[])
+    domain_name = env.str("DOMAIN_NAME", default="example.com")
+    return allowed_hosts + [domain_name]
+
+
+ALLOWED_HOSTS = get_allowed_hosts()
 
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE")
 
