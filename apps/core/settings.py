@@ -146,7 +146,9 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL", engine=env.str("DATABASE_ENGINE", default=None))}
+DATABASES = {
+    "default": env.db("DATABASE_URL", default="sqlite://db.sqlite3", engine=env.str("DATABASE_ENGINE", default=None))
+}
 
 
 # Password validation
@@ -192,8 +194,8 @@ THEMES = [path.stem for path in THEMES_ROOT.iterdir() if path.is_dir()]
 THEME_STATICFILE_DIRS = [path for path in THEMES_ROOT.glob("**/static") if path.is_dir()]
 STATICFILES_DIRS = [BASE_DIR / "../static/", *THEME_STATICFILE_DIRS]
 
-STATIC_ROOT = env.path("STATIC_ROOT")
-MEDIA_ROOT = env.path("MEDIA_ROOT")
+STATIC_ROOT = env.path("STATIC_ROOT", default="./staticfiles/")
+MEDIA_ROOT = env.path("MEDIA_ROOT", default="./micropub_media/")
 
 
 REST_FRAMEWORK = {
