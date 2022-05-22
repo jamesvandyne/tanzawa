@@ -46,7 +46,7 @@ def get_secret_key() -> str:
 SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
 
 
 def get_allowed_hosts() -> List[str]:
@@ -60,9 +60,9 @@ def get_allowed_hosts() -> List[str]:
 
 ALLOWED_HOSTS = get_allowed_hosts()
 
-SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE")
+SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", default=False)
 
-CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
+CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", default=False)
 
 
 # Application definition
@@ -171,9 +171,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = env.str("LANGUAGE_CODE")
+LANGUAGE_CODE = env.str("LANGUAGE_CODE", default="en-us")
 
-TIME_ZONE = env.str("TIME_ZONE")
+TIME_ZONE = env.str("TIME_ZONE", default="UTC")
 
 USE_I18N = True
 
