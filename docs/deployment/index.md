@@ -1,4 +1,4 @@
-:wqUsing Tanzawa in Production
+Using Tanzawa in Production
 
 The instructions for running Tanzawa in the README are for demonstration and development purposes. Using the Django `runserver` is not recommended in production use for your blog.
 
