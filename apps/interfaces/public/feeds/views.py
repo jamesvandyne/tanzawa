@@ -90,7 +90,7 @@ class AllEntriesFeed(Feed):
         return self.request.settings.title or "Tanzawa"
 
     def link(self):
-        return reverse("public:feed")
+        return reverse("public:home")
 
     def items(self):
         return post_queries.get_public_posts_for_user(user=self.request.user)[:10]
