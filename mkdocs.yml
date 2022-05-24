@@ -3,6 +3,8 @@ theme: readthedocs
 nav:
   - index.md
   - customization.md
+  - 'Deployment':
+       - deployment/index.md
   - 'Indieweb':
       - indieweb/relme.md
   - 'Plugins':
