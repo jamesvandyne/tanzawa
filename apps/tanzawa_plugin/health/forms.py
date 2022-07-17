@@ -4,7 +4,11 @@ from . import constants
 
 
 class DailyCheckinForm(forms.Form):
-    weight = forms.DecimalField(label="How much do you weigh?", help_text="Be honest. Nobody can see this but you.")
+    weight = forms.DecimalField(
+        label="How much do you weigh?",
+        help_text="Be honest. Nobody can see this but you.",
+        widget=forms.NumberInput(attrs={"inputmode": "decimal"}),
+    )
     weight_unit = forms.ChoiceField(
         choices=constants.WeightUnitChoices.choices,
         initial=constants.WeightUnitChoices.KILOGRAMS,
