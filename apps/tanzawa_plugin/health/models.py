@@ -19,6 +19,9 @@ class Weight(TimestampModel):
         verbose_name = "Weight"
         verbose_name_plural = "Weight"
 
+    def __str__(self) -> str:
+        return f"Weight {self.id} {self.measurement} {self.unit}"
+
 
 class Mood(TimestampModel):
     """
@@ -31,3 +34,6 @@ class Mood(TimestampModel):
     class Meta:
         verbose_name = "Mood"
         verbose_name_plural = "Mood"
+
+    def __str__(self) -> str:
+        return f"Mood {self.id} {self.measurement}"
