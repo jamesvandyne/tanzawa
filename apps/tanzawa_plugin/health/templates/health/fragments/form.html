@@ -1,0 +1,43 @@
+<h2 class="mx-2">{{ page_title }}</h2>
+<p class="mx-2 help-text">Small measurements over time help you see change you do not notice day-to-day.</p>
+ <form id="health" action="{% url "plugin_health_admin:add_daily_health" %}" method="POST" class="flex-col mt-2" data-turbo="false">
+    {% csrf_token %}
+     {{ form.errors }}
+    <div class="{% if form.errors %}pt-2{% endif %}">
+        <section class="weight">
+            <div class="mx-2 mt-2 flex flex-col">
+                {{ form.weight.label_tag }}
+                <span class="help-text">{{ form.weight.help_text }}</span>
+                <div class="mt-2">
+                    {{ form.weight }}
+                </div>
+            </div>
+            <div class="mx-2 mt-2">
+                {{ form.weight_unit.weight_unit }}
+                <div class="grid grid-flow-col border border-secondary rounded text-secondary-900 text-center mt-2">
+                {% for choice in form.weight_unit %}
+                    <div>
+                        {{ choice.tag }}
+                        <label for="{{ choice.id_for_label }}" class="inline-block peer-checked:bg-secondary peer-checked:text-primary w-full px-2">{{ choice.choice_label }}</label>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="mx-2 mt-2 flex flex-col">
+                {{ form.mood.label_tag }}
+                <span class="help-text">{{ form.mood.help_text }}</span>
+                <div class="grid grid-flow-col border border-secondary rounded text-secondary-900 text-center mt-2">
+                    {% for choice in form.mood %}
+                        <div>
+                            {{ choice.tag }}
+                            <label for="{{ choice.id_for_label }}" class="inline-block peer-checked:bg-secondary peer-checked:text-primary w-full px-2">{{ choice.choice_label }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </div>
+     <div class="mt-2 mx-2">
+        <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border w-full" form="health" data-turbo="false">Save</button>
+    </div>
+</form>

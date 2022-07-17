@@ -3,10 +3,18 @@ from operator import attrgetter
 from typing import Iterable, Optional
 
 from data.plugins import activation, plugin
-from data.plugins.models import MPlugin
 from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
+
+
+def _get_m_plugin():
+    """
+    Only import django models when they're used to prevent raising AppRegistryNotReady errors.
+    """
+    from data.plugins.models import MPlugin
+
+    return MPlugin
 
 
 class PluginPool:
@@ -54,6 +62,7 @@ class PluginPool:
         """
         Marks a plugin as enabled before activating it.
         """
+        MPlugin = _get_m_plugin()
         if MPlugin.objects.filter(identifier=plugin_.identifier).exists():
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=True)
         else:
@@ -64,6 +73,7 @@ class PluginPool:
         """
         Marks a plugin as disabled before deactivating it.
         """
+        MPlugin = _get_m_plugin()
         if MPlugin.objects.filter(identifier=plugin_.identifier).exists():
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=False)
         else:
@@ -91,15 +101,18 @@ class PluginPool:
         Yields enabled Plugin instances
         """
         self.discover_plugins()
+        MPlugin = _get_m_plugin()
         try:
             enabled = list(MPlugin.objects.enabled().values_list("identifier", flat=True))
         except utils.OperationalError:
             # MPlugin table hasn't been migrated yet
-            return
-
+            return []
+        enabled_plugins = []
         for plugin_ in self.plugins.values():
             if plugin_.identifier in enabled:
-                yield plugin_
+                # yield plugin_
+                enabled_plugins.append(plugin_)
+        return enabled_plugins
 
     def feed_plugins(self) -> Iterable[plugin.Plugin]:
         for enabled_plugin in self.enabled_plugins():

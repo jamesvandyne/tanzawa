@@ -1,17 +1,25 @@
 import abc
 import pathlib
 from importlib import util as importlib_util
-from typing import Optional, Protocol
+from typing import TYPE_CHECKING, Optional, Protocol
 
-from data.post import models as post_models
+if TYPE_CHECKING:
+    from data.post import models as post_models
 
-from .models import MPlugin
 
-
-class TopNavProtocol(Protocol):
+class NavigationProtocol(Protocol):
     @property
-    def public_has_top_nav(self) -> bool:
-        """Does this plugin have public facing top nav?"""
+    def has_public_top_nav(self) -> bool:
+        """
+        Does this plugin have public facing top nav?
+        """
+        return False
+
+    @property
+    def has_admin_left_nav(self) -> bool:
+        """
+        Return if the plugin has left navigation in admin pages.
+        """
         return False
 
 
@@ -23,26 +31,28 @@ class FeedHook(Protocol):
         """
         return False
 
-    def feed_before_content(self, post: Optional[post_models.TPost] = None) -> str:
+    def feed_before_content(self, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed before the post.
         """
         return ""
 
-    def feed_after_content(self, post: Optional[post_models.TPost] = None) -> str:
+    def feed_after_content(self, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed after the post.
         """
         return ""
 
 
-class Plugin(abc.ABC, TopNavProtocol, FeedHook):
+class Plugin(abc.ABC, NavigationProtocol, FeedHook):
     name: str
     description: str
     # A unique namespaced identifier for the plugin
     identifier: str
 
     def is_enabled(self) -> bool:
+        from .models import MPlugin
+
         return MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first() or False
 
     @property
