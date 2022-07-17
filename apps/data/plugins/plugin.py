@@ -1,9 +1,10 @@
 import abc
 import pathlib
 from importlib import util as importlib_util
-from typing import Optional, Protocol
+from typing import TYPE_CHECKING, Optional, Protocol
 
-from data.post import models as post_models
+if TYPE_CHECKING:
+    from data.post import models as post_models
 
 from .models import MPlugin
 
@@ -23,13 +24,13 @@ class FeedHook(Protocol):
         """
         return False
 
-    def feed_before_content(self, post: Optional[post_models.TPost] = None) -> str:
+    def feed_before_content(self, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed before the post.
         """
         return ""
 
-    def feed_after_content(self, post: Optional[post_models.TPost] = None) -> str:
+    def feed_after_content(self, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed after the post.
         """
@@ -43,6 +44,8 @@ class Plugin(abc.ABC, TopNavProtocol, FeedHook):
     identifier: str
 
     def is_enabled(self) -> bool:
+        from .models import MPlugin
+
         return MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first() or False
 
     @property
