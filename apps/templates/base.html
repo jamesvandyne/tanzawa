@@ -1,4 +1,4 @@
-{% load static %}
+{% load static plugins %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -51,7 +51,11 @@
                     <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
                     <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
                     <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
-
+                    {% for plugin in request.plugin_pool.enabled_plugins %}
+                        {% if plugin.has_admin_left_nav %}
+                            {% render_plugin plugin.identifier "ADMIN.NAV.LEFT.MOBILE" %}
+                        {% endif %}
+                    {% endfor %}
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
@@ -65,6 +69,11 @@
                     <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
                     <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
                     <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
+                    {% for plugin in request.plugin_pool.enabled_plugins %}
+                        {% if plugin.has_admin_left_nav %}
+                            {% render_plugin plugin.identifier "ADMIN.NAV.LEFT" %}
+                        {% endif %}
+                    {% endfor %}
                     <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>

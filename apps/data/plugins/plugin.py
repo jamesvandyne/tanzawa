@@ -6,13 +6,20 @@ from typing import TYPE_CHECKING, Optional, Protocol
 if TYPE_CHECKING:
     from data.post import models as post_models
 
-from .models import MPlugin
 
-
-class TopNavProtocol(Protocol):
+class NavigationProtocol(Protocol):
     @property
-    def public_has_top_nav(self) -> bool:
-        """Does this plugin have public facing top nav?"""
+    def has_public_top_nav(self) -> bool:
+        """
+        Does this plugin have public facing top nav?
+        """
+        return False
+
+    @property
+    def has_admin_left_nav(self) -> bool:
+        """
+        Return if the plugin has left navigation in admin pages.
+        """
         return False
 
 
@@ -37,7 +44,7 @@ class FeedHook(Protocol):
         return ""
 
 
-class Plugin(abc.ABC, TopNavProtocol, FeedHook):
+class Plugin(abc.ABC, NavigationProtocol, FeedHook):
     name: str
     description: str
     # A unique namespaced identifier for the plugin
