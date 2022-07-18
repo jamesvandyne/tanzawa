@@ -14,6 +14,15 @@
         <nav>
             <a href="{% url "plugin_health_admin:add_daily_health" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">🌅</span><span class="hover:underline">Add Daily Health</span></a>
         </nav>
+        {% if weight and mood %}
+        <section class="mt-2">
+            <h1>Most recently you were...</h1>
+            <div class="mt-2 mx-auto mx-2 grid grid-cols-2 gap-2 text-center">
+                <p class="text-4xl">{{ weight.measurement }}{{ weight.unit }}</p>
+                <p class="text-4xl">{{ mood.emoji }}</p>
+            </div>
+        </section>
+        {% endif %}
         {# TODO: Add graphs #}
     </main>
 {% endblock %}

@@ -37,3 +37,7 @@ class Mood(TimestampModel):
 
     def __str__(self) -> str:
         return f"Mood {self.id} {self.measurement}"
+
+    @property
+    def emoji(self):
+        return constants.EmojiMoodChoices(self.measurement).label
