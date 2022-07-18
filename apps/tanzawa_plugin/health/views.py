@@ -1,10 +1,12 @@
+from typing import Optional
+
 from django import urls
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.utils import decorators as util_decorators
 from django.views import generic
 
-from . import application, forms
+from . import application, forms, models
 
 
 @util_decorators.method_decorator(auth_decorators.login_required, name="dispatch")
@@ -14,9 +16,16 @@ class Health(generic.TemplateView):
     """
 
     template_name = "health/health.html"
+    weight: Optional[models.Weight]
+    mood: Optional[models.Mood]
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.weight = models.Weight.objects.latest("measured_at")
+        self.mood = models.Mood.objects.latest("measured_at")
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(page_title="Health", nav="health")
+        return super().get_context_data(page_title="Health", nav="health", weight=self.weight, mood=self.mood)
 
 
 @util_decorators.method_decorator(auth_decorators.login_required, name="dispatch")

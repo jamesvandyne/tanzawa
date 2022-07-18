@@ -15,11 +15,7 @@ class DailyCheckinForm(forms.Form):
         widget=forms.RadioSelect(attrs={"class": "peer appearance-none hidden"}),
     )
     mood = forms.ChoiceField(
-        choices=(
-            (constants.MoodChoices.NEGATIVE, "☹️"),
-            (constants.MoodChoices.NEUTRAL, "😐"),
-            (constants.MoodChoices.POSITIVE, "😀"),
-        ),
+        choices=constants.EmojiMoodChoices.choices,
         initial=constants.MoodChoices.NEUTRAL,
         label="How do you feel?",
         widget=forms.RadioSelect(attrs={"class": "peer appearance-none hidden"}),

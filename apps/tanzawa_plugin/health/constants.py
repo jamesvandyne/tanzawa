@@ -10,3 +10,9 @@ class MoodChoices(TextChoices):
     POSITIVE = "positive", "Positive"
     NEUTRAL = "neutral", "Neutral"
     NEGATIVE = "negative", "Negative"
+
+
+class EmojiMoodChoices(TextChoices):
+    POSITIVE = "positive", "😀"
+    NEUTRAL = "neutral", "😐"
+    NEGATIVE = "negative", "☹️"
