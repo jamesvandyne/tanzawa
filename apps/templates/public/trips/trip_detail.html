@@ -16,7 +16,7 @@
             ></div>
             {% endwith %}
         </div>
-        <div class="w-full md:w-96 md:mx-2 h-screen overflow-scroll">
+        <div class="w-full md:w-9/12 md:mx-2 h-screen overflow-scroll">
             <h1 class="text-2xl ml-2 md:ml-0">Trip to {{ t_trip.name }}</h1>
             <h2 class="help-text ml-2 md:ml-0">{{ t_trip.d_start }} ~ {{  t_trip.d_end|default_if_none:"" }}</h2>
             <p class="mx-2 md:ml-0">{{ t_trip.p_summary }}</p>
