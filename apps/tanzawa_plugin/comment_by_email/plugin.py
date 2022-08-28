@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from data.plugins import plugin, pool
-from data.post import models as post_models
 from django.template import loader
+
+if TYPE_CHECKING:
+    from data.post import models as post_models
 
 __identifier__ = "blog.tanzawa.plugins.comment-by-email"
 
@@ -31,7 +33,7 @@ class CommentByEmail(plugin.Plugin):
     def admin_urls(self) -> Optional[str]:
         return None
 
-    def feed_after_content(self, post: Optional[post_models.TPost] = None) -> str:
+    def feed_after_content(self, post: Optional["post_models.TPost"] = None) -> str:
         template = loader.get_template("comment_by_email/feed.html")
         return template.render(context={"post": post})
 
