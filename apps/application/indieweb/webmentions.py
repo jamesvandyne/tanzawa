@@ -11,6 +11,7 @@ from data.post import models as post_models
 from data.post.models import TPost
 from data.wordpress import models as wp_models
 from django.conf import settings
+from django.core import exceptions
 from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
 from domain.indieweb import utils
@@ -49,8 +50,7 @@ def _get_post_by_uuid(url: str) -> Optional[TPost]:
     uuid = extract_uuid_from_url(url)
     try:
         return post_queries.get_t_post_by_uuid(uuid)
-    except post_models.TPost.DoesNotExist:
-        logger.info("Webmention received for invalid post %s", uuid)
+    except (exceptions.ValidationError, post_models.TPost.DoesNotExist):
         return None
 
 
