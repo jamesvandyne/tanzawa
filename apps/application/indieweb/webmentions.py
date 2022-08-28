@@ -1,5 +1,6 @@
 import logging
-from typing import List, Set
+import urllib
+from typing import List, Optional, Set
 
 import mf2py
 import ronkyuu
@@ -8,6 +9,7 @@ from data.indieweb import models as indieweb_models
 from data.indieweb.constants import MPostKinds
 from data.post import models as post_models
 from data.post.models import TPost
+from data.wordpress import models as wp_models
 from django.conf import settings
 from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
@@ -25,12 +27,9 @@ def create_moderation_record_for_webmention(webmention: webmention_models.WebMen
     and create/update a TWebmention instance for moderation.
     """
 
-    uuid = extract_uuid_from_url(webmention.response_to)
-    try:
-        t_post = post_queries.get_t_post_by_uuid(uuid)
-    except post_models.TPost.DoesNotExist:
-        logger.info("Webmention received for invalid post %s", uuid)
-        return
+    t_post = _determine_post_for_url(webmention.response_to)
+    if t_post is None:
+        return None
 
     microformat_data = _extract_microformat_data(webmention=webmention)
 
@@ -41,6 +40,42 @@ def create_moderation_record_for_webmention(webmention: webmention_models.WebMen
         indieweb_models.TWebmention.new(
             t_webmention_response=webmention, t_post=t_post, microformat_data=microformat_data
         )
+
+
+def _get_post_by_uuid(url: str) -> Optional[TPost]:
+    """
+    Return a post by extracting a uuid from its url.
+    """
+    uuid = extract_uuid_from_url(url)
+    try:
+        return post_queries.get_t_post_by_uuid(uuid)
+    except post_models.TPost.DoesNotExist:
+        logger.info("Webmention received for invalid post %s", uuid)
+        return None
+
+
+def _get_post_by_wordpress_path(url: str) -> Optional[TPost]:
+    """
+    Return post by cross referencing urls from a wordpress import.
+    """
+    path = urllib.parse.urlparse(url).path
+
+    try:
+        wordpress_post = wp_models.TWordpressPost.objects.get(path=path)
+    except (wp_models.TWordpressPost.DoesNotExist, wp_models.TWordpressPost.MultipleObjectsReturned):
+        return None
+    else:
+        return wordpress_post.t_post
+
+
+def _determine_post_for_url(url: str) -> Optional[TPost]:
+    """
+    Determine a post for a given url.
+    """
+    t_post = _get_post_by_uuid(url)
+    if t_post:
+        return t_post
+    return _get_post_by_wordpress_path(url)
 
 
 def send_webmention(request, t_post: TPost, e_content: str) -> List[indieweb_models.TWebmentionSend]:
