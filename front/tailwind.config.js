@@ -3,6 +3,7 @@ module.exports = {
      '../apps/**/*.html',
       '../apps/**/forms.py',
     '../apps/**/forms/**/*.py',
+    '../apps/interfaces/public/**/*.py',
       'src/**/*.js',
    ],
   theme: {

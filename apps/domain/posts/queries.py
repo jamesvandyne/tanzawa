@@ -35,3 +35,14 @@ def get_public_posts_for_user(
         .all()
         .order_by("-dt_published")
     )
+
+
+def get_last_post_with_location(
+    user: Optional[auth_models.User],
+    stream: Optional[stream_models.MStream] = None,
+    kinds: Optional[List[MPostKinds]] = None,
+) -> Optional[post_models.TPost]:
+    """
+    Return the latest post with a location.
+    """
+    return get_public_posts_for_user(user, stream, kinds).filter(ref_t_entry__t_location__isnull=False).first()

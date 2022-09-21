@@ -1,14 +1,18 @@
+from typing import Optional
+
 from core.constants import Visibility
 from data.entry.models import TEntry
-from data.indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostKinds, MPostStatuses
+from data.post.models import MPostKind
 from data.streams.models import MStream
 from django.db.models import Count, Q
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
+from domain.posts import queries as post_queries
 
 
-class HomeView(ListView):
+class BlogListView(ListView):
     template_name = "public/index.html"
-    paginate_by = 10
+    paginate_by = 5
 
     def get_queryset(self):
         return (
@@ -39,6 +43,52 @@ class HomeView(ListView):
             {
                 "selected": ["home"],
                 "streams": MStream.objects.visible(self.request.user),
+            }
+        )
+        return context
+
+
+class HomeView(TemplateView):
+    template_name = "public/home.html"
+    paginate_by = 5
+    # TODO: Make this slug dynamic / settable in the db.
+    stream_name = "the-week"
+    stream: Optional[MStream]
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        try:
+            self.stream = MStream.objects.get(slug=self.stream_name)
+        except MStream.DoesNotExist:
+            self.stream = None
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update(
+            {
+                "centered_nav": True,
+                "selected": ["home"],
+                "streams": MStream.objects.visible(self.request.user),
+                "posts": post_queries.get_public_posts_for_user(
+                    self.request.user, kinds=[MPostKinds.note, MPostKinds.reply, MPostKinds.bookmark]
+                )[:3],
+                "highlight_kind": {
+                    "kind": MPostKind.objects.get(key=MPostKinds.article),
+                    "posts": post_queries.get_public_posts_for_user(
+                        self.request.user, kinds=[MPostKinds.article]
+                    ).exclude(streams__slug=self.stream_name)[:5],
+                },
+                "highlight_stream": {
+                    "posts": post_queries.get_public_posts_for_user(self.request.user, stream=self.stream)[:5],
+                    "stream": self.stream,
+                },
+                "last_seen": {
+                    "last_location_post": post_queries.get_last_post_with_location(self.request.user),
+                    "checkins": zip(
+                        post_queries.get_public_posts_for_user(self.request.user, kinds=[MPostKinds.checkin])[1:5],
+                        ["text-lg", "text-md", "text-sm", "text-xs"],
+                    ),
+                },
             }
         )
         return context

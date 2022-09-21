@@ -1,0 +1,94 @@
+{% extends "base_public.html" %}
+
+{% load plugins %}
+
+{% block breadcrumbs_block %}{% endblock %}
+
+{% block meta_section %}{% endblock %}
+
+{% block stream_nav %} {% endblock %}
+
+
+{% block content_wrapper %}
+    <div class="w-full md:flex flex-col p-2">
+
+        <div class="md:max-w-prose mx-auto">
+        <div class="md:flex">
+            <div>
+                <h1>💬 Status</h1>
+                <ul class="mt-2">
+                {% for t_post in posts %}
+                    <li class="text-sm {% if not forloop.last %}mb-2{% endif %}">
+                        {% with t_entry=t_post.ref_t_entry %}
+                            <div class="trix-content bg-primary">
+                            {{ t_entry.e_content|safe|truncatechars_html:180 }}
+                            </div>
+                            <div class="flex help-text">
+                                <span>{{ t_post.dt_published }}</span>
+                                <a href="{{ t_post.get_absolute_url }}" class="ml-auto">permalink</a>
+                            </div>
+                        {% endwith %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+        <div class="mt-2 md:flex md:mt-8">
+
+            <div class="md:flex flex-col flex-grow">
+                {% if highlight_kind.kind %}
+                <div class="mb-2 md:mb-4">
+                    <h1>{{ highlight_kind.kind.icon }} {{ highlight_kind.kind.name }}{{ highlight_kind.posts|pluralize:"s" }}</h1>
+                    <ol class="text-sm">
+                        {% for post in highlight_kind.posts %}
+                            <li>
+                                <a href="{{ post.get_absolute_url }}" class="hover:underline">{{ post.ref_t_entry.p_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                {% endif %}
+                {% if highlight_stream.stream %}
+                <div class="mt-2 md:mt-4">
+                    <h1>{{ highlight_stream.stream.icon }} {{ highlight_stream.stream }}</h1>
+                    <ul class="text-sm">
+                        {% for post in highlight_stream.posts %}
+                            <li class="hover:underline">
+                                <a href="{{ post.get_absolute_url }}">{{ post.ref_t_entry.p_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mt-2 md:mt-0 md:flex flex-col">
+                <h1>🌏 Last seen...</h1>
+                <ul class="">
+                    {% if last_seen.last_location_post %}
+                    <li class="w-80">
+                        in {{ last_seen.last_location_post.ref_t_entry.t_location.summary }}
+                    </li>
+                    {% endif %}
+                    {% for checkin_post, size in last_seen.checkins %}
+                        <li class="{{ size }} truncate text-ellipsis w-80">
+                            <a href="{{ checkin_post.get_absolute_url }}" class="hover:underline">{{ checkin_post.ref_t_entry.t_checkin.name }}</a> in {{ checkin_post.ref_t_entry.t_location.summary }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if last_seen.last_location_post %}
+                    <div class="mt-2 mx-auto">
+                        {% include "public/fragments/meta_map.html" with t_location=last_seen.last_location_post.ref_t_entry.t_location zoom="14" %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block footer_snippet %}{% endblock %}
