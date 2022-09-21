@@ -35,14 +35,15 @@
         <header class="p-2">
             {% block header %}
             <nav  data-controller="reveal">
-                <div class="flex">
-                    <h1 class="text-secondary text-2xl">
+                <div class="flex {% if centered_nav %}md:flex-col md:mx-auto{% endif %}">
+                    <h1 class="text-secondary text-2xl {% if centered_nav %}md:mx-auto{% endif %}">
                         <a href="{% url "public:home" %}">
                             {% if request.settings.icon %}
                                 <span class="mr-1">{{ request.settings.icon }}</span>
                             {% endif %}{{ request.settings.title }}
                         </a>
                     </h1>
+                    {% if centered_nav %}<div class="mx-auto">{% endif %}
                     <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
                     <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
 
@@ -51,6 +52,7 @@
                             {% render_plugin plugin.identifier "NAV.TOP" %}
                         {% endif %}
                     {% endfor %}
+                    {% if centered_nav %}</div>{% endif %}
                     <div class="ml-auto pt-2 md:hidden">
                         <button data-reveal-target="button" data-action="click->reveal#toggle">
                             <div class="w-8 bg-secondary h-1"></div>
@@ -118,7 +120,9 @@
             {% endblock %}
         </div>
         <footer class="w-full">
+            {% block footer_snippet %}
             {{ request.settings.footer_snippet|safe }}
+            {% endblock %}
         </footer>
     </div>
 </body>

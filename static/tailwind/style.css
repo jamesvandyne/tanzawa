@@ -457,6 +457,9 @@ Ensure the default browser behavior of the `hidden` attribute.
     max-width: 1536px;
   }
 }
+.visible {
+  visibility: visible;
+}
 .static {
   position: static;
 }
@@ -652,6 +655,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .w-6\/12 {
   width: 50%;
 }
+.w-80 {
+  width: 20rem;
+}
 .w-10 {
   width: 2.5rem;
 }
@@ -742,6 +748,14 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .overflow-scroll {
   overflow: scroll;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.text-ellipsis {
+  text-overflow: ellipsis;
 }
 .rounded {
   border-radius: 0.25rem;
@@ -945,6 +959,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
+}
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
 }
 .font-bold {
   font-weight: 700;
@@ -1244,6 +1262,11 @@ main.content blockquote {
     order: -9999;
   }
 
+  .md\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .md\:mx-2 {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
@@ -1256,6 +1279,22 @@ main.content blockquote {
 
   .md\:ml-auto {
     margin-left: auto;
+  }
+
+  .md\:mt-8 {
+    margin-top: 2rem;
+  }
+
+  .md\:mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .md\:mt-4 {
+    margin-top: 1rem;
+  }
+
+  .md\:mt-0 {
+    margin-top: 0px;
   }
 
   .md\:ml-0 {
@@ -1306,6 +1345,10 @@ main.content blockquote {
     width: 24rem;
   }
 
+  .md\:max-w-prose {
+    max-width: 65ch;
+  }
+
   .md\:flex-grow {
     flex-grow: 1;
   }
@@ -1324,6 +1367,10 @@ main.content blockquote {
 
   .md\:flex-row {
     flex-direction: row;
+  }
+
+  .md\:flex-col {
+    flex-direction: column;
   }
 
   .md\:pt-0 {
