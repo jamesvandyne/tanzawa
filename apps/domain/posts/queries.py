@@ -1,13 +1,17 @@
-from typing import Optional
+from typing import List, Optional
 
 from core.constants import Visibility
-from data.indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from data.streams import models as stream_models
 from django.contrib.auth import models as auth_models
 
 
-def get_public_posts_for_user(user: Optional[auth_models.User], stream: Optional[stream_models.MStream] = None):
+def get_public_posts_for_user(
+    user: Optional[auth_models.User],
+    stream: Optional[stream_models.MStream] = None,
+    kinds: Optional[List[MPostKinds]] = None,
+):
     """
     This function gets all visible posts for a user sorted in reverse chronological order.
     """
@@ -17,6 +21,8 @@ def get_public_posts_for_user(user: Optional[auth_models.User], stream: Optional
         posts = posts.filter(streams=stream, m_post_status__key=MPostStatuses.published)
     else:
         posts = posts.filter(m_post_status__key=MPostStatuses.published)
+    if kinds:
+        posts = posts.filter(m_post_kind__key__in=kinds)
     return (
         posts.exclude(visibility=Visibility.UNLISTED)
         .select_related("ref_t_entry")
