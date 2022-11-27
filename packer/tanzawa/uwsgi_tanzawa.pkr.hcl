@@ -13,7 +13,7 @@ source "docker" "ubuntu" {
   commit = true
   changes = [
     "ENTRYPOINT [\"\"]",
-    "CMD [\"uwsgi\", \"--emperor\", \"/etc/uwsgi/vassals\", \"--uid\", \"www-data\", \"--gid\", \"www-data\"]",
+    "CMD [\"uwsgi\", \"--ini\", \"/etc/uwsgi/vassals/tanzawa.ini\"]"
   ]
 }
 
