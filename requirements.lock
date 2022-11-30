@@ -8,7 +8,6 @@ beautifulsoup4==4.9.3
 gunicorn==20.0.4
 exif==1.0.4
 Pillow==8.1.0
-django-environ==0.4.5
 mf2py==1.1.2
 mf2util==0.5.1
 django-picklefield==3.0.1
@@ -28,3 +27,4 @@ mkdocs==1.2.2
 isort==5.10.0
 django-meta==2.0.0
 factory_boy==3.2.1
+envparse==0.2.0
