@@ -2,18 +2,25 @@
 
 Tanzawa is a blogging system designed for the [IndieWeb](https://indieweb.org/) that focuses on sustainability.
 
-# Running Tanzawa
 
-The simplest way to run try Tanzawa is to run it locally in a Docker container.
+## Installation
+
+We recommend using a fully managed host like Fly.io when running Tanzawa. There are [setup instructions](https://jamesvandyne.github.io/tanzawa/deployment/) in the deployment documentation.
+
+## Development
+
+The simplest way to run Tanzawa locally is in a Docker container.
 
 Running Tanzawa outside of Docker requires the following:
 
-* Python 3.9
-* Spatalite (Geo-enabled SQLite) or Postgres with PostGIS enabled. We recommend Spatalite for most blogs.
+* Python 3.10 or higher
+* Spatalite (Geo-enabled SQLite)
 
 Please refer to the [GeoDjango installation documentation](https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/) for setting up the appropriate environment.
 
-## Prepare Docker Image
+
+### Running Tanzawa Locally
+
 ```
 $ git clone git@github.com:jamesvandyne/tanzawa.git
 $ cd tanzawa
@@ -27,7 +34,7 @@ $ cp .env.sample .env
 $ python3 -c "import secrets; print(secrets.token_urlsafe())" | xargs -I{} -n1 echo SECRET_KEY={} >> .env
 ```
 
-## First Run of Tanzawa
+### First Run
 
 Start a container and open a shell.
 
@@ -69,7 +76,7 @@ Streams are how you categorize posts in Tanzawa. By default Tanzawa creates stre
    2. Name: This will appear on the left as navigation.
    3. Slug: Generally this is the name in lowercase and will appear in stream urls e.g. `example.com/notes`
 
-# Sites using Tanzawa
+## Sites using Tanzawa
 
 Is your site running Tanzawa? Open a pull request and add your site below.
 
