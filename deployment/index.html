@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Index - Tanzawa Documentation</title>
+    <title>Deploying Tanzawa - Tanzawa Documentation</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Index";
+        var mkdocs_page_name = "Deploying Tanzawa";
         var mkdocs_page_input_path = "deployment/index.md";
         var mkdocs_page_url = null;
       </script>
@@ -50,8 +50,16 @@
               </ul>
               <p class="caption"><span class="caption-text">Deployment</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Index</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Deploying Tanzawa</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-volume">Create a volume</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#set-secrets">Set Secrets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#deploy">Deploy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#create-a-user">Create a user</a>
+    </li>
     </ul>
                   </li>
               </ul>
@@ -91,206 +99,47 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li>
-          <li>Deployment &raquo;</li><li>Index</li>
+          <li>Deployment &raquo;</li>
+      <li>Deploying Tanzawa</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
   <hr/>
 </div>
-
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <p>Using Tanzawa in Production</p>
-<p>The instructions for running Tanzawa in the README are for demonstration and development purposes. Using the Django <code>runserver</code> is not recommended in production use for your blog.</p>
-<p>This document will guide you through how to setup Tanzawa on your own server. There are two different methods described: running directly on the server and using Docker.</p>
-<h2 id="requirements">Requirements</h2>
-<p>This  guide assumes a modern Ubuntu LTS version of the OS is being used. As Tanzawa is python application, running it in production requires 2 servers:</p>
-<ol>
-<li>uWSGI – this is what runs the actual Tanzawa code. Currently you can also use Gunicorn, but the project will be switching to uWSGI in the near future.</li>
-<li>Nginx or Apache – this is used for two purposes:</li>
-<li>Serving all staticfiles (javascript, css, images) and media files (user uploads).</li>
-<li>Proxying all requests that <em>aren't</em> staticfiles to the uWSGI server.</li>
-</ol>
-<h2 id="docker">Docker</h2>
-<p>This section will guide you through installing ngix and configuring Tanzawa via Docker using <code>docker compose</code>. <code>$</code> is denotes a regular shell.</p>
-<h3 id="component-paths">Component Paths</h3>
-<p>This guide will assume that the Tanzawa data will live in <code>/opt/tanzawa/</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Component</th>
-<th>Path</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>database</td>
-<td>/opt/tanzawa/db.sqlite3</td>
-<td></td>
-</tr>
-<tr>
-<td>file uploads</td>
-<td>/opt/tanzawa/media/</td>
-<td></td>
-</tr>
-<tr>
-<td>plugins</td>
-<td>/opt/tanzawa/plugins/</td>
-<td></td>
-</tr>
-<tr>
-<td>themes</td>
-<td>/opt/tanzawa/themes/</td>
-<td></td>
-</tr>
-<tr>
-<td>static resources</td>
-<td>/opt/tanzawa/staticfiles</td>
-<td>Publicly accessible by nginx</td>
-</tr>
-<tr>
-<td>tanzawa socket</td>
-<td>/var/run/tanzawa/tanzawa.sock</td>
-<td></td>
-</tr>
-<tr>
-<td>server name config</td>
-<td>/opt/tanzawa/server_name</td>
-<td>Used to configure the domain by nginx</td>
-</tr>
-</tbody>
-</table>
-<h4 id="base-setup">Base setup</h4>
-<p>First, install nginx and base packages required to install Docker.</p>
-<pre><code>$ apt-get update &amp;&amp; apt-get install -y apt-utils nginx certbot apt-transport-https ca-certificates curl gnupg lsb-release python3-pip
+                <h1 id="deploying-tanzawa">Deploying Tanzawa</h1>
+<p>Hosting your Tanzawa instance with Fly.io is the easiest and recommended way to use Tanzawa.</p>
+<p>To get started, first create a new app in Fly.io in whichever region is closest to you. Tanzawa does not use PostgresSQL, so there is no need to create a database if prompted.</p>
+<h2 id="create-a-volume">Create a volume</h2>
+<p>Create a volume to store your database and file uploads. The region should be the same as your app.</p>
+<pre><code>$ flyctl volumes create my_volume_name --region nrt --size 3
 </code></pre>
-<p>Add Docker GPG key, so you can install the Docker packages.</p>
-<pre><code>$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+<h2 id="set-secrets">Set Secrets</h2>
+<p>Tanzawa requires a few secrets to be set in order to operate. Set them using the commands below.</p>
+<p>If you have multiple domains you want to access your blog from include them both with a comma separating them. e.g. <code>ALLOWED_HOSTS=hello.fly.dev,example.com,www.example.com</code>. </p>
+<pre><code>$ flyctl secrets set ALLOWED_HOSTS=&lt;your_domain&gt;
+$ flyctl secrets set DB_NAME=/opt/tanzawa/data/db.sqlite3
+$ flyctl secrets set MEDIA_ROOT=/opt/tanzawa/data/media/
 </code></pre>
-<p>Add the docker repository.</p>
-<pre><code>$ echo &quot;deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable&quot; | tee /etc/apt/sources.list.d/docker.list &gt; /dev/null &amp;&amp; \
-
-$ apt-get update &amp;&amp; apt-get install -y docker-ce docker-ce-cli containerd.io &amp;&amp; apt-get upgrade -y
+<h2 id="deploy">Deploy</h2>
+<p>Deploying Tanzawa to Fly.io using the deploy command.</p>
+<pre><code>$ flyctl deploy
 </code></pre>
-<p>Install docker-compose and add the command and link it so it's executable in your path. </p>
-<pre><code>$ pip3 install docker-compose
-$ ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+<h2 id="create-a-user">Create a user</h2>
+<p>Creating a user will allow you to login to Tanzawa and write blog posts.</p>
+<pre><code>$ flyctl ssh console
+$ cd /app/apps
+$ python manage.py createsuperuser
 </code></pre>
-<h3 id="docker-composeyml">docker-compose.yml</h3>
-<p>Copy the following YAML file to <code>/opt/tanzawa/docker-compose.yml</code>. This is the main file that will setup the Docker container running Tanzawa.</p>
-<pre><code class="language-yaml">version: &quot;3.9&quot;
-
-services:
-  web:
-    image: jamesvandyne/tanzawa
-    restart: always
-    volumes:
-      - /opt/tanzawa/staticfiles:/opt/tanzawa/static
-      - /var/run/tanzawa:/var/run/tanzawa
-      - /opt/tanzawa/data:/opt/tanzawa/data
-    environment:
-      - ENV_FILE=/opt/tanzawa/data/env
-</code></pre>
-<p>Note that there are no open ports in this docker-compose configuration. That's because the default Tanzawa image is accessible via a socket located in <code>/var/run/tanzawa/tanzawa.sock</code>.</p>
-<h3 id="nginx">nginx</h3>
-<p>If it doesn't exist already create the directories to house your nginx configurations.</p>
-<pre><code>$ mkdir -p /etc/nginx/sites-available/ /etc/nginx/sites-enabled
-</code></pre>
-<h3 id="uwsgingix">uWSGI/ngix</h3>
-<p>Add a file to store our uWSGI specific nginx configuration in <code>/etc/nginx/usgi_params</code> with the following contents:</p>
-<pre><code>uwsgi_param  QUERY_STRING       $query_string;
-uwsgi_param  REQUEST_METHOD     $request_method;
-uwsgi_param  CONTENT_TYPE       $content_type;
-uwsgi_param  CONTENT_LENGTH     $content_length;
-
-uwsgi_param  REQUEST_URI        $request_uri;
-uwsgi_param  PATH_INFO          $document_uri;
-uwsgi_param  DOCUMENT_ROOT      $document_root;
-uwsgi_param  SERVER_PROTOCOL    $server_protocol;
-uwsgi_param  REQUEST_SCHEME     $scheme;
-uwsgi_param  HTTPS              $https if_not_empty;
-
-uwsgi_param  REMOTE_ADDR        $remote_addr;
-uwsgi_param  REMOTE_PORT        $remote_port;
-uwsgi_param  SERVER_PORT        $server_port;
-uwsgi_param  SERVER_NAME        $server_name;
-</code></pre>
-<p>Add a file that will house the <code>server_name</code> configuration for your nginx configuration. Replace <code>mydomain.com</code> with the domain you plan to run Tanzawa.</p>
-<pre><code>$ echo &quot;server_name mydomaim.com&quot; &gt;&gt; /opt/tanzawa/server_name
-</code></pre>
-<p>Create a nginx configuration file for Tanzawa in <code>/etc/nginx/sites-available/tanzawa.conf</code> with the following content:</p>
-<pre><code># the upstream component nginx needs to connect to
-upstream django {
-    server unix:///var/run/tanzawa/tanzawa.sock;
-}
-
-# configuration of the server
-server {
-    # the port your site will be served on
-    listen      80;
-    # the domain name it will serve for
-    include /opt/tanzawa/server_name;
-    charset     utf-8;
-
-    # max upload size
-    client_max_body_size 75M;
-
-    # Django media
-    location /media  {
-        alias /opt/tanzawa/media;
-    }
-
-    location /static {
-        alias /opt/tanzawa/staticfiles; # your Django project's static files - amend as required
-    }
-
-    # Finally, send all non-media requests to the Django server.
-    location / {
-        uwsgi_pass  django;
-        include     /etc/nginx/uwsgi_params; # the uwsgi_params file you installed
-    }
-}
-</code></pre>
-<p>Enable Tanzawa nginx configuration and disable the default site.</p>
-<pre><code>$ ln -s /etc/nginx/sites-available/tanzawa.conf /etc/nginx/sites-enabled/
-$ unlink /etc/nginx/sites-enabled/default
-</code></pre>
-<h2 id="setup-tanzawa-environment-settings">Setup Tanzawa environment settings</h2>
-<p>These are the core settings that are used to configure the Django installation. Any changes to this file will require a restart of Tanzawa to take effect. Save this file in <code>/opt/tanzawa/data/env</code>.</p>
-<pre><code>DEBUG=False
-ALLOWED_HOSTS=127.0.0.1,localhost
-
-# set to False if running over http
-SESSION_COOKIE_SECURE=True
-CSRF_COOKIE_SECURE=True
-
-DATABASE_URL=sqlite:////opt/tanzawa/data/db.sqlite3
-DATABASE_ENGINE=django.contrib.gis.db.backends.spatialite
-
-# Used to configure Django error messages
-LANGUAGE_CODE=en-us
-
-# Which timezone is your blog running?
-TIME_ZONE=UTC
-
-# Collect static/media in the project root.
-STATIC_ROOT=/opt/tanzawa/static/
-MEDIA_ROOT=/opt/tanzawa/data/media/
-</code></pre>
-<p>Add a unique <code>SECRET_KEY</code> to the env file above by running the following command.</p>
-<pre><code>$ python3 -c &quot;import secrets; print(secrets.token_urlsafe())&quot; | xargs -I{} -n1 echo SECRET_KEY={} &gt;&gt; /opt/tanzawa/data/env
-</code></pre>
-<h2 id="setup-weekly-security-updates">Setup Weekly Security Updates</h2>
-<p>Keeping your server updated with the latest security patches is important. While not technically related to Tanzawa, it's a good practice. Put the following file in <code>/etc/cron.weekly/weekly_update.sh</code></p>
-<pre><code class="language-bash"> #!/bin/bash
-apt-get update
-apt-get upgrade -y
-apt-get autoclean
-</code></pre>
-<p>Modify permissions it's fully executable to enable.</p>
-<pre><code>$ chmod 755 /etc/cron.weekly/weekly_update.sh
+<p>Once created you should be able to login at http://my_app.fly.dev/a/ where my_app is the name of your application.</p>
+<h1 id="migrate-an-existing-install-tanzawa-to-fly">Migrate an existing install Tanzawa to Fly</h1>
+<p>To migrate an existing installation of Tanzawa to Fly.io you only need to copy your SQLite database and media files the volume.</p>
+<p>You can do this using the <code>ssh sftp</code> utility in the flyctl app.</p>
+<pre><code>$ flyctl ssh sftp shell
+&gt;&gt; put /Users/my_user/backup/db.sqlite3 /opt/tanzawa/data/sqlite3
+&gt;&gt; put /Users/my_user/backup/media /opt/tanzawa/data/media
 </code></pre>
               
             </div>
