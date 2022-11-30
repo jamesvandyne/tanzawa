@@ -10,26 +10,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 import secrets
 from pathlib import Path
 from typing import List
 
 import django
-import environ
+from envparse import env
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-root = environ.Path(__file__) - 3
-env = environ.Env()
+env.read_envfile(path=os.environ.get("ENV_FILE"))
 
-if env("ENV_FILE", default=None):
-    env.read_env(env("ENV_FILE"))
-elif Path(root(".env")).is_file():
-    env.read_env(root(".env"))
-else:
-    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -147,7 +141,10 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="sqlite://db.sqlite3", engine=env.str("DATABASE_ENGINE", default=None))
+    "default": {
+        "ENGINE": "django.contrib.gis.db.backends.spatialite",
+        "NAME": env.str("DB_NAME", default="db.sqlite3"),
+    }
 }
 
 
@@ -194,8 +191,8 @@ THEMES = [path.stem for path in THEMES_ROOT.iterdir() if path.is_dir()]
 THEME_STATICFILE_DIRS = [path for path in THEMES_ROOT.glob("**/static") if path.is_dir()]
 STATICFILES_DIRS = [BASE_DIR / "../static/", *THEME_STATICFILE_DIRS]
 
-STATIC_ROOT = env.path("STATIC_ROOT", default="./staticfiles/")
-MEDIA_ROOT = env.path("MEDIA_ROOT", default="./micropub_media/")
+STATIC_ROOT = Path(env.str("STATIC_ROOT", default="./staticfiles/"))
+MEDIA_ROOT = Path(env.str("MEDIA_ROOT", default="./micropub_media/"))
 
 
 REST_FRAMEWORK = {
@@ -218,7 +215,7 @@ PLUGINS = env.list("PLUGINS", default=[])
 
 INSTALLED_APPS.extend(PLUGINS)
 
-PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", True)
+PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", default=True)
 
 
 # Open Graph Settings

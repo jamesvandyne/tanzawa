@@ -1,0 +1,36 @@
+FROM python:3
+
+WORKDIR /app
+
+COPY requirements.txt requirements_dev.txt requirements.lock /app/
+COPY apps /app/apps/
+COPY front /app/front/
+COPY static /app/static/
+
+
+# Install Python dependencies
+RUN \
+  apt-get update && apt-get upgrade -y && \
+  apt-get install -y spatialite-bin libsqlite3-mod-spatialite \
+     binutils libproj-dev gdal-bin nodejs npm && \
+  pip install -U pip && pip install uwsgi && \
+  pip install -r /app/requirements_dev.txt && \
+  rm -rf /var/lib/apt/lists/*
+
+# Build Frontend
+RUN \
+  cd /app/front/ && \
+  npm install && \
+  npm run build
+
+
+ENV STATIC_ROOT "/app/staticfiles"
+ENV SECRET_KEY "this is a secret key for building purposes"
+
+# Collect static
+RUN \
+  cd /app/apps/ && \
+  python3 manage.py collectstatic --noinput
+
+
+CMD uwsgi --ini /app/apps/interfaces/public/uwsgi.ini

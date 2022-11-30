@@ -1,0 +1,53 @@
+# flyctl launch added from .gitignore
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+
+**/htmlcov
+**/.tox
+**/.cache
+**/junit.xml
+
+# dotenv
+**/.env
+
+# virtualenv
+**/venv
+**/venv*
+
+# vagrant
+**/.vagrant
+
+**/.DS_Store
+**/*.orig
+**/*.rej
+**/*.swap
+
+**/*.log
+**/*.idea
+**/.idea/*
+
+**/.coverage
+**/*.sqlite3
+**/.dmypy.json
+
+**/logs
+**/**/staticfiles/**
+**/.var
+**/node_modules
+
+# flyctl launch added from .mypy_cache/.gitignore
+# Automatically created by mypy
+.mypy_cache/**/*
+
+# flyctl launch added from .pytest_cache/.gitignore
+# Created by pytest automatically.
+.pytest_cache/**/*
+
+# flyctl launch added from .tox/env/.gitignore
+# created by virtualenv automatically
+.tox/env/**/*
+
+# flyctl launch added from .tox/env/.pytest_cache/.gitignore
+# Created by pytest automatically.
+.tox/env/.pytest_cache/**/*

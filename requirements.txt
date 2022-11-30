@@ -2,11 +2,10 @@
 
 
 Django
-django-environ
+envparse
 django-meta
 django-webmention
 djangorestframework
-gunicorn
 beautifulsoup4
 exif
 Pillow

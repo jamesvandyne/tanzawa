@@ -34,3 +34,5 @@ logs
 **/staticfiles/**
 .var
 node_modules/
+
+fly.toml
