@@ -1,4 +1,4 @@
-{% load static plugins %}
+{% load static plugins django_htmx %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -93,5 +93,7 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {% django_htmx_script %}
 </body>
 </html>
