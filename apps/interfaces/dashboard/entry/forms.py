@@ -445,3 +445,12 @@ class QuickCreateStatusForm(CreateStatusForm):
         self.fields["m_post_status"].initial = MPostStatuses.published
         self.fields["m_post_status"].widget.attrs = select_attrs
         self.fields["visibility"].widget.attrs = select_attrs
+
+
+class ReplyTitle(forms.Form):
+    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?")
+    title = TCharField(label="Reply title?")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["u_in_reply_to"].widget.attrs = {"class": "input-field"}

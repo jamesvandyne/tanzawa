@@ -31,4 +31,7 @@ urlpatterns = [
         name="posts",
     ),
     path("posts/<int:pk>", views.edit_post, name="post_edit"),
+    # Reply
+    path("reply/<int:pk>/title", views.ReplyTitle.as_view(), name="reply_title"),
+    path("reply/<int:pk>/change_title", views.ChangeReplyTitle.as_view(), name="change_reply_title"),
 ]

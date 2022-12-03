@@ -2,14 +2,15 @@
 
 <form id="entry" action="" method="POST" class="flex-col" data-turbo-frame="_top">
     {{ form.errors }}
+    {% csrf_token %}
     {% for hidden in form.hidden_fields %}
         {{ hidden }}
     {% endfor %}
-    {% csrf_token %}
-    <div>
-        <span>Responding to "{{ form.title.value }}"</span>
-        <span class="block text-xs">{{ form.u_in_reply_to.value|urlize }}</span>
-    </div>
+    {% if object %}
+        {% include "interfaces/dashboard/entry/reply/_reply_title.html" with title=object.t_reply.title url=object.t_reply.u_in_reply_to  t_entry_id=object.id %}
+    {% else %}
+        {% include "interfaces/dashboard/entry/reply/_reply_title.html" with title=form.title.value url=form.u_in_reply_to.value %}
+    {% endif %}
     <div class="pt-2">
         {{ form.summary.label }}
         <span class="block text-xs text-bianca-800">{{ form.summary.help_text }}</span>

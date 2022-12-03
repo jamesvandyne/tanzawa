@@ -10,10 +10,17 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.html import mark_safe
-from django.views.generic import CreateView, FormView, ListView, UpdateView
+from django.views.generic import (
+    CreateView,
+    FormView,
+    ListView,
+    TemplateView,
+    UpdateView,
+)
 from interfaces.dashboard.entry import forms
 from turbo_response import TurboFrame, redirect_303
 
@@ -78,7 +85,11 @@ class CreateEntryView(CreateView):
         return None
 
     def _get_syndication_urls(self, syndication_formset) -> list[str]:
-        return [syndication_form.cleaned_data["url"] for syndication_form in syndication_formset]
+        return [
+            syndication_form.cleaned_data["url"]
+            for syndication_form in syndication_formset
+            if syndication_form.cleaned_data.get("url")
+        ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(nav="posts", **kwargs)
@@ -202,7 +213,11 @@ class UpdateEntryView(UpdateView):
         return None
 
     def _get_syndication_urls(self, syndication_formset) -> list[str]:
-        return [syndication_form.cleaned_data["url"] for syndication_form in syndication_formset]
+        return [
+            syndication_form.cleaned_data["url"]
+            for syndication_form in syndication_formset
+            if syndication_form.cleaned_data.get("url")
+        ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -385,7 +400,7 @@ class CreateReplyView(CreateEntryView):
         )
         return redirect_303(self.get_redirect_url(entry=entry))
 
-    def form_invalid(self, form):
+    def form_invalid(self, form, named_forms):
         context = self.get_context_data(form=form)
         return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)
 
@@ -674,3 +689,56 @@ class QuickEntry(CreateStatusView):
     def get_redirect_url(self, entry):
         # Facilitate another quick post by redirecting to an empty quick entry form
         return reverse("status_quick")
+
+
+@method_decorator(login_required, name="dispatch")
+class ReplyTitle(TemplateView):
+    template_name = "interfaces/dashboard/entry/reply/_reply_title.html"
+    reply: models.TReply
+
+    def setup(self, *args, pk: int, **kwargs):
+        super().setup(*args, **kwargs)
+        self.reply = get_object_or_404(models.TReply, t_entry_id=pk)
+
+    def get_context_data(self, **kwargs) -> dict[str, str]:
+        return super().get_context_data(
+            title=self.reply.title, url=self.reply.u_in_reply_to, t_entry_id=self.reply.t_entry_id
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class ChangeReplyTitle(FormView):
+    template_name = "interfaces/dashboard/entry/reply/_change_reply_title.html"
+    form_class = forms.ReplyTitle
+    reply: models.TReply
+
+    def setup(self, *args, pk: int, **kwargs):
+        super().setup(*args, **kwargs)
+        self.reply = get_object_or_404(models.TReply, t_entry_id=pk)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"initial": {"title": self.reply.title, "u_in_reply_to": self.reply.u_in_reply_to}})
+        return kwargs
+
+    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+        return super().get_context_data(*args, t_entry_id=self.reply.t_entry_id, **kwargs)
+
+    def form_valid(self, form):
+        self.reply.update(
+            u_in_reply_to=form.cleaned_data["u_in_reply_to"],
+            title=form.cleaned_data["title"],
+            quote=self.reply.quote,
+            author=self.reply.author,
+            author_url=self.reply.author_url,
+            author_photo=self.reply.author_photo,
+        )
+        return TemplateResponse(
+            self.request,
+            "interfaces/dashboard/entry/reply/_reply_title.html",
+            {
+                "t_entry_id": self.reply.t_entry_id,
+                "title": form.cleaned_data["title"],
+                "url": form.cleaned_data["u_in_reply_to"],
+            },
+        )
