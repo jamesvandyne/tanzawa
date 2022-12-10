@@ -1,3 +1,4 @@
+import datetime
 from typing import List, Optional
 
 from core.constants import Visibility
@@ -46,3 +47,20 @@ def get_last_post_with_location(
     Return the latest post with a location.
     """
     return get_public_posts_for_user(user, stream, kinds).filter(ref_t_entry__t_location__isnull=False).first()
+
+
+def is_published(post_id: int) -> bool:
+    """
+    Return if the post is published.
+    """
+    return (
+        post_models.TPost.objects.filter(id=post_id).values_list("m_post_status__key", flat=True).first()
+        == MPostStatuses.published
+    )
+
+
+def determine_published_at(post: post_models.TPost, occurred_at: datetime.datetime) -> datetime.datetime | None:
+    if post.m_post_status.key == post_models.MPostStatuses.published:
+        if post.dt_published is None or not is_published(post.id):
+            return occurred_at
+    return None

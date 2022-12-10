@@ -76,41 +76,6 @@ class CreateStatusForm(forms.ModelForm):
         except post_models.MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
-        urls = trix_queries.extract_attachment_urls(self.cleaned_data.get("e_content", ""))
-        self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
-
-    def prepare_data(self):
-        n = now()
-        self.t_post = post_models.TPost(
-            m_post_status=self.cleaned_data["m_post_status"],
-            m_post_kind=self.cleaned_data["m_post_kind"],
-            p_author=self.p_author,
-            visibility=self.cleaned_data["visibility"],
-            dt_published=self.cleaned_data.get("dt_published") or n
-            if self.cleaned_data["m_post_status"].key == MPostStatuses.published
-            else None,
-            dt_updated=n,
-        )
-        soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
-        self.instance = entry_models.TEntry(
-            e_content=self.cleaned_data.get("e_content", ""),
-            p_summary=soup.text[:255].strip(),
-            p_name=self.cleaned_data.get("p_name", ""),
-        )
-
-    @transaction.atomic
-    def save(self, commit=True) -> entry_models.TEntry:
-        if self.t_post:
-            self.t_post.save()
-            self.instance.t_post = self.t_post
-            entry = super().save(commit)
-            self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-            self.t_post.streams.set(self.cleaned_data["streams"])
-            if self.cleaned_data["t_trip"]:
-                self.t_post.trips.set([self.cleaned_data["t_trip"]])
-            return entry
-        raise Exception("TPost must not be null")
-
 
 class CreateArticleForm(CreateStatusForm):
     m_post_kind = MPostKinds.article

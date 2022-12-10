@@ -57,6 +57,11 @@ class TEntry(TimestampModel):
     def is_reply(self) -> bool:
         return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.reply
 
+    def update_content_summary(self, e_content: str, p_summary: str) -> None:
+        self.e_content = e_content
+        self.p_summary = p_summary
+        self.save()
+
 
 class TReply(TimestampModel):
 

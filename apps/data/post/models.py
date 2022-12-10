@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from typing import Optional
 
@@ -120,3 +121,16 @@ class TPost(TimestampModel):
         elif self.m_post_kind.key == MPostKinds.checkin:
             title = f"Checkin to {t_entry.t_checkin.name}"
         return title
+
+    def update_publishing_meta(
+        self,
+        post_status: MPostStatus,
+        visibility: Visibility,
+        dt_updated: datetime.datetime | None,
+        dt_published: datetime.datetime | None,
+    ):
+        self.m_post_status = post_status
+        self.visibility = visibility
+        self.dt_updated = dt_updated
+        self.dt_published = dt_published
+        self.save()

@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
 from application.indieweb import webmentions
 from data.entry import models
@@ -23,6 +24,10 @@ class CreateEntryView(CreateView):
     autofocus: Optional[str] = None
     redirect_url = "status_edit"
 
+    def setup(self, *args, **kwargs) -> None:
+        super().setup(*args, **kwargs)
+        self.object = None
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs.update({"p_author": self.request.user, "autofocus": self.autofocus})
@@ -38,14 +43,18 @@ class CreateEntryView(CreateView):
         return resolve_url(self.redirect_url, pk=entry.pk)
 
     def form_valid(self, form, named_forms=None):
-        form.prepare_data()
-
-        with transaction.atomic():
-            entry = form.save()
-            named_forms["syndication"].instance = entry
-            for named_form in named_forms.values():
-                named_form.prepare_data(entry)
-                named_form.save()
+        entry = entry_app.create_entry(
+            status=form.cleaned_data["m_post_status"],
+            post_kind=form.cleaned_data["m_post_kind"],
+            author=form.p_author,
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+        )
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             webmentions.send_webmention(self.request, entry.t_post, entry.e_content)
@@ -57,6 +66,21 @@ class CreateEntryView(CreateView):
         )
         return redirect_303(self.get_redirect_url(entry=entry))
 
+    def _get_location(self, location_form) -> entry_app.Location | None:
+        if location_form.cleaned_data["point"]:
+            return entry_app.Location(
+                street_address=location_form.cleaned_data["street_address"],
+                locality=location_form.cleaned_data["locality"],
+                region=location_form.cleaned_data["region"],
+                country_name=location_form.cleaned_data["country_name"],
+                postal_code=location_form.cleaned_data["postal_code"],
+                point=location_form.cleaned_data["point"],
+            )
+        return None
+
+    def _get_syndication_urls(self, syndication_formset) -> list[str]:
+        return [syndication_form.cleaned_data["url"] for syndication_form in syndication_formset]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(nav="posts", **kwargs)
         if "named_forms" not in context:
@@ -67,10 +91,6 @@ class CreateEntryView(CreateView):
     def form_invalid(self, form, named_forms=None):
         context = self.get_context_data(form=form, named_forms=named_forms)
         return render(self.request, self.template_name, context=context, status=422)
-
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """
