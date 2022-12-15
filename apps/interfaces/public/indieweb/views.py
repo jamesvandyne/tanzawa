@@ -216,6 +216,7 @@ def _determine_handler(form: Type[forms.Form]) -> EntryHandler:
         CreateStatusForm: _create_status,
         CreateArticleForm: _create_article,
         CreateReplyForm: _create_reply,
+        CreateBookmarkForm: _create_bookmark,
     }
     try:
         return usecase_map[form.__class__]
@@ -274,6 +275,32 @@ def _create_reply(
         syndication_urls=_get_syndication_urls(serializer),
         reply=entry_app.Reply(
             u_in_reply_to=form.cleaned_data["u_in_reply_to"],
+            title=form.cleaned_data["title"],
+            quote=form.cleaned_data["summary"],
+            author=form.cleaned_data["author"],
+            author_url=form.cleaned_data["author_url"],
+            author_photo=form.cleaned_data["author_photo_url"],
+        ),
+    )
+
+
+def _create_bookmark(
+    form: CreateBookmarkForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+        bookmark=entry_app.Bookmark(
+            u_bookmark_of=form.cleaned_data["u_bookmark_of"],
             title=form.cleaned_data["title"],
             quote=form.cleaned_data["summary"],
             author=form.cleaned_data["author"],

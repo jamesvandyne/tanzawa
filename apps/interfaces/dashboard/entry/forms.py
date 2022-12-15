@@ -293,24 +293,6 @@ class CreateBookmarkForm(CreateStatusForm):
             if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_bookmark = entry_models.TBookmark(
-            u_bookmark_of=self.cleaned_data["u_bookmark_of"],
-            title=self.cleaned_data["title"],
-            quote=self.cleaned_data["summary"],
-            author=self.cleaned_data["author"],
-            author_url=self.cleaned_data["author_url"],
-            author_photo=self.cleaned_data["author_photo_url"],
-        )
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        if self.t_bookmark:
-            self.t_bookmark.t_entry = t_entry
-            self.t_bookmark.save()
-        return t_entry
-
 
 class UpdateBookmarkForm(UpdateStatusForm):
     u_bookmark_of = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)

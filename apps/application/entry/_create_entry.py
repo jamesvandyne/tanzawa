@@ -39,6 +39,15 @@ class Reply:
     author_url: str
     author_photo: str
 
+@dataclass
+class Bookmark:
+    u_bookmark_of: str
+    title: str
+    quote: str
+    author: str
+    author_url: str
+    author_photo: str
+
 
 @transaction.atomic
 def create_entry(
@@ -54,6 +63,7 @@ def create_entry(
     syndication_urls: list[str] | None = None,
     location: Location | None = None,
     reply: Reply | None = None,
+    bookmark: Bookmark | None = None
 ) -> entry_models.TEntry:
     """
     Create a new entry with related data.
@@ -78,6 +88,9 @@ def create_entry(
 
     if reply:
         _create_reply(entry, reply)
+
+    if bookmark:
+        _create_bookmark(entry, bookmark)
 
     return entry
 
@@ -124,6 +137,21 @@ def _create_reply(entry: entry_models.TEntry, reply: Reply) -> entry_models.TRep
         author=reply.author,
         author_url=reply.author_url,
         author_photo=reply.author_photo,
+    )
+
+
+def _create_bookmark(entry: entry_models.TEntry, bookmark: Bookmark) -> entry_models.TBookmark:
+    if not entry.is_bookmark:
+        raise PostKindMismatch(f"Cannot create bookmark with post kind {entry.t_post.m_post_kind.key}")
+
+    return entry_models.TBookmark.objects.create(
+        t_entry=entry,
+        u_bookmark_of=bookmark.u_bookmark_of,
+        title=bookmark.title,
+        quote=bookmark.quote,
+        author=bookmark.author,
+        author_url=bookmark.author_url,
+        author_photo=bookmark.author_photo,
     )
 
 

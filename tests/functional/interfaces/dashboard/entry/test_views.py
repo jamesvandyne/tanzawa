@@ -344,3 +344,81 @@ class TestCreateReplyView:
 
         # ... and it is in the specified stream
         assert list(entry.t_post.streams.all()) == [stream]
+
+
+
+@pytest.mark.django_db
+class TestCreateBookmarkView:
+    @mock.patch("application.indieweb.webmentions.ronkyuu")
+    def test_creates_bookmark(self, ronkyuu_mock, client, factory) -> None:
+        """
+        Given: A post to create a new bookmark entry
+        Expect: A new bookmark to be created
+        """
+        # Create a user
+        admin = factory.User()
+        client.force_login(admin)
+        stream = factory.Stream()
+
+        # Mock out discovering webmentions
+        ronkyuu_mock.return_value = []
+
+        # Who submits a post
+        payload = {
+            "csrfmiddlewaretoken": "n59B1BvGUfxuMbCSJp5GqlZ9swSnhvanfqYmsmT4ngD86McH40tvL1nyVaGgHB7J",
+            "m_post_kind": "bookmark",
+            "p_name": "I want to visit York",
+            "e_content": "<div>Hello</div>",
+            "streams": str(stream.pk),
+            # Reply specific fields
+            "u_bookmark_of": "https://jamesg.blog/2022/05/25/york-coffee/",
+            "title": "York Coffee Recommendations",
+            "summary": "I spent the weekend in York...",
+            "author": "James G",
+            "author_url": "",
+            "author_photo_url": "",
+            # ... no location
+            # ... and has not been syndicated...
+            "syndication-TOTAL_FORMS": "0",
+            "syndication-INITIAL_FORMS": "0",
+            "syndication-MIN_NUM_FORMS": "0",
+            "syndication-MAX_NUM_FORMS": "1000",
+            # ... and is published
+            "m_post_status": ["published", "published"],
+            # ... for everyone to see
+            "visibility": "1",
+            "t_trip": "",
+        }
+
+        # Submit and...
+        response = client.post(reverse("bookmark_create"), payload)
+
+        # ... redirect to the edit page
+        assert response.status_code == 303
+
+        # An entry should have been created...
+        entry = entry_models.TEntry.objects.last()
+        assert entry
+        assert entry.p_name == "I want to visit York"
+        assert entry.e_content == "<div>Hello</div>"
+        assert entry.p_summary == "Hello"
+
+        # ... that should have a bookmark...
+        bookmark = entry.t_bookmark
+        assert bookmark.u_bookmark_of == "https://jamesg.blog/2022/05/25/york-coffee/"
+        assert bookmark.title == "York Coffee Recommendations"
+        assert bookmark.quote == "I spent the weekend in York..."
+        assert bookmark.author == "James G"
+        assert bookmark.author_url == ""
+        assert bookmark.author_photo == ""
+
+        # ... with a post
+        t_post = entry.t_post
+        assert t_post
+        # ... that is visible and published
+        assert t_post.m_post_status.key == "published"
+        assert t_post.m_post_kind.key == "bookmark"
+        assert t_post.visibility == Visibility.PUBLIC
+
+        # ... and it is in the specified stream
+        assert list(entry.t_post.streams.all()) == [stream]
