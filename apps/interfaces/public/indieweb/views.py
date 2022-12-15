@@ -212,7 +212,10 @@ def _determine_handler(form: Type[forms.Form]) -> EntryHandler:
     """
     Determine which application function should be called to process the form data.
     """
-    usecase_map: dict[Type[forms.Form], EntryHandler] = {CreateStatusForm: _create_status}
+    usecase_map: dict[Type[forms.Form], EntryHandler] = {
+        CreateStatusForm: _create_status,
+        CreateArticleForm: _create_article,
+    }
     try:
         return usecase_map[form.__class__]
     except KeyError:
@@ -229,6 +232,24 @@ def _create_status(
         visibility=form.cleaned_data["visibility"],
         title=form.cleaned_data["p_name"],
         content=form.cleaned_data["e_content"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+    )
+
+
+def _create_article(
+    form: CreateArticleForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
         streams=form.cleaned_data["streams"],
         trip=form.cleaned_data["t_trip"],
         location=_get_location(named_forms.get("location")),
