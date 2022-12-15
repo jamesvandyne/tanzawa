@@ -16,6 +16,10 @@ from domain.entry import operations as entry_ops
 from domain.entry import queries as entry_queries
 
 
+class PostKindMismatch(Exception):
+    pass
+
+
 @dataclass
 class Location:
     street_address: str
@@ -24,6 +28,16 @@ class Location:
     country_name: str
     postal_code: str
     point: geos.Point
+
+
+@dataclass
+class Reply:
+    u_in_reply_to: str
+    title: str
+    quote: str
+    author: str
+    author_url: str
+    author_photo: str
 
 
 @transaction.atomic
@@ -39,6 +53,7 @@ def create_entry(
     trip: trip_models.TTrip | None = None,
     syndication_urls: list[str] | None = None,
     location: Location | None = None,
+    reply: Reply | None = None,
 ) -> entry_models.TEntry:
     """
     Create a new entry with related data.
@@ -60,6 +75,10 @@ def create_entry(
 
     if location:
         _create_location(entry, location)
+
+    if reply:
+        _create_reply(entry, reply)
+
     return entry
 
 
@@ -91,6 +110,21 @@ def _create_entry(
         trip=trip,
     )
     return entry
+
+
+def _create_reply(entry: entry_models.TEntry, reply: Reply) -> entry_models.TReply:
+    if not entry.is_reply:
+        raise PostKindMismatch(f"Cannot create reply with post kind {entry.t_post.m_post_kind.key}")
+
+    return entry_models.TReply.objects.create(
+        t_entry=entry,
+        u_in_reply_to=reply.u_in_reply_to,
+        title=reply.title,
+        quote=reply.quote,
+        author=reply.author,
+        author_url=reply.author_url,
+        author_photo=reply.author_photo,
+    )
 
 
 def _create_location(entry: entry_models.TEntry, location: Location) -> entry_models.TLocation:

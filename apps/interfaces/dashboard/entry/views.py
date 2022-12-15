@@ -305,6 +305,38 @@ class CreateReplyView(CreateEntryView):
             return forms.ExtractMetaForm
         return forms.CreateReplyForm
 
+    def form_valid(self, form, named_forms=None):
+        entry = entry_app.create_entry(
+            status=form.cleaned_data["m_post_status"],
+            post_kind=form.cleaned_data["m_post_kind"],
+            author=form.p_author,
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+            reply=entry_app.Reply(
+                u_in_reply_to=form.cleaned_data["u_in_reply_to"],
+                title=form.cleaned_data["title"],
+                quote=form.cleaned_data["summary"],
+                author=form.cleaned_data["author"],
+                author_url=form.cleaned_data["author_url"],
+                author_photo=form.cleaned_data["author_photo_url"],
+            ),
+        )
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, entry.t_post, entry.e_content)
+
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": entry.t_post})
+        messages.success(
+            self.request,
+            f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
+        )
+        return redirect_303(self.get_redirect_url(entry=entry))
+
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
         return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)

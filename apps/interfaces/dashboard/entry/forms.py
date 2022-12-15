@@ -123,24 +123,6 @@ class CreateReplyForm(CreateStatusForm):
             if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
 
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_reply = entry_models.TReply(
-            u_in_reply_to=self.cleaned_data["u_in_reply_to"],
-            title=self.cleaned_data["title"],
-            quote=self.cleaned_data["summary"],
-            author=self.cleaned_data["author"],
-            author_url=self.cleaned_data["author_url"],
-            author_photo=self.cleaned_data["author_photo_url"],
-        )
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        if self.t_reply:
-            self.t_reply.t_entry = t_entry
-            self.t_reply.save()
-        return t_entry
-
 
 class ExtractMetaForm(forms.Form):
     url = forms.URLField(required=True, label="What's the URL you're replying to?")
