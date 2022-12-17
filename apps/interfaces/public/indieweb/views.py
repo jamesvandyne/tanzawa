@@ -24,7 +24,6 @@ from interfaces.dashboard.entry.forms import (
     CreateCheckinForm,
     CreateReplyForm,
     CreateStatusForm,
-    TCheckinModelForm,
     TLocationModelForm,
 )
 from interfaces.public.files.forms import MediaUploadForm
@@ -134,8 +133,6 @@ def micropub(request):  # noqa: C901 too complex (30)
             "point": location_to_pointfield_input(location),
         }
         named_forms["location"] = TLocationModelForm(data=location_form_data)
-    if serializer.validated_data["properties"].get("checkin"):
-        named_forms["checkin"] = TCheckinModelForm(data=serializer.validated_data["properties"].get("checkin"))
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -167,7 +164,7 @@ def micropub(request):  # noqa: C901 too complex (30)
         p_name=form_data["p_name"],
         u_in_reply_to=form_data.get("u_in_reply_to"),
         u_bookmark_of=form_data.get("u_bookmark_of"),
-        checkin=named_forms.get("checkin"),
+        checkin=serializer.validated_data["properties"].get("checkin"),
     )
     form = form_class(data=form_data, p_author=indieauth.queries.get_user_for_token(key=token))
 
@@ -191,7 +188,7 @@ def _determine_validation_form(
     p_name: str,
     u_in_reply_to: str | None = None,
     u_bookmark_of: str | None = None,
-    checkin: TCheckinModelForm | None = None,
+    checkin: dict | None = None,
 ) -> Type[forms.Form]:
     """
     Determine which form should be used to perform validation for this request.
@@ -217,6 +214,7 @@ def _determine_handler(form: Type[forms.Form]) -> EntryHandler:
         CreateArticleForm: _create_article,
         CreateReplyForm: _create_reply,
         CreateBookmarkForm: _create_bookmark,
+        CreateCheckinForm: _create_checkin,
     }
     try:
         return usecase_map[form.__class__]
@@ -236,6 +234,7 @@ def _create_status(
         content=form.cleaned_data["e_content"],
         streams=form.cleaned_data["streams"],
         trip=form.cleaned_data["t_trip"],
+        published_at=form.cleaned_data["dt_published"],
         location=_get_location(named_forms.get("location")),
         syndication_urls=_get_syndication_urls(serializer),
     )
@@ -257,6 +256,7 @@ def _create_article(
         location=_get_location(named_forms.get("location")),
         syndication_urls=_get_syndication_urls(serializer),
     )
+
 
 def _create_reply(
     form: CreateReplyForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
@@ -310,6 +310,25 @@ def _create_bookmark(
     )
 
 
+def _create_checkin(
+    form: CreateBookmarkForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+        checkin=_get_checkin(serializer),
+    )
+
+
 def _get_location(location_form: TLocationModelForm | None) -> entry_app.Location | None:
     # TODO: Migrate location away from using the TLocationModelForm and use the serializer validated data
     if location_form is None:
@@ -328,6 +347,11 @@ def _get_location(location_form: TLocationModelForm | None) -> entry_app.Locatio
 
 def _get_syndication_urls(serializer: MicropubSerializer) -> list[str]:
     return [url for url in serializer.validated_data["properties"].get("syndication", [])]
+
+
+def _get_checkin(serializer: MicropubSerializer) -> entry_app.Checkin:
+    checkin = serializer.validated_data["properties"].get("checkin", {})
+    return entry_app.Checkin(name=checkin.get("name", ""), url=checkin.get("url", ""))
 
 
 @api_view(["POST", "GET"])

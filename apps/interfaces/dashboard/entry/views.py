@@ -404,14 +404,12 @@ class CreateBookmarkView(CreateEntryView):
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             webmentions.send_webmention(self.request, entry.t_post, entry.e_content)
 
-        permalink_a_tag = render_to_string("fragments/view_post_link.html",
-                                           {"t_post": entry.t_post})
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": entry.t_post})
         messages.success(
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
         return redirect_303(self.get_redirect_url(entry=entry))
-
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)

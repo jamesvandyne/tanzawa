@@ -346,7 +346,6 @@ class TestCreateReplyView:
         assert list(entry.t_post.streams.all()) == [stream]
 
 
-
 @pytest.mark.django_db
 class TestCreateBookmarkView:
     @mock.patch("application.indieweb.webmentions.ronkyuu")

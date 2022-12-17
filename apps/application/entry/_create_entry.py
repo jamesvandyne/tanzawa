@@ -39,6 +39,7 @@ class Reply:
     author_url: str
     author_photo: str
 
+
 @dataclass
 class Bookmark:
     u_bookmark_of: str
@@ -47,6 +48,12 @@ class Bookmark:
     author: str
     author_url: str
     author_photo: str
+
+
+@dataclass
+class Checkin:
+    url: str
+    name: str
 
 
 @transaction.atomic
@@ -63,7 +70,8 @@ def create_entry(
     syndication_urls: list[str] | None = None,
     location: Location | None = None,
     reply: Reply | None = None,
-    bookmark: Bookmark | None = None
+    bookmark: Bookmark | None = None,
+    checkin: Checkin | None = None,
 ) -> entry_models.TEntry:
     """
     Create a new entry with related data.
@@ -91,6 +99,9 @@ def create_entry(
 
     if bookmark:
         _create_bookmark(entry, bookmark)
+
+    if checkin:
+        _create_checkin(entry, checkin)
 
     return entry
 
@@ -164,6 +175,18 @@ def _create_location(entry: entry_models.TEntry, location: Location) -> entry_mo
         country_name=location.country_name,
         postal_code=location.postal_code,
         point=location.point,
+    )
+
+
+def _create_checkin(entry: entry_models.TEntry, checkin: Checkin) -> entry_models.TCheckin:
+    if not entry.is_checkin:
+        raise PostKindMismatch(f"Cannot create checkin with post kind {entry.t_post.m_post_kind.key}")
+
+    return entry_models.TCheckin.objects.create(
+        t_entry=entry,
+        t_location=entry.t_location,
+        url=checkin.url,
+        name=checkin.name,
     )
 
 

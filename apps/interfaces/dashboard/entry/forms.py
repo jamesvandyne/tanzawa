@@ -368,10 +368,6 @@ class TCheckinModelForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"class": "input-field"}
 
-    def prepare_data(self, t_entry: entry_models.TEntry):
-        self.instance.t_entry = t_entry
-        self.instance.t_location = t_entry.t_location
-
 
 class TSyndicationModelForm(forms.ModelForm):
     class Meta:
