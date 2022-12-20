@@ -55,3 +55,60 @@ def create_entry(
         post.trips.set([trip])
 
     return entry
+
+
+@transaction.atomic
+def update_entry(
+    entry: entry_models.TEntry,
+    status: post_models.MPostStatus,
+    visibility: constants.Visibility,
+    updated_at: datetime.datetime,
+    title: str = "",
+    e_content: str = "",
+    summary: str = "",
+    files: list[file_models.TFile] | None = None,
+    streams: list[stream_models.MStream] | None = None,
+    trip: trip_models.TTrip | None = None,
+    published_at: datetime.datetime | None = None,
+):
+    """
+    Create a new entry and post.
+    """
+
+    post = entry.t_post
+    post.update_publishing_meta(
+        post_status=status,
+        visibility=visibility,
+        dt_updated=updated_at,
+        dt_published=published_at,
+    )
+
+    entry.update_title_content_summary(
+        title=title,
+        e_content=e_content,
+        p_summary=summary,
+    )
+
+    if files:
+        post.files.set(files)
+
+    if streams:
+        post.streams.set(streams)
+
+    if trip:
+        post.trips.set([trip])
+
+    return entry
+
+
+def remove_location(entry: entry_models.TEntry) -> None:
+    """
+    Remove a location from a given entry.
+    """
+
+    try:
+        entry_location = entry.t_location
+    except entry_models.TLocation.DoesNotExist:
+        return None
+    else:
+        entry_location.delete()

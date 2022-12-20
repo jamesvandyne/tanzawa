@@ -8,7 +8,6 @@ from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -140,16 +139,20 @@ class UpdateEntryView(UpdateView):
         }
 
     def form_valid(self, form, named_forms=None):
-        form.prepare_data()
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             webmentions.send_webmention(self.request, form.instance.t_post, self.original_content)
 
-        with transaction.atomic():
-            entry = form.save()
-
-            for named_form in named_forms.values():
-                named_form.prepare_data(entry)
-                named_form.save()
+        entry_app.update_entry(
+            entry_id=self.object.pk,
+            status=form.cleaned_data["m_post_status"],
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+        )
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             webmentions.send_webmention(self.request, form.instance.t_post, form.instance.e_content)
@@ -185,6 +188,21 @@ class UpdateEntryView(UpdateView):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
+
+    def _get_location(self, location_form) -> entry_app.Location | None:
+        if location_form.cleaned_data["point"]:
+            return entry_app.Location(
+                street_address=location_form.cleaned_data["street_address"],
+                locality=location_form.cleaned_data["locality"],
+                region=location_form.cleaned_data["region"],
+                country_name=location_form.cleaned_data["country_name"],
+                postal_code=location_form.cleaned_data["postal_code"],
+                point=location_form.cleaned_data["point"],
+            )
+        return None
+
+    def _get_syndication_urls(self, syndication_formset) -> list[str]:
+        return [syndication_form.cleaned_data["url"] for syndication_form in syndication_formset]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -292,6 +310,36 @@ class UpdateCheckinView(UpdateEntryView):
         )
         return named_forms
 
+    def form_valid(self, form, named_forms=None):
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, self.original_content)
+
+        entry_app.update_entry(
+            entry_id=self.object.pk,
+            status=form.cleaned_data["m_post_status"],
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+            checkin=entry_app.Checkin(
+                name=named_forms["checkin"].cleaned_data["name"],
+                url=named_forms["checkin"].cleaned_data["url"],
+            ),
+        )
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": form.instance.t_post})
+        messages.success(
+            self.request,
+            f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
+        )
+        return redirect_303(self.request.build_absolute_uri())
+
 
 # Reply CRUD views
 
@@ -359,6 +407,44 @@ class UpdateReplyView(UpdateEntryView):
     template_name = "entry/reply/update.html"
     m_post_kind = MPostKinds.reply
     autofocus = "e_content"
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.reply = get_object_or_404(models.TReply, t_entry_id=kwargs["pk"])
+
+    def form_valid(self, form, named_forms=None):
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, self.original_content)
+
+        entry_app.update_entry(
+            entry_id=self.object.pk,
+            status=form.cleaned_data["m_post_status"],
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+            reply=entry_app.Reply(
+                u_in_reply_to=self.reply.u_in_reply_to,
+                title=self.reply.title,
+                quote=form.cleaned_data["summary"],
+                author=self.reply.author,
+                author_url=self.reply.author_url,
+                author_photo=self.reply.author_photo,
+            ),
+        )
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": form.instance.t_post})
+        messages.success(
+            self.request,
+            f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
+        )
+        return redirect_303(self.request.build_absolute_uri())
 
 
 # Bookmarks
@@ -439,6 +525,44 @@ class UpdateBookmarkView(UpdateEntryView):
     template_name = "entry/bookmark/update.html"
     m_post_kind = MPostKinds.bookmark
     autofocus = "e_content"
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        self.bookmark = get_object_or_404(models.TBookmark, t_entry_id=kwargs["pk"])
+
+    def form_valid(self, form, named_forms=None):
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, self.original_content)
+
+        entry_app.update_entry(
+            entry_id=self.object.pk,
+            status=form.cleaned_data["m_post_status"],
+            visibility=form.cleaned_data["visibility"],
+            title=form.cleaned_data["p_name"],
+            content=form.cleaned_data["e_content"],
+            streams=form.cleaned_data["streams"],
+            trip=form.cleaned_data["t_trip"],
+            location=self._get_location(named_forms["location"]),
+            syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+            bookmark=entry_app.Bookmark(
+                u_bookmark_of=form.cleaned_data["u_bookmark_of"],
+                title=form.cleaned_data["title"],
+                quote=form.cleaned_data["summary"],
+                author=self.bookmark.author,
+                author_url=self.bookmark.author_url,
+                author_photo=self.bookmark.author_photo,
+            ),
+        )
+
+        if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
+            webmentions.send_webmention(self.request, form.instance.t_post, form.instance.e_content)
+
+        permalink_a_tag = render_to_string("fragments/view_post_link.html", {"t_post": form.instance.t_post})
+        messages.success(
+            self.request,
+            f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
+        )
+        return redirect_303(self.request.build_absolute_uri())
 
 
 @login_required

@@ -235,8 +235,6 @@ class UpdateCheckinForm(UpdateStatusForm):
 
 
 class UpdateReplyForm(UpdateStatusForm):
-    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
-    title = forms.CharField(label="Title", widget=forms.HiddenInput)
     summary = forms.CharField(
         widget=forms.Textarea,
         label="Summary",
@@ -248,19 +246,7 @@ class UpdateReplyForm(UpdateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_reply: entry_models.TReply = self.instance.t_reply
-        self.fields["summary"].initial = self.t_reply.quote
-        self.fields["title"].initial = self.t_reply.title
-        self.fields["u_in_reply_to"].initial = self.t_reply.u_in_reply_to
-
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_reply.quote = self.cleaned_data["summary"]
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        self.t_reply.save()
-        return t_entry
+        self.fields["summary"].initial = self.instance.t_reply.quote
 
 
 class CreateBookmarkForm(CreateStatusForm):
