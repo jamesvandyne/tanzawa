@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "webmention",
     "meta",
     "core",
+    "django_htmx",
     # Data layer
     "data",
     "data.entry",
@@ -93,6 +94,7 @@ MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
     "turbo_response.middleware.TurboMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",

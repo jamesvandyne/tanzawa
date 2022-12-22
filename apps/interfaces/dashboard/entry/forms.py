@@ -76,41 +76,6 @@ class CreateStatusForm(forms.ModelForm):
         except post_models.MPostKind.DoesNotExist:
             raise forms.ValidationError(f"m_post_kind: {self.m_post_kind} does not exist")
 
-        urls = trix_queries.extract_attachment_urls(self.cleaned_data.get("e_content", ""))
-        self.file_attachment_uuids = [extract_uuid_from_url(url) for url in urls]
-
-    def prepare_data(self):
-        n = now()
-        self.t_post = post_models.TPost(
-            m_post_status=self.cleaned_data["m_post_status"],
-            m_post_kind=self.cleaned_data["m_post_kind"],
-            p_author=self.p_author,
-            visibility=self.cleaned_data["visibility"],
-            dt_published=self.cleaned_data.get("dt_published") or n
-            if self.cleaned_data["m_post_status"].key == MPostStatuses.published
-            else None,
-            dt_updated=n,
-        )
-        soup = BeautifulSoup(self.cleaned_data["e_content"], "html.parser")
-        self.instance = entry_models.TEntry(
-            e_content=self.cleaned_data.get("e_content", ""),
-            p_summary=soup.text[:255].strip(),
-            p_name=self.cleaned_data.get("p_name", ""),
-        )
-
-    @transaction.atomic
-    def save(self, commit=True) -> entry_models.TEntry:
-        if self.t_post:
-            self.t_post.save()
-            self.instance.t_post = self.t_post
-            entry = super().save(commit)
-            self.t_post.files.set(TFile.objects.filter(uuid__in=self.file_attachment_uuids))
-            self.t_post.streams.set(self.cleaned_data["streams"])
-            if self.cleaned_data["t_trip"]:
-                self.t_post.trips.set([self.cleaned_data["t_trip"]])
-            return entry
-        raise Exception("TPost must not be null")
-
 
 class CreateArticleForm(CreateStatusForm):
     m_post_kind = MPostKinds.article
@@ -157,24 +122,6 @@ class CreateReplyForm(CreateStatusForm):
                 continue
             if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
-
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_reply = entry_models.TReply(
-            u_in_reply_to=self.cleaned_data["u_in_reply_to"],
-            title=self.cleaned_data["title"],
-            quote=self.cleaned_data["summary"],
-            author=self.cleaned_data["author"],
-            author_url=self.cleaned_data["author_url"],
-            author_photo=self.cleaned_data["author_photo_url"],
-        )
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        if self.t_reply:
-            self.t_reply.t_entry = t_entry
-            self.t_reply.save()
-        return t_entry
 
 
 class ExtractMetaForm(forms.Form):
@@ -288,8 +235,6 @@ class UpdateCheckinForm(UpdateStatusForm):
 
 
 class UpdateReplyForm(UpdateStatusForm):
-    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?", widget=forms.HiddenInput)
-    title = forms.CharField(label="Title", widget=forms.HiddenInput)
     summary = forms.CharField(
         widget=forms.Textarea,
         label="Summary",
@@ -301,19 +246,7 @@ class UpdateReplyForm(UpdateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_reply: entry_models.TReply = self.instance.t_reply
-        self.fields["summary"].initial = self.t_reply.quote
-        self.fields["title"].initial = self.t_reply.title
-        self.fields["u_in_reply_to"].initial = self.t_reply.u_in_reply_to
-
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_reply.quote = self.cleaned_data["summary"]
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        self.t_reply.save()
-        return t_entry
+        self.fields["summary"].initial = self.instance.t_reply.quote
 
 
 class CreateBookmarkForm(CreateStatusForm):
@@ -345,24 +278,6 @@ class CreateBookmarkForm(CreateStatusForm):
                 continue
             if isinstance(self.fields[key].widget, forms.HiddenInput):
                 self.fields[key].widget = forms.TextInput(attrs={"class": "input-field"})
-
-    def prepare_data(self):
-        super().prepare_data()
-        self.t_bookmark = entry_models.TBookmark(
-            u_bookmark_of=self.cleaned_data["u_bookmark_of"],
-            title=self.cleaned_data["title"],
-            quote=self.cleaned_data["summary"],
-            author=self.cleaned_data["author"],
-            author_url=self.cleaned_data["author_url"],
-            author_photo=self.cleaned_data["author_photo_url"],
-        )
-
-    def save(self, commit=True) -> entry_models.TEntry:
-        t_entry = super().save()
-        if self.t_bookmark:
-            self.t_bookmark.t_entry = t_entry
-            self.t_bookmark.save()
-        return t_entry
 
 
 class UpdateBookmarkForm(UpdateStatusForm):
@@ -438,10 +353,6 @@ class TCheckinModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["url"].widget.attrs = {"class": "input-field"}
-
-    def prepare_data(self, t_entry: entry_models.TEntry):
-        self.instance.t_entry = t_entry
-        self.instance.t_location = t_entry.t_location
 
 
 class TSyndicationModelForm(forms.ModelForm):
@@ -534,3 +445,21 @@ class QuickCreateStatusForm(CreateStatusForm):
         self.fields["m_post_status"].initial = MPostStatuses.published
         self.fields["m_post_status"].widget.attrs = select_attrs
         self.fields["visibility"].widget.attrs = select_attrs
+
+
+class ReplyTitle(forms.Form):
+    u_in_reply_to = forms.URLField(label="What's the URL you're replying to?")
+    title = TCharField(label="Reply title?")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["u_in_reply_to"].widget.attrs = {"class": "input-field"}
+
+
+class BookmarkTitle(forms.Form):
+    u_bookmark_of = forms.URLField(label="What's the URL you're replying to?")
+    title = TCharField(label="Bookmark title?")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["u_bookmark_of"].widget.attrs = {"class": "input-field"}

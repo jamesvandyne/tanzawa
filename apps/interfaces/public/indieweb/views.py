@@ -1,10 +1,14 @@
 import logging
+from typing import Callable, Type
 
+from application import entry as entry_app
 from application.indieweb import micropub as micropub_app
 from application.indieweb import webmentions as webmention_app
 from application.indieweb.location import location_to_pointfield_input
 from bs4 import BeautifulSoup
+from data.entry import models as entry_models
 from data.indieweb.constants import MPostStatuses
+from django import forms
 from django.db import transaction
 from django.utils import timezone
 from domain.indieweb import indieauth
@@ -20,9 +24,7 @@ from interfaces.dashboard.entry.forms import (
     CreateCheckinForm,
     CreateReplyForm,
     CreateStatusForm,
-    TCheckinModelForm,
     TLocationModelForm,
-    TSyndicationModelForm,
 )
 from interfaces.public.files.forms import MediaUploadForm
 from rest_framework import status
@@ -36,6 +38,9 @@ from .serializers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+EntryHandler = Callable[[Type[forms.Form], dict[str, forms.Form], MicropubSerializer], entry_models.TEntry]
 
 
 @api_view(["GET", "POST"])
@@ -128,11 +133,6 @@ def micropub(request):  # noqa: C901 too complex (30)
             "point": location_to_pointfield_input(location),
         }
         named_forms["location"] = TLocationModelForm(data=location_form_data)
-    if serializer.validated_data["properties"].get("checkin"):
-        named_forms["checkin"] = TCheckinModelForm(data=serializer.validated_data["properties"].get("checkin"))
-    if serializer.validated_data["properties"].get("syndication"):
-        for idx, syndication_url in enumerate(serializer.validated_data["properties"]["syndication"]):
-            named_forms[f"syndication_{idx}"] = TSyndicationModelForm(data={"url": syndication_url})
 
     # Save and replace any embedded images
     soup = BeautifulSoup(form_data["e_content"], "html.parser")
@@ -160,27 +160,18 @@ def micropub(request):  # noqa: C901 too complex (30)
         tag = render_attachment(request, attachment)
         form_data["e_content"] += tag
 
-    form_class = CreateStatusForm
-    if form_data["p_name"]:
-        form_class = CreateArticleForm
-    if form_data.get("u_in_reply_to"):
-        form_class = CreateReplyForm
-    if form_data.get("u_bookmark_of"):
-        form_class = CreateBookmarkForm
-    if named_forms.get("checkin"):
-        form_class = CreateCheckinForm
-
+    form_class = _determine_validation_form(
+        p_name=form_data["p_name"],
+        u_in_reply_to=form_data.get("u_in_reply_to"),
+        u_bookmark_of=form_data.get("u_bookmark_of"),
+        checkin=serializer.validated_data["properties"].get("checkin"),
+    )
     form = form_class(data=form_data, p_author=indieauth.queries.get_user_for_token(key=token))
 
     if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
-        form.prepare_data()
 
-        with transaction.atomic():
-            entry = form.save()
-
-            for named_form in named_forms.values():
-                named_form.prepare_data(entry)
-                named_form.save()
+        handler = _determine_handler(form)
+        entry = handler(form, named_forms, serializer)
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
             webmention_app.send_webmention(request, entry.t_post, entry.e_content)
@@ -191,6 +182,176 @@ def micropub(request):  # noqa: C901 too complex (30)
     named_forms["entry"] = form
     response = {key: value.errors.as_json() for key, value in named_forms.items()}
     return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+
+
+def _determine_validation_form(
+    p_name: str,
+    u_in_reply_to: str | None = None,
+    u_bookmark_of: str | None = None,
+    checkin: dict | None = None,
+) -> Type[forms.Form]:
+    """
+    Determine which form should be used to perform validation for this request.
+    """
+    form_class = CreateStatusForm
+    if p_name:
+        form_class = CreateArticleForm
+    if u_in_reply_to:
+        form_class = CreateReplyForm
+    if u_bookmark_of:
+        form_class = CreateBookmarkForm
+    if checkin:
+        form_class = CreateCheckinForm
+    return form_class
+
+
+def _determine_handler(form: Type[forms.Form]) -> EntryHandler:
+    """
+    Determine which application function should be called to process the form data.
+    """
+    usecase_map: dict[Type[forms.Form], EntryHandler] = {
+        CreateStatusForm: _create_status,
+        CreateArticleForm: _create_article,
+        CreateReplyForm: _create_reply,
+        CreateBookmarkForm: _create_bookmark,
+        CreateCheckinForm: _create_checkin,
+    }
+    try:
+        return usecase_map[form.__class__]
+    except KeyError:
+        raise ValueError(f"Handler not defined for {form}")
+
+
+def _create_status(
+    form: CreateStatusForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        published_at=form.cleaned_data["dt_published"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+    )
+
+
+def _create_article(
+    form: CreateArticleForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+    )
+
+
+def _create_reply(
+    form: CreateReplyForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+        reply=entry_app.Reply(
+            u_in_reply_to=form.cleaned_data["u_in_reply_to"],
+            title=form.cleaned_data["title"],
+            quote=form.cleaned_data["summary"],
+            author=form.cleaned_data["author"],
+            author_url=form.cleaned_data["author_url"],
+            author_photo=form.cleaned_data["author_photo_url"],
+        ),
+    )
+
+
+def _create_bookmark(
+    form: CreateBookmarkForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+        bookmark=entry_app.Bookmark(
+            u_bookmark_of=form.cleaned_data["u_bookmark_of"],
+            title=form.cleaned_data["title"],
+            quote=form.cleaned_data["summary"],
+            author=form.cleaned_data["author"],
+            author_url=form.cleaned_data["author_url"],
+            author_photo=form.cleaned_data["author_photo_url"],
+        ),
+    )
+
+
+def _create_checkin(
+    form: CreateBookmarkForm, named_forms: dict[str, forms.Form], serializer: MicropubSerializer
+) -> entry_models.TEntry:
+    return entry_app.create_entry(
+        status=form.cleaned_data["m_post_status"],
+        post_kind=form.cleaned_data["m_post_kind"],
+        author=form.p_author,
+        visibility=form.cleaned_data["visibility"],
+        title=form.cleaned_data["p_name"],
+        content=form.cleaned_data["e_content"],
+        published_at=form.cleaned_data["dt_published"],
+        streams=form.cleaned_data["streams"],
+        trip=form.cleaned_data["t_trip"],
+        location=_get_location(named_forms.get("location")),
+        syndication_urls=_get_syndication_urls(serializer),
+        checkin=_get_checkin(serializer),
+    )
+
+
+def _get_location(location_form: TLocationModelForm | None) -> entry_app.Location | None:
+    # TODO: Migrate location away from using the TLocationModelForm and use the serializer validated data
+    if location_form is None:
+        return None
+    if location_form.cleaned_data["point"]:
+        return entry_app.Location(
+            street_address=location_form.cleaned_data["street_address"],
+            locality=location_form.cleaned_data["locality"],
+            region=location_form.cleaned_data["region"],
+            country_name=location_form.cleaned_data["country_name"],
+            postal_code=location_form.cleaned_data["postal_code"],
+            point=location_form.cleaned_data["point"],
+        )
+    return None
+
+
+def _get_syndication_urls(serializer: MicropubSerializer) -> list[str]:
+    return [url for url in serializer.validated_data["properties"].get("syndication", [])]
+
+
+def _get_checkin(serializer: MicropubSerializer) -> entry_app.Checkin:
+    checkin = serializer.validated_data["properties"].get("checkin", {})
+    return entry_app.Checkin(name=checkin.get("name", ""), url=checkin.get("url", ""))
 
 
 @api_view(["POST", "GET"])

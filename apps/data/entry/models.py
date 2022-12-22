@@ -4,6 +4,7 @@ from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 from core.constants import Visibility
 from core.models import TimestampModel
 from data.indieweb import constants as indieweb_constants
+from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models import Q
@@ -57,6 +58,17 @@ class TEntry(TimestampModel):
     def is_reply(self) -> bool:
         return self.t_post.m_post_kind.key == indieweb_constants.MPostKinds.reply
 
+    def update_content_summary(self, e_content: str, p_summary: str) -> None:
+        self.e_content = e_content
+        self.p_summary = p_summary
+        self.save()
+
+    def update_title_content_summary(self, title: str, e_content: str, p_summary: str) -> None:
+        self.p_name = title
+        self.e_content = e_content
+        self.p_summary = p_summary
+        self.save()
+
 
 class TReply(TimestampModel):
 
@@ -85,6 +97,17 @@ class TReply(TimestampModel):
             description=self.quote,
             author=LinkedPageAuthor(name=self.author, url=self.author_url, photo=self.author_photo),
         )
+
+    def update(
+        self, u_in_reply_to: str, title: str, quote: str, author: str, author_url: str, author_photo: str
+    ) -> None:
+        self.u_in_reply_to = u_in_reply_to
+        self.title = title
+        self.quote = quote
+        self.author = author
+        self.author_url = author_url
+        self.author_photo = author_photo
+        self.save()
 
 
 class TBookmark(TimestampModel):
@@ -115,6 +138,18 @@ class TBookmark(TimestampModel):
             author=LinkedPageAuthor(name=self.author, url=self.author_url, photo=self.author_photo),
         )
 
+    def update(
+        self, u_bookmark_of: str, title: str, quote: str, author: str, author_url: str, author_photo: str
+    ) -> None:
+
+        self.u_bookmark_of = u_bookmark_of
+        self.title = title
+        self.quote = quote
+        self.author = author
+        self.author_url = author_url
+        self.author_photo = author_photo
+        self.save()
+
 
 class TLocation(TimestampModel):
     t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_location")
@@ -136,6 +171,17 @@ class TLocation(TimestampModel):
             ", ".join(filter(None, [self.locality, self.region, self.country_name])) or f"{self.point.y},{self.point.x}"
         )
 
+    def change_location(
+        self, street_address: str, locality: str, region: str, country_name: str, postal_code: str, point: geos.Point
+    ) -> None:
+        self.street_address = street_address
+        self.locality = locality
+        self.region = region
+        self.country_name = country_name
+        self.postal_code = postal_code
+        self.point = point
+        self.save()
+
 
 class TCheckin(TimestampModel):
     t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_checkin")
@@ -147,6 +193,11 @@ class TCheckin(TimestampModel):
         db_table = "t_checkin"
         verbose_name = "Checkin"
         verbose_name_plural = "Checkins"
+
+    def update_name_url(self, name: str, url: str) -> None:
+        self.name = name
+        self.url = url
+        self.save()
 
 
 class TSyndication(TimestampModel):

@@ -1,0 +1,19 @@
+<div hx-target="this" hx-swap="outerHTML">
+    <form class="flex" hx-post="{% url 'change_reply_title' t_entry_id %}">
+        <div class="flex flex-col flex-grow">
+            {{ form.errors }}
+            <div>
+                {{ form.title.label }}
+                {{ form.title }}
+            </div>
+            <div class="mt-2">
+                {{ form.u_in_reply_to.label }}
+                <div>{{ form.u_in_reply_to }}</div>
+            </div>
+            <div class="mt-2">
+                <button class="outline-button text-xs mr-2">save</button>
+                <button class="help-text" hx-get="{% url 'reply_title' t_entry_id%}" >cancel</button>
+            </div>
+        </div>
+    </form>
+</div>

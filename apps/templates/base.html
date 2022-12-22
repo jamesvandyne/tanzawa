@@ -1,4 +1,4 @@
-{% load static plugins %}
+{% load static plugins django_htmx %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -25,7 +25,7 @@
     <script src="{% static 'trix/attachments.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
 </head>
-<body class="bg-bianca-500">
+<body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="">
         <header class="max-w mx-auto p-2">
              <nav  data-controller="reveal">
@@ -93,5 +93,7 @@
             </div>
         </div>
     </div>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {% django_htmx_script %}
 </body>
 </html>
