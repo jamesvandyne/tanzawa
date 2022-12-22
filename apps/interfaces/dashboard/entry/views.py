@@ -1,11 +1,5 @@
 from typing import Any, Dict, Optional
 
-from application import entry as entry_app
-from application.indieweb import extract as indieweb_extract
-from application.indieweb import webmentions
-from data.entry import models
-from data.indieweb.constants import MPostKinds, MPostStatuses
-from data.post import models as post_models
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
@@ -21,8 +15,15 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
-from interfaces.dashboard.entry import forms
 from turbo_response import TurboFrame, redirect_303
+
+from application import entry as entry_app
+from application.indieweb import extract as indieweb_extract
+from application.indieweb import webmentions
+from data.entry import models
+from data.indieweb.constants import MPostKinds, MPostStatuses
+from data.post import models as post_models
+from interfaces.dashboard.entry import forms
 
 
 @method_decorator(login_required, name="dispatch")

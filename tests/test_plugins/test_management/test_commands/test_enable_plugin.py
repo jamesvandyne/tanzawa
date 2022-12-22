@@ -1,8 +1,9 @@
 from unittest import mock
 
 import pytest
-from data.plugins import models as plugin_models
 from django.core import management
+
+from data.plugins import models as plugin_models
 
 
 @pytest.mark.django_db

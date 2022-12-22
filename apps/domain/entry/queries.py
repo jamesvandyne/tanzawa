@@ -1,4 +1,5 @@
 import bs4
+
 from domain.files import utils as file_utils
 from domain.trix import queries as trix_queries
 

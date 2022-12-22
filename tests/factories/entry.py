@@ -1,8 +1,9 @@
 from decimal import Decimal
 
 import factory
-from data.entry import models
 from django.contrib.gis import geos
+
+from data.entry import models
 
 
 class StatusEntry(factory.django.DjangoModelFactory):

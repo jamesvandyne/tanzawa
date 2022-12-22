@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, Optional
 
-from core.models import TimestampModel
 from django.db import models, transaction
 from picklefield import PickledObjectField
 from webmention.models import WebMentionResponse
+
+from core.models import TimestampModel
 
 if TYPE_CHECKING:
     from data.post import models as post_models

@@ -1,8 +1,9 @@
-from data.plugins import activation, pool
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import redirect, render
 from django.views.decorators import http
+
+from data.plugins import activation, pool
 
 
 @auth_decorators.login_required

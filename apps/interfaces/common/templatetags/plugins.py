@@ -1,5 +1,6 @@
-from data.plugins import pool
 from django import template
+
+from data.plugins import pool
 
 register = template.Library()
 

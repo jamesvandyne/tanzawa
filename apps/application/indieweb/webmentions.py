@@ -5,19 +5,20 @@ from typing import List, Optional, Set
 import mf2py
 import ronkyuu
 from bs4 import BeautifulSoup
+from django.conf import settings
+from django.core import exceptions
+from django.utils.timezone import now
+from webmention import models as webmention_models
+
 from data.indieweb import models as indieweb_models
 from data.indieweb.constants import MPostKinds
 from data.post import models as post_models
 from data.post.models import TPost
 from data.wordpress import models as wp_models
-from django.conf import settings
-from django.core import exceptions
-from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
 from domain.indieweb import utils
 from domain.indieweb import webmention as webmention_domain
 from domain.post import queries as post_queries
-from webmention import models as webmention_models
 
 logger = logging.getLogger(__name__)
 

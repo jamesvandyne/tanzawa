@@ -1,13 +1,14 @@
 from typing import Optional
 
-from application.indieweb.extract import LinkedPage, LinkedPageAuthor
-from core.constants import Visibility
-from core.models import TimestampModel
-from data.indieweb import constants as indieweb_constants
 from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.db.models import Q
+
+from application.indieweb.extract import LinkedPage, LinkedPageAuthor
+from core.constants import Visibility
+from core.models import TimestampModel
+from data.indieweb import constants as indieweb_constants
 
 
 class TEntryManager(models.Manager):

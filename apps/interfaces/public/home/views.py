@@ -1,12 +1,13 @@
 from typing import Optional
 
+from django.db.models import Count, Q
+from django.views.generic import ListView, TemplateView
+
 from core.constants import Visibility
 from data.entry.models import TEntry
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import MPostKind
 from data.streams.models import MStream
-from django.db.models import Count, Q
-from django.views.generic import ListView, TemplateView
 from domain.posts import queries as post_queries
 
 

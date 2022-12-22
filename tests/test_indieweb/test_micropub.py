@@ -2,6 +2,7 @@ from typing import Any, Dict
 from unittest.mock import Mock
 
 import pytest
+
 from core.constants import Visibility
 from data.entry.models import TBookmark, TCheckin, TEntry, TLocation, TReply
 from data.post.models import TPost

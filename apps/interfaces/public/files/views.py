@@ -1,5 +1,3 @@
-from data.files.constants import PICTURE_FORMATS
-from data.files.models import TFile, TFormattedImage
 from django.db.models import Q
 from django.http import (
     FileResponse,
@@ -10,6 +8,9 @@ from django.http import (
 )
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
+
+from data.files.constants import PICTURE_FORMATS
+from data.files.models import TFile, TFormattedImage
 from domain.images.images import convert_image_format
 
 from .forms import MediaUploadForm

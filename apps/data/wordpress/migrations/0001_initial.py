@@ -2,9 +2,10 @@
 
 import uuid
 
-import data.wordpress.upload
 import django.db.models.deletion
 from django.db import migrations, models
+
+import data.wordpress.upload
 
 
 class Migration(migrations.Migration):

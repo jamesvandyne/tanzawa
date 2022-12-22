@@ -1,5 +1,6 @@
-from data.indieweb.models import MMicropubScope
 from django import forms
+
+from data.indieweb.models import MMicropubScope
 
 
 class MMicropubCheckboxWidget(forms.CheckboxSelectMultiple):

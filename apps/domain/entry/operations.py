@@ -1,13 +1,14 @@
 import datetime
 
+from django.contrib.auth import models as auth_models
+from django.db import transaction
+
 from core import constants
 from data.entry import models as entry_models
 from data.files import models as file_models
 from data.post import models as post_models
 from data.streams import models as stream_models
 from data.trips import models as trip_models
-from django.contrib.auth import models as auth_models
-from django.db import transaction
 
 
 @transaction.atomic

@@ -1,8 +1,9 @@
 import uuid
 
+from django.db import models
+
 from core.models import TimestampModel
 from data.wordpress.upload import wordpress_upload_to
-from django.db import models
 
 
 class TWordpress(TimestampModel):

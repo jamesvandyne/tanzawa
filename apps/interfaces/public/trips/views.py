@@ -1,10 +1,11 @@
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import ListView
+
 from core.constants import Visibility
 from data.indieweb.constants import MPostStatuses
 from data.post.models import TPost
 from data.streams.models import MStream
 from data.trips.models import TTrip
-from django.shortcuts import get_object_or_404, render
-from django.views.generic import ListView
 from domain.trips import queries
 
 

@@ -1,5 +1,6 @@
-from data.plugins import plugin, pool
 from django import template
+
+from data.plugins import plugin, pool
 
 __identifier__ = "blog.tanzawa.plugins.health"
 

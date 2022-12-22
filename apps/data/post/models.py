@@ -2,15 +2,16 @@ import datetime
 import uuid
 from typing import Optional
 
-from core.constants import VISIBILITY_CHOICES, Visibility
-from core.models import TimestampModel
-from data.indieweb.constants import MPostKinds, MPostStatuses
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+
+from core.constants import VISIBILITY_CHOICES, Visibility
+from core.models import TimestampModel
+from data.indieweb.constants import MPostKinds, MPostStatuses
 
 
 class MPostStatus(TimestampModel):

@@ -1,10 +1,11 @@
 from dataclasses import asdict, dataclass, field
 from typing import Optional
 
-from data.entry import models
 from django.conf import settings
-from domain.files import images
 from meta import views as meta_views
+
+from data.entry import models
+from domain.files import images
 
 
 @dataclass

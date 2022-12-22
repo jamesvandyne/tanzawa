@@ -3,10 +3,11 @@ import mimetypes
 from pathlib import Path
 from typing import Optional, Tuple, Union
 
-from data.files.models import TFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.timezone import now
 from PIL import Image, ImageOps
+
+from data.files.models import TFile
 
 
 def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:

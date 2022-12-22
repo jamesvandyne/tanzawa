@@ -1,4 +1,5 @@
 from django.urls import path
+
 from interfaces.public.feeds import views
 
 urlpatterns = [

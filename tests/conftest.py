@@ -1,6 +1,7 @@
 import pytest
-from data.indieweb.constants import MPostStatuses
 from model_bakery import baker
+
+from data.indieweb.constants import MPostStatuses
 
 
 @pytest.fixture

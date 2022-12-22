@@ -2,6 +2,9 @@ from typing import List
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
+from django import forms
+from django.db import transaction
+
 from data.post.models import TPost
 from data.streams.models import MStream
 from data.wordpress.models import (
@@ -12,8 +15,6 @@ from data.wordpress.models import (
     TWordpressAttachment,
     TWordpressPost,
 )
-from django import forms
-from django.db import transaction
 from domain.wordpress.extract import (
     extract_categories,
     extract_post_format,

@@ -1,6 +1,7 @@
-from data.settings.models import MSiteSettings
 from django import forms
 from django.contrib import admin
+
+from data.settings.models import MSiteSettings
 from domain.settings import queries
 
 

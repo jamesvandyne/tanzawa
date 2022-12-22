@@ -3,9 +3,10 @@ import datetime
 import os
 from typing import Optional
 
-from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from core.models import TimestampModel
 
 from ._m_micropub_scope import MMicropubScope
 

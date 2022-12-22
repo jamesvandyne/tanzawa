@@ -1,7 +1,6 @@
 import json
 
 from bs4 import BeautifulSoup
-from data.files.models import TFile
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.urls import reverse_lazy
@@ -9,6 +8,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView, DetailView, ListView
 from PIL import Image
 from turbo_response.mixins import HttpResponseSeeOther, TurboFrameTemplateResponseMixin
+
+from data.files.models import TFile
 
 
 @method_decorator(login_required, name="dispatch")

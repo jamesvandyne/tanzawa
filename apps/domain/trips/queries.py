@@ -1,10 +1,11 @@
 from typing import Dict, Iterable, List, Optional
 
+from django.contrib.gis.geos import Point
+from django.db.models import F
+
 from core import constants
 from data.entry import models as entry_models
 from data.trips import models as trip_models
-from django.contrib.gis.geos import Point
-from django.db.models import F
 
 
 def get_public_trips_for_user(user_id: Optional[int]):

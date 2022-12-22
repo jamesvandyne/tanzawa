@@ -1,6 +1,11 @@
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
+from django import forms
+from django.contrib.gis.forms import PointField
+from django.db import transaction
+from django.utils.timezone import now
+
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.forms import LeafletWidget, TCharField
 from data.entry import models as entry_models
@@ -9,10 +14,6 @@ from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from data.streams import models as stream_models
 from data.trips import models as trip_models
-from django import forms
-from django.contrib.gis.forms import PointField
-from django.db import transaction
-from django.utils.timezone import now
 from domain.files.utils import extract_uuid_from_url
 from domain.settings import queries as settings_queries
 from domain.trix import queries as trix_queries

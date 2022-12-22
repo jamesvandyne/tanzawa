@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from data.wordpress.models import (
     TCategory,
     TPostFormat,
@@ -6,7 +8,6 @@ from data.wordpress.models import (
     TWordpressAttachment,
     TWordpressPost,
 )
-from django.contrib import admin
 
 admin.site.register(TWordpress)
 admin.site.register(TCategory)

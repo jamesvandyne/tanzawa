@@ -1,8 +1,9 @@
 from typing import List, Optional
 
+from django.conf import settings
+
 from data.settings import models as settings_models
 from data.trips import models as trip_models
-from django.conf import settings
 
 
 def get_theme_choices() -> List[List[str]]:

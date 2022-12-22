@@ -9,10 +9,7 @@ from typing import List, Optional, Union
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from data.files.models import TFile
 from django.template.loader import render_to_string
-from domain.images.images import bytes_as_upload_image
-from interfaces.public.files.forms import MediaUploadForm
 from mf2util import (
     _find_all_entries,
     classify_comment,
@@ -21,6 +18,10 @@ from mf2util import (
     parse_author,
 )
 from PIL import Image
+
+from data.files.models import TFile
+from domain.images.images import bytes_as_upload_image
+from interfaces.public.files.forms import MediaUploadForm
 
 IMG_DATA_PATTERN = re.compile(r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$")
 

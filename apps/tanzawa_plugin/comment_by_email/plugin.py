@@ -1,7 +1,8 @@
 from typing import TYPE_CHECKING, Optional
 
-from data.plugins import plugin, pool
 from django.template import loader
+
+from data.plugins import plugin, pool
 
 if TYPE_CHECKING:
     from data.post import models as post_models

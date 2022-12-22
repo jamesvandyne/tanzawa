@@ -3,12 +3,13 @@ from typing import Dict, List, Optional, Tuple, Union
 
 import phpserialize
 import pytz
-from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 from bs4 import BeautifulSoup
-from data.entry.models import TEntry
-from data.post.models import MPostStatuses
 from django.contrib.gis.geos import Point
 from django.utils.timezone import make_aware
+
+from application.indieweb.extract import LinkedPage, LinkedPageAuthor
+from data.entry.models import TEntry
+from data.post.models import MPostStatuses
 
 
 def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:

@@ -1,7 +1,8 @@
 import pytest
+from model_bakery import baker
+
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds
-from model_bakery import baker
 
 
 @pytest.mark.django_db

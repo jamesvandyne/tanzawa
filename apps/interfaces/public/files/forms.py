@@ -2,10 +2,11 @@ import uuid
 from typing import Optional
 
 import plum
-from data.files.models import TFile
 from django import forms
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+from data.files.models import TFile
 from domain.images.exif import extract_exif, get_location, scrub_exif
 from domain.images.images import rotate_image
 

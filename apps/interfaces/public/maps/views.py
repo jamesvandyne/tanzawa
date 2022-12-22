@@ -1,7 +1,8 @@
+from django.shortcuts import render
+
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import TPost
-from django.shortcuts import render
 
 
 def cluster_map(request):
