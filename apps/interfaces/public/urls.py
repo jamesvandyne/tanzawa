@@ -1,6 +1,11 @@
 from django.urls import include, path
 
+from data.plugins import pool
+
 app_name = "public"
+
+plugin_urls = [path("", include(plugin_urls)) for plugin_urls in pool.plugin_pool.urls()]
+
 
 urlpatterns = [
     path("", include("interfaces.public.feeds.urls")),
@@ -40,5 +45,6 @@ urlpatterns = [
         "",
         include("interfaces.public.indieweb.urls"),
     ),
+    *plugin_urls,
     path("", include("interfaces.public.streams.urls")),
 ]

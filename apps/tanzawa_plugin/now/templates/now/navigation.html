@@ -1,10 +1,10 @@
 {% if render_location == "NAV.TOP" %}
-<a href="{% url "plugin_now:now" %}" class="ml-2 leading-8 hidden md:inline-block{% if nav == "now" %} border-b-4 border-secondary{% endif %}">
+<a href="{% url "public:now" %}" class="ml-2 leading-8 hidden md:inline-block{% if nav == "now" %} border-b-4 border-secondary{% endif %}">
     <span class="mr-1">👉</span>Now
 </a>
 {% elif render_location == "NAV.TOP.MOBILE" %}
     <li class="{% if 'nav' == now %}border-l-4 border-secondary{% endif %} p-1 mb-2">
-        <a href="{% url "plugin_now:now" %}" class="w-full inline-block">
+        <a href="{% url "public:now" %}" class="w-full inline-block">
             <span class="mr-1">👉</span>Now
         </a>
     </li>
