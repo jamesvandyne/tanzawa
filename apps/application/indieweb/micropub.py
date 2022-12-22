@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 
 class UnknownContentType(Exception):
@@ -11,7 +11,7 @@ class ContentType:
     MULTIPART_FORM = "multipart/form-data"
 
 
-def normalize_request(*, content_type: str, post_data, request_data) -> Dict[str, Any]:
+def normalize_request(*, content_type: str, post_data, request_data) -> dict[str, Any]:
     """
     Normalize form posts and json requests into a microformat2 shaped object.
     """
@@ -43,7 +43,7 @@ def _form_to_mf2(post):
     return __normalize_properties_to_underscore(mf)
 
 
-def __normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]:
+def __normalize_properties_to_underscore(data: dict[str, Any]) -> dict[str, Any]:
     """Converts microformat2 style property keys from hyphen to underscores."""
     properties = {}
     for key, value in data.get("properties", {}).items():
@@ -51,7 +51,7 @@ def __normalize_properties_to_underscore(data: Dict[str, Any]) -> Dict[str, Any]
     return {"type": data["type"], "properties": properties}
 
 
-def _normalize_properties(data: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_properties(data: dict[str, Any]) -> dict[str, Any]:
     h_entry = __normalize_properties_to_underscore(data)
     return h_entry
 

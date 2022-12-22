@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 import extruct
 import mf2util
@@ -9,9 +8,9 @@ from bs4 import BeautifulSoup
 
 @dataclass
 class LinkedPageAuthor:
-    name: Optional[str]
-    url: Optional[str]
-    photo: Optional[str]  # url
+    name: str | None
+    url: str | None
+    photo: str | None  # url
 
 
 @dataclass
@@ -19,7 +18,7 @@ class LinkedPage:
     url: str
     title: str
     description: str
-    author: Optional[LinkedPageAuthor]
+    author: LinkedPageAuthor | None
 
 
 def extract_title(soup: BeautifulSoup) -> str:
@@ -35,7 +34,7 @@ def extract_description(soup: BeautifulSoup) -> str:
     return desc["content"] if desc else ""
 
 
-def extract_reply_details_from_url(url: str) -> Optional[LinkedPage]:
+def extract_reply_details_from_url(url: str) -> LinkedPage | None:
 
     # Specify a custom User Agent as some sites prevent scraping by blocking the default requests UA.
     response = requests.get(url, headers={"User-Agent": "Tanzawa"})

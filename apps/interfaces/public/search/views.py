@@ -1,5 +1,3 @@
-from typing import Union
-
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.db.models import Count, Q
@@ -17,7 +15,7 @@ class SearchView(ListView):
     paginate_by = 10
     form_class = SearchForm
 
-    def convert_km_to_degrees(self, km: Union[float, int]):
+    def convert_km_to_degrees(self, km: float | int):
         """
         Convert kms to degrees.
         """

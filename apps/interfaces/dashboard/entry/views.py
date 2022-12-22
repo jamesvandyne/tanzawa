@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -28,7 +28,7 @@ from interfaces.dashboard.entry import forms
 
 @method_decorator(login_required, name="dispatch")
 class CreateEntryView(CreateView):
-    autofocus: Optional[str] = None
+    autofocus: str | None = None
     redirect_url = "status_edit"
 
     def setup(self, *args, **kwargs) -> None:
@@ -112,7 +112,7 @@ class CreateEntryView(CreateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
@@ -196,7 +196,7 @@ class UpdateEntryView(UpdateView):
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)
@@ -225,8 +225,8 @@ class UpdateEntryView(UpdateView):
 class ExtractLinkedPageMetaView(FormView):
     form_class = forms.ExtractMetaForm
     success_form = forms.CreateReplyForm
-    invalidate_template: Optional[str] = None
-    validate_template: Optional[str] = None
+    invalidate_template: str | None = None
+    validate_template: str | None = None
     turbo_frame = ""
     url_key = ""
 
@@ -641,7 +641,7 @@ class TEntryListView(ListView):
         )
         return context
 
-    def render_to_response(self, context: Dict[str, Any], **response_kwargs):
+    def render_to_response(self, context: dict[str, Any], **response_kwargs):
         if self.request.turbo.frame:
             return (
                 TurboFrame(self.request.turbo.frame)

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, Union
 
 import phpserialize
 import pytz
@@ -12,11 +11,11 @@ from data.entry.models import TEntry
 from data.post.models import MPostStatuses
 
 
-def extract_internal_links(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:
+def extract_internal_links(soup: BeautifulSoup, domain) -> list[BeautifulSoup]:
     return [link for link in soup.find_all("a") if domain in link["href"]]
 
 
-def extract_images(soup: BeautifulSoup, domain) -> List[BeautifulSoup]:
+def extract_images(soup: BeautifulSoup, domain) -> list[BeautifulSoup]:
     return [img for img in soup.find_all("img") if domain in img["src"]]
 
 
@@ -25,7 +24,7 @@ def extract_post_status(soup: BeautifulSoup) -> str:
     return status_map.get(soup.find("status").text, MPostStatuses.draft)
 
 
-def extract_published_date(soup: BeautifulSoup) -> Optional[datetime]:
+def extract_published_date(soup: BeautifulSoup) -> datetime | None:
     try:
         pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
         return make_aware(pub_date, pytz.utc)
@@ -43,41 +42,41 @@ def extract_entry(soup: BeautifulSoup) -> TEntry:
     )
 
 
-def extract_categories(soup: BeautifulSoup) -> List[Tuple[str, str]]:
+def extract_categories(soup: BeautifulSoup) -> list[tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
     return [(cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "category"}))]
 
 
-def extract_post_kind(soup: BeautifulSoup) -> List[Tuple[str, str]]:
+def extract_post_kind(soup: BeautifulSoup) -> list[tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
     return [(cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "kind"}))]
 
 
-def extract_post_format(soup: BeautifulSoup) -> List[Tuple[str, str]]:
+def extract_post_format(soup: BeautifulSoup) -> list[tuple[str, str]]:
     # Returns a tuple ("name", "nice-name")
     return [
         (cat.text, cat.attrs["nicename"]) for cat in set(soup.find_all("category", attrs={"domain": "post_format"}))
     ]
 
 
-def _extract_meta_list(soup: BeautifulSoup, key: str) -> List[str]:
+def _extract_meta_list(soup: BeautifulSoup, key: str) -> list[str]:
     values = []
     for item in soup.find("meta_key", text=key) or []:
         value = item.find_next("meta_value")
-        value_dict: Dict[int, bytes] = phpserialize.loads(value.text.encode("utf8"))
+        value_dict: dict[int, bytes] = phpserialize.loads(value.text.encode("utf8"))
         values.extend([url.decode("utf8") for url in value_dict.values()])
     return values
 
 
-def extract_photo(soup: BeautifulSoup) -> List[str]:
+def extract_photo(soup: BeautifulSoup) -> list[str]:
     return _extract_meta_list(soup, "mf2_photo")
 
 
-def extract_syndication(soup: BeautifulSoup) -> List[str]:
+def extract_syndication(soup: BeautifulSoup) -> list[str]:
     return _extract_meta_list(soup, "mf2_syndication")
 
 
-def _get_first_value_for_key(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> Union[bytes, float]:
+def _get_first_value_for_key(value_dict: dict[bytes, dict[int, bytes]], key: bytes) -> bytes | float:
     """
     php arrays get decoded as python dictionaries where the array's index becomes the key in the python dict
     e.g.
@@ -96,14 +95,14 @@ def _get_first_value_for_key(value_dict: Dict[bytes, Dict[int, bytes]], key: byt
     return b""
 
 
-def get_string_from_dict(value_dict: Dict[bytes, Dict[int, bytes]], key: bytes) -> str:
+def get_string_from_dict(value_dict: dict[bytes, dict[int, bytes]], key: bytes) -> str:
     value = _get_first_value_for_key(value_dict=value_dict, key=key)
     if isinstance(value, bytes):
         return value.decode("utf8")
     return str(value)
 
 
-def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
+def extract_location(soup: BeautifulSoup) -> dict[str, str | Point]:
     location_key = soup.find("meta_key", text="mf2_location")
     if location_key:
         """
@@ -137,7 +136,7 @@ def extract_location(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     return {}
 
 
-def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
+def extract_checkin(soup: BeautifulSoup) -> dict[str, str | Point]:
     location_key = soup.find("meta_key", text="mf2_checkin")
     if location_key:
         value = location_key.find_next("meta_value")
@@ -150,7 +149,7 @@ def extract_checkin(soup: BeautifulSoup) -> Dict[str, Union[str, Point]]:
     return {}
 
 
-def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optional[LinkedPageAuthor]:
+def _extract_author(author: dict[bytes, dict[bytes, dict[int, bytes]]]) -> LinkedPageAuthor | None:
     properties = author.get(b"properties")
     if properties:
         return LinkedPageAuthor(
@@ -161,7 +160,7 @@ def _extract_author(author: Dict[bytes, Dict[bytes, Dict[int, bytes]]]) -> Optio
     return None
 
 
-def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
+def _extract_cite(soup: BeautifulSoup, key: str) -> LinkedPage | None:
     cite = None
     cites = soup.find_all("meta_key", text=key)
     for c in cites:
@@ -181,9 +180,9 @@ def _extract_cite(soup: BeautifulSoup, key: str) -> Optional[LinkedPage]:
     return None
 
 
-def extract_in_reply_to(soup: BeautifulSoup) -> Optional[LinkedPage]:
+def extract_in_reply_to(soup: BeautifulSoup) -> LinkedPage | None:
     return _extract_cite(soup, "mf2_in-reply-to")
 
 
-def extract_bookmark(soup: BeautifulSoup) -> Optional[LinkedPage]:
+def extract_bookmark(soup: BeautifulSoup) -> LinkedPage | None:
     return _extract_cite(soup, "mf2_bookmark-of")

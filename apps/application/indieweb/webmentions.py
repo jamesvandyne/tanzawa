@@ -1,6 +1,5 @@
 import logging
 import urllib
-from typing import List, Optional, Set
 
 import mf2py
 import ronkyuu
@@ -44,7 +43,7 @@ def create_moderation_record_for_webmention(webmention: webmention_models.WebMen
         )
 
 
-def _get_post_by_uuid(url: str) -> Optional[TPost]:
+def _get_post_by_uuid(url: str) -> TPost | None:
     """
     Return a post by extracting a uuid from its url.
     """
@@ -55,7 +54,7 @@ def _get_post_by_uuid(url: str) -> Optional[TPost]:
         return None
 
 
-def _get_post_by_wordpress_path(url: str) -> Optional[TPost]:
+def _get_post_by_wordpress_path(url: str) -> TPost | None:
     """
     Return post by cross referencing urls from a wordpress import.
     """
@@ -69,7 +68,7 @@ def _get_post_by_wordpress_path(url: str) -> Optional[TPost]:
         return wordpress_post.t_post
 
 
-def _determine_post_for_url(url: str) -> Optional[TPost]:
+def _determine_post_for_url(url: str) -> TPost | None:
     """
     Determine a post for a given url.
     """
@@ -79,12 +78,12 @@ def _determine_post_for_url(url: str) -> Optional[TPost]:
     return _get_post_by_wordpress_path(url)
 
 
-def send_webmention(request, t_post: TPost, e_content: str) -> List[indieweb_models.TWebmentionSend]:
+def send_webmention(request, t_post: TPost, e_content: str) -> list[indieweb_models.TWebmentionSend]:
     source_url = request.build_absolute_uri(t_post.get_absolute_url())
     mentions = ronkyuu.findMentions(source_url, exclude_domains=settings.ALLOWED_HOSTS, content=e_content)
 
-    t_webmention_sends: List[indieweb_models.TWebmentionSend] = []
-    refs: Set[str] = mentions["refs"]
+    t_webmention_sends: list[indieweb_models.TWebmentionSend] = []
+    refs: set[str] = mentions["refs"]
     if t_post.m_post_kind.key == MPostKinds.reply:
         refs.add(t_post.ref_t_entry.t_reply.u_in_reply_to)
 
@@ -129,6 +128,6 @@ def _extract_microformat_data(*, webmention: webmention_models.WebMentionRespons
     return mf_data
 
 
-def _find_a_tags(e_content: str) -> List[str]:
+def _find_a_tags(e_content: str) -> list[str]:
     soup = BeautifulSoup(e_content, "html.parser")
     return [a["href"] for a in soup.select("a")]

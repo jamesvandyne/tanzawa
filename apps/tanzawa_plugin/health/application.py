@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import Optional
 
 from django.db import transaction
 from django.utils import timezone
@@ -14,7 +13,7 @@ def save_daily_health(
     weight: Decimal,
     unit: constants.WeightUnitChoices,
     mood: constants.MoodChoices,
-    measured_at: Optional[datetime.datetime] = None
+    measured_at: datetime.datetime | None = None
 ) -> None:
     """
     Record daily health records.

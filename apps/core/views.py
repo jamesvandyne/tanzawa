@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -15,7 +13,7 @@ from data.wordpress.models import TCategory, TWordpressPost
 
 def handle404(request, exception):
     # Redirect from our Wordpress post url to new permanent uuid url
-    wp_post: Optional[TWordpressPost] = TWordpressPost.objects.filter(
+    wp_post: TWordpressPost | None = TWordpressPost.objects.filter(
         path__endswith=request.path, t_post__isnull=False
     ).first()
     if wp_post:

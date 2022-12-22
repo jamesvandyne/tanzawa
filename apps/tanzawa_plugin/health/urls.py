@@ -1,5 +1,5 @@
-from typing import Any, List
+from typing import Any
 
 app_name = "plugin_health"
 
-urlpatterns: List[Any] = []
+urlpatterns: list[Any] = []

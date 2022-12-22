@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.db import models, transaction
 from picklefield import PickledObjectField
@@ -34,7 +34,7 @@ class TWebmention(TimestampModel):
         t_webmention_response: WebMentionResponse,
         t_post: "post_models.TPost",
         microformat_data,
-        approval_status: Optional[bool] = None,
+        approval_status: bool | None = None,
     ) -> "TWebmention":
         return cls.objects.create(
             t_webmention_response=t_webmention_response,

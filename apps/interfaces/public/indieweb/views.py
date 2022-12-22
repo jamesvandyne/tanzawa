@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Type
+from collections.abc import Callable
 
 from bs4 import BeautifulSoup
 from django import forms
@@ -41,7 +41,7 @@ from .serializers import (
 logger = logging.getLogger(__name__)
 
 
-EntryHandler = Callable[[Type[forms.Form], dict[str, forms.Form], MicropubSerializer], entry_models.TEntry]
+EntryHandler = Callable[[type[forms.Form], dict[str, forms.Form], MicropubSerializer], entry_models.TEntry]
 
 
 @api_view(["GET", "POST"])
@@ -190,7 +190,7 @@ def _determine_validation_form(
     u_in_reply_to: str | None = None,
     u_bookmark_of: str | None = None,
     checkin: dict | None = None,
-) -> Type[forms.Form]:
+) -> type[forms.Form]:
     """
     Determine which form should be used to perform validation for this request.
     """
@@ -206,11 +206,11 @@ def _determine_validation_form(
     return form_class
 
 
-def _determine_handler(form: Type[forms.Form]) -> EntryHandler:
+def _determine_handler(form: type[forms.Form]) -> EntryHandler:
     """
     Determine which application function should be called to process the form data.
     """
-    usecase_map: dict[Type[forms.Form], EntryHandler] = {
+    usecase_map: dict[type[forms.Form], EntryHandler] = {
         CreateStatusForm: _create_status,
         CreateArticleForm: _create_article,
         CreateReplyForm: _create_reply,

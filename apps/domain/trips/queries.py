@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List, Optional
+from collections.abc import Iterable
 
 from django.contrib.gis.geos import Point
 from django.db.models import F
@@ -8,7 +8,7 @@ from data.entry import models as entry_models
 from data.trips import models as trip_models
 
 
-def get_public_trips_for_user(user_id: Optional[int]):
+def get_public_trips_for_user(user_id: int | None):
     """
     Get all publicly visible trips for a user.
     """
@@ -20,7 +20,7 @@ def get_public_trips_for_user(user_id: Optional[int]):
     )
 
 
-def get_points_for_trips(trips: Iterable[trip_models.TTrip]) -> Dict[int, List[Point]]:
+def get_points_for_trips(trips: Iterable[trip_models.TTrip]) -> dict[int, list[Point]]:
     """
     Get all publicly visible Points for the passed in trips.
 
@@ -34,7 +34,7 @@ def get_points_for_trips(trips: Iterable[trip_models.TTrip]) -> Dict[int, List[P
         .annotate(trip_id=F("t_entry__t_post__trips__pk"))
         .values_list("trip_id", "point")
     )
-    t_location_points: Dict[int, List[Point]] = {}
+    t_location_points: dict[int, list[Point]] = {}
     # Group points by trip
     for trip_id, point in locations:
         points = t_location_points.get(trip_id, [])

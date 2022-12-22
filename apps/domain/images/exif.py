@@ -1,13 +1,13 @@
 from io import BytesIO
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from django.contrib.gis.geos import Point
 from exif import Image
 
 
-def extract_exif(image) -> Dict[str, Any]:
+def extract_exif(image) -> dict[str, Any]:
     img = Image(image)
-    exif: Dict[str, Any] = {}
+    exif: dict[str, Any] = {}
     if not img.has_exif:
         return exif
 
@@ -21,7 +21,7 @@ def extract_exif(image) -> Dict[str, Any]:
     return exif
 
 
-def scrub_exif(image: BytesIO) -> Optional[BytesIO]:
+def scrub_exif(image: BytesIO) -> BytesIO | None:
     img = Image(image)
     if not img.has_exif:
         return None
@@ -38,7 +38,7 @@ def dms_to_dd(degree, minute, second) -> float:
     return sign * (int(degree) + float(minute) / 60 + float(second) / 3600)
 
 
-def get_location(exif_dict: Dict[str, Tuple[float, float, float]]) -> Optional[Point]:
+def get_location(exif_dict: dict[str, tuple[float, float, float]]) -> Point | None:
     """Convert the gps degree/minute/second to a Point"""
     gps_latitude = exif_dict.get("gps_latitude")
     gps_longitude = exif_dict.get("gps_longitude")

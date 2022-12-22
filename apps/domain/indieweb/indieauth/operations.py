@@ -1,4 +1,4 @@
-from typing import Iterable
+from collections.abc import Iterable
 
 from django.db import transaction
 from rest_framework import authentication

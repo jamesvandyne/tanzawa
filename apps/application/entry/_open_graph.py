@@ -1,5 +1,4 @@
 from dataclasses import asdict, dataclass, field
-from typing import Optional
 
 from django.conf import settings
 from meta import views as meta_views
@@ -12,8 +11,8 @@ from domain.files import images
 class OpenGraphImage:
     url: str
     type: str
-    width: Optional[int] = field(default=None)
-    height: Optional[int] = field(default=None)
+    width: int | None = field(default=None)
+    height: int | None = field(default=None)
     alt: str = field(default="")
 
 
@@ -33,13 +32,13 @@ def get_open_graph_meta_for_entry(request, entry: models.TEntry) -> meta_views.M
     )
 
 
-def _get_entry_title(entry: models.TEntry) -> Optional[str]:
+def _get_entry_title(entry: models.TEntry) -> str | None:
     if entry.is_checkin or entry.is_note:
         return None
     return entry.t_post.post_title
 
 
-def _get_image(entry: models.TEntry, request) -> Optional[OpenGraphImage]:
+def _get_image(entry: models.TEntry, request) -> OpenGraphImage | None:
     if entry.is_checkin or entry.is_note or entry.is_article:
         # Notes and checkins might have an image or more associated with them.
         # If so, use the first image for the open graph meta
@@ -58,7 +57,7 @@ def _get_image(entry: models.TEntry, request) -> Optional[OpenGraphImage]:
     return None
 
 
-def _get_twitter_handle(entry: models.TEntry) -> Optional[str]:
+def _get_twitter_handle(entry: models.TEntry) -> str | None:
     return (
         entry.t_post.p_author.relme.filter(url__icontains="twitter.com").values_list("display_name", flat=True).first()
     )

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
@@ -12,7 +10,7 @@ from data.indieweb import constants as indieweb_constants
 
 
 class TEntryManager(models.Manager):
-    def visible_for_user(self, user_id: Optional[int]):
+    def visible_for_user(self, user_id: int | None):
         qs = self.get_queryset()
         anon_ok_entries = Q(t_post__visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
         if user_id:

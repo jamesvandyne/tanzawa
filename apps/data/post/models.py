@@ -1,6 +1,5 @@
 import datetime
 import uuid
-from typing import Optional
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -62,7 +61,7 @@ class TPostManager(models.Manager):
             m_post_status__key=MPostStatuses.draft,
         )
 
-    def visible_for_user(self, user_id: Optional[int]):
+    def visible_for_user(self, user_id: int | None):
         qs = self.get_queryset()
         anon_ok_entries = Q(visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
         if user_id:

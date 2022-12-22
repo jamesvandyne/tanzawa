@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.db.models import Count, Q
 from django.views.generic import ListView, TemplateView
 
@@ -54,7 +52,7 @@ class HomeView(TemplateView):
     paginate_by = 5
     # TODO: Make this slug dynamic / settable in the db.
     stream_name = "the-week"
-    stream: Optional[MStream]
+    stream: MStream | None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django import urls
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
@@ -40,7 +38,7 @@ class PublicViewNow(generic.TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
 
-        self.now: Optional[models.TNow] = models.TNow.objects.first()
+        self.now: models.TNow | None = models.TNow.objects.first()
         if not self.now:
             self.now = models.TNow.objects.create()
         return super().dispatch(request, *args, **kwargs)

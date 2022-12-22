@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django import urls
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
@@ -16,8 +14,8 @@ class Health(generic.TemplateView):
     """
 
     template_name = "health/health.html"
-    weight: Optional[models.Weight]
-    mood: Optional[models.Mood]
+    weight: models.Weight | None
+    mood: models.Mood | None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)

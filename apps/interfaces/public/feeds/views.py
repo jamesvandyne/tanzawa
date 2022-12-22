@@ -34,7 +34,7 @@ class ExtendedRSSFeed(Rss201rev2Feed):
 
         # Author information.
         if item["author_name"] and item["author_email"]:
-            handler.addQuickElement("author", "%s (%s)" % (item["author_email"], item["author_name"]))
+            handler.addQuickElement("author", "{} ({})".format(item["author_email"], item["author_name"]))
         elif item["author_email"]:
             handler.addQuickElement("author", item["author_email"])
         elif item["author_name"]:

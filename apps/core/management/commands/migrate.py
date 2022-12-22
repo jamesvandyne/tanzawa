@@ -8,5 +8,5 @@ class Command(migrate.Command):
         migrations.MIGRATION_OPERATION_IN_PROGRESS = True
 
         # Execute the normal behaviour.
-        super(Command, self).handle(*args, **kwargs)
+        super().handle(*args, **kwargs)
         migrations.MIGRATION_OPERATION_IN_PROGRESS = False

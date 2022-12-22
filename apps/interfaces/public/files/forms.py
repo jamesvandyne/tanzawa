@@ -1,5 +1,4 @@
 import uuid
-from typing import Optional
 
 import plum
 from django import forms
@@ -18,7 +17,7 @@ class MediaUploadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.point: Optional[Point] = None
+        self.point: Point | None = None
 
     def clean(self):
         self.instance.uuid = uuid.uuid4()

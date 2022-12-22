@@ -1,4 +1,3 @@
-from typing import Dict, Optional
 from urllib.parse import urlparse
 
 from django.core.validators import URLValidator
@@ -111,7 +110,7 @@ class HEntryPropertiesSerializer(serializers.Serializer):
     checkin = CheckinField(required=False)
     visibility = VisibilityField(required=False, default=Visibility.PUBLIC)
 
-    def _get_linked_page(self, url: str, url_key: str) -> Optional[Dict[str, str]]:
+    def _get_linked_page(self, url: str, url_key: str) -> dict[str, str] | None:
         linked_page = extract.extract_reply_details_from_url(url)
         link_dict = {
             url_key: url,
@@ -130,12 +129,12 @@ class HEntryPropertiesSerializer(serializers.Serializer):
             )
         return link_dict
 
-    def validate_in_reply_to(self, value: str) -> Optional[Dict[str, str]]:
+    def validate_in_reply_to(self, value: str) -> dict[str, str] | None:
         if value:
             return self._get_linked_page(value, "u_in_reply_to")
         return None
 
-    def validate_bookmark_of(self, value: str) -> Optional[Dict[str, str]]:
+    def validate_bookmark_of(self, value: str) -> dict[str, str] | None:
         if value:
             return self._get_linked_page(value, "u_bookmark_of")
         return None

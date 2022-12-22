@@ -1,5 +1,4 @@
 from hashlib import md5
-from typing import Optional
 from urllib import parse
 
 from django import template
@@ -7,7 +6,7 @@ from django import template
 register = template.Library()
 
 
-def get_gravatar_url(email: Optional[str] = None, size=40) -> str:
+def get_gravatar_url(email: str | None = None, size=40) -> str:
     if email is None:
         return ""
     digest = md5(email.lower().encode("utf-8")).hexdigest()
@@ -17,11 +16,11 @@ def get_gravatar_url(email: Optional[str] = None, size=40) -> str:
 
 
 @register.filter(name="gravatar_url")
-def gravatar_url(email: Optional[str] = None) -> str:
+def gravatar_url(email: str | None = None) -> str:
     return get_gravatar_url(email, 40)
 
 
 @register.filter(name="retina_gravatar_url")
-def retina_gravatar_url(email: Optional[str] = None) -> str:
+def retina_gravatar_url(email: str | None = None) -> str:
     retina = get_gravatar_url(email, 80)
     return f"{retina} 2x" if retina else retina

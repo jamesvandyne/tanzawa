@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from bs4 import BeautifulSoup
 from django import forms
 from django.contrib.gis.forms import PointField
@@ -67,9 +65,9 @@ class CreateStatusForm(forms.ModelForm):
         active_trip = settings_queries.get_active_trip()
         if active_trip:
             self.fields["t_trip"].initial = active_trip.id
-        self.t_post: Optional[post_models.TPost] = None
-        self.t_entry: Optional[entry_models.TEntry] = None
-        self.file_attachment_uuids: List[str] = []
+        self.t_post: post_models.TPost | None = None
+        self.t_entry: entry_models.TEntry | None = None
+        self.file_attachment_uuids: list[str] = []
 
     def clean(self):
         try:
@@ -117,7 +115,7 @@ class CreateReplyForm(CreateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "My Response"
-        self.t_reply: Optional[entry_models.TReply] = None
+        self.t_reply: entry_models.TReply | None = None
         for key, val in self.initial.items():
             if val:
                 continue
@@ -191,7 +189,7 @@ class UpdateStatusForm(forms.ModelForm):
 
         if autofocus:
             self.fields[autofocus].widget.attrs.update({"autofocus": "autofocus"})
-        self.file_attachment_uuids: List[str] = []
+        self.file_attachment_uuids: list[str] = []
 
     def clean(self):
         urls = trix_queries.extract_attachment_urls(self.cleaned_data["e_content"])
@@ -273,7 +271,7 @@ class CreateBookmarkForm(CreateStatusForm):
         super().__init__(*args, **kwargs)
         self.fields["summary"].widget.attrs = {"class": "input-field"}
         self.fields["e_content"].label = "Comment"
-        self.t_bookmark: Optional[entry_models.TBookmark] = None
+        self.t_bookmark: entry_models.TBookmark | None = None
         for key, val in self.initial.items():
             if val:
                 continue

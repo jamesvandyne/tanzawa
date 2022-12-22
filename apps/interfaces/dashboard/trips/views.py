@@ -59,7 +59,7 @@ class ProcessNamedFormMixin(SingleObjectTemplateResponseMixin, ContextMixin, Pro
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)

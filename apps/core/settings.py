@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 import secrets
 from pathlib import Path
-from typing import List
 
 import django
 from envparse import env
@@ -43,7 +42,7 @@ SECRET_KEY = get_secret_key()
 DEBUG = env.bool("DEBUG", default=False)
 
 
-def get_allowed_hosts() -> List[str]:
+def get_allowed_hosts() -> list[str]:
     """
     Get all hosts that are allowed to connect to Tanzawa.
     """

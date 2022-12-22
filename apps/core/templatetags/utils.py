@@ -1,5 +1,5 @@
 import mimetypes
-from typing import Any, Dict, Optional
+from typing import Any
 from urllib import parse
 
 import ftfy
@@ -9,7 +9,7 @@ register = template.Library()
 
 
 @register.filter
-def get_key(obj: Optional[Dict[str, Any]] = None, key: str = "") -> str:
+def get_key(obj: dict[str, Any] | None = None, key: str = "") -> str:
     if not obj:
         return ""
     try:

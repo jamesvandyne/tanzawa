@@ -1,12 +1,10 @@
-from typing import List, Optional
-
 from django.conf import settings
 
 from data.settings import models as settings_models
 from data.trips import models as trip_models
 
 
-def get_theme_choices() -> List[List[str]]:
+def get_theme_choices() -> list[list[str]]:
     """
     This function returns all themes available to Tanzawa.
     """
@@ -21,7 +19,7 @@ def get_site_settings() -> settings_models.MSiteSettings:
     return settings_models.MSiteSettings.objects.first() or settings_models.MSiteSettings()
 
 
-def get_active_trip() -> Optional[trip_models.TTrip]:
+def get_active_trip() -> trip_models.TTrip | None:
     """
     Get the active trip.
     """
