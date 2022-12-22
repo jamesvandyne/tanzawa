@@ -6,10 +6,11 @@
         {{ hidden }}
     {% endfor %}
     {% csrf_token %}
-    <div>
-        <span>Bookmark of "{{ form.title.value }}"</span>
-        <span class="block text-xs">{{ form.u_bookmark_of.value|urlize }}</span>
-    </div>
+    {% if object %}
+        {% include "interfaces/dashboard/entry/bookmark/_bookmark_title.html" with title=object.t_bookmark.title url=object.t_bookmark.u_bookmark_of  t_entry_id=object.id %}
+    {% else %}
+        {% include "interfaces/dashboard/entry/bookmark/_bookmark_title.html" with title=form.title.value url=form.u_bookmark_of.value %}
+    {% endif %}
     <div class="pt-2">
         {{ form.summary.label }}
         <span class="block help-text">{{ form.summary.help_text }}</span>

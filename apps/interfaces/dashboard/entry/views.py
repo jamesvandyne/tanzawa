@@ -742,3 +742,56 @@ class ChangeReplyTitle(FormView):
                 "url": form.cleaned_data["u_in_reply_to"],
             },
         )
+
+
+@method_decorator(login_required, name="dispatch")
+class BookmarkTitle(TemplateView):
+    template_name = "interfaces/dashboard/entry/bookmark/_bookmark_title.html"
+    bookmark: models.TBookmark
+
+    def setup(self, *args, pk: int, **kwargs):
+        super().setup(*args, **kwargs)
+        self.bookmark = get_object_or_404(models.TBookmark, t_entry_id=pk)
+
+    def get_context_data(self, **kwargs) -> dict[str, str]:
+        return super().get_context_data(
+            title=self.bookmark.title, url=self.bookmark.u_bookmark_of, t_entry_id=self.bookmark.t_entry_id
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class ChangeBookmarkTitle(FormView):
+    template_name = "interfaces/dashboard/entry/bookmark/_change_bookmark_title.html"
+    form_class = forms.BookmarkTitle
+    bookmark: models.TBookmark
+
+    def setup(self, *args, pk: int, **kwargs):
+        super().setup(*args, **kwargs)
+        self.bookmark = get_object_or_404(models.TBookmark, t_entry_id=pk)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"initial": {"title": self.bookmark.title, "u_bookmark_of": self.bookmark.u_bookmark_of}})
+        return kwargs
+
+    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+        return super().get_context_data(*args, t_entry_id=self.bookmark.t_entry_id, **kwargs)
+
+    def form_valid(self, form):
+        self.bookmark.update(
+            u_bookmark_of=form.cleaned_data["u_bookmark_of"],
+            title=form.cleaned_data["title"],
+            quote=self.bookmark.quote,
+            author=self.bookmark.author,
+            author_url=self.bookmark.author_url,
+            author_photo=self.bookmark.author_photo,
+        )
+        return TemplateResponse(
+            self.request,
+            "interfaces/dashboard/entry/bookmark/_bookmark_title.html",
+            {
+                "t_entry_id": self.bookmark.t_entry_id,
+                "title": form.cleaned_data["title"],
+                "url": form.cleaned_data["u_bookmark_of"],
+            },
+        )

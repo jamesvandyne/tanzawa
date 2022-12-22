@@ -34,4 +34,7 @@ urlpatterns = [
     # Reply
     path("reply/<int:pk>/title", views.ReplyTitle.as_view(), name="reply_title"),
     path("reply/<int:pk>/change_title", views.ChangeReplyTitle.as_view(), name="change_reply_title"),
+    # Bookmark
+    path("bookmark/<int:pk>/title", views.BookmarkTitle.as_view(), name="bookmark_title"),
+    path("bookmark/<int:pk>/change_title", views.ChangeBookmarkTitle.as_view(), name="change_bookmark_title"),
 ]

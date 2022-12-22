@@ -454,3 +454,12 @@ class ReplyTitle(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["u_in_reply_to"].widget.attrs = {"class": "input-field"}
+
+
+class BookmarkTitle(forms.Form):
+    u_bookmark_of = forms.URLField(label="What's the URL you're replying to?")
+    title = TCharField(label="Bookmark title?")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["u_bookmark_of"].widget.attrs = {"class": "input-field"}
