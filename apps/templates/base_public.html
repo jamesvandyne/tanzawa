@@ -46,6 +46,7 @@
                     {% if centered_nav %}<div class="mx-auto">{% endif %}
                     <a href="{% url "public:trips" %}" class="{% if 'trips' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✈️</span><span>Trips</span></a>
                     <a href="{% url "public:cluster_map" %}" class="{% if 'maps' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a>
+                    <a href="{% url "public:blog" %}" class="{% if 'blog' in selected %}border-b-4 border-secondary{% endif %} ml-2 leading-8 hidden md:inline-block"><span class="mr-1">✏️️</span><span>Blog</span></a>
 
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
@@ -68,6 +69,7 @@
                     <li class="{% if 'home' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:home" %}" class="w-full inline-block"><span class="mr-1">🏡</span><span>Home</span></a></li>
                     <li class="{% if 'trips' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:trips" %}" class="w-full inline-block"><span class="mr-1">✈️</span><span>Trips</span></a></li>
                     <li class="{% if 'maps' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:cluster_map" %}" class="w-full inline-block"><span class="mr-1">🗺️</span><span>Maps</span></a></li>
+                    <li class="{% if 'blog' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:blog" %}" class="w-full inline-block"><span class="mr-1">✏️</span><span>Blog</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
                             {% render_plugin plugin.identifier "NAV.TOP.MOBILE" %}
