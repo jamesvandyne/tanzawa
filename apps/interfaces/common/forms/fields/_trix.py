@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
-from data.files.constants import PICTURE_FORMATS
 from django import forms
 from django.template.loader import render_to_string
+
+from data.files.constants import PICTURE_FORMATS
 
 from ..widgets import TrixEditor
 

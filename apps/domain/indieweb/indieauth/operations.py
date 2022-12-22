@@ -1,8 +1,9 @@
-from typing import Iterable
+from collections.abc import Iterable
 
-from data.indieweb import models
 from django.db import transaction
 from rest_framework import authentication
+
+from data.indieweb import models
 
 from . import queries
 

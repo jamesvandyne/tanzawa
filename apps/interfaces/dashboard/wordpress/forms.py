@@ -1,7 +1,9 @@
-from typing import List
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
+from django import forms
+from django.db import transaction
+
 from data.post.models import TPost
 from data.streams.models import MStream
 from data.wordpress.models import (
@@ -12,8 +14,6 @@ from data.wordpress.models import (
     TWordpressAttachment,
     TWordpressPost,
 )
-from django import forms
-from django.db import transaction
 from domain.wordpress.extract import (
     extract_categories,
     extract_post_format,
@@ -29,11 +29,11 @@ class WordpressUploadForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.t_categories: List[TCategory] = []
-        self.t_post_formats: List[TPostFormat] = []
-        self.t_post_kinds: List[TPostKind] = []
-        self.t_attachments: List[TWordpressAttachment] = []
-        self.t_posts: List[TWordpressPost] = []
+        self.t_categories: list[TCategory] = []
+        self.t_post_formats: list[TPostFormat] = []
+        self.t_post_kinds: list[TPostKind] = []
+        self.t_attachments: list[TWordpressAttachment] = []
+        self.t_posts: list[TWordpressPost] = []
 
     def clean_export_file(self):
         if self.cleaned_data["export_file"].content_type not in [

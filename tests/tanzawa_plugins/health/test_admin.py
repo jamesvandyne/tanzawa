@@ -2,6 +2,7 @@ from decimal import Decimal
 
 import pytest
 from django.urls import reverse
+
 from tanzawa_plugin.health import constants, models
 
 

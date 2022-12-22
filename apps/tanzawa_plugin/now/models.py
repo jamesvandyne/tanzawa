@@ -1,5 +1,6 @@
-from core.models import TimestampModel
 from django.db import models
+
+from core.models import TimestampModel
 
 
 class TNow(TimestampModel):

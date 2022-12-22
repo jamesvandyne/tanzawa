@@ -1,6 +1,7 @@
-from data.plugins import pool
 from django.urls import include, path
 from django.utils import text
+
+from data.plugins import pool
 
 urlpatterns = [
     path("", include("interfaces.dashboard.entry.urls")),

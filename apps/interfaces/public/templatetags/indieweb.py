@@ -1,4 +1,5 @@
 from django import template
+
 from domain.indieweb.relme import queries as relme_queries
 
 register = template.Library()

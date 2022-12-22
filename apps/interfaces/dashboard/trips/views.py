@@ -1,4 +1,3 @@
-from data.trips.models import TTrip
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, resolve_url
@@ -6,8 +5,10 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import ProcessFormView, SingleObjectTemplateResponseMixin
-from interfaces.dashboard.trips.forms import TLocationModelForm, TTripModelForm
 from turbo_response import redirect_303
+
+from data.trips.models import TTrip
+from interfaces.dashboard.trips.forms import TLocationModelForm, TTripModelForm
 
 
 @method_decorator(login_required, "dispatch")
@@ -58,7 +59,7 @@ class ProcessNamedFormMixin(SingleObjectTemplateResponseMixin, ContextMixin, Pro
         form = self.get_form()
         named_forms = self.get_named_forms()
 
-        if form.is_valid() and all((named_form.is_valid() for named_form in named_forms.values())):
+        if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
             return self.form_valid(form, named_forms)
         else:
             return self.form_invalid(form, named_forms)

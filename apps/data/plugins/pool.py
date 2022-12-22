@@ -1,11 +1,12 @@
+from collections.abc import Iterable
 from importlib import import_module
 from operator import attrgetter
-from typing import Iterable, Optional
 
-from data.plugins import activation, plugin
 from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
+
+from data.plugins import activation, plugin
 
 
 def _get_m_plugin():
@@ -43,7 +44,7 @@ class PluginPool:
         plugins = sorted(self.plugins.values(), key=attrgetter("name"))
         return plugins
 
-    def get_plugin(self, identifier) -> Optional[plugin.Plugin]:
+    def get_plugin(self, identifier) -> plugin.Plugin | None:
         self.discover_plugins()
 
         for plugin_ in self.plugins.values():

@@ -1,12 +1,11 @@
-from typing import Optional
+from django.db.models import Count, Q
+from django.views.generic import ListView, TemplateView
 
 from core.constants import Visibility
 from data.entry.models import TEntry
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import MPostKind
 from data.streams.models import MStream
-from django.db.models import Count, Q
-from django.views.generic import ListView, TemplateView
 from domain.posts import queries as post_queries
 
 
@@ -53,7 +52,7 @@ class HomeView(TemplateView):
     paginate_by = 5
     # TODO: Make this slug dynamic / settable in the db.
     stream_name = "the-week"
-    stream: Optional[MStream]
+    stream: MStream | None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)

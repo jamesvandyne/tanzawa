@@ -1,6 +1,7 @@
-from data.plugins import plugin, pool
 from django import template, urls
 from django.template.loader import render_to_string
+
+from data.plugins import plugin, pool
 
 __identifier__ = "blog.tanzawa.plugins.nowpage"
 

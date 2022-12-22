@@ -1,16 +1,16 @@
 import datetime
 import uuid
-from typing import Optional
 
-from core.constants import VISIBILITY_CHOICES, Visibility
-from core.models import TimestampModel
-from data.indieweb.constants import MPostKinds, MPostStatuses
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+
+from core.constants import VISIBILITY_CHOICES, Visibility
+from core.models import TimestampModel
+from data.indieweb.constants import MPostKinds, MPostStatuses
 
 
 class MPostStatus(TimestampModel):
@@ -61,7 +61,7 @@ class TPostManager(models.Manager):
             m_post_status__key=MPostStatuses.draft,
         )
 
-    def visible_for_user(self, user_id: Optional[int]):
+    def visible_for_user(self, user_id: int | None):
         qs = self.get_queryset()
         anon_ok_entries = Q(visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
         if user_id:

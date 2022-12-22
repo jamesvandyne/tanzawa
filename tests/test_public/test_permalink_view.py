@@ -1,9 +1,10 @@
 import mf2py
 import pytest
-from core.constants import Visibility
-from data.indieweb.constants import MPostKinds
 from django.contrib.gis.geos import Point
 from model_bakery import baker
+
+from core.constants import Visibility
+from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db

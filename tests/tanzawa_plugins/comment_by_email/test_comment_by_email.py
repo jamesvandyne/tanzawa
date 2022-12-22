@@ -2,6 +2,7 @@ from unittest import mock
 
 import pytest
 from django.urls import reverse
+
 from tanzawa_plugin.comment_by_email.plugin import get_plugin
 
 

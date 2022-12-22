@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from data.entry.models import (
     TBookmark,
     TCheckin,
@@ -6,7 +8,6 @@ from data.entry.models import (
     TReply,
     TSyndication,
 )
-from django.contrib import admin
 
 admin.site.register(TEntry)
 admin.site.register(TReply)

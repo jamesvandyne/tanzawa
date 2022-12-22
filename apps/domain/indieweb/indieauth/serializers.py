@@ -1,8 +1,9 @@
 from urllib.parse import urlparse
 
-from data.indieweb.models import TToken
 from ninka.indieauth import discoverAuthEndpoints
 from rest_framework import serializers
+
+from data.indieweb.models import TToken
 
 
 class IndieAuthTokenSerializer(serializers.Serializer):

@@ -1,9 +1,10 @@
+from django.shortcuts import get_object_or_404, render
+from django.utils.timezone import now
+
 from application import entry as entry_application
 from data.indieweb.constants import MPostStatuses
 from data.post import models as post_models
 from data.streams.models import MStream
-from django.shortcuts import get_object_or_404, render
-from django.utils.timezone import now
 
 
 def status_detail(request, uuid):

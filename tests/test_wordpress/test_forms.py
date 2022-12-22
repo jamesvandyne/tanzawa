@@ -1,4 +1,6 @@
 import pytest
+from django.core.files.uploadedfile import SimpleUploadedFile
+
 from data.wordpress.models import (
     TCategory,
     TPostFormat,
@@ -6,7 +8,6 @@ from data.wordpress.models import (
     TWordpressAttachment,
     TWordpressPost,
 )
-from django.core.files.uploadedfile import SimpleUploadedFile
 
 
 @pytest.mark.django_db

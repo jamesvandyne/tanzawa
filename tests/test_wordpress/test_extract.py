@@ -2,9 +2,10 @@ from datetime import datetime
 
 import pytest
 import pytz
-from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
+
+from application.indieweb.extract import LinkedPage, LinkedPageAuthor
 
 
 @pytest.fixture

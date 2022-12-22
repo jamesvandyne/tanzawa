@@ -4,15 +4,11 @@ import logging
 import re
 from dataclasses import dataclass
 from itertools import chain
-from typing import List, Optional, Union
 
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from data.files.models import TFile
 from django.template.loader import render_to_string
-from domain.images.images import bytes_as_upload_image
-from interfaces.public.files.forms import MediaUploadForm
 from mf2util import (
     _find_all_entries,
     classify_comment,
@@ -22,6 +18,10 @@ from mf2util import (
 )
 from PIL import Image
 
+from data.files.models import TFile
+from domain.images.images import bytes_as_upload_image
+from interfaces.public.files.forms import MediaUploadForm
+
 IMG_DATA_PATTERN = re.compile(r"^data:(?P<mime_type>.+);(?P<encoding>.+),(?P<image_data>.+)$")
 
 logger = logging.getLogger(__name__)
@@ -29,12 +29,12 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DataImage:
-    image_data: Union[str, bytes]  # encoded data
+    image_data: str | bytes  # encoded data
     mime_type: str  # image/png
     encoding: str  # base64
-    tag: Optional[Tag]  # original img tag
+    tag: Tag | None  # original img tag
 
-    def decode(self) -> Optional[bytes]:
+    def decode(self) -> bytes | None:
         if self.encoding == "base64":
             return base64.b64decode(self.image_data)
         elif self.encoding == "none" and isinstance(self.image_data, bytes):
@@ -95,7 +95,7 @@ def interpret_comment(
         return result
 
 
-def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
+def extract_base64_images(soup: BeautifulSoup) -> list[DataImage]:
     attachments = []
     for img in soup.select(r"img[src^=data\:]"):
         data = IMG_DATA_PATTERN.match(img["src"])
@@ -104,7 +104,7 @@ def extract_base64_images(soup: BeautifulSoup) -> List[DataImage]:
     return attachments
 
 
-def download_image(url: str) -> Optional[DataImage]:
+def download_image(url: str) -> DataImage | None:
     response = requests.get(url)
     if response.status_code == 200:
         return DataImage(
@@ -116,7 +116,7 @@ def download_image(url: str) -> Optional[DataImage]:
     return None
 
 
-def save_and_get_tag(request, image: DataImage) -> Optional[BeautifulSoup]:
+def save_and_get_tag(request, image: DataImage) -> BeautifulSoup | None:
     # convert base64 embeded image to a SimpleFileUpload object
     upload_file, width, height = bytes_as_upload_image(image.decode(), image.mime_type)
     if not upload_file:

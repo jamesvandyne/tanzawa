@@ -1,16 +1,16 @@
 import uuid
-from typing import Optional
 
-from core.constants import VISIBILITY_CHOICES, Visibility
-from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 from django.urls import reverse
 
+from core.constants import VISIBILITY_CHOICES, Visibility
+from core.models import TimestampModel
+
 
 class TTripManager(models.Manager):
-    def visible_for_user(self, user_id: Optional[int]):
+    def visible_for_user(self, user_id: int | None):
         qs = self.get_queryset()
         anon_ok_entries = models.Q(visibility__in=[Visibility.PUBLIC, Visibility.UNLISTED])
         if user_id:

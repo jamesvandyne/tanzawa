@@ -1,8 +1,9 @@
 import pytest
-from core.constants import Visibility
-from data.indieweb.constants import MPostKinds
 from django.urls import reverse
 from model_bakery import baker
+
+from core.constants import Visibility
+from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db

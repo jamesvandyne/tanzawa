@@ -1,5 +1,6 @@
-from data.indieweb.models import TToken
 from django.urls import reverse
+
+from data.indieweb.models import TToken
 
 
 class TokenNotFound(Exception):

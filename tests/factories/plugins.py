@@ -1,5 +1,6 @@
 import factory
 import faker
+
 from data.plugins import models
 
 fake = faker.Faker()

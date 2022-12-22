@@ -78,13 +78,13 @@ class Plugin(abc.ABC, NavigationProtocol, FeedHook):
         return ""
 
     @property
-    def urls(self) -> Optional[str]:
+    def urls(self) -> str | None:
         """Return the path to the _public_ url configuration for a plugin"""
         # TODO: Make this check for a urls.py and return None if not exists
         return f"{self.plugin_module}.urls"
 
     @property
-    def admin_urls(self) -> Optional[str]:
+    def admin_urls(self) -> str | None:
         """Return the path to the _admin_ url configuration for a plugin"""
         return f"{self.plugin_module}.admin_urls"
 

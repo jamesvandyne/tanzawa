@@ -1,5 +1,5 @@
 import json
-from typing import Any, Dict, Union
+from typing import Any
 
 from django.contrib.gis.geos import Point
 from mf2util import LOCATION_PROPERTIES, string_type
@@ -11,7 +11,7 @@ def get_location(hentry):  # noqa: C901
     # properties:
     # https://indieweb.org/location#How_to_determine_the_location_of_a_microformat
     # Extracted from mf2util
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     props = hentry["properties"]
     location_stack = [props]
     for prop in "location", "adr":
@@ -47,7 +47,7 @@ def get_location(hentry):  # noqa: C901
     return result
 
 
-def location_to_pointfield_input(location: Union[Point, Dict[str, Any]]) -> str:
+def location_to_pointfield_input(location: Point | dict[str, Any]) -> str:
     if isinstance(location, Point):
         lat = location.y
         lon = location.x

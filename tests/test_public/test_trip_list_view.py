@@ -1,7 +1,8 @@
 import pytest
-from core.constants import Visibility
 from django.urls import reverse
 from model_bakery import baker
+
+from core.constants import Visibility
 
 
 @pytest.mark.django_db

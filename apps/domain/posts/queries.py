@@ -1,17 +1,17 @@
 import datetime
-from typing import List, Optional
+
+from django.contrib.auth import models as auth_models
 
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
 from data.streams import models as stream_models
-from django.contrib.auth import models as auth_models
 
 
 def get_public_posts_for_user(
-    user: Optional[auth_models.User],
-    stream: Optional[stream_models.MStream] = None,
-    kinds: Optional[List[MPostKinds]] = None,
+    user: auth_models.User | None,
+    stream: stream_models.MStream | None = None,
+    kinds: list[MPostKinds] | None = None,
 ):
     """
     This function gets all visible posts for a user sorted in reverse chronological order.
@@ -39,10 +39,10 @@ def get_public_posts_for_user(
 
 
 def get_last_post_with_location(
-    user: Optional[auth_models.User],
-    stream: Optional[stream_models.MStream] = None,
-    kinds: Optional[List[MPostKinds]] = None,
-) -> Optional[post_models.TPost]:
+    user: auth_models.User | None,
+    stream: stream_models.MStream | None = None,
+    kinds: list[MPostKinds] | None = None,
+) -> post_models.TPost | None:
     """
     Return the latest post with a location.
     """

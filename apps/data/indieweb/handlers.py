@@ -1,9 +1,10 @@
 import logging
 
-from application.indieweb import webmentions
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from webmention import models as webmention_models
+
+from application.indieweb import webmentions
 
 logger = logging.getLogger(__name__)
 

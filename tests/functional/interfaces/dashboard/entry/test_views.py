@@ -2,11 +2,11 @@ from decimal import Decimal
 from unittest import mock
 
 import pytest
-from core.constants import Visibility
-from data.entry import models as entry_models
 from django.contrib.gis import geos
 from django.urls import reverse
 
+from core.constants import Visibility
+from data.entry import models as entry_models
 from tests import factories
 
 

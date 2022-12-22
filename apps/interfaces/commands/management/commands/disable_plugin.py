@@ -1,5 +1,6 @@
-from data.plugins import pool
 from django.core.management.base import BaseCommand, CommandError
+
+from data.plugins import pool
 
 
 class Command(BaseCommand):

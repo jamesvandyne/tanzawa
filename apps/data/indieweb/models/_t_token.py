@@ -1,11 +1,11 @@
 import binascii
 import datetime
 import os
-from typing import Optional
 
-from core.models import TimestampModel
 from django.contrib.auth import get_user_model
 from django.db import models
+
+from core.models import TimestampModel
 
 from ._m_micropub_scope import MMicropubScope
 
@@ -52,7 +52,7 @@ class TToken(TimestampModel):
         self.auth_token = ""
         self.save()
 
-    def set_exchanged_at(self, *, exchanged_at: Optional[datetime.datetime] = None) -> None:
+    def set_exchanged_at(self, *, exchanged_at: datetime.datetime | None = None) -> None:
         self.exchanged_at = exchanged_at
         self.save()
 

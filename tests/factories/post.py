@@ -1,6 +1,7 @@
 import factory
-from data.post import models
 from django.utils import timezone
+
+from data.post import models
 
 # Post Kinds
 

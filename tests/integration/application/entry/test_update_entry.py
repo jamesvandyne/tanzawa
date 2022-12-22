@@ -1,7 +1,7 @@
 import pytest
+
 from application.entry import update_entry
 from data.entry import models as entry_models
-
 from tests import factories
 
 

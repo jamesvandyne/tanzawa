@@ -1,7 +1,8 @@
-from typing import Any, Dict
+from typing import Any
 from unittest.mock import Mock
 
 import pytest
+
 from core.constants import Visibility
 from data.entry.models import TBookmark, TCheckin, TEntry, TLocation, TReply
 from data.post.models import TPost
@@ -325,7 +326,7 @@ class TestMicropub:
         mock_extract_reply.assert_called_once()
 
     @pytest.fixture
-    def entry_with_location(self) -> Dict[str, Any]:
+    def entry_with_location(self) -> dict[str, Any]:
         return {
             "type": ["h-entry"],
             "properties": {

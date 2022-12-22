@@ -1,10 +1,9 @@
 import json
-from typing import Dict, List
 
 from bs4 import BeautifulSoup
 
 
-def extract_attachments(html: str) -> List[Dict[str, str]]:
+def extract_attachments(html: str) -> list[dict[str, str]]:
     """
     Extract trix attachment json dict from html
 
@@ -27,7 +26,7 @@ def extract_attachments(html: str) -> List[Dict[str, str]]:
     return attachments
 
 
-def extract_attachment_urls(html: str) -> List[str]:
+def extract_attachment_urls(html: str) -> list[str]:
     """
     Return a list  of all trix attachments
 

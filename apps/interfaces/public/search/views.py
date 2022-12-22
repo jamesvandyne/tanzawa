@@ -1,13 +1,12 @@
-from typing import Union
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
+from django.db.models import Count, Q
+from django.views.generic import ListView
 
 from core.constants import Visibility
 from data.entry.models import TEntry
 from data.indieweb.constants import MPostStatuses
 from data.streams.models import MStream
-from django.contrib.gis.geos import Point
-from django.contrib.gis.measure import D
-from django.db.models import Count, Q
-from django.views.generic import ListView
 from interfaces.public.search.forms import SearchForm
 
 
@@ -16,7 +15,7 @@ class SearchView(ListView):
     paginate_by = 10
     form_class = SearchForm
 
-    def convert_km_to_degrees(self, km: Union[float, int]):
+    def convert_km_to_degrees(self, km: float | int):
         """
         Convert kms to degrees.
         """
