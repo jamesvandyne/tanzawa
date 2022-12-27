@@ -25,7 +25,33 @@ def import_activities(athlete: strava_models.Athlete) -> None:
         activities = client.get_activities()
     except strava_client.StravaClientError as e:
         raise UnableToImportActivities(e)
+    else:
+        _import_activities(activities)
 
+
+@transaction.atomic
+def import_all_activities(athlete: strava_models.Athlete) -> None:
+    """
+    Download all activities from Strava and record them to the database.
+    """
+    auth_token = _determine_auth_token(athlete)
+    client = strava_client.get_client(auth_token=auth_token)
+    page = 1
+    while True:
+        try:
+            activities = client.get_activities(page=page)
+        except strava_client.StravaClientError as e:
+            raise UnableToImportActivities(e)
+        if activities:
+            # Import all activities from this page and increase the counter, so we can load the next
+            _import_activities(activities)
+            page += 1
+        else:
+            # No more pages to load
+            break
+
+
+def _import_activities(activities: list[dict]) -> None:
     for strava_activity in activities:
         activity = _strava_activity_to_activity(strava_activity)
         if exercise_queries.get_activity_by_vendor_id(activity.vendor_id) is None:
@@ -63,6 +89,6 @@ def _strava_activity_to_activity(strava_activity: dict) -> exercise_ops.Activity
         activity_map=strava_activity_map,
         average_speed=strava_activity["average_speed"],
         max_speed=strava_activity["max_speed"],
-        average_heartrate=strava_activity["average_heartrate"],
-        max_heartrate=strava_activity["max_heartrate"],
+        average_heartrate=strava_activity.get("average_heartrate"),
+        max_heartrate=strava_activity.get("max_heartrate"),
     )
