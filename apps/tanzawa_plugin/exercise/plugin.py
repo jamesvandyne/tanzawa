@@ -16,6 +16,10 @@ class ExercisePlugin(plugin.Plugin):
         return "Track your runs and rides on your site."
 
     @property
+    def has_public_top_nav(self):
+        return True
+
+    @property
     def has_admin_left_nav(self) -> bool:
         return True
 

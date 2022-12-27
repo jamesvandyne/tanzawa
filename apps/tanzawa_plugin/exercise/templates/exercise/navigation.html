@@ -6,4 +6,14 @@
             <span class="mr-1">🏃‍</span>Exercise
         </a>
     </li>
+{% elif render_location == "NAV.TOP" %}
+<a href="{% url "plugin_exercise:runs_top" %}" class="ml-2 leading-8 hidden md:inline-block{% if nav == "runs" %} border-b-4 border-secondary{% endif %}">
+    <span class="mr-1">🏃</span>Runs
+</a>
+{% elif render_location == "NAV.TOP.MOBILE" %}
+    <li class="{% if 'nav' == "runs" %}border-l-4 border-secondary{% endif %} p-1 mb-2">
+        <a href="{% url "plugin_exercise:runs_top" %}" class="w-full inline-block">
+            <span class="mr-1">🏃</span>Runs
+        </a>
+    </li>
 {% endif %}
