@@ -226,3 +226,9 @@ META_SITE_PROTOCOL = env.str("PROTOCOL", default="https")
 OPEN_GRAPH_USE_OPEN_GRAPH = env.bool("OPEN_GRAPH_USE_OPEN_GRAPH", default=True)
 OPEN_GRAPH_USE_TWITTER = env.bool("OPEN_GRAPH_USE_TWITTER", default=True)
 OPEN_GRAPH_USE_FACEBOOK = env.bool("OPEN_GRAPH_USE_FACEBOOK", default=True)
+
+
+# Exercise Plugin
+
+STRAVA_CLIENT_ID = env.str("STRAVA_CLIENT_ID", default="")
+STRAVA_CLIENT_SECRET = env.str("STRAVA_CLIENT_SECRET", default="")
