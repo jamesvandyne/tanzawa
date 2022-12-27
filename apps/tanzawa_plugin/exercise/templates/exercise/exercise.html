@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2 ml-2 md:ml-0">
+        <a href="{% url "plugin_exercise_admin:exercise" %}" class="underline">Exercise</a><span class="ml-2">> Top</span>
+    </nav>
+    <main class="mt-2 ml-2 md:ml-0">
+        <div>
+            <h1 class="text-2xl mb-2">Activities</h1>
+            {% if user_connected_to_strava %}
+                <form action="{% url "plugin_exercise_admin:import_activities" %}" method="post">
+                    {% csrf_token %}
+                    <button class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Import activities</span></button>
+                </form>
+                <div class="mt-2">
+                    <h1 class="text-xl">Activities</h1>
+                    <table class="text-left">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Activity</th>
+                                <th>Elapsed Time</th>
+                                <th>Distance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in activities %}
+                                <tr>
+                                    <td>{{ activity.id }}</td>
+                                    <td>{{ activity.started_at }}</td>
+                                    <td>{{ activity.name }}</td>
+                                    <td>{{ activity.activity_type }}</td>
+                                    <td>{{ activity.elapsed_time }}</td>
+                                    <td>{{ activity.distance }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p>No activities.</p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+
+                <a href="{% url "plugin_exercise_admin:strava_request_authorization" %}" class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Connect to Strava</span></a>
+
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
