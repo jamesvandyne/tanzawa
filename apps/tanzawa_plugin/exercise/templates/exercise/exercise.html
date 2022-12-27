@@ -11,44 +11,36 @@
     </nav>
     <main class="mt-2 ml-2 md:ml-0">
         <div>
-            <h1 class="text-2xl mb-2">Activities</h1>
+            <h1 class="text-2xl mb-2">Exercise</h1>
             {% if user_connected_to_strava %}
                 <form action="{% url "plugin_exercise_admin:import_activities" %}" method="post">
                     {% csrf_token %}
-                    <button class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Import activities</span></button>
+                    <button class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Import from Strava</span></button>
                 </form>
                 <div class="mt-2">
                     <h1 class="text-xl">Activities</h1>
-                    <table class="text-left">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Activity</th>
-                                <th>Elapsed Time</th>
-                                <th>Distance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for activity in activities %}
-                                <tr>
-                                    <td>{{ activity.id }}</td>
-                                    <td>{{ activity.started_at }}</td>
-                                    <td>{{ activity.name }}</td>
-                                    <td>{{ activity.activity_type }}</td>
-                                    <td>{{ activity.elapsed_time }}</td>
-                                    <td>{{ activity.distance }}</td>
-                                </tr>
-                            {% empty %}
-                                <tr>
-                                    <td colspan="6">
-                                        <p>No activities.</p>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    <ol>
+                        {% for activity in activities %}
+                            <li class="mt-2">
+                                <div class="flex">
+                                    <div class="w-full md:w-96">
+                                        <h1>{{ activity.name }}</h1>
+                                        <p class="help-text">{{ activity.started_at|date:"Y/m/d H:i" }}</p>
+                                    </div>
+                                    <div class="ml-2">
+                                        <h1><span class="font-bold text-2xl">{{ activity.distance_km|floatformat }}</span>km</h1>
+                                    </div>
+                                    <div class="ml-2">
+                                        <h1><span class="font-bold text-2xl">{{ activity.elapsed_time_minutes|floatformat }}</span>minutes</h1>
+                                    </div>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li>
+                                <p>No activities.</p>
+                            </li>
+                        {% endfor %}
+                    </ol>
                 </div>
             {% else %}
 

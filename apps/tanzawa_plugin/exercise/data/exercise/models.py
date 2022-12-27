@@ -31,6 +31,14 @@ class Activity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def distance_km(self) -> float:
+        return self.distance / 1000
+
+    @property
+    def elapsed_time_minutes(self) -> float:
+        return self.elapsed_time / 60
+
     @classmethod
     def new(
         cls,
