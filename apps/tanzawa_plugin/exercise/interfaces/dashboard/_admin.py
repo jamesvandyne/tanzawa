@@ -15,6 +15,7 @@ class ExerciseTop(generic.TemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         return super().get_context_data(
+            is_strava_environment_setup=strava_queries.is_strava_environment_setup(),
             user_connected_to_strava=strava_queries.is_user_connected_to_strava(self.request.user),
             activities=exercise_models.Activity.objects.all().order_by("-started_at"),
             page_title="Exercise",

@@ -42,10 +42,10 @@
                         {% endfor %}
                     </ol>
                 </div>
+            {% elif not is_strava_environment_setup %}
+                <p>Please set the STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET variables.</p>
             {% else %}
-
                 <a href="{% url "plugin_exercise_admin:strava_request_authorization" %}" class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Connect to Strava</span></a>
-
             {% endif %}
         </div>
     </main>
