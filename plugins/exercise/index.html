@@ -5,15 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Plugins - Tanzawa Documentation</title>
+    <title>Exercise - Tanzawa Documentation</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Plugins";
-        var mkdocs_page_input_path = "plugins/overview.md";
+        var mkdocs_page_name = "Exercise";
+        var mkdocs_page_input_path = "plugins/exercise.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -60,15 +60,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Plugins</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Plugins</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#activation-deactivation">Activation / Deactivation</a>
-    </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../overview/">Plugins</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../custom-plugins/">Custom Plugins</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../exercise/">Exercise</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Exercise</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#strava-setup">Strava Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#importing-all-activities">Importing all activities</a>
+    </li>
+    </ul>
                   </li>
               </ul>
               <p class="caption"><span class="caption-text">Theming</span></p>
@@ -96,7 +98,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
           <li>Plugins &raquo;</li>
-      <li>Plugins</li>
+      <li>Exercise</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -105,31 +107,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="plugins">Plugins</h1>
-<p>Plugins allow you to create custom functionality for you Tanzawa website.
-They can be selectively enabled and disabled.</p>
-<p>Tanzawa Plugins are regular Django applications. They can provide:</p>
-<ul>
-<li>Custom URLs (public and admin facing)</li>
-<li>Database tables</li>
-<li>Navigation items in the header of public site </li>
-</ul>
-<h2 id="activation-deactivation">Activation / Deactivation</h2>
-<p>Plugins can be activated by clicking on the "Enable" button at <code>/a/plugins/</code>.</p>
-<p>Alternatively you can enable them from the command line with the following command.</p>
-<p>When running Tanzawa on fly.io, you'll need to manually restart your machine by running the command <code>flyctl restart my_machine_name</code>.</p>
-<pre><code>python3 apps/manage.py enable_plugin &lt;identifier&gt;
+                <h1 id="exercise">Exercise</h1>
+<p>The exercise plugin is a core plugin of Tanzawa. It allows you to import your activity data from Strava.
+Once enabled there will be a button in the admin exercise dashboard (<code>/a/exercise/</code>) that will download
+the latest activities.</p>
+<h2 id="strava-setup">Strava Setup</h2>
+<p>Tanzawa requires API access in order to access your Strava data. This
+requires you to https://strava.com/settings/api in your <a href="https://strava.com/settings/api">Strava account settings</a>.</p>
+<p>Once created set the <code>client id</code> and <code>client secret</code> values in Tanzawa.</p>
+<pre><code>$ flyctl secrets set STRAVA_CLIENT_ID=your_client_id
+$ flyctl secrets set STRAVA_CLIENT_SECRET=your_client_secret
 </code></pre>
-<p>Likewise you can disable them by running the <code>disable_plugin</code> command. </p>
-<pre><code>python3 apps/manage.py disable_plugin &lt;identifier&gt;
+<h2 id="importing-all-activities">Importing all activities</h2>
+<p>If you have more than 30 activities in Strava, they will need to be imported by running a command.
+This needs to be run after importing activities from the website once, so your Tanzawa has authorization to access your account. </p>
+<pre><code>$ flyctl ssh console
+$ cd app
+$ python apps/manage.py import_all_strava_activities
 </code></pre>
-<p>Refer to <a href="../custom-plugins/">Custom Plugins</a> for a guide on writing your own plugins.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../../indieweb/relme/" class="btn btn-neutral float-left" title="Rel-me"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../custom-plugins/" class="btn btn-neutral float-right" title="Custom Plugins">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../custom-plugins/" class="btn btn-neutral float-left" title="Custom Plugins"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../../themes/overview/" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -152,10 +153,10 @@ They can be selectively enabled and disabled.</p>
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../../indieweb/relme/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../custom-plugins/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../custom-plugins/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../../themes/overview/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
