@@ -7,7 +7,7 @@ Tanzawa is a blogging system designed for the [IndieWeb](https://indieweb.org/) 
 
 Running Tanzawa outside of Docker requires the following:
 
-* Python 3.9
+* Python 3.11
 * Spatalite (Geo-enabled SQLite) or Postgres with PostGIS enabled. We recommend Spatalite for most blogs.
 
 If you are running Tanzawa outside of Docker, refer to the [GeoDjango installation documentation](https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/) for setting up the appropriate environment.

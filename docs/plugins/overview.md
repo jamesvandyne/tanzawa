@@ -15,6 +15,9 @@ Plugins can be activated by clicking on the "Enable" button at `/a/plugins/`.
 
 Alternatively you can enable them from the command line with the following command.
 
+When running Tanzawa on fly.io, you'll need to manually restart your machine by running the command `flyctl restart my_machine_name`.
+
+
 ```
 python3 apps/manage.py enable_plugin <identifier>
 ```

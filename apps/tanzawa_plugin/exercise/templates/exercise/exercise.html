@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Exercise{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% include "fragments/messages.html" %}
+    {% endif %}
+    <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2 ml-2 md:ml-0">
+        <a href="{% url "plugin_exercise_admin:exercise" %}" class="underline">Exercise</a><span class="ml-2">> Top</span>
+    </nav>
+    <main class="mt-2 ml-2 md:ml-0">
+        <div>
+            <h1 class="text-2xl mb-2">Exercise</h1>
+            {% if user_connected_to_strava %}
+                <form action="{% url "plugin_exercise_admin:import_activities" %}" method="post">
+                    {% csrf_token %}
+                    <button class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Import from Strava</span></button>
+                </form>
+                <div class="mt-2">
+                    <h1 class="text-xl">Activities</h1>
+                    <ol>
+                        {% for activity in activities %}
+                            <li class="mt-2">
+                                <div class="flex">
+                                    <div class="w-full md:w-96">
+                                        <h1>{{ activity.name }}</h1>
+                                        <p class="help-text">{{ activity.started_at|date:"Y/m/d H:i" }}</p>
+                                    </div>
+                                    <div class="ml-2">
+                                        <h1><span class="font-bold text-2xl">{{ activity.distance_km|floatformat }}</span>km</h1>
+                                    </div>
+                                    <div class="ml-2">
+                                        <h1><span class="font-bold text-2xl">{{ activity.elapsed_time_minutes|floatformat }}</span>minutes</h1>
+                                    </div>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li>
+                                <p>No activities.</p>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            {% elif not is_strava_environment_setup %}
+                <p>Please set the STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET variables.</p>
+            {% else %}
+                <a href="{% url "plugin_exercise_admin:strava_request_authorization" %}" class="primary-button"><span class="mr-1">🏃‍</span><span class="hover:underline">Connect to Strava</span></a>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
