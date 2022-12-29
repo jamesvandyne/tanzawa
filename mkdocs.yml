@@ -10,6 +10,7 @@ nav:
   - 'Plugins':
     - plugins/overview.md
     - plugins/custom-plugins.md
+    - plugins/exercise.md
   - 'Theming':
       - themes/overview.md
   - 'Community':
