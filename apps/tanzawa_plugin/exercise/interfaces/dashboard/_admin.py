@@ -1,7 +1,9 @@
 from django import http
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import generic
 
 from tanzawa_plugin.exercise.application import strava
@@ -11,6 +13,7 @@ from tanzawa_plugin.exercise.domain.exercise import queries as exercise_queries
 from tanzawa_plugin.exercise.domain.strava import queries as strava_queries
 
 
+@method_decorator(login_required, name="dispatch")
 class ExerciseTop(generic.TemplateView):
     template_name = "exercise/exercise.html"
 
@@ -24,6 +27,7 @@ class ExerciseTop(generic.TemplateView):
         )
 
 
+@method_decorator(login_required, name="dispatch")
 class ImportActivities(generic.View):
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -39,6 +43,7 @@ class ImportActivities(generic.View):
         return http.HttpResponseRedirect(reverse("plugin_exercise_admin:exercise"))
 
 
+@method_decorator(login_required, name="dispatch")
 class ActivityDetail(generic.TemplateView):
     template_name = "exercise/activity/detail.html"
     activity: exercise_models.Activity
