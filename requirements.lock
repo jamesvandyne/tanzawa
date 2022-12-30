@@ -11,7 +11,7 @@ mf2py==1.1.2
 mf2util==0.5.1
 django-picklefield==3.0.1
 ftfy==5.8
-ronkyuu==0.7
+ronkyuu==0.9
 ninka==0.3.4
 extruct==0.13.0
 django-turbo-response==0.0.48
