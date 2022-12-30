@@ -4,7 +4,7 @@ pytz==2020.5
 sqlparse==0.4.1
 django-webmention==2.0.2
 djangorestframework==3.12.2
-beautifulsoup4==4.9.3
+beautifulsoup4==4.11.1
 exif==1.0.4
 Pillow==9.4.0
 mf2py==1.1.2
