@@ -9,7 +9,7 @@ exif==1.0.4
 Pillow==9.4.0
 mf2py==1.1.2
 mf2util==0.5.1
-django-picklefield==3.0.1
+django-picklefield==3.1
 ftfy==5.8
 ronkyuu==0.9
 ninka==0.3.4
