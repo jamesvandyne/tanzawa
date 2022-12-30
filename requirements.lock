@@ -3,7 +3,7 @@ Django==3.2.16
 pytz==2022.7
 sqlparse==0.4.1
 django-webmention==2.0.2
-djangorestframework==3.12.2
+djangorestframework==3.14.0
 beautifulsoup4==4.11.1
 exif==1.0.4
 Pillow==9.4.0
