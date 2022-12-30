@@ -28,3 +28,4 @@ django-meta==2.0.0
 factory_boy==3.2.1
 envparse==0.2.0
 django-htmx==1.13.0
+polyline==1.4.0

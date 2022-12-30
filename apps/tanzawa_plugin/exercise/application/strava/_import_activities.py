@@ -54,7 +54,9 @@ def import_all_activities(athlete: strava_models.Athlete) -> None:
 def _import_activities(activities: list[dict]) -> None:
     for strava_activity in activities:
         activity = _strava_activity_to_activity(strava_activity)
-        if exercise_queries.get_activity_by_vendor_id(activity.vendor_id) is None:
+        if act := exercise_queries.get_activity_by_vendor_id(activity.vendor_id):
+            exercise_ops.update_activity(act, activity)
+        else:
             exercise_ops.record_activity(activity)
 
 

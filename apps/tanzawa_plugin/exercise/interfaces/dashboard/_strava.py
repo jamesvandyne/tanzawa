@@ -1,14 +1,15 @@
 """
 API Views for interacting with Strava
 """
-
 import logging
 from urllib import parse as url_parse
 
 from django import http
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import generic
 
 from tanzawa_plugin.exercise.application.strava import exchange_auth_code
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 # OAuth Authorization Views
+@method_decorator(login_required, name="dispatch")
 class StravaRequestAuthorization(generic.RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         redirect_path = reverse("plugin_exercise_admin:strava_request_authorization_success")
@@ -36,6 +38,7 @@ class StravaRequestAuthorization(generic.RedirectView):
         return f"{constants.STRAVA_OAUTH_AUTHORIZE_URL}?{values_url}"
 
 
+@method_decorator(login_required, name="dispatch")
 class StravaAuthorizationSuccessful(generic.View):
     def get(self, *args, **kwargs):
         exchange_auth_code(authorization_code=self.request.GET["code"], user=self.request.user)

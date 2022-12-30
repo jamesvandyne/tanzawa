@@ -19,3 +19,4 @@ extruct
 django-turbo-response
 phpserialize
 django-htmx
+polyline

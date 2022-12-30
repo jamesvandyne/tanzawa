@@ -1,5 +1,6 @@
 import datetime
 
+import polyline
 from django.db.models import Sum
 
 from tanzawa_plugin.exercise.data.exercise import models
@@ -49,3 +50,13 @@ def total_elapsed_time(
     if activity_types:
         qs = qs.filter(activity_type__in=activity_types)
     return qs.aggregate(total_elapsed_time=Sum("elapsed_time"))["total_elapsed_time"]
+
+
+def get_point_list(activity: models.Activity) -> list[list[float]]:
+    """
+    Return a list of points that can be used to plot a path for a given Activity.
+    """
+    try:
+        return [list(coords) for coords in polyline.decode(activity.map.summary_polyline)]
+    except models.Map.DoesNotExist:
+        return []

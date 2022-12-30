@@ -1,15 +1,19 @@
 from django import http
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views import generic
 
 from tanzawa_plugin.exercise.application import strava
 from tanzawa_plugin.exercise.data.exercise import models as exercise_models
 from tanzawa_plugin.exercise.data.strava import models as strava_models
+from tanzawa_plugin.exercise.domain.exercise import queries as exercise_queries
 from tanzawa_plugin.exercise.domain.strava import queries as strava_queries
 
 
+@method_decorator(login_required, name="dispatch")
 class ExerciseTop(generic.TemplateView):
     template_name = "exercise/exercise.html"
 
@@ -23,6 +27,7 @@ class ExerciseTop(generic.TemplateView):
         )
 
 
+@method_decorator(login_required, name="dispatch")
 class ImportActivities(generic.View):
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
@@ -36,3 +41,21 @@ class ImportActivities(generic.View):
         else:
             messages.success(self.request, "Imported activities")
         return http.HttpResponseRedirect(reverse("plugin_exercise_admin:exercise"))
+
+
+@method_decorator(login_required, name="dispatch")
+class ActivityDetail(generic.TemplateView):
+    template_name = "exercise/activity/detail.html"
+    activity: exercise_models.Activity
+
+    def setup(self, request, *args, **kwargs) -> None:
+        super().setup(request, *args, **kwargs)
+        self.activity = get_object_or_404(exercise_models.Activity, pk=kwargs["pk"])
+
+    def get_context_data(self, **kwargs) -> dict:
+        return super().get_context_data(
+            activity=self.activity,
+            default_lat=self.activity.start_point.y,
+            default_lon=self.activity.start_point.x,
+            point_list=exercise_queries.get_point_list(self.activity),
+        )

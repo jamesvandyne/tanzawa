@@ -7,7 +7,7 @@ the latest activities.
 ## Strava Setup
 
 Tanzawa requires API access in order to access your Strava data. This
-requires you to https://strava.com/settings/api in your [Strava account settings](https://strava.com/settings/api).
+requires you to add an app in your [Strava account settings](https://strava.com/settings/api).
 
 Once created set the `client id` and `client secret` values in Tanzawa.
 
