@@ -5,7 +5,7 @@ sqlparse==0.4.1
 django-webmention==2.0.2
 djangorestframework==3.14.0
 beautifulsoup4==4.11.1
-exif==1.0.4
+exif==1.4.2
 Pillow==9.4.0
 mf2py==1.1.2
 mf2util==0.5.1
