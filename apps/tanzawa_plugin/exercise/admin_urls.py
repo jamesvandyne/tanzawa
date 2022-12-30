@@ -10,6 +10,11 @@ urlpatterns = [
         dashboard.ExerciseTop.as_view(),
         name="exercise",
     ),
+    path(
+        "activities/<int:pk>/modal/",
+        dashboard.ActivityDetail.as_view(),
+        name="activity_detail",
+    ),
     # Import
     path(
         "activities/import",

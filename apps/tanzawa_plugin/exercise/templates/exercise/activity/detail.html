@@ -1,0 +1,44 @@
+{% extends "fragments/modal.html" %}
+{% block modal_content %}
+    <div>
+        <div class="mb-2">
+            <h1 class="text-2xl">{{ activity.name }}</h1>
+            <p class="help-text">{{ activity.started_at|date:"Y/m/d H:i" }}</p>
+        </div>
+        <div class="grid md:grid-cols-4">
+            <div class="ml-2">
+                <h2><span class="font-bold text-2xl">{{ activity.distance_km|floatformat }}</span>km</h2>
+            </div>
+            <div class="ml-2">
+                <h2><span class="font-bold text-2xl">{{ activity.elapsed_time_minutes|floatformat }}</span>min</h2>
+            </div>
+            <div class="ml-2">
+                <h2><span class="font-bold text-2xl">{{ activity.average_heartrate|floatformat }}</span>bpm</h2>
+            </div>
+            <div class="ml-2">
+                <h2><span class="font-bold text-2xl">{{ activity.total_elevation_gain|floatformat }}</span>m climbed</h2>
+            </div>
+        </div>
+        <div id="map" class="mt-2" style="width: 100%; height: 300px;"></div>
+    </div>
+    <script lang="js">
+        function loadMap() {
+            const defaultLat = {{ default_lat }};
+            const defaultLon = {{ default_lon }};
+            const routePoints = {{ point_list }};
+            const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {minZoom: 0, maxZoom: 18});
+            const map = L.map("map").setView([defaultLat, defaultLon], 13);
+            const route = new L.Polyline(routePoints, {
+                color: 'red',
+                weight: 3,
+                opacity: 0.5,
+                smoothFactor: 1,
+                lineCap: 'round'
+            });
+            route.addTo(map);
+            osm.addTo(map);
+            map.fitBounds(routePoints);
+        }
+        loadMap();
+    </script>
+{% endblock %}

@@ -21,7 +21,7 @@
                     <h1 class="text-xl">Activities</h1>
                     <ol>
                         {% for activity in activities %}
-                            <li class="mt-2">
+                            <li class="mt-2" hx-get="{% url "plugin_exercise_admin:activity_detail" activity.pk %}"  hx-trigger="click" hx-target="body" hx-swap="beforeend">
                                 <div class="flex">
                                     <div class="w-full md:w-96">
                                         <h1>{{ activity.name }}</h1>
