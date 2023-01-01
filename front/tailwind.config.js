@@ -58,6 +58,11 @@ module.exports = {
       },
     },
     extend: {
+      fontSize: {
+        '5xl': ['5em', {
+          lineHeight: '1em'
+        }]
+      },
       spacing: {
         '99': '45rem',
       },

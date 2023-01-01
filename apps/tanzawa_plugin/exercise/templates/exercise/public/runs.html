@@ -1,13 +1,28 @@
 {% extends "base_public.html" %}
 
 {% block content %}
-    <h1 class="text-xl">Runs</h1>
-    <section class="mt-2">
-            <h1>This year...</h1>
-            <div class="mt-2 mx-auto mx-2 grid grid-cols-3 gap-2 text-center">
-                <p class="text-4xl">{{ number_of_runs }} runs</p>
-                <p class="text-4xl">{{ total_kms|floatformat }} kms</p>
-                <p class="text-4xl">{{ total_time|floatformat }} hours</p>
+    {% for instance in object_list %}
+        <section class="mt-4 pb-4">
+            <h1 class="bg-secondary text-white text-2xl inline-block px-4">{{ instance.year }}</h1>
+            <div class="mt-2 mx-auto mx-2 grid grid-cols-2 md:grid-cols-3 gap-2 text-center">
+                <div>
+                    <h1 class="text-5xl pb-0">{{ instance.number_of_runs }}</h1>
+                    <h2 class="text-4xl pt-0">runs</h2>
+                </div>
+                <div>
+                    <h1 class="text-5xl pb-0">{{ instance.total_kms|floatformat  }}</h1>
+                    <h2 class="text-4xl pt-0">kms</h2>
+                </div>
+                <div>
+                    <h1 class="text-5xl pb-0">{{ instance.total_time|floatformat  }}</h1>
+                    <h2 class="text-4xl pt-0">hours</h2>
+                </div>
+            </div>
+            <div class="mt-2 grid grid-cols-3 md:grid-cols-8 gap-2">
+                {% for activity in instance.activities %}
+                    {{ activity.route_svg }}
+                {% endfor %}
             </div>
         </section>
+    {% endfor %}
 {% endblock %}
