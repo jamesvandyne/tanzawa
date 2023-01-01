@@ -1,6 +1,6 @@
 {% extends "base_public.html" %}
 
-{% load plugins %}
+{% load plugins tz %}
 
 {% block breadcrumbs_block %}{% endblock %}
 
@@ -24,7 +24,7 @@
                             {{ t_entry.e_content|safe|truncatechars_html:180 }}
                             </div>
                             <div class="flex help-text">
-                                <span>{{ t_post.dt_published }}</span>
+                                <span>{{ t_post.dt_published|localtime }}</span>
                                 <a href="{{ t_post.get_absolute_url }}" class="ml-auto">permalink</a>
                             </div>
                         {% endwith %}
