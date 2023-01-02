@@ -22,9 +22,6 @@ def get_open_graph_meta_for_entry(request, entry: models.TEntry) -> meta_views.M
     """
     image_meta = _get_image(entry=entry, request=request)
     return meta_views.Meta(
-        use_twitter=settings.OPEN_GRAPH_USE_TWITTER,
-        use_og=settings.OPEN_GRAPH_USE_OPEN_GRAPH,
-        use_fb=settings.OPEN_GRAPH_USE_FACEBOOK,
         url=request.build_absolute_uri(entry.t_post.get_absolute_url()),
         title=_get_entry_title(entry=entry),
         image_object=asdict(image_meta) if image_meta else {},
