@@ -9,10 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.11
       uses: actions/setup-python@v1
       with:
-        python-version: 3.9
+        python-version: 3.11
     - name: Install Spatalite
       run: |
         sudo apt-get install -y spatialite-bin libsqlite3-mod-spatialite binutils libproj-dev gdal-bin
