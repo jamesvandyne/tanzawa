@@ -1,6 +1,5 @@
 from dataclasses import asdict, dataclass, field
 
-from django.conf import settings
 from meta import views as meta_views
 
 from data.entry import models
