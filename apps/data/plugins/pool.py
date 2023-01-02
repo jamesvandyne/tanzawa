@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from importlib import import_module
 from operator import attrgetter
 
+from django.conf import settings
 from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
@@ -110,7 +111,7 @@ class PluginPool:
             return []
         enabled_plugins = []
         for plugin_ in self.plugins.values():
-            if plugin_.identifier in enabled:
+            if plugin_.identifier in enabled or plugin_.identifier in settings.FORCE_ENABLED_PLUGINS:
                 # yield plugin_
                 enabled_plugins.append(plugin_)
         return enabled_plugins

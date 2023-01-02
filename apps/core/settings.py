@@ -218,7 +218,7 @@ INSTALLED_APPS.extend(PLUGINS)
 
 PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", default=True)
 
-
+FORCE_ENABLED_PLUGINS = env.list("FORCE_ENABLED_PLUGINS", default=[])
 # Open Graph Settings
 
 META_SITE_DOMAIN = env.str("DOMAIN_NAME", default="example.com")
