@@ -1,9 +1,9 @@
 import uuid
 
-import plum
 from django import forms
 from django.contrib.gis.geos import Point
 from django.core.files.uploadedfile import SimpleUploadedFile
+from plum import exceptions as plum_exceptions
 
 from data.files.models import TFile
 from domain.images.exif import extract_exif, get_location, scrub_exif
@@ -39,5 +39,5 @@ class MediaUploadForm(forms.ModelForm):
                 self.cleaned_data["file"].content_type,
             )
             self.cleaned_data["file"] = upload_file
-        except plum._exceptions.UnpackError:
+        except plum_exceptions.UnpackError:
             pass
