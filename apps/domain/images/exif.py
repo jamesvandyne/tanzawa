@@ -6,6 +6,9 @@ from exif import Image
 
 
 def extract_exif(image) -> dict[str, Any]:
+    """
+    Extract exif information on a photo, excluding any non-json serializable information.
+    """
     img = Image(image)
     exif: dict[str, Any] = {}
     if not img.has_exif:
@@ -14,6 +17,12 @@ def extract_exif(image) -> dict[str, Any]:
     for key in dir(img):
         value = img.get(key)
         if not value:
+            continue
+        # Callables cannot be serialized to JSON.
+        if callable(value):
+            continue
+        # This is a private value and should not be serialized.
+        if key.startswith("_"):
             continue
         if hasattr(value, "asdict"):
             value = value.asdict()
