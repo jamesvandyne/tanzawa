@@ -13,7 +13,7 @@
     <div class="w-full md:flex flex-col p-2">
 
         <div class="md:max-w-prose mx-auto">
-        <div class="md:flex">
+            <div class="md:flex">
             <div>
                 <h1>💬 Status</h1>
                 <ul class="mt-2">
@@ -34,8 +34,7 @@
             </div>
 
         </div>
-        <div class="mt-2 md:flex md:mt-8">
-
+            <div class="mt-2 md:flex md:mt-8">
             <div class="md:flex flex-col flex-grow">
                 {% if highlight_kind.kind %}
                 <div class="mb-2 md:mb-4">
@@ -85,6 +84,17 @@
             </div>
 
         </div>
+            <div class="mt-2 md:mt-8">
+                <h1>📸 Photos</h1>
+                <div class="mt-2 grid grid-cols-3 gap-2 md:grid-cols-5">
+                    {% for photo in photo_gallery %}
+                        <picture>
+                            <source srcset="{% url 'public:get_media' photo.uuid %}?s=256&f=image/webp 2x" type="image/webp"/>
+                            <img src="{% url 'public:get_media' photo.uuid %}?s=128&f=image/webp" loading="lazy"  class="h-24 w-24 object-cover"/>
+                        </picture>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
     </div>

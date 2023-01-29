@@ -6,6 +6,7 @@ from data.entry.models import TEntry
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import MPostKind
 from data.streams.models import MStream
+from domain.files import queries as file_queries
 from domain.posts import queries as post_queries
 
 
@@ -88,6 +89,7 @@ class HomeView(TemplateView):
                         ["text-lg", "text-md", "text-sm", "text-xs"],
                     ),
                 },
+                "photo_gallery": file_queries.get_public_photos(limit=10),
             }
         )
         return context
