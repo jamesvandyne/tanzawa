@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Count, Q
 from django.views.generic import ListView, TemplateView
 
@@ -51,12 +52,12 @@ class BlogListView(ListView):
 class HomeView(TemplateView):
     template_name = "public/home.html"
     paginate_by = 5
-    # TODO: Make this slug dynamic / settable in the db.
-    stream_name = "the-week"
+    stream_name: str | None = None
     stream: MStream | None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
+        self.stream_name = settings.HIGHLIGHT_STREAM_SLUG
         try:
             self.stream = MStream.objects.get(slug=self.stream_name)
         except MStream.DoesNotExist:
