@@ -610,6 +610,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .h-80 {
   height: 20rem;
 }
+.h-24 {
+  height: 6rem;
+}
 .h-12 {
   height: 3rem;
 }
@@ -657,6 +660,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .w-80 {
   width: 20rem;
+}
+.w-24 {
+  width: 6rem;
 }
 .w-10 {
   width: 2.5rem;
@@ -1489,6 +1495,10 @@ main.content blockquote {
 
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .md\:grid-cols-3 {

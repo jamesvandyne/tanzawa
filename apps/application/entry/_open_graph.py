@@ -3,7 +3,7 @@ from dataclasses import asdict, dataclass, field
 from meta import views as meta_views
 
 from data.entry import models
-from domain.files import images
+from domain.files import queries
 
 
 @dataclass
@@ -38,7 +38,7 @@ def _get_image(entry: models.TEntry, request) -> OpenGraphImage | None:
     if entry.is_checkin or entry.is_note or entry.is_article:
         # Notes and checkins might have an image or more associated with them.
         # If so, use the first image for the open graph meta
-        image = images.get_representative_image(post=entry.t_post)
+        image = queries.get_representative_image(post=entry.t_post)
         if image:
             formatted_image = image.ref_t_formatted_image.first()
             if formatted_image:

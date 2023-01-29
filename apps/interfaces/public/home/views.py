@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Count, Q
 from django.views.generic import ListView, TemplateView
 
@@ -6,6 +7,7 @@ from data.entry.models import TEntry
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import MPostKind
 from data.streams.models import MStream
+from domain.files import queries as file_queries
 from domain.posts import queries as post_queries
 
 
@@ -50,12 +52,12 @@ class BlogListView(ListView):
 class HomeView(TemplateView):
     template_name = "public/home.html"
     paginate_by = 5
-    # TODO: Make this slug dynamic / settable in the db.
-    stream_name = "the-week"
+    stream_name: str | None = None
     stream: MStream | None
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
+        self.stream_name = settings.HIGHLIGHT_STREAM_SLUG
         try:
             self.stream = MStream.objects.get(slug=self.stream_name)
         except MStream.DoesNotExist:
@@ -88,6 +90,7 @@ class HomeView(TemplateView):
                         ["text-lg", "text-md", "text-sm", "text-xs"],
                     ),
                 },
+                "photo_gallery": file_queries.get_public_photos(limit=10),
             }
         )
         return context

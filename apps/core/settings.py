@@ -212,6 +212,9 @@ LOGIN_REDIRECT_URL = "post:dashboard"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 
+# Homepage Settings
+HIGHLIGHT_STREAM_SLUG: str | None = env.str("HIGHLIGHT_STREAM_SLUG", default=None)
+
 PLUGINS = env.list("PLUGINS", default=[])
 
 INSTALLED_APPS.extend(PLUGINS)
