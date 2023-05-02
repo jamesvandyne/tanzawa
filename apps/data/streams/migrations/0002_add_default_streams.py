@@ -15,7 +15,6 @@ def add_default_streams(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("streams", "0001_initial"),
     ]

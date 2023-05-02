@@ -37,7 +37,6 @@ class PublicViewNow(generic.TemplateView):
     template_name = "now/now.html"
 
     def dispatch(self, request, *args, **kwargs):
-
         self.now: models.TNow | None = models.TNow.objects.first()
         if not self.now:
             self.now = models.TNow.objects.create()

@@ -40,7 +40,6 @@ def extract_auth_token_from_request(request) -> str:
 
 @transaction.atomic
 def create_token_for_user(*, user, client_id: str, scope: Iterable[models.MMicropubScope]) -> models.TToken:
-
     t_token = models.TToken.new(
         user=user,
         auth_token=queries.get_new_token(),

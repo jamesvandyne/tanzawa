@@ -5,7 +5,6 @@ from core.models import TimestampModel
 
 
 class TRelMe(TimestampModel):
-
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name="relme")
     url = models.URLField(
         unique=True, help_text="URL to your profile on other sites. Email adddress should start with mailto."

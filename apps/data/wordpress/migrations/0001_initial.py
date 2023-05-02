@@ -9,7 +9,6 @@ import data.wordpress.upload
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

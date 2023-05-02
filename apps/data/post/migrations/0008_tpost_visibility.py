@@ -6,7 +6,6 @@ import core.constants
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0007_update_verbose_names"),
     ]

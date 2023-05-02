@@ -12,11 +12,11 @@
         {% endif %}
         <div>
             <time class="dt-published" datetime="{{ t_post.dt_published.isoformat }}">
-            {% ifequal t_post.dt_published|date:"d" now|date:"d" %}
+            {% if t_post.dt_published|date:"d" == now|date:"d" %}
                 {{ t_post.dt_published|naturaltime }}
             {% else %}
                 {{ t_post.dt_published|date:"M d, Y" }}
-            {% endifequal %}
+            {% endif %}
             </time>
             {% include 'author/byline.html' with p_author=t_post.p_author %}
             {% if t_entry.t_location %}

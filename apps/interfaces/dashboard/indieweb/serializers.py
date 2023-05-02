@@ -7,7 +7,6 @@ ResponseTypeChoices = [("id", "id"), ("code", "id+authorization")]
 
 
 class IndieAuthAuthorizationSerializer(serializers.Serializer):
-
     me = serializers.URLField(required=False)
     client_id = serializers.URLField(required=True)
     redirect_uri = serializers.URLField(required=True)

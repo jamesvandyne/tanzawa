@@ -1,4 +1,6 @@
 import pytest
+from django.core.management import call_command
+from django.db import connection
 from model_bakery import baker
 
 from data.indieweb.constants import MPostStatuses
@@ -67,3 +69,15 @@ def factory():
     from tests import factories
 
     return factories
+
+
+@pytest.fixture(scope="session")
+def django_db_setup(django_db_blocker):
+    with django_db_blocker.unblock():
+        with connection.cursor() as c:
+            # Spatalite5 and sqlite 3.36 are incompatible with each other.
+            # Force creation of the spatial metadata before running migrations.
+            # This should be a "temporary" fix so tests can run on CI.
+            # refs: https://code.djangoproject.com/ticket/32935
+            c.execute("SELECT InitSpatialMetaData(1);")
+        call_command("migrate", interactive=False)

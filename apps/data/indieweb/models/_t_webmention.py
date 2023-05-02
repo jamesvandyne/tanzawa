@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 
 class TWebmention(TimestampModel):
-
     t_webmention_response = models.ForeignKey(
         WebMentionResponse, related_name="ref_t_webmention", on_delete=models.CASCADE
     )

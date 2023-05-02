@@ -14,7 +14,6 @@ from data.indieweb.constants import MPostKinds, MPostStatuses
 
 
 class MPostStatus(TimestampModel):
-
     key = models.CharField(max_length=16, unique=True)
     name = models.CharField(max_length=16)
 
@@ -28,7 +27,6 @@ class MPostStatus(TimestampModel):
 
 
 class MPostKind(TimestampModel):
-
     key = models.CharField(max_length=16, unique=True)
     name = models.CharField(max_length=16)
 
@@ -74,7 +72,6 @@ class TPostManager(models.Manager):
 
 
 class TPost(TimestampModel):
-
     m_post_status = models.ForeignKey(MPostStatus, on_delete=models.CASCADE)
     m_post_kind = models.ForeignKey(MPostKind, on_delete=models.CASCADE)
     uuid = models.UUIDField(default=uuid.uuid4)

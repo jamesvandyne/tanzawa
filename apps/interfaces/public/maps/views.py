@@ -6,7 +6,6 @@ from data.post.models import TPost
 
 
 def cluster_map(request):
-
     posts = TPost.objects.visible_for_user(request.user.id).filter(
         m_post_status__key=MPostStatuses.published, m_post_kind__key=MPostKinds.checkin
     )

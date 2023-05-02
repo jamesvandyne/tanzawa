@@ -4,7 +4,6 @@ from core.models import TimestampModel
 
 
 class MSiteSettings(TimestampModel):
-
     title = models.CharField(max_length=128, default="Tanzawa", blank=True)
     subtitle = models.CharField(max_length=128, default="", blank=True)
     theme = models.CharField(max_length=128, default="", blank=True)

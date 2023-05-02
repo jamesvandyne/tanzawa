@@ -13,7 +13,6 @@ class MPluginManager(models.Manager):
 
 
 class MPlugin(TimestampModel):
-
     identifier = models.CharField(max_length=255, unique=True)
     enabled = models.BooleanField(default=False)
 

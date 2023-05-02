@@ -13,7 +13,6 @@ def create_uuid(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0003_tpost_files"),
     ]

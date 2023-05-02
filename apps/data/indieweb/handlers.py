@@ -11,5 +11,4 @@ logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=webmention_models.WebMentionResponse)
 def create_t_webmention(sender, instance, created, raw, using, update_fields, **kwargs):
-
     webmentions.create_moderation_record_for_webmention(instance)

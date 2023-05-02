@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0006_tpost_streams"),
         ("entry", "0005_tsyndication"),

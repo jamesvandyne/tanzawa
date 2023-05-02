@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("exercise", "0002_accesstoken_athlete_refreshtoken"),
     ]

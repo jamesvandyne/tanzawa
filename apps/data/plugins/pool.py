@@ -29,7 +29,6 @@ class PluginPool:
             del self.__dict__["registered_plugins"]
 
     def discover_plugins(self) -> None:
-
         if self.discovered:
             return
         # Load our plugins module so we can discover our plugins automatically.

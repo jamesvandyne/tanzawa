@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("trips", "0002_auto_20220404_0621"),
         ("settings", "0004_icon_footer_snippet"),
