@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0005_rename_published_updated_columns"),
         ("indieweb", "0001_initial"),

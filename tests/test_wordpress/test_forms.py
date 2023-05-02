@@ -33,7 +33,6 @@ class TestWordpressUploadFrom:
         return {"export_file": export_file}
 
     def test_valid(self, target, form_data):
-
         form = target(files=form_data)
         assert form.is_valid()
 

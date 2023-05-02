@@ -20,7 +20,6 @@ class TEntryManager(models.Manager):
 
 
 class TEntry(TimestampModel):
-
     t_post = models.OneToOneField("post.TPost", on_delete=models.CASCADE, related_name="ref_t_entry")
 
     p_name = models.CharField(max_length=255, blank=True, default="")
@@ -70,7 +69,6 @@ class TEntry(TimestampModel):
 
 
 class TReply(TimestampModel):
-
     t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_reply")
     u_in_reply_to = models.URLField()
     title = models.CharField(max_length=128, blank=True, default="")
@@ -110,7 +108,6 @@ class TReply(TimestampModel):
 
 
 class TBookmark(TimestampModel):
-
     t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_bookmark")
     u_bookmark_of = models.URLField()
     title = models.CharField(max_length=128, blank=True, default="")
@@ -140,7 +137,6 @@ class TBookmark(TimestampModel):
     def update(
         self, u_bookmark_of: str, title: str, quote: str, author: str, author_url: str, author_photo: str
     ) -> None:
-
         self.u_bookmark_of = u_bookmark_of
         self.title = title
         self.quote = quote

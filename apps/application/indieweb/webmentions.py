@@ -93,7 +93,6 @@ def send_webmention(request, t_post: TPost, e_content: str) -> list[indieweb_mod
 
         wm_status, wm_url = ronkyuu.discoverEndpoint(target, test_urls=False)
         if wm_url is not None and wm_status == 200:
-
             try:
                 t_webmention_send = t_post.ref_t_webmention_send.get(target=target)
             except indieweb_models.TWebmentionSend.DoesNotExist:

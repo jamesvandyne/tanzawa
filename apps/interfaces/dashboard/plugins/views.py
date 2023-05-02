@@ -8,7 +8,6 @@ from data.plugins import activation, pool
 
 @auth_decorators.login_required
 def plugin_list(request):
-
     return render(
         request,
         "plugins/plugin_list.html",

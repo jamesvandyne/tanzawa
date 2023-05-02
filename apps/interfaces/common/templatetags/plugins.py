@@ -25,7 +25,6 @@ class RenderPlugin(template.Node):
 
 @register.tag(name="render_plugin")
 def do_render_plugin(parser, token):
-
     try:
         # split_contents() knows not to split quoted strings.
         tag_name, plugin_identifier, render_location = token.split_contents()

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("files", "0003_tfile_exif"),
         ("post", "0006_tpost_streams"),

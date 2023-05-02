@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 def register_default_post_statuses(apps, schema):
-
     MPostStatus = apps.get_model("post", "MPostStatus")
 
     MPostStatus.objects.get_or_create(key="published", name="Published")
@@ -12,7 +11,6 @@ def register_default_post_statuses(apps, schema):
 
 
 def register_default_post_kinds(apps, schema):
-
     MPostKind = apps.get_model("post", "MPostKind")
 
     MPostKind.objects.get_or_create(key="article", name="Article")
@@ -24,7 +22,6 @@ def register_default_post_kinds(apps, schema):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0001_initial"),
     ]

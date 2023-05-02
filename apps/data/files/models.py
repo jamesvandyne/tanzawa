@@ -33,7 +33,6 @@ class TFile(TimestampModel):
 
 
 class TFilePost(TimestampModel):
-
     t_file = models.ForeignKey(TFile, on_delete=models.CASCADE)
     t_post = models.ForeignKey("post.TPost", on_delete=models.CASCADE)
 

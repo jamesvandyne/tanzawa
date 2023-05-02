@@ -13,7 +13,6 @@ class _MPostKind(factory.django.DjangoModelFactory):
 
 
 class NoteKind(_MPostKind):
-
     key = "note"
 
 

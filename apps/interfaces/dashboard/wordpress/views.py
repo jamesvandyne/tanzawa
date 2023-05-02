@@ -53,7 +53,6 @@ logger = logging.getLogger(__name__)
 
 @method_decorator(login_required, name="dispatch")
 class TWordpressListView(ListView):
-
     model = TWordpress
     allow_empty = False
 
@@ -164,7 +163,6 @@ def import_posts(request, pk):
 
 
 def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):  # noqa: C901  too complex (32)!
-
     guid = soup.find("guid", text=t_wordpress_post.guid)
     t_post = t_wordpress_post.t_post
     if t_post:
@@ -173,7 +171,6 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
         t_entry = None
 
     if not guid:
-
         raise forms.ValidationError("Guid doesn't exist in export file")
     item = guid.parent
     logging.info("Processing %s", guid)
@@ -272,7 +269,6 @@ def import_post(request, t_wordpress_post: TWordpressPost, soup: BeautifulSoup):
     if t_wordpress_post.path != "/":
         for attachment in TWordpressAttachment.objects.filter(link__contains=t_wordpress_post.path):
             if attachment.t_file:
-
                 if str(attachment.t_file.uuid) in form_data["e_content"]:
                     # File was already inserted into the post in the image rewrite step above. Skip.
                     continue

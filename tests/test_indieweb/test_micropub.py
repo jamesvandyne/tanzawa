@@ -443,7 +443,6 @@ class TestMicropub:
         download_image_mock,
         factory,
     ):
-
         # Create an active trip
         trip = factory.Trip()
         factory.Settings(active_trip=trip)

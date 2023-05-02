@@ -13,7 +13,6 @@ def set_published_date(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("post", "0004_tpost_uuid"),
     ]

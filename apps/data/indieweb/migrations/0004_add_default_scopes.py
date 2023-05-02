@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 def register_micropub_scopes(apps, schema):
-
     MMicropubScope = apps.get_model("indieweb", "MMicropubScope")
 
     MMicropubScope.objects.get_or_create(key="create", name="Create")
@@ -15,7 +14,6 @@ def register_micropub_scopes(apps, schema):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("indieweb", "0003_ttoken"),
     ]

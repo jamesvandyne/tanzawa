@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("files", "0004_formatted_image_width_height_unique"),
     ]

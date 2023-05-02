@@ -35,7 +35,6 @@ def extract_description(soup: BeautifulSoup) -> str:
 
 
 def extract_reply_details_from_url(url: str) -> LinkedPage | None:
-
     # Specify a custom User Agent as some sites prevent scraping by blocking the default requests UA.
     response = requests.get(url, headers={"User-Agent": "Tanzawa"})
     if response.status_code != 200:

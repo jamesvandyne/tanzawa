@@ -96,7 +96,6 @@ class EContentSerializer(serializers.Serializer):
 
 
 class HEntryPropertiesSerializer(serializers.Serializer):
-
     name = FlattenedStringField(required=False)
     content = ContentField(required=False)
     category = serializers.ListSerializer(child=serializers.CharField(), required=False, write_only=True)
@@ -168,7 +167,6 @@ ResponseTypeChoices = [("id", "id"), ("code", "id+authorization")]
 
 
 class IndieAuthAuthorizationSerializer(serializers.Serializer):
-
     me = serializers.URLField(required=False)
     client_id = serializers.URLField(required=True)
     redirect_uri = serializers.URLField(required=True)

@@ -338,7 +338,6 @@ class TLocationModelForm(forms.ModelForm):
 
 
 class TCheckinModelForm(forms.ModelForm):
-
     name = TCharField(label="Where did you go?")
     url = forms.URLField(
         label="What's its url?",

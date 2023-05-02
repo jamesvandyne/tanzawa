@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("streams", "0001_initial"),
         ("post", "0005_rename_published_updated_columns"),

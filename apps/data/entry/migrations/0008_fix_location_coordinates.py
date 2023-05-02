@@ -17,7 +17,6 @@ def fix_location_point(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("entry", "0007_update_verbose_names"),
     ]

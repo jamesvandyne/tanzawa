@@ -4,7 +4,6 @@ from core.models import TimestampModel
 
 
 class MMicropubScope(TimestampModel):
-
     key = models.CharField(max_length=12, unique=True)
     name = models.CharField(max_length=16)
 

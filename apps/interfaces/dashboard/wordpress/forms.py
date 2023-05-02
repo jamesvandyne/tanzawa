@@ -115,7 +115,6 @@ class WordpressUploadForm(forms.ModelForm):
 
 
 class TCategoryModelForm(forms.ModelForm):
-
     t_stream = StreamModelChoiceField(MStream.objects, label="", empty_label="Skip", required=False)
 
     class Meta:

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("entry", "0006_tentry_t_post_1x1"),
     ]

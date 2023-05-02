@@ -8,7 +8,6 @@ import data.files._upload
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [

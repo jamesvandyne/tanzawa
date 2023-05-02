@@ -170,7 +170,6 @@ def micropub(request):  # noqa: C901 too complex (30)
     form = form_class(data=form_data, p_author=indieauth.queries.get_user_for_token(key=token))
 
     if form.is_valid() and all(named_form.is_valid() for named_form in named_forms.values()):
-
         handler = _determine_handler(form)
         entry = handler(form, named_forms, serializer)
 

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("files", "0005_update_verbose_names"),
         ("now", "0001_initial"),

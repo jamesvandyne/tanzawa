@@ -7,7 +7,6 @@ import data.files._upload
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("files", "0001_initial"),
     ]

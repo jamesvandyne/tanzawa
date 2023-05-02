@@ -18,7 +18,6 @@ class StreamView(ListView):
         return get_object_or_404(MStream.objects.visible(self.request.user), slug=self.kwargs["stream_slug"])
 
     def get_queryset(self):
-
         return (
             TEntry.objects.visible_for_user(self.request.user.id)
             .exclude(t_post__visibility=Visibility.UNLISTED)
