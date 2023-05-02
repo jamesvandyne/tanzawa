@@ -6,10 +6,10 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView, DetailView, ListView
-from PIL import Image
 from turbo_response.mixins import HttpResponseSeeOther, TurboFrameTemplateResponseMixin
 
 from data.files.models import TFile
+from domain.files import queries as file_queries
 
 
 @method_decorator(login_required, name="dispatch")
@@ -110,25 +110,22 @@ class TrixFigure(DetailView):
     def get_context_data(self, **kwargs):
         t_file: TFile = self.object
 
-        with Image.open(t_file.file) as image:
-            width = image.width
-            height = image.height
-
+        size = file_queries.get_size_for_file(t_file)
         img_src = self.request.build_absolute_uri(t_file.get_absolute_url())
         context = {
             "mime": self.object.mime_type,
             "src": img_src,
-            "width": width,
-            "height": height,
+            "width": size.width,
+            "height": size.height,
             "trix_attachment_data": json.dumps(
                 {
                     "contentType": self.object.mime_type,
                     "filename": self.object.filename,
                     "filesize": self.object.file.size,
-                    "height": height,
+                    "height": size.height,
                     "href": f"{img_src}?content-disposition=attachment",
                     "url": img_src,
-                    "width": width,
+                    "width": size.width,
                 }
             ),
         }
