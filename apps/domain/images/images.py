@@ -26,7 +26,6 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
     return rotated_bytes
 
 
-# TODO: Convert this into a class to handle image formatting
 def convert_image_format(  # noqa: C901
     t_file: TFile, target_mime: str, size: int | None = None
 ) -> tuple[SimpleUploadedFile, int, int] | tuple[None, None, None]:
@@ -36,20 +35,8 @@ def convert_image_format(  # noqa: C901
     if not ext:
         # unknown mimetype, can't convert
         return None, None, None
-    orientation = 274
-    try:
-        exif = image._getexif()
-    except (AttributeError, KeyError):
-        # There is AttributeError: _getexif sometimes.
-        pass
-    else:
-        exif = dict(exif.items())
-        if exif[orientation] == 3:
-            image = image.rotate(180, expand=True)
-        elif exif[orientation] == 6:
-            image = image.rotate(270, expand=True)
-        elif exif[orientation] == 8:
-            image = image.rotate(90, expand=True)
+
+    image = _get_rotated_image(image)
 
     if size:
         image = image.copy()
@@ -71,6 +58,24 @@ def convert_image_format(  # noqa: C901
     upload_file = SimpleUploadedFile(new_filename, new_image_data.read(), target_mime)
 
     return upload_file, new_image.width, new_image.height
+
+
+def _get_rotated_image(image: Image) -> Image:
+    orientation = 274
+    try:
+        exif = image._getexif()
+    except (AttributeError, KeyError):
+        # There is AttributeError: _getexif sometimes.
+        pass
+    else:
+        exif = dict(exif.items())
+        if exif[orientation] == 3:
+            image = image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            image = image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            image = image.rotate(90, expand=True)
+    return image
 
 
 def bytes_as_upload_image(
