@@ -9,8 +9,8 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
-from data.files.constants import PICTURE_FORMATS
 from data.files.models import TFile, TFormattedImage
+from domain.files import queries as file_queries
 from domain.images.images import convert_image_format
 
 from .forms import MediaUploadForm
@@ -45,14 +45,9 @@ def get_media(request, uuid):
     file_format = request.GET.get("f")
     size = request.GET.get("s")
 
-    if file_format in PICTURE_FORMATS.keys():
-        qs = t_file.ref_t_formatted_image.filter(mime_type=file_format)
-        if size:
-            qs = qs.filter(Q(width=size) | Q(height=size))
-        formatted_file = qs.first()
-        if formatted_file:
-            return_file = formatted_file
-        else:
+    if file_queries.can_process_file(file_format):
+        return_file = file_queries.get_processed_file(t_file, file_format, size)
+        if return_file is None:
             upload_file, width, height = convert_image_format(
                 t_file, target_mime=file_format, size=int(size) if size else None
             )
@@ -68,11 +63,8 @@ def get_media(request, uuid):
                 formatted_file.save()
                 return_file = formatted_file
     elif size:
-        qs = t_file.ref_t_formatted_image.filter(Q(width=size) | Q(height=size))
-        formatted_file = qs.first()
-        if formatted_file:
-            return_file = formatted_file
-        else:
+        return_file = file_queries.get_processed_file(t_file, longest_edge=size)
+        if return_file is None:
             upload_file, width, height = convert_image_format(t_file, target_mime=t_file.mime_type, size=int(size))
             if upload_file:
                 formatted_file = TFormattedImage(
