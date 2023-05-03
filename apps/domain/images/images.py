@@ -39,17 +39,17 @@ def convert_image_format(  # noqa: C901
     orientation = 274
     try:
         exif = image._getexif()
-        if exif:
-            exif = dict(exif.items())
-            if exif[orientation] == 3:
-                image = image.rotate(180, expand=True)
-            elif exif[orientation] == 6:
-                image = image.rotate(270, expand=True)
-            elif exif[orientation] == 8:
-                image = image.rotate(90, expand=True)
     except (AttributeError, KeyError):
         # There is AttributeError: _getexif sometimes.
         pass
+    else:
+        exif = dict(exif.items())
+        if exif[orientation] == 3:
+            image = image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            image = image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            image = image.rotate(90, expand=True)
 
     if size:
         image = image.copy()
