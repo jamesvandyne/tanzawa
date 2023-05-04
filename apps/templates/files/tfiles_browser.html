@@ -11,7 +11,7 @@
             data-remote-url='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}&insert=1'
         >
             <div data-action='click->remote#view' class="cursor-pointer">
-                {% if "image" in t_file.mime_type %}
+                {% if "image" in t_file.mime_type or "pdf" in t_file.mime_type  %}
                     {#  208px ==  13rm #}
                     <picture>
                         <source srcset="{% url 'public:get_media' t_file.uuid %}?s=416&f=image/webp 2x" type="image/webp"/>

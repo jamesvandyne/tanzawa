@@ -2,6 +2,7 @@ import io
 import mimetypes
 from pathlib import Path
 
+import fitz
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.timezone import now
 from PIL import Image, ImageOps
@@ -29,7 +30,7 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
 def convert_image_format(
     t_file: file_models.TFile, target_mime: str, longest_edge: int | None = None
 ) -> tuple[SimpleUploadedFile, int, int] | tuple[None, None, None]:
-    image = Image.open(t_file.file)
+    image = _get_image(t_file)
     file_extension = mimetypes.guess_extension(target_mime)
     if not file_extension:
         # unknown mimetype, can't convert
@@ -52,6 +53,26 @@ def convert_image_format(
     upload_file = SimpleUploadedFile(new_filename, new_format_data.read(), target_mime)
 
     return upload_file, new_image.width, new_image.height
+
+
+def _get_image(t_file: file_models.TFile) -> Image:
+    if t_file.mime_type == "application/pdf":
+        return Image.open(_get_first_page_of_pdf_as_png(t_file))
+    else:
+        return Image.open(t_file.file)
+
+
+def _get_first_page_of_pdf_as_png(t_file: file_models.TFile) -> io.BytesIO:
+    with fitz.open(stream=t_file.file.read(), filetype="pdf") as doc:
+        for page in doc:  # Iterate through the pages
+            png_data = io.BytesIO()
+            # Render the page to an image
+            pix = page.get_pixmap()
+            png_data.write(pix.pil_tobytes(format="PNG", optimize=True))
+            png_data.seek(0)
+            return png_data
+        else:
+            raise ValueError("No pages in the PDF")
 
 
 def _get_thumbnail(image: Image, longest_edge: int) -> Image:
@@ -80,13 +101,14 @@ def _get_rotated_image(image: Image) -> Image:
         # There is AttributeError: _getexif sometimes.
         pass
     else:
-        exif = dict(exif.items())
-        if exif[orientation] == 3:
-            image = image.rotate(180, expand=True)
-        elif exif[orientation] == 6:
-            image = image.rotate(270, expand=True)
-        elif exif[orientation] == 8:
-            image = image.rotate(90, expand=True)
+        if exif:
+            exif = dict(exif.items())
+            if exif[orientation] == 3:
+                image = image.rotate(180, expand=True)
+            elif exif[orientation] == 6:
+                image = image.rotate(270, expand=True)
+            elif exif[orientation] == 8:
+                image = image.rotate(90, expand=True)
     return image
 
 
