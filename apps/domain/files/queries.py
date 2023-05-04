@@ -67,3 +67,8 @@ def get_processed_file(
     if longest_edge:
         qs = qs.filter(Q(width=longest_edge) | Q(height=longest_edge))
     return qs.first()
+
+
+def get_image_url(request, t_file: file_models.TFile) -> str:
+    img_url = request.build_absolute_uri(t_file.get_absolute_url())
+    return img_url
