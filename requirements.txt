@@ -21,3 +21,4 @@ phpserialize
 django-htmx
 polyline
 cairosvg
+PyMuPDF

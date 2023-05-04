@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.http import (
     FileResponse,
     HttpResponse,
@@ -9,9 +8,8 @@ from django.http import (
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
-from data.files.constants import PICTURE_FORMATS
-from data.files.models import TFile, TFormattedImage
-from domain.images.images import convert_image_format
+from data.files import models as file_models
+from domain.files import operations as file_ops
 
 from .forms import MediaUploadForm
 
@@ -39,53 +37,14 @@ def micropub_media(request):
 
 
 def get_media(request, uuid):
-    t_file: TFile = get_object_or_404(TFile, uuid=uuid)
-    return_file = t_file
+    t_file: file_models.TFile = get_object_or_404(file_models.TFile, uuid=uuid)
     as_attachment = request.GET.get("content-disposition", "inline") == "attachment"
-    file_format = request.GET.get("f")
+    file_format = request.GET.get("f") or t_file.mime_type
     size = request.GET.get("s")
 
-    if file_format in PICTURE_FORMATS.keys():
-        qs = t_file.ref_t_formatted_image.filter(mime_type=file_format)
-        if size:
-            qs = qs.filter(Q(width=size) | Q(height=size))
-        formatted_file = qs.first()
-        if formatted_file:
-            return_file = formatted_file
-        else:
-            upload_file, width, height = convert_image_format(
-                t_file, target_mime=file_format, size=int(size) if size else None
-            )
-            if upload_file:
-                formatted_file = TFormattedImage(
-                    file=upload_file,
-                    t_file=t_file,
-                    mime_type=file_format,
-                    filename=upload_file.name,
-                    width=width,
-                    height=height,
-                )
-                formatted_file.save()
-                return_file = formatted_file
-    elif size:
-        qs = t_file.ref_t_formatted_image.filter(Q(width=size) | Q(height=size))
-        formatted_file = qs.first()
-        if formatted_file:
-            return_file = formatted_file
-        else:
-            upload_file, width, height = convert_image_format(t_file, target_mime=t_file.mime_type, size=int(size))
-            if upload_file:
-                formatted_file = TFormattedImage(
-                    file=upload_file,
-                    t_file=t_file,
-                    mime_type=t_file.mime_type,
-                    filename=upload_file.name,
-                    width=width,
-                    height=height,
-                )
-                formatted_file.save()
-                return_file = formatted_file
-    # If there was an error creating a smaller version, the file has already been read so reset to 0.
+    return_file = file_ops.get_file(t_file, file_format, size)
+
+    # Ensure we always return the entire file, despite potential processing.
     return_file.file.seek(0)
     response = FileResponse(
         return_file.file,

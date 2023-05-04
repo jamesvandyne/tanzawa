@@ -2,11 +2,12 @@ import io
 import mimetypes
 from pathlib import Path
 
+import fitz
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.timezone import now
 from PIL import Image, ImageOps
 
-from data.files.models import TFile
+from data.files import models as file_models
 
 
 def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
@@ -26,19 +27,80 @@ def rotate_image(image_bytes: io.BytesIO, mime_type: str) -> io.BytesIO:
     return rotated_bytes
 
 
-# TODO: Convert this into a class to handle image formatting
-def convert_image_format(  # noqa: C901
-    t_file: TFile, target_mime: str, size: int | None = None
+def convert_image_format(
+    t_file: file_models.TFile, target_mime: str, longest_edge: int | None = None
 ) -> tuple[SimpleUploadedFile, int, int] | tuple[None, None, None]:
-    image = Image.open(t_file.file)
-    new_image_data = io.BytesIO()
-    ext = mimetypes.guess_extension(target_mime)
-    if not ext:
+    image = _get_image(t_file)
+    file_extension = mimetypes.guess_extension(target_mime)
+    if not file_extension:
         # unknown mimetype, can't convert
         return None, None, None
+
+    image = _get_rotated_image(image)
+
+    if longest_edge:
+        image = _get_thumbnail(image, longest_edge)
+    elif image.width >= 1200 or image.height >= 1200:
+        width, height = (image.width // 2, image.height // 2)
+        image = image.resize((width, height))
+
+    new_format_data = _change_image_format(image, format=file_extension[1:])
+
+    new_image = Image.open(new_format_data)
+    new_filename = t_file.filename.replace(Path(t_file.filename).suffix, file_extension)
+    new_format_data.seek(0)
+
+    upload_file = SimpleUploadedFile(new_filename, new_format_data.read(), target_mime)
+
+    return upload_file, new_image.width, new_image.height
+
+
+def _get_image(t_file: file_models.TFile) -> Image:
+    if t_file.mime_type == "application/pdf":
+        return Image.open(_get_first_page_of_pdf_as_png(t_file))
+    else:
+        return Image.open(t_file.file)
+
+
+def _get_first_page_of_pdf_as_png(t_file: file_models.TFile) -> io.BytesIO:
+    with fitz.open(stream=t_file.file.read(), filetype="pdf") as doc:
+        for page in doc:  # Iterate through the pages
+            png_data = io.BytesIO()
+            # Render the page to an image
+            pix = page.get_pixmap()
+            png_data.write(pix.pil_tobytes(format="PNG", optimize=True))
+            png_data.seek(0)
+            return png_data
+        else:
+            raise ValueError("No pages in the PDF")
+
+
+def _get_thumbnail(image: Image, longest_edge: int) -> Image:
+    image = image.copy()
+    # thumbnail resizes in place. resize returns a new image instance
+    image.thumbnail((longest_edge, longest_edge))
+    return image
+
+
+def _change_image_format(image: Image, format: str) -> io.BytesIO:
+    new_image_data = io.BytesIO()
+
+    if format == "jpg":
+        # .jpg fails but jpeg works ¯\_(ツ)_/¯
+        format = "jpeg"
+    image.save(new_image_data, format=format)
+    new_image_data.seek(0)
+    return new_image_data
+
+
+def _get_rotated_image(image: Image) -> Image:
     orientation = 274
     try:
         exif = image._getexif()
+    except (AttributeError, KeyError):
+        # There is AttributeError: _getexif sometimes.
+        pass
+    else:
         if exif:
             exif = dict(exif.items())
             if exif[orientation] == 3:
@@ -47,30 +109,7 @@ def convert_image_format(  # noqa: C901
                 image = image.rotate(270, expand=True)
             elif exif[orientation] == 8:
                 image = image.rotate(90, expand=True)
-    except (AttributeError, KeyError):
-        # There is AttributeError: _getexif sometimes.
-        pass
-
-    if size:
-        image = image.copy()
-        # thumbnail resizes in place. resize returns a new image instance
-        image.thumbnail((size, size))
-    elif image.width >= 1200 or image.height >= 1200:
-        width, height = (image.width // 2, image.height // 2)
-        image = image.resize((width, height))
-    fmt = ext[1:]
-
-    if fmt == "jpg":
-        # .jpg fails but jpeg works ¯\_(ツ)_/¯
-        fmt = "jpeg"
-    image.save(new_image_data, format=fmt)
-    new_image_data.seek(0)
-    new_image = Image.open(new_image_data)
-    new_filename = t_file.filename.replace(Path(t_file.filename).suffix, ext)
-    new_image_data.seek(0)
-    upload_file = SimpleUploadedFile(new_filename, new_image_data.read(), target_mime)
-
-    return upload_file, new_image.width, new_image.height
+    return image
 
 
 def bytes_as_upload_image(

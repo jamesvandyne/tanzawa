@@ -30,3 +30,4 @@ envparse==0.2.0
 django-htmx==1.13.0
 polyline==1.4.0
 cairosvg==2.5.2
+PyMuPDF==1.22.2

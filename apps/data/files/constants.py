@@ -7,6 +7,7 @@ SVG = "image/svg+xml"
 BMP = "image/bmp"
 ICO = "image/x-icon"
 TIFF = "image/tiff"
+PDF = "application/pdf"
 
 PICTURE_FORMATS = {
     GIF: [APNG],
@@ -17,4 +18,5 @@ PICTURE_FORMATS = {
     BMP: [JPEG, WEBP],
     ICO: [JPEG, WEBP],
     TIFF: [JPEG, WEBP],
+    PDF: [WEBP],
 }

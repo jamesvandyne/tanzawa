@@ -111,7 +111,7 @@ class TrixFigure(DetailView):
         t_file: TFile = self.object
 
         size = file_queries.get_size_for_file(t_file)
-        img_src = self.request.build_absolute_uri(t_file.get_absolute_url())
+        img_src = file_queries.get_image_url(self.request, t_file)
         context = {
             "mime": self.object.mime_type,
             "src": img_src,

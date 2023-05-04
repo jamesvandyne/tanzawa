@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from PIL import Image, UnidentifiedImageError
 
 from core.constants import Visibility
+from data.files import constants as file_constants
 from data.files import models as file_models
 from data.indieweb.constants import MPostStatuses
 from data.post import models as post_models
@@ -45,3 +46,29 @@ def get_size_for_file(t_file: file_models.TFile) -> Size:
     except UnidentifiedImageError:
         # Return a fixed size if case we upload a PDF or some non-Image file.
         return Size(width=600, height=600)
+
+
+def can_process_file(mime_type: str | None) -> bool:
+    """
+    Return if we can process a mime type or not.
+    """
+    return mime_type in file_constants.PICTURE_FORMATS.keys()
+
+
+def get_processed_file(
+    t_file: file_models.TFile, mime_type: str | None = None, longest_edge: int | None = None
+) -> file_models.TFormattedImage | None:
+    """
+    Get a pre-processed file (thumbnail etc..) for a given file.
+    """
+    qs = t_file.ref_t_formatted_image.all()
+    if mime_type:
+        qs = qs.filter(mime_type=mime_type)
+    if longest_edge:
+        qs = qs.filter(Q(width=longest_edge) | Q(height=longest_edge))
+    return qs.first()
+
+
+def get_image_url(request, t_file: file_models.TFile) -> str:
+    img_url = request.build_absolute_uri(t_file.get_absolute_url())
+    return img_url
