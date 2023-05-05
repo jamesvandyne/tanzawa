@@ -22,3 +22,4 @@ django-htmx
 polyline
 cairosvg
 PyMuPDF
+sentry-sdk
