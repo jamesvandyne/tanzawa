@@ -15,7 +15,9 @@ import secrets
 from pathlib import Path
 
 import django
+import sentry_sdk
 from envparse import env
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -236,3 +238,16 @@ META_USE_SCHEMAORG_PROPERTIES = env.bool("META_USE_SCHEMAORG_PROPERTIES", defaul
 
 STRAVA_CLIENT_ID = env.str("STRAVA_CLIENT_ID", default="")
 STRAVA_CLIENT_SECRET = env.str("STRAVA_CLIENT_SECRET", default="")
+
+
+# Sentry
+
+if env.bool("ENABLE_SENTRY", default=False):
+    sentry_sdk.init(
+        dsn=env.str("SENTRY_DSN"),
+        integrations=[
+            DjangoIntegration(),
+        ],
+        traces_sample_rate=1.0,
+        send_default_pii=True,
+    )
