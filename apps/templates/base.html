@@ -24,6 +24,7 @@
     <script src="{% static 'trix/trix.js' %}"></script>
     <script src="{% static 'trix/attachments.js' %}"></script>
     <script src="{% static 'js/app.js' %}"></script>
+    {% block head %}{% endblock %}
 </head>
 <body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="">
@@ -96,5 +97,8 @@
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <script src="{% static 'js/_hyperscript.min.js' %}" defer></script>
     {% django_htmx_script %}
+    {% block body_end %}
+    {% endblock %}
+
 </body>
 </html>
