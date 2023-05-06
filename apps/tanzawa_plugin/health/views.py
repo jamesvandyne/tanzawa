@@ -1,4 +1,4 @@
-from django import urls
+from django import http, urls
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.utils import decorators as util_decorators
@@ -44,3 +44,14 @@ class AddDailyHealth(generic.FormView):
         )
         messages.success(self.request, "Recorded your daily health measurements.")
         return super().form_valid(form)
+
+
+@auth_decorators.login_required
+def graph_api(request) -> http.JsonResponse:
+    points = models.Weight.objects.order_by("-measured_at")[:10]
+    return http.JsonResponse(
+        data={
+            "labels": [point.measured_at.date() for point in reversed(points)],
+            "weight": [point.measurement for point in reversed(points)],
+        }
+    )
