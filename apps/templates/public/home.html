@@ -1,6 +1,6 @@
 {% extends "base_public.html" %}
 
-{% load plugins tz %}
+{% load plugins tz humanize %}
 
 {% block breadcrumbs_block %}{% endblock %}
 
@@ -93,6 +93,21 @@
                     {% endfor %}
                 </div>
             </div>
+
+            {% if generation %}
+            <div class="mt-2 md:flex md:mt-8">
+                <div class="md:flex flex-col flex-grow">
+                    <div class="mb-2 md:mb-4">
+                        <h1>☀️ Solar Generation</h1>
+                        <p>The <a href="https://solar.jamesvandyne.com" class="underline">solar panels</a> on my roof have generated:</p>
+                            <ol class="text-sm">
+                                <li>{{ generation.today_generation|intcomma }} kWh today</li>
+                                <li>{{ generation.total_generation|intcomma }} kWh total</li>
+                            </ol>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
     </div>
