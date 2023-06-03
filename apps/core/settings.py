@@ -251,3 +251,8 @@ if env.bool("ENABLE_SENTRY", default=False):
         traces_sample_rate=1.0,
         send_default_pii=True,
     )
+
+
+# Sunbottle
+
+SUNBOTTLE_API_URL = env.str("SUNBOTTLE_API_URL", default="")

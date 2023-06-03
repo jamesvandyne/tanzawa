@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 from django.urls import reverse
 from model_bakery import baker
@@ -61,5 +63,7 @@ class TestHomeView:
     ):
         if login_user:
             client.force_login(login_user)
-        response = client.get(target_url)
+
+        with mock.patch("interfaces.public.home.views.sunbotte_queries"):
+            response = client.get(target_url)
         assert should_show == (t_entry.p_summary in response.content.decode("utf-8"))

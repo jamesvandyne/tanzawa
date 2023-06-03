@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db.models import Count, Q
+from django.utils import timezone
 from django.views.generic import ListView, TemplateView
 
 from core.constants import Visibility
@@ -9,6 +10,7 @@ from data.post.models import MPostKind
 from data.streams.models import MStream
 from domain.files import queries as file_queries
 from domain.posts import queries as post_queries
+from domain.sunbottle import queries as sunbotte_queries
 
 
 class BlogListView(ListView):
@@ -93,4 +95,7 @@ class HomeView(TemplateView):
                 "photo_gallery": file_queries.get_public_photos(limit=10),
             }
         )
+        if settings.SUNBOTTLE_API_URL:
+            context["generation"] = sunbotte_queries.get_generation(timezone.now().time().hour)
+
         return context
