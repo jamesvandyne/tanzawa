@@ -16,3 +16,10 @@ class EmojiMoodChoices(TextChoices):
     POSITIVE = "positive", "😀"
     NEUTRAL = "neutral", "😐"
     NEGATIVE = "negative", "☹️"
+
+
+class GraphDuration(TextChoices):
+    SIX_WEEKS = "SIX_WEEKS", "Six Weeks"
+    MONTH_TO_DATE = "MONTH_TO_DATE", "Month to date"
+    LAST_MONTH = "LAST_MONTH", "Last Month"
+    ALL = "ALL", "All"
