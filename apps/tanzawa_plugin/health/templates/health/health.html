@@ -25,55 +25,7 @@
                 <p class="text-4xl">{{ mood.emoji }}</p>
             </div>
         </section>
-        <section class="mt-2">
-            <canvas id="weightChart" width="400" height="300" class="max-w-prose" style="height: 300px;"></canvas>
-        </section>
+        <div hx-get="{% url "plugin_health_admin:weight_graph" %}" hx-trigger="load"></div>
         {% endif %}
     </main>
-{% endblock %}
-
-
-{% block body_end %}
-    <script>
-    const ctx = document.getElementById('weightChart');
-
-    async function drawChart() {
-        const response = await fetch("{% url 'plugin_health_admin:graph_api' %}");
-        const data = await response.json();
-        const weightChart = new Chart(ctx, {
-            type: "line",
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Last 10 measurements',
-                        color: "#938070",
-                    },
-                     legend: {
-                        display: true,
-                         position: "bottom",
-                        labels: {
-                            color: "#938070"
-                        }
-                    }
-                }
-            },
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        label: "{{ weight.unit }}",
-                        data: data.weight,
-                        fill: true,
-                        borderColor: "#11722c",
-                        pointRadius: 0,
-                    },
-                ],
-            },
-        });
-    }
-    drawChart();
-</script>
 {% endblock %}
