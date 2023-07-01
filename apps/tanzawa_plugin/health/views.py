@@ -46,6 +46,26 @@ class AddDailyHealth(generic.FormView):
         return super().form_valid(form)
 
 
+@util_decorators.method_decorator(auth_decorators.login_required, name="dispatch")
+class WeightGraph(generic.TemplateView):
+    """
+    A view that displays a weight data graph.
+    """
+
+    template_name = "health/fragments/weight_graph.html"
+
+    def setup(self, request, *args, **kwargs) -> None:
+        super().setup(request, *args, **kwargs)
+        try:
+            self.duration = constants.GraphDuration(request.GET.get("duration"))
+        except ValueError:
+            self.duration = constants.GraphDuration(constants.GraphDuration.SIX_WEEKS)
+
+    def get_context_data(self, **kwargs) -> dict:
+        form = forms.WeightGraph(self.request.GET)
+        return super().get_context_data(duration=self.duration, form=form)
+
+
 @auth_decorators.login_required
 def graph_api(request) -> http.JsonResponse:
     try:

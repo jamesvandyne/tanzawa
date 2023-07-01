@@ -1,0 +1,50 @@
+<div id="chart">
+    {{ form }}
+    <section class="mt-2">
+        <canvas id="weightChart" width="400" height="300" class="max-w-prose" style="height: 300px;"></canvas>
+    </section>
+</div>
+
+
+<script>
+
+async function drawChart() {
+    let ctx = document.getElementById('weightChart');
+    const response = await fetch("{% url 'plugin_health_admin:graph_api' %}?duration={{ duration }}");
+    const data = await response.json();
+    const weightChart = new Chart(ctx, {
+        type: "line",
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Weight',
+                    color: "#938070",
+                },
+                 legend: {
+                    display: true,
+                     position: "bottom",
+                    labels: {
+                        color: "#938070"
+                    }
+                }
+            }
+        },
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: "{{ weight.unit }}",
+                    data: data.weight,
+                    fill: true,
+                    borderColor: "#11722c",
+                    pointRadius: 0,
+                },
+            ],
+        },
+    });
+}
+drawChart();
+</script>
