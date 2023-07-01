@@ -4,7 +4,7 @@ from django.contrib.auth import decorators as auth_decorators
 from django.utils import decorators as util_decorators
 from django.views import generic
 
-from . import application, forms, models
+from . import application, constants, forms, models, queries
 
 
 @util_decorators.method_decorator(auth_decorators.login_required, name="dispatch")
@@ -48,7 +48,15 @@ class AddDailyHealth(generic.FormView):
 
 @auth_decorators.login_required
 def graph_api(request) -> http.JsonResponse:
-    points = models.Weight.objects.order_by("-measured_at")[:10]
+    try:
+        duration = constants.GraphDuration(request.GET.get("duration"))
+    except ValueError:
+        duration = constants.GraphDuration(constants.GraphDuration.SIX_WEEKS)
+
+    points = models.Weight.objects.all()
+    if date_filter := queries.get_date_filter(duration):
+        points = points.filter(date_filter)
+    points = points.order_by("-measured_at")
     return http.JsonResponse(
         data={
             "labels": [point.measured_at.date() for point in reversed(points)],
