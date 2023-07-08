@@ -3,7 +3,7 @@ import datetime
 from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
-
+from data.entry import models as entry_models
 from . import constants
 
 
@@ -26,6 +26,8 @@ class Activity(models.Model):
     max_speed = models.FloatField()
     average_heartrate = models.FloatField(null=True)
     max_heartrate = models.FloatField(null=True)
+
+    entry = models.ForeignKey("entry.TEntry", on_delete=models.CASCADE, null=True, related_name="activities")
 
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
