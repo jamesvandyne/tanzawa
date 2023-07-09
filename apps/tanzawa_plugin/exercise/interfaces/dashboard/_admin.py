@@ -59,3 +59,22 @@ class ActivityDetail(generic.TemplateView):
             default_lon=self.activity.start_point.x,
             point_list=exercise_queries.get_point_list(self.activity),
         )
+
+
+@method_decorator(login_required, name="dispatch")
+class CreatePostFromActivity(generic.View):
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.athlete = get_object_or_404(strava_models.Athlete, user=request.user)
+        self.activity = get_object_or_404(exercise_models.Activity, pk=kwargs["pk"])
+
+    def post(self, *args, **kwargs):
+        try:
+            entry = strava.create_post_from_activity(athlete=self.athlete, activity=self.activity)
+        except strava.UnableToCreatePostFromActivity as e:
+            messages.error(self.request, f"Unable to create post from activity {e}")
+        else:
+            messages.success(self.request, "Created entry from activity")
+            return http.HttpResponseRedirect(reverse("status_edit", args=[entry.pk]))
+
+        return http.HttpResponseRedirect(reverse("plugin_exercise_admin:exercise"))
