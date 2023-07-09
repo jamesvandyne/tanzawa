@@ -35,6 +35,9 @@ class Activity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = "exercise"
+
     @property
     def distance_km(self) -> float:
         return self.distance / 1000
@@ -137,6 +140,9 @@ class Map(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = "exercise"
+
     def update(self, vendor_id: str, summary_polyline: str) -> None:
         self.vendor_id = vendor_id
         self.summary_polyline = summary_polyline
@@ -150,6 +156,9 @@ class GPXRoute(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = "exercise"
+
 
 class ActivityPhoto(models.Model):
     t_file = models.ForeignKey("files.TFile", on_delete=models.CASCADE)
@@ -160,3 +169,6 @@ class ActivityPhoto(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"

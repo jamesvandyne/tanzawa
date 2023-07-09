@@ -13,6 +13,9 @@ class Athlete(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        app_label = "exercise"
+
 
 class AccessToken(models.Model):
     athlete = models.OneToOneField(Athlete, on_delete=models.CASCADE, related_name="access_token")
@@ -23,6 +26,9 @@ class AccessToken(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"
 
     @property
     def is_expired(self) -> bool:
@@ -42,6 +48,9 @@ class RefreshToken(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"
 
     def update(self, token: str) -> None:
         self.token = token
