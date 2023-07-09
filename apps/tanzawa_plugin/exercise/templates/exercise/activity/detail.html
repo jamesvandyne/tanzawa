@@ -20,6 +20,14 @@
             </div>
         </div>
         <div id="map" class="mt-2" style="width: 100%; height: 300px;"></div>
+
+        <form action="{% url "plugin_exercise_admin:create_post_for_activity" activity.pk %}" method="post" class="mt-2">
+            {% csrf_token %}
+            <button class="primary-button">
+                <span class="mr-1">💬</span>
+                <span class="hover:underline">{{ activity.entry|yesno:"Update,Create" }} post</span>
+            </button>
+        </form>
     </div>
     <script lang="js">
         function loadMap() {
