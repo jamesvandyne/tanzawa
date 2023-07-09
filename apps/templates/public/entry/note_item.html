@@ -24,5 +24,23 @@
     <main class="e-content mb-2 pt-2 content">
         {{ t_entry.e_content|safe }}
     </main>
+    <section class="mt-2">
+        {% for activity in activities %}
+            <div class="grid grid-cols-2 md:grid-cols-4 mt-2">
+                <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.distance_km|floatformat }}</span><span class="text-sm">km</span></p>
+                <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.elapsed_time_minutes|floatformat }}</span><span class="text-sm">min</span></p>
+                <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.total_elevation_gain|floatformat }}</span><span class="text-sm">m climbed</span></p>
+                <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.distance_km|floatformat }}</span><span class="text-sm">avg bpm</span></p>
+            </div>
+            <div class="flex mt-2">
+                {% for photo in activity.photos %}
+                    <img src="{{ photo.url }}" alt="" class="h-80"/>
+                {% endfor %}
+                <div class="ml-auto">
+                    {{ activity.route_svg }}
+                </div>
+            </div>
+        {% endfor %}
+    </section>
     {% include "public/fragments/post_footer.html" %}
 </div>
