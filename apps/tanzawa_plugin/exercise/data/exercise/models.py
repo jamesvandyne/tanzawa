@@ -3,7 +3,9 @@ import datetime
 from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
+
 from data.entry import models as entry_models
+
 from . import constants
 
 
@@ -119,6 +121,10 @@ class Activity(models.Model):
         self.max_speed = max_speed
         self.average_heartrate = average_heartrate
         self.max_heartrate = max_heartrate
+        self.save()
+
+    def set_entry(self, entry: entry_models.TEntry) -> None:
+        self.entry = entry
         self.save()
 
 
