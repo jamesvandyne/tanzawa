@@ -81,12 +81,12 @@ class ActivitySvg:
 
 
 @functools.lru_cache(maxsize=256)
-def get_svg(activity: models.Activity, width: int = 1000, height: int = 1000) -> str:
+def get_svg(activity: models.Activity, width: int = 1000, height: int = 1000, css_class: str = "h-32") -> str:
     """
     Get a svg for a given activity.
     """
     svg_data = _get_svg(activity, width, height)
-    return render_to_string("exercise/activity/route.svg", {"svg": svg_data})
+    return render_to_string("exercise/activity/route.svg", {"svg": svg_data, "css_class": css_class})
 
 
 def get_png_of_route(activity: models.Activity, width: int = 1000, height: int = 1000) -> io.BytesIO:
