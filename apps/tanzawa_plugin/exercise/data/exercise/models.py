@@ -143,3 +143,14 @@ class GPXRoute(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class ActivityPhoto(models.Model):
+    t_file = models.ForeignKey("files.TFile", on_delete=models.CASCADE)
+    activity = models.ForeignKey("Activity", on_delete=models.CASCADE, related_name="photos")
+    vendor_id = models.CharField(max_length=128, unique=True)
+    params = models.JSONField(default=dict)
+
+    # Audit Fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
