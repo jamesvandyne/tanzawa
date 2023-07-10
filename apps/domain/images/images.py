@@ -1,4 +1,5 @@
 import io
+import math
 import mimetypes
 from pathlib import Path
 
@@ -41,7 +42,7 @@ def convert_image_format(
     if longest_edge:
         image = _get_thumbnail(image, longest_edge)
     elif image.width >= 1200 or image.height >= 1200:
-        width, height = (image.width // 2, image.height // 2)
+        width, height = (math.floor(image.width * 0.75), math.floor(image.height * 0.75))
         image = image.resize((width, height))
 
     new_format_data = _change_image_format(image, format=file_extension[1:])
