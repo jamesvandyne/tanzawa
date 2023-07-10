@@ -102,13 +102,25 @@ def _get_rotated_image(image: Image) -> Image:
         pass
     else:
         if exif:
-            exif = dict(exif.items())
-            if exif[orientation] == 3:
-                image = image.rotate(180, expand=True)
-            elif exif[orientation] == 6:
-                image = image.rotate(270, expand=True)
-            elif exif[orientation] == 8:
-                image = image.rotate(90, expand=True)
+            try:
+                return _maybe_rotate_image(image, exif, orientation)
+            except KeyError:
+                pass
+    return image
+
+
+def _maybe_rotate_image(
+    image: Image,
+    exif: dict,
+    orientation: int,
+) -> Image:
+    exif = dict(exif.items())
+    if exif[orientation] == 3:
+        image = image.rotate(180, expand=True)
+    elif exif[orientation] == 6:
+        image = image.rotate(270, expand=True)
+    elif exif[orientation] == 8:
+        image = image.rotate(90, expand=True)
     return image
 
 
