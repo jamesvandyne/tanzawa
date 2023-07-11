@@ -1,3 +1,5 @@
 STRAVA_OAUTH_AUTHORIZE_URL = "https://www.strava.com/oauth/authorize"
 STRAVA_OAUTH_TOKEN_URL = "https://www.strava.com/oauth/token"
 STRAVA_ACTIVITIES_ENDPOINT = "https://www.strava.com/api/v3/athlete/activities"
+STRAVA_ACTIVITY_URL = "https://www.strava.com/activities/{id}"
+STRAVA_ACTIVITY_DETAIL_ENDPOINT = "https://www.strava.com/api/v3/activities/{id}?include_all_efforts="

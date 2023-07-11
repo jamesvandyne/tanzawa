@@ -1,4 +1,5 @@
 import io
+import math
 import mimetypes
 from pathlib import Path
 
@@ -41,7 +42,7 @@ def convert_image_format(
     if longest_edge:
         image = _get_thumbnail(image, longest_edge)
     elif image.width >= 1200 or image.height >= 1200:
-        width, height = (image.width // 2, image.height // 2)
+        width, height = (math.floor(image.width * 0.75), math.floor(image.height * 0.75))
         image = image.resize((width, height))
 
     new_format_data = _change_image_format(image, format=file_extension[1:])
@@ -102,13 +103,25 @@ def _get_rotated_image(image: Image) -> Image:
         pass
     else:
         if exif:
-            exif = dict(exif.items())
-            if exif[orientation] == 3:
-                image = image.rotate(180, expand=True)
-            elif exif[orientation] == 6:
-                image = image.rotate(270, expand=True)
-            elif exif[orientation] == 8:
-                image = image.rotate(90, expand=True)
+            try:
+                return _maybe_rotate_image(image, exif, orientation)
+            except KeyError:
+                pass
+    return image
+
+
+def _maybe_rotate_image(
+    image: Image,
+    exif: dict,
+    orientation: int,
+) -> Image:
+    exif = dict(exif.items())
+    if exif[orientation] == 3:
+        image = image.rotate(180, expand=True)
+    elif exif[orientation] == 6:
+        image = image.rotate(270, expand=True)
+    elif exif[orientation] == 8:
+        image = image.rotate(90, expand=True)
     return image
 
 

@@ -29,6 +29,16 @@ class StravaClient:
             return response.json()
         raise StravaClientError(response.json())
 
+    def get_activity(self, activity_id: str) -> dict:
+        """
+        Get the details for a given activity.
+        """
+        activity_url = constants.STRAVA_ACTIVITY_DETAIL_ENDPOINT.format(id=activity_id)
+        response = requests.get(activity_url, headers=self._get_headers())
+        if response.status_code == 200:
+            return response.json()
+        raise StravaClientError(response.json())
+
     def _get_headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self.auth_token}"}
 

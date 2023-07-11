@@ -24,5 +24,10 @@
     <main class="e-content mb-2 pt-2 content">
         {{ t_entry.e_content|safe }}
     </main>
+    <section class="mt-2">
+        {% for activity in activities %}
+            {% include "exercise/public/fragments/activity_detail.html" %}
+        {% endfor %}
+    </section>
     {% include "public/fragments/post_footer.html" %}
 </div>

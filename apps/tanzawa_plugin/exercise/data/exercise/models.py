@@ -4,6 +4,8 @@ from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 
+from data.entry import models as entry_models
+
 from . import constants
 
 
@@ -27,9 +29,14 @@ class Activity(models.Model):
     average_heartrate = models.FloatField(null=True)
     max_heartrate = models.FloatField(null=True)
 
+    entry = models.ForeignKey("entry.TEntry", on_delete=models.CASCADE, null=True, related_name="activities")
+
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"
 
     @property
     def distance_km(self) -> float:
@@ -119,6 +126,10 @@ class Activity(models.Model):
         self.max_heartrate = max_heartrate
         self.save()
 
+    def set_entry(self, entry: entry_models.TEntry) -> None:
+        self.entry = entry
+        self.save()
+
 
 class Map(models.Model):
     activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
@@ -128,6 +139,9 @@ class Map(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"
 
     def update(self, vendor_id: str, summary_polyline: str) -> None:
         self.vendor_id = vendor_id
@@ -141,3 +155,20 @@ class GPXRoute(models.Model):
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"
+
+
+class ActivityPhoto(models.Model):
+    t_file = models.ForeignKey("files.TFile", on_delete=models.CASCADE)
+    activity = models.ForeignKey("Activity", on_delete=models.CASCADE, related_name="photos")
+    vendor_id = models.CharField(max_length=128, unique=True)
+    params = models.JSONField(default=dict)
+
+    # Audit Fields
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = "exercise"

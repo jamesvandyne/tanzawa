@@ -3,6 +3,8 @@ import pathlib
 from importlib import util as importlib_util
 from typing import TYPE_CHECKING, Optional, Protocol
 
+from django.conf import settings
+
 if TYPE_CHECKING:
     from data.post import models as post_models
 
@@ -53,7 +55,11 @@ class Plugin(abc.ABC, NavigationProtocol, FeedHook):
     def is_enabled(self) -> bool:
         from .models import MPlugin
 
-        return MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first() or False
+        return (
+            MPlugin.objects.filter(identifier=self.identifier).values_list("enabled", flat=True).first()
+            or self.identifier in settings.FORCE_ENABLED_PLUGINS
+            or False
+        )
 
     @property
     def plugin_module(self) -> str:

@@ -953,6 +953,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 .text-center {
   text-align: center;
 }
+.text-right {
+  text-align: right;
+}
 .align-top {
   vertical-align: top;
 }
@@ -989,6 +992,9 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 .font-bold {
   font-weight: 700;
+}
+.uppercase {
+  text-transform: uppercase;
 }
 .italic {
   font-style: italic;

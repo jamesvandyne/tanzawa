@@ -15,6 +15,11 @@ urlpatterns = [
         dashboard.ActivityDetail.as_view(),
         name="activity_detail",
     ),
+    path(
+        "activities/<int:pk>/create_post/",
+        dashboard.CreatePostFromActivity.as_view(),
+        name="create_post_for_activity",
+    ),
     # Import
     path(
         "activities/import",
