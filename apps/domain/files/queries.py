@@ -66,6 +66,11 @@ def get_processed_file(
         qs = qs.filter(mime_type=mime_type)
     if longest_edge:
         qs = qs.filter(Q(width=longest_edge) | Q(height=longest_edge))
+    else:
+        # Ensure we do not return a thumbnail sized photo when requesting the original without a
+        # specified size as it causes photos to become blurry.
+        original_size = get_size_for_file(t_file)
+        qs = qs.filter(Q(width=original_size.width) | Q(height=original_size.height))
     return qs.first()
 
 
