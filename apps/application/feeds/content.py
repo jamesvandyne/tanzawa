@@ -12,8 +12,10 @@ def get_encoded_content(*, post: post_models.TPost) -> str:
     br_tag = "<br/>"
     content = queries.get_encoded_content(post)
     for feed_plugin in plugin_pool.feed_plugins():
-        before_content.append(feed_plugin.feed_before_content(post=post))
-        after_content.append(feed_plugin.feed_after_content(post=post))
+        if plugin_before_content := feed_plugin.feed_before_content(post=post):
+            before_content.append(plugin_before_content)
+        if plugin_after_content := feed_plugin.feed_after_content(post=post):
+            after_content.append(plugin_after_content)
 
     if before_content:
         content = f"{br_tag.join(before_content)}{br_tag}{content}"
