@@ -70,7 +70,12 @@ def get_processed_file(
         # Ensure we do not return a thumbnail sized photo when requesting the original without a
         # specified size as it causes photos to become blurry.
         original_size = get_size_for_file(t_file)
-        qs = qs.filter(Q(width=original_size.width) | Q(height=original_size.height))
+        qs = qs.filter(
+            Q(width=original_size.width)
+            | Q(width=original_size.height)
+            | Q(height=original_size.height)
+            | Q(height=original_size.width)
+        )
     return qs.first()
 
 
