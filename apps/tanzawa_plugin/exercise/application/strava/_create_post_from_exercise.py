@@ -98,8 +98,9 @@ def _get_summary(activity: dict) -> str:
 
 def _store_photos(activity: exercise_models.Activity, activity_detail: dict) -> list[exercise_models.ActivityPhoto]:
     try:
-        return [_get_photo(activity, activity_detail["photos"]["primary"])]
-    except KeyError:
+        primary_photo = activity_detail["photos"]["primary"]
+        return [_get_photo(activity, primary_photo)]
+    except (KeyError, TypeError):
         return []
 
 
