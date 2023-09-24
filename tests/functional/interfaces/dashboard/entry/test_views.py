@@ -1,9 +1,11 @@
+import datetime
 from decimal import Decimal
 from unittest import mock
 
 import pytest
 from django.contrib.gis import geos
 from django.urls import reverse
+from django.utils import timezone
 
 from core.constants import Visibility
 from data.entry import models as entry_models
@@ -444,8 +446,8 @@ class TestUpdateStatusView:
 
         # Mock out discovering webmentions
         ronkyuu_mock.return_value = []
-
-        entry = factory.StatusEntry()
+        published_at = timezone.localtime().now() - datetime.timedelta(days=365)
+        entry = factory.StatusEntry(t_post__dt_published=published_at)
 
         # Who submits a post
         payload = {
@@ -496,6 +498,8 @@ class TestUpdateStatusView:
         assert t_post.m_post_status.key == "published"
         assert t_post.m_post_kind.key == "note"
         assert t_post.visibility == Visibility.PUBLIC
+        # ... and the original published date remains unchanged
+        assert t_post.dt_published.date() == published_at.date()
 
         # ... and it is in the specified stream
         assert list(entry.t_post.streams.all()) == [stream]

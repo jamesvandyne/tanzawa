@@ -1,13 +1,13 @@
 arrow==1.2.3
-asgiref==3.6.0
-Django==4.2.4
+asgiref==3.7.2
+Django==4.2.5
 pytz==2022.7
 sqlparse==0.4.1
 django-webmention==3.0.0
 djangorestframework==3.14.0
 beautifulsoup4==4.11.1
 exif==1.4.2
-Pillow==9.4.0
+Pillow==10.0.1
 mf2py==1.1.2
 mf2util==0.5.1
 django-picklefield==3.1
