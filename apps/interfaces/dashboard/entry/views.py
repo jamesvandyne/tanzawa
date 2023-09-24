@@ -163,6 +163,7 @@ class UpdateEntryView(UpdateView):
             streams=form.cleaned_data["streams"],
             trip=form.cleaned_data["t_trip"],
             location=self._get_location(named_forms["location"]),
+            published_at=self.object.t_post.dt_published,
             syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
         )
 
@@ -339,6 +340,7 @@ class UpdateCheckinView(UpdateEntryView):
             streams=form.cleaned_data["streams"],
             trip=form.cleaned_data["t_trip"],
             location=self._get_location(named_forms["location"]),
+            published_at=self.object.t_post.dt_published,
             syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
             checkin=entry_app.Checkin(
                 name=named_forms["checkin"].cleaned_data["name"],
@@ -441,6 +443,7 @@ class UpdateReplyView(UpdateEntryView):
             streams=form.cleaned_data["streams"],
             trip=form.cleaned_data["t_trip"],
             location=self._get_location(named_forms["location"]),
+            published_at=self.object.t_post.dt_published,
             syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
             reply=entry_app.Reply(
                 u_in_reply_to=self.reply.u_in_reply_to,
@@ -560,6 +563,7 @@ class UpdateBookmarkView(UpdateEntryView):
             trip=form.cleaned_data["t_trip"],
             location=self._get_location(named_forms["location"]),
             syndication_urls=self._get_syndication_urls(named_forms["syndication"]),
+            published_at=self.object.t_post.dt_published,
             bookmark=entry_app.Bookmark(
                 u_bookmark_of=form.cleaned_data["u_bookmark_of"],
                 title=form.cleaned_data["title"],
