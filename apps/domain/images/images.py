@@ -39,11 +39,7 @@ def convert_image_format(
 
     image = _get_rotated_image(image)
 
-    if longest_edge:
-        image = _get_thumbnail(image, longest_edge)
-    elif image.width >= 1200 or image.height >= 1200:
-        width, height = (math.floor(image.width * 0.75), math.floor(image.height * 0.75))
-        image = image.resize((width, height))
+    image, width, height = _get_maybe_resized_image_and_size(image, longest_edge)
 
     new_format_data = _change_image_format(image, format=file_extension[1:])
 
@@ -61,6 +57,24 @@ def _get_image(t_file: file_models.TFile) -> Image:
         return Image.open(_get_first_page_of_pdf_as_png(t_file))
     else:
         return Image.open(t_file.file)
+
+
+def get_maybe_resized_size(t_file: file_models.TFile, longest_edge: int | None = None) -> tuple[int, int]:
+    image = _get_image(t_file)
+    image = _get_rotated_image(image)
+    # Would be great to refactor this to not rely on using .thumbnail() just for the size,
+    # as that requires us to actually resize the image just to get the final width/height.
+    _, width, height = _get_maybe_resized_image_and_size(image, longest_edge)
+    return width, height
+
+
+def _get_maybe_resized_image_and_size(image: Image, longest_edge: int | None = None) -> tuple[Image, int, int]:
+    if longest_edge:
+        image = _get_thumbnail(image, longest_edge)
+    elif image.width >= 1200 or image.height >= 1200:
+        width, height = (math.floor(image.width * 0.75), math.floor(image.height * 0.75))
+        image = image.resize((width, height))
+    return image, image.width, image.height
 
 
 def _get_first_page_of_pdf_as_png(t_file: file_models.TFile) -> io.BytesIO:

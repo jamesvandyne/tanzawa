@@ -37,6 +37,11 @@ def _get_or_create_processed_file(
     if processed_file := file_queries.get_processed_file(t_file, mime_type=target_mime, longest_edge=longest_edge):
         return processed_file, False
 
+    width, height = image_ops.get_maybe_resized_size(t_file, longest_edge)
+    if processed_file := file_queries.get_processed_file(
+        t_file, mime_type=target_mime, longest_edge=max([width, height])
+    ):
+        return processed_file, False
     return _create_processed_file(t_file, target_mime=target_mime, longest_edge=longest_edge), True
 
 
@@ -50,6 +55,7 @@ def _create_processed_file(
 
     :raises UnprocessableFile
     """
+    # This should be using the same size query as we use else where
     upload_file, width, height = image_ops.convert_image_format(
         t_file, target_mime=target_mime, longest_edge=int(longest_edge) if longest_edge else None
     )
