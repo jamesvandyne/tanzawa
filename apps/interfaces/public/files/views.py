@@ -40,7 +40,7 @@ def get_media(request, uuid):
     t_file: file_models.TFile = get_object_or_404(file_models.TFile, uuid=uuid)
     as_attachment = request.GET.get("content-disposition", "inline") == "attachment"
     file_format = request.GET.get("f") or t_file.mime_type
-    size = request.GET.get("s")
+    size = int(request.GET.get("s")) if request.GET.get("s") else None
 
     return_file = file_ops.get_file(t_file, file_format, size)
 
