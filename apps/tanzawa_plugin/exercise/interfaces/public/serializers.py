@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework import serializers
 
+import tanzawa_plugin.exercise.domain.exercise.operations
 from tanzawa_plugin.exercise.data.exercise import constants, models
 from tanzawa_plugin.exercise.domain.exercise import queries
 
@@ -10,7 +11,7 @@ class ActivitySerializer(serializers.Serializer):
     route_svg = serializers.SerializerMethodField()
 
     def get_route_svg(self, obj: models.Activity) -> str:
-        return queries.get_svg(obj, 128, 128)
+        return tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_svg(obj, 128, 128)
 
 
 class RunsTop(serializers.Serializer):
