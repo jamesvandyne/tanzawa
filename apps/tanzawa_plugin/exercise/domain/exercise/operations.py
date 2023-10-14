@@ -114,11 +114,14 @@ def maybe_create_and_get_svg(
     """
     Get a svg for a given activity.
     """
-    if svg_map := activity.map.svg:
-        return svg_map.file.read()
-
-    svg_data = _get_svg(activity, width, height)
-    return render_to_string("exercise/activity/route.svg", {"svg": svg_data, "css_class": css_class})
+    if map := activity.map:
+        if map.svg:
+            return map.svg.replace("h-size", css_class)
+        svg_data = _get_svg(activity, width, height)
+        svg = render_to_string("exercise/activity/route.svg", {"svg": svg_data, "css_class": "h-size"})
+        map.set_svg(svg)
+        return map.svg.replace("h-size", css_class)
+    return ""
 
 
 def maybe_create_and_get_png_of_route(activity: models.Activity, width: int = 1000, height: int = 1000) -> io.BytesIO:
