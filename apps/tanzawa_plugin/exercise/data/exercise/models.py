@@ -135,6 +135,7 @@ class Map(models.Model):
     activity = models.OneToOneField(Activity, on_delete=models.CASCADE)
     vendor_id = models.CharField(max_length=255, default="", unique=True)
     summary_polyline = models.TextField()
+    svg = models.TextField(default="")
 
     # Audit Fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -146,6 +147,10 @@ class Map(models.Model):
     def update(self, vendor_id: str, summary_polyline: str) -> None:
         self.vendor_id = vendor_id
         self.summary_polyline = summary_polyline
+        self.save()
+
+    def set_svg(self, svg: str) -> None:
+        self.svg = svg
         self.save()
 
 

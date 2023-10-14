@@ -1,7 +1,8 @@
+from django.utils.safestring import mark_safe
 from rest_framework import serializers
 
+import tanzawa_plugin.exercise.domain.exercise.operations
 from tanzawa_plugin.exercise.data.exercise import models
-from tanzawa_plugin.exercise.domain.exercise import queries
 
 
 class ActivityPhoto(serializers.Serializer):
@@ -35,4 +36,6 @@ class Activity(serializers.Serializer):
         return ActivityPhoto(obj.photos, many=True).data
 
     def get_route_svg(self, obj: models.Activity) -> str:
-        return queries.get_svg(obj, 256, 256, css_class="h-80")
+        return mark_safe(
+            tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_svg(obj, 256, 256, css_class="h-80")
+        )

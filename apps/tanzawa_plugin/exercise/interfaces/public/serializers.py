@@ -1,7 +1,9 @@
 import datetime
 
+from django.utils.safestring import mark_safe
 from rest_framework import serializers
 
+import tanzawa_plugin.exercise.domain.exercise.operations
 from tanzawa_plugin.exercise.data.exercise import constants, models
 from tanzawa_plugin.exercise.domain.exercise import queries
 
@@ -10,7 +12,7 @@ class ActivitySerializer(serializers.Serializer):
     route_svg = serializers.SerializerMethodField()
 
     def get_route_svg(self, obj: models.Activity) -> str:
-        return queries.get_svg(obj, 128, 128)
+        return mark_safe(tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_svg(obj, 128, 128))
 
 
 class RunsTop(serializers.Serializer):
@@ -42,5 +44,9 @@ class RunsTop(serializers.Serializer):
         return (queries.total_elapsed_time(self.start_at, self.end_at, self.activity_types) / 60) / 60
 
     def get_activities(self, obj) -> ActivitySerializer:
-        activities = queries.get_activties(self.start_at, self.end_at, self.activity_types).order_by("-started_at")
+        activities = (
+            queries.get_activties(self.start_at, self.end_at, self.activity_types)
+            .select_related("map")
+            .order_by("-started_at")
+        )
         return ActivitySerializer(instance=activities, many=True).data

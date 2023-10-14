@@ -7,9 +7,9 @@ from django.utils import timezone
 from django.views import generic
 from meta.views import Meta
 
+import tanzawa_plugin.exercise.domain.exercise.operations
 from tanzawa_plugin.exercise.data.exercise import constants
 from tanzawa_plugin.exercise.data.exercise import models as exercise_models
-from tanzawa_plugin.exercise.domain.exercise import queries
 
 from . import serializers
 
@@ -82,5 +82,7 @@ class RouteRaster(generic.View):
         self.activity = get_object_or_404(exercise_models.Activity, pk=kwargs["pk"])
 
     def get(self, *args, **kwargs):
-        png = queries.get_png_of_route(activity=self.activity)
+        png = tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_png_of_route(
+            activity=self.activity
+        )
         return http.HttpResponse(png.read(), headers={"Content-Type": "image/png"})
