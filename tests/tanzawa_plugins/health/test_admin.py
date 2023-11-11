@@ -10,9 +10,6 @@ from tanzawa_plugin.health import constants, models
 class TestHealth:
     def test_can_record_health(self, client, factory):
         admin = factory.User()
-        from data.plugins import activation
-
-        activation._reload_urlconf()
         payload = {
             "weight": Decimal("75.12"),
             "weight_unit": constants.WeightUnitChoices.KILOGRAMS,

@@ -68,7 +68,6 @@ class PluginPool:
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=True)
         else:
             MPlugin.new(identifier=plugin_.identifier, enabled=True)
-        activation.activate_plugin(plugin_)
 
     def disable(self, plugin_: plugin.Plugin) -> None:
         """
@@ -79,7 +78,6 @@ class PluginPool:
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=False)
         else:
             MPlugin.new(identifier=plugin_.identifier, enabled=False)
-        activation.deactivate_plugin(plugin_)
 
     def urls(self) -> Iterable[str]:
         """

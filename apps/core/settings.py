@@ -222,7 +222,6 @@ PLUGINS = env.list("PLUGINS", default=[])
 
 INSTALLED_APPS.extend(PLUGINS)
 
-PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", default=True)
 
 FORCE_ENABLED_PLUGINS = env.list("FORCE_ENABLED_PLUGINS", default=[])
 # Open Graph Settings
@@ -256,3 +255,7 @@ if env.bool("ENABLE_SENTRY", default=False):
 # Sunbottle
 
 SUNBOTTLE_API_URL = env.str("SUNBOTTLE_API_URL", default="")
+
+
+# Fly.io
+FLY_APP_NAME = env.str("FLY_APP_NAME", default="")
