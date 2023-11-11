@@ -105,7 +105,6 @@ class PluginPool:
         enabled_plugins = []
         for plugin_ in self.plugins.values():
             if plugin_.identifier in enabled or plugin_.identifier in settings.FORCE_ENABLED_PLUGINS:
-                # yield plugin_
                 enabled_plugins.append(plugin_)
         return enabled_plugins
 
