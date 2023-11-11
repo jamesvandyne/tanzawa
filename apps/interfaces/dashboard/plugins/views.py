@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import decorators as auth_decorators
 from django.shortcuts import redirect, render
 from django.views.decorators import http
 
-from data.plugins import activation, pool
+from data.plugins import pool
 
 
 @auth_decorators.login_required
@@ -23,8 +24,10 @@ def enable_plugin(request, identifier: str):
         messages.error(request, "Plugin not found.")
         return redirect("plugin_list")
     pool.plugin_pool.enable(plugin)
-    messages.success(request, f"{plugin.name} enabled.")
-    activation.restart_parent_process()
+    fly_app_message = (
+        f"Run flyctl app restart {settings.FLY_APP_NAME} for changes to take effect." if settings.FLY_APP_NAME else ""
+    )
+    messages.success(request, f"{plugin.name} enabled. {fly_app_message}")
     return redirect("plugin_list")
 
 
@@ -36,6 +39,8 @@ def disable_plugin(request, identifier: str):
         messages.error(request, "Plugin not found.")
         return redirect("plugin_list")
     pool.plugin_pool.disable(plugin)
-    messages.success(request, f"{plugin.name} disabled.")
-    activation.restart_parent_process()
+    fly_app_message = (
+        f"Run flyctl app restart {settings.FLY_APP_NAME} for changes to take effect." if settings.FLY_APP_NAME else ""
+    )
+    messages.success(request, f"{plugin.name} disabled. {fly_app_message}")
     return redirect("plugin_list")
