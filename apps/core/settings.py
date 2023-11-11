@@ -146,7 +146,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
+        "ENGINE": "core.db",
         "NAME": env.str("DB_NAME", default="db.sqlite3"),
     }
 }
