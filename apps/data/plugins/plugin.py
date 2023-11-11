@@ -1,6 +1,4 @@
 import abc
-import pathlib
-from importlib import util as importlib_util
 from typing import TYPE_CHECKING, Optional, Protocol
 
 from django import urls
@@ -99,16 +97,3 @@ class Plugin(abc.ABC, NavigationProtocol, FeedHook):
     def admin_urls(self) -> str | None:
         """Return the path to the _admin_ url configuration for a plugin"""
         return f"{self.plugin_module}.admin_urls"
-
-    @property
-    def has_migrations(self) -> bool:
-        """Check if a plugin has migration directory.
-
-        Uses pathlib instead of importlib to avoid importing modules.
-        """
-        module_spec = importlib_util.find_spec(self.__module__)
-        if not module_spec or not module_spec.origin:
-            return False
-
-        migration_module = pathlib.Path(module_spec.origin).parent / "migrations"
-        return migration_module.is_dir()
