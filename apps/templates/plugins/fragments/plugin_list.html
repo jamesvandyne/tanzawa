@@ -13,7 +13,8 @@
     {% for plugin in available_plugins %}
         <li class="flex {% if not forloop.first %}mt-2{% endif %}">
             <div class="flex flex-col mr-2 w-96">
-                <h2 class="">{{ plugin.name }}</h2>
+                <h2>{{ plugin.name }}</h2>
+                <span class="help-text">{{ plugin.identifier }}</span>
                 <p class="mt-2 text-sm">{{ plugin.description }}</p>
             </div>
             <div class="flex flex-col">
