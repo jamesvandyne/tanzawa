@@ -3,6 +3,7 @@ import pathlib
 from importlib import util as importlib_util
 from typing import TYPE_CHECKING, Optional, Protocol
 
+from django import urls
 from django.conf import settings
 
 if TYPE_CHECKING:
@@ -51,6 +52,7 @@ class Plugin(abc.ABC, NavigationProtocol, FeedHook):
     description: str
     # A unique namespaced identifier for the plugin
     identifier: str
+    settings_url_name: str = ""
 
     def is_enabled(self) -> bool:
         from .models import MPlugin
@@ -68,11 +70,15 @@ class Plugin(abc.ABC, NavigationProtocol, FeedHook):
 
     @property
     def settings_url(self) -> str:
-        """The main URL for configuring the plugin.
-
-        Plugins that do not provide any configuration via the admin should return a blank string.
         """
-        return ""
+        The main URL for configuring the plugin.
+
+        Plugins should define the settings_url_name attribute if they can be configured.
+        """
+        try:
+            return urls.reverse(self.settings_url_name)
+        except urls.NoReverseMatch:
+            return ""
 
     def render_navigation(
         self,
