@@ -92,6 +92,12 @@ INSTALLED_APPS = [
     "interfaces",
 ]
 
+# Install Plugins
+for module in (BASE_DIR / "tanzawa_plugin").iterdir():
+    if module.is_dir() and (module / "__init__.py").exists():
+        INSTALLED_APPS.append(f"tanzawa_plugin.{module.name}")
+
+
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -217,10 +223,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Homepage Settings
 HIGHLIGHT_STREAM_SLUG: str | None = env.str("HIGHLIGHT_STREAM_SLUG", default=None)
-
-PLUGINS = env.list("PLUGINS", default=[])
-
-INSTALLED_APPS.extend(PLUGINS)
 
 
 FORCE_ENABLED_PLUGINS = env.list("FORCE_ENABLED_PLUGINS", default=[])
