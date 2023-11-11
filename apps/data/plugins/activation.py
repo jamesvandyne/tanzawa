@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from django.apps import apps
 from django.conf import settings
 from django.core import exceptions, management
-from django.db import migrations
 from django.template import utils
 from django.urls import clear_url_caches
 
@@ -62,7 +61,6 @@ def activate_plugin(plugin: "Plugin") -> None:
     This will enable any URLs it has defined and run migrations.
     """
     install_app(plugin.plugin_module)
-    _run_migrations(plugin=plugin)
     _reload_urlconf()
     utils.get_app_template_dirs.cache_clear()
 
@@ -113,12 +111,3 @@ def _wait_for_app_registry():
         else:
             apps_ready = True
             models_ready = True
-
-
-def _run_migrations(*, plugin: "Plugin") -> None:
-    _wait_for_app_registry()
-
-    # Run migrations.
-    if plugin.has_migrations and not getattr(migrations, "MIGRATION_OPERATION_IN_PROGRESS", False):
-        app_name = plugin.plugin_module.split(".")[-1]
-        management.call_command("migrate", app_name, interactive=False)
