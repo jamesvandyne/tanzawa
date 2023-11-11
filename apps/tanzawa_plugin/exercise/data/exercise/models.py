@@ -1,12 +1,14 @@
 import datetime
+from typing import TYPE_CHECKING
 
 from django.contrib.gis import geos
 from django.contrib.gis.db import models as geo_models
 from django.db import models
 
-from data.entry import models as entry_models
-
 from . import constants
+
+if TYPE_CHECKING:
+    from data.entry import models as entry_models
 
 
 class Activity(models.Model):
@@ -126,7 +128,7 @@ class Activity(models.Model):
         self.max_heartrate = max_heartrate
         self.save()
 
-    def set_entry(self, entry: entry_models.TEntry) -> None:
+    def set_entry(self, entry: "entry_models.TEntry") -> None:
         self.entry = entry
         self.save()
 

@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from importlib import import_module
 from operator import attrgetter
 
 from django.conf import settings
@@ -7,7 +6,7 @@ from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
 
-from data.plugins import activation, plugin
+from data.plugins import plugin
 
 
 def _get_m_plugin():
@@ -31,12 +30,9 @@ class PluginPool:
     def discover_plugins(self) -> None:
         if self.discovered:
             return
-        # Load our plugins module so we can discover our plugins automatically.
-        import_module("tanzawa_plugin")
 
-        autodiscover_modules("tanzawa_plugin")
-        for plugin_ in self.plugins.values():
-            activation.install_app(plugin_.plugin_module)
+        autodiscover_modules("plugin")
+
         self.discovered = True
 
     def get_all_plugins(self) -> Iterable[plugin.Plugin]:
@@ -68,7 +64,6 @@ class PluginPool:
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=True)
         else:
             MPlugin.new(identifier=plugin_.identifier, enabled=True)
-        activation.activate_plugin(plugin_)
 
     def disable(self, plugin_: plugin.Plugin) -> None:
         """
@@ -79,7 +74,6 @@ class PluginPool:
             MPlugin.objects.filter(identifier=plugin_.identifier).update(enabled=False)
         else:
             MPlugin.new(identifier=plugin_.identifier, enabled=False)
-        activation.deactivate_plugin(plugin_)
 
     def urls(self) -> Iterable[str]:
         """
@@ -111,7 +105,6 @@ class PluginPool:
         enabled_plugins = []
         for plugin_ in self.plugins.values():
             if plugin_.identifier in enabled or plugin_.identifier in settings.FORCE_ENABLED_PLUGINS:
-                # yield plugin_
                 enabled_plugins.append(plugin_)
         return enabled_plugins
 

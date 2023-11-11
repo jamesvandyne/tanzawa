@@ -1,4 +1,4 @@
-from django import template, urls
+from django import template
 from django.template.loader import render_to_string
 
 from data.plugins import plugin, pool
@@ -11,14 +11,11 @@ class NowPlugin(plugin.Plugin):
 
     name = "Now"
     identifier = __identifier__
+    settings_url_name = "plugin_now_admin:update_now"
 
     @property
     def description(self):
         return render_to_string("now/description.html")
-
-    @property
-    def settings_url(self):
-        return urls.reverse_lazy("plugin_now_admin:update_now")
 
     @property
     def has_public_top_nav(self):

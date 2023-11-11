@@ -1,8 +1,11 @@
+import logging
+
 from django import template
 
 from data.plugins import pool
 
 register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 class RenderPlugin(template.Node):
@@ -10,7 +13,7 @@ class RenderPlugin(template.Node):
         self.plugin = plugin
         self.render_location = render_location[1:-1]  # trim quotes
 
-    def render(self, context):
+    def render(self, context) -> str:
         plugin_variable = self.plugin.resolve(context=context)
         plugin_ = pool.plugin_pool.get_plugin(plugin_variable)
         if not plugin_:
@@ -18,9 +21,13 @@ class RenderPlugin(template.Node):
         if not plugin_.is_enabled():
             raise template.TemplateSyntaxError(f"Plugin {plugin_variable} is not enabled.")
 
-        # TODO: Add support for rendering different locations
         context["render_location"] = self.render_location
-        return plugin_.render_navigation(context=context, render_location=self.render_location)
+        try:
+            return plugin_.render_navigation(context=context, render_location=self.render_location)
+        except Exception:
+            # Use a broad exception to prevent a template error in a plugin from breaking Tanzawa
+            logger.exception("Error rendering %s, %s", plugin_, self.render_location)
+            return ""
 
 
 @register.tag(name="render_plugin")

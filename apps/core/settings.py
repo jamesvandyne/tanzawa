@@ -92,6 +92,12 @@ INSTALLED_APPS = [
     "interfaces",
 ]
 
+# Install Plugins
+for module in (BASE_DIR / "tanzawa_plugin").iterdir():
+    if module.is_dir() and (module / "__init__.py").exists():
+        INSTALLED_APPS.append(f"tanzawa_plugin.{module.name}")
+
+
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -146,7 +152,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
+        "ENGINE": "core.db",
         "NAME": env.str("DB_NAME", default="db.sqlite3"),
     }
 }
@@ -218,11 +224,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 # Homepage Settings
 HIGHLIGHT_STREAM_SLUG: str | None = env.str("HIGHLIGHT_STREAM_SLUG", default=None)
 
-PLUGINS = env.list("PLUGINS", default=[])
-
-INSTALLED_APPS.extend(PLUGINS)
-
-PLUGINS_RUN_MIGRATIONS_STARTUP = env.bool("PLUGINS_RUN_MIGRATIONS_STARTUP", default=True)
 
 FORCE_ENABLED_PLUGINS = env.list("FORCE_ENABLED_PLUGINS", default=[])
 # Open Graph Settings
@@ -256,3 +257,7 @@ if env.bool("ENABLE_SENTRY", default=False):
 # Sunbottle
 
 SUNBOTTLE_API_URL = env.str("SUNBOTTLE_API_URL", default="")
+
+
+# Fly.io
+FLY_APP_NAME = env.str("FLY_APP_NAME", default="")
