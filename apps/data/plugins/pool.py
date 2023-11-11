@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from importlib import import_module
 from operator import attrgetter
 
 from django.conf import settings
@@ -7,7 +6,7 @@ from django.core import exceptions
 from django.db import utils
 from django.utils.module_loading import autodiscover_modules
 
-from data.plugins import activation, plugin
+from data.plugins import plugin
 
 
 def _get_m_plugin():
@@ -31,12 +30,9 @@ class PluginPool:
     def discover_plugins(self) -> None:
         if self.discovered:
             return
-        # Load our plugins module so we can discover our plugins automatically.
-        import_module("tanzawa_plugin")
 
-        autodiscover_modules("tanzawa_plugin")
-        for plugin_ in self.plugins.values():
-            activation.install_app(plugin_.plugin_module)
+        autodiscover_modules("plugin")
+
         self.discovered = True
 
     def get_all_plugins(self) -> Iterable[plugin.Plugin]:
