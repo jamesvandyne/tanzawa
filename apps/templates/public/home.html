@@ -108,6 +108,20 @@
                 </div>
             </div>
             {% endif %}
+            {% if webmentions %}
+            <div class="mt-2 md:flex md:mt-8">
+                <div class="md:flex flex-col flex-grow">
+                    <div class="mb-2 md:mb-4">
+                        <h1>💬️ Latest webmentions</h1>
+                        <ol>
+                            {% for webmention in webmentions %}
+                                {% include "indieweb/webmention/webmention.html" with t_webmention=webmention public=True show_post_link=True %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
     </div>
