@@ -11,3 +11,12 @@ def pending_moderation():
         .select_related("t_post", "t_webmention_response")
         .reverse()
     )
+
+
+def approved_webmentions():
+    return (
+        models.TWebmention.objects.filter(approval_status=True)
+        .select_related("t_post", "t_webmention_response")
+        .order_by("id")
+        .reverse()
+    )

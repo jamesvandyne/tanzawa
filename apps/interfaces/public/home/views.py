@@ -9,6 +9,7 @@ from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post.models import MPostKind
 from data.streams.models import MStream
 from domain.files import queries as file_queries
+from domain.indieweb.webmention import approved_webmentions
 from domain.posts import queries as post_queries
 from domain.sunbottle import queries as sunbotte_queries
 
@@ -93,6 +94,7 @@ class HomeView(TemplateView):
                     ),
                 },
                 "photo_gallery": file_queries.get_public_photos(limit=10),
+                "webmentions": approved_webmentions()[:10],
             }
         )
         if settings.SUNBOTTLE_API_URL:
