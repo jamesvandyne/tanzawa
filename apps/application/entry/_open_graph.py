@@ -1,5 +1,6 @@
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 
+from django import urls
 from meta import views as meta_views
 
 from data.entry import models
@@ -9,6 +10,7 @@ from domain.files import queries
 @dataclass
 class OpenGraphImage:
     url: str
+    secure_url: str
     type: str
     width: int | None = field(default=None)
     height: int | None = field(default=None)
@@ -21,9 +23,11 @@ def get_open_graph_meta_for_entry(request, entry: models.TEntry) -> meta_views.M
     """
     image_meta = _get_image(entry=entry, request=request)
     return meta_views.Meta(
-        url=request.build_absolute_uri(entry.t_post.get_absolute_url()),
+        url=request.build_absolute_uri(entry.t_post.get_absolute_url()).replace("https:", "http:"),
+        secure_url=request.build_absolute_uri(entry.t_post.get_absolute_url()),
         title=_get_entry_title(entry=entry),
-        image_object=asdict(image_meta) if image_meta else {},
+        image=image_meta.secure_url if image_meta else None,
+        twitter_type="summary_large_image" if image_meta else "summary",
         twitter_creator=_get_twitter_handle(entry),
     )
 
@@ -44,12 +48,28 @@ def _get_image(entry: models.TEntry, request) -> OpenGraphImage | None:
             if formatted_image:
                 return OpenGraphImage(
                     url=request.build_absolute_uri(image.get_absolute_url()) + f"?f={formatted_image.mime_type}",
+                    secure_url=request.build_absolute_uri(image.get_absolute_url()) + f"?f={formatted_image.mime_type}",
                     type=formatted_image.mime_type,
                     width=formatted_image.width,
                     height=formatted_image.height,
                 )
             else:
-                return OpenGraphImage(url=request.build_absolute_uri(image.get_absolute_url()), type=image.mime_type)
+                return OpenGraphImage(
+                    url=request.build_absolute_uri(image.get_absolute_url()),
+                    secure_url=request.build_absolute_uri(image.get_absolute_url()),
+                    type=image.mime_type,
+                )
+        if activity := entry.activities.first():
+            return OpenGraphImage(
+                url=request.build_absolute_uri(urls.reverse("plugin_exercise:activity_route", args=[activity.pk])),
+                secure_url=request.build_absolute_uri(
+                    urls.reverse("plugin_exercise:activity_route", args=[activity.pk])
+                ),
+                type="image/png",
+                width=1200,
+                height=630,
+            )
+
     return None
 
 

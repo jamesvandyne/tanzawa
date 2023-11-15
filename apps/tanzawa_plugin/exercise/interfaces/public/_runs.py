@@ -83,6 +83,6 @@ class RouteRaster(generic.View):
 
     def get(self, *args, **kwargs):
         png = tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_png_of_route(
-            activity=self.activity
+            activity=self.activity, height=630, width=1200
         )
         return http.HttpResponse(png.read(), headers={"Content-Type": "image/png"})
