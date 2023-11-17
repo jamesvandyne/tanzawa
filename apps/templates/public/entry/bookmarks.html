@@ -1,0 +1,64 @@
+{% extends "base_public.html" %}
+{% load humanize utils %}
+
+{% block breadcrumbs_block %}{% endblock %}
+
+{% block meta_section %}{% endblock %}
+
+{% block main %}
+    <ul class="ml-2">
+    {% for t_entry in object_list %}
+        {% with t_entry.t_post as t_post %}
+        {% with t_entry.t_bookmark as t_bookmark %}
+        {% url 'public:post_detail' t_post.uuid as permalink %}
+        {% url 'bookmark_edit' t_entry.pk as edit_link %}
+
+        <li class="{% if not forloop.first %}py-2 my-2{% endif %}">
+            <div class="flex-col h-entry">
+                <header>
+                    {% if t_bookmark %}
+                        <h1>
+                           <a href="{{ t_bookmark.u_bookmark_of }}" class="font-bold u-bookmark-of {% if t_bookmark.u_bookmark_of != t_bookmark.title %}h-cite{% endif %} inline-block hover:underline" title="{{ t_bookmark.title }}">🔗 {{ t_bookmark.title }}</a>
+                        </h1>
+                    {% endif %}
+                    <div class="help-text">
+                        <time class="dt-published inline" datetime="{{ t_post.dt_published.isoformat }}">
+                        {% if t_post.dt_published|date:"d" == now|date:"d" %}
+                            {{ t_post.dt_published|naturaltime }}
+                        {% else %}
+                            {{ t_post.dt_published|date:"M d, Y" }}
+                        {% endif %}
+                        </time>
+                    </div>
+                </header>
+                <main class="e-content pt-2 content max-w-prose">
+                    <blockquote class="italic text-sm">{{ t_bookmark.quote|linebreaksbr }}</blockquote>
+                    {{ t_entry.e_content|safe }}
+                </main>
+                <footer class="help-text">
+                    <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
+                    {% if t_entry.interaction_count %}
+                        <a href="{{ permalink|absolute_uri:request }}?o=1"><span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}</a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                        <a href="{{ edit_link }}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+                    {% endif %}
+                </footer>
+            </div>
+        </li>
+        {% endwith %}
+        {% endwith %}
+    {% endfor %}
+    </ul>
+    <div class="mt-2 text-center md:text-left">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

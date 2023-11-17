@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
+from django.views import generic
 
 from application import entry as entry_application
 from data.entry import models as entry_models
-from data.indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.plugins import pool
 from data.post import models as post_models
 from data.streams.models import MStream
@@ -48,6 +49,42 @@ def status_detail(request, uuid):
         "open_interactions": request.GET.get("o"),
     }
     return render(request, "public/post/post_detail.html", context=context)
+
+
+class Bookmarks(generic.ListView):
+    template_name = "public/entry/bookmarks.html"
+    paginate_by = 5
+
+    def get_queryset(self):
+        return (
+            entry_models.TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
+                "t_post",
+                "t_post__m_post_kind",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+            )
+            .filter(t_post__m_post_status__key=MPostStatuses.published)
+            .filter(t_post__m_post_kind__key=MPostKinds.bookmark)
+            .exclude(t_post__visibility=post_models.Visibility.UNLISTED)
+            .annotate(
+                interaction_count=Count(
+                    "t_post__ref_t_webmention",
+                    filter=Q(t_post__ref_t_webmention__approval_status=True),
+                )
+            )
+            .order_by("-t_post__dt_published")
+        )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update(
+            {
+                "selected": ["home"],
+            }
+        )
+        return context
 
 
 def _get_activities(t_entry: entry_models.TEntry) -> list[dict]:
