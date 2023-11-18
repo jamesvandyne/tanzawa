@@ -2,6 +2,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
 from django.views import generic
+from meta import views as meta_views
 from taggit import models as taggit_models
 
 from application import entry as entry_application
@@ -87,9 +88,15 @@ class Bookmarks(generic.ListView):
         context.update(
             {
                 "selected": ["home"],
+                "title": "Bookmarks",
                 "tags": taggit_models.Tag.objects.filter(tpost__m_post_kind__key=MPostKinds.bookmark)
                 .annotate(count=Count("tpost"))
                 .order_by("name"),
+                "meta": meta_views.Meta(
+                    url=self.request.build_absolute_uri(),
+                    secure_url=self.request.build_absolute_uri(),
+                    title="Bookmarks",
+                ),
             }
         )
         return context
