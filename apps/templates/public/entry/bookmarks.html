@@ -6,7 +6,15 @@
 {% block meta_section %}{% endblock %}
 
 {% block main %}
-    <ul class="ml-2">
+    <details class="ml-2">
+        <summary>Browse tags</summary>
+        <div class="grid grid-cols-2 md:grid-cols-4 help-text">
+            {% for tag in tags %}
+                <a href="{% url "public:bookmarks" %}?tag={{ tag }}"><span class="hover:underline mr-0.5">{{ tag }}</span><span class="text-secondary">({{ tag.count }})</span></a>
+            {% endfor %}
+        </div>
+    </details>
+    <ul class="ml-2 mt-2">
     {% for t_entry in object_list %}
         {% with t_entry.t_post as t_post %}
         {% with t_entry.t_bookmark as t_bookmark %}

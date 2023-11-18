@@ -1,6 +1,8 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
 from django.views import generic
+from taggit import models as taggit_models
 
 from application import entry as entry_application
 from data.entry import models as entry_models
@@ -85,6 +87,9 @@ class Bookmarks(generic.ListView):
         context.update(
             {
                 "selected": ["home"],
+                "tags": taggit_models.Tag.objects.filter(tpost__m_post_kind__key=MPostKinds.bookmark)
+                .annotate(count=Count("tpost"))
+                .order_by("name"),
             }
         )
         return context
