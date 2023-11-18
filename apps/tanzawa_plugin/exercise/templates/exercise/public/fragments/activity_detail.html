@@ -6,7 +6,7 @@
 </div>
 <div class="grid md:grid-cols-2 mt-2">
     {% for photo in activity.photos %}
-        <img src="{{ photo.url }}" alt=""/>
+        <img src="{{ photo.url }}" alt="" loading="lazy"/>
     {% endfor %}
     {{ activity.route_svg }}
 </div>
