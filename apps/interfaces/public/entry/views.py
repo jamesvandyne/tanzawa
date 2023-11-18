@@ -87,7 +87,7 @@ class Bookmarks(generic.ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context.update(
             {
-                "selected": ["home"],
+                "selected": ["bookmarks"],
                 "title": "Bookmarks",
                 "tags": taggit_models.Tag.objects.filter(tpost__m_post_kind__key=MPostKinds.bookmark)
                 .annotate(count=Count("tpost"))
