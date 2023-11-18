@@ -1,7 +1,5 @@
-from django.utils.safestring import mark_safe
 from rest_framework import serializers
 
-import tanzawa_plugin.exercise.domain.exercise.operations
 from tanzawa_plugin.exercise.data.exercise import models
 
 
@@ -13,12 +11,15 @@ class ActivityPhoto(serializers.Serializer):
 
 
 class Activity(serializers.Serializer):
+    pk = serializers.SerializerMethodField()
     distance_km = serializers.SerializerMethodField()
     elapsed_time_minutes = serializers.SerializerMethodField()
     average_heartrate = serializers.SerializerMethodField()
     total_elevation_gain = serializers.SerializerMethodField()
     photos = serializers.SerializerMethodField()
-    route_svg = serializers.SerializerMethodField()
+
+    def get_pk(self, obj: models.Activity) -> int:
+        return obj.pk
 
     def get_distance_km(self, obj: models.Activity) -> float:
         return obj.distance_km
@@ -34,8 +35,3 @@ class Activity(serializers.Serializer):
 
     def get_photos(self, obj: models.Activity) -> dict:
         return ActivityPhoto(obj.photos, many=True).data
-
-    def get_route_svg(self, obj: models.Activity) -> str:
-        return mark_safe(
-            tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_svg(obj, 256, 256, css_class="h-80")
-        )

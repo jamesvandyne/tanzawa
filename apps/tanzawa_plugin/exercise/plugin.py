@@ -53,7 +53,7 @@ class ExercisePlugin(plugin.Plugin):
         if post is None:
             return ""
 
-        template = loader.get_template("exercise/public/fragments/activity_detail.html")
+        template = loader.get_template("exercise/public/feeds/activity_detail.html")
         try:
             activity = exercise_models.Activity.objects.get(entry_id=post.ref_t_entry.id)
         except Exception:

@@ -1,0 +1,12 @@
+<div class="grid grid-cols-2 md:grid-cols-4 mt-2">
+    <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.distance_km|floatformat }}</span><span class="text-sm">km</span></p>
+    <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.elapsed_time_minutes|floatformat }}</span><span class="text-sm">min</span></p>
+    <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.total_elevation_gain|floatformat }}</span><span class="text-sm">m climbed</span></p>
+    <p><span class="text-2xl text-secondary font-bold mr-1">{{ activity.average_heartrate|floatformat }}</span><span class="text-sm">avg bpm</span></p>
+</div>
+<div class="grid md:grid-cols-2 mt-2">
+    {% for photo in activity.photos %}
+        <img src="{{ photo.url }}" alt="" loading="lazy"/>
+    {% endfor %}
+    <img src="{% url "plugin_exercise:activity_route" activity.pk %}" alt="The route for this activity" loading="lazy">
+</div>
