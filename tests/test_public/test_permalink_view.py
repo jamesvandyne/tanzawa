@@ -116,7 +116,7 @@ class TestBookmarkRendering:
         assert bookmark == {
             "type": ["h-entry"],
             "properties": {
-                "name": ["Bookmark of The Week #34"],
+                "name": ["🔗 The Week #34"],
                 "bookmark-of": [
                     {
                         "type": ["h-cite"],
