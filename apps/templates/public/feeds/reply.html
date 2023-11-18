@@ -1,0 +1,10 @@
+↩️ <a href="{{ t_reply.u_in_reply_to }}">{{ t_reply.title }}</a>
+{% if t_reply.author and t_reply.author_url %}
+    by <a href="{{ t_reply.author_url }}">{{ t_reply.author_url }}</a>
+ {% elif t_reply.author %}
+    by {{ t_reply.author }}
+{% endif %}
+{% if t_reply.quote %}
+    <blockquote>{{ t_reply.quote }}</blockquote>
+{% endif %}
+{{ e_content|safe }}
