@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+from taggit import managers as taggit_managers
 
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.models import TimestampModel
@@ -92,6 +93,7 @@ class TPost(TimestampModel):
         through="trips.TTripPost",
     )
     objects = TPostManager()
+    tags = taggit_managers.TaggableManager()
 
     class Meta:
         db_table = "t_post"
