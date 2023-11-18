@@ -391,6 +391,7 @@ class TestCreateBookmarkView:
             # ... for everyone to see
             "visibility": "1",
             "t_trip": "",
+            "tags": "coffee travel york",
         }
 
         # Submit and...
@@ -425,6 +426,9 @@ class TestCreateBookmarkView:
 
         # ... and it is in the specified stream
         assert list(entry.t_post.streams.all()) == [stream]
+
+        # ... and tags
+        assert set(t_post.tags.names()) == {"coffee", "travel", "york"}
 
 
 # Update

@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.gis.forms import PointField
 from django.db import transaction
 from django.utils.timezone import now
+from taggit import forms as taggit_forms
 
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.forms import LeafletWidget, TCharField
@@ -262,6 +263,7 @@ class CreateBookmarkForm(CreateStatusForm):
         help_text="This is will appear above your comment for context.",
         required=False,
     )
+    tags = taggit_forms.TagField(required=False, widget=taggit_forms.TagWidget(attrs={"class": "input-field"}))
 
     class Meta:
         model = entry_models.TEntry
