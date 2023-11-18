@@ -22,13 +22,15 @@
                         </h1>
                     {% endif %}
                     <div class="help-text">
-                        <time class="dt-published inline" datetime="{{ t_post.dt_published.isoformat }}">
-                        {% if t_post.dt_published|date:"d" == now|date:"d" %}
-                            {{ t_post.dt_published|naturaltime }}
-                        {% else %}
-                            {{ t_post.dt_published|date:"M d, Y" }}
-                        {% endif %}
+                        <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark">
+                            <time class="dt-published inline" datetime="{{ t_post.dt_published.isoformat }}">
+                            {% if t_post.dt_published|date:"d" == now|date:"d" %}
+                                {{ t_post.dt_published|naturaltime }}
+                            {% else %}
+                                {{ t_post.dt_published|date:"M d, Y" }}
+                            {% endif %}
                         </time>
+                        </a>
                     </div>
                 </header>
                 <main class="e-content pt-2 content max-w-prose">
@@ -36,12 +38,16 @@
                     {{ t_entry.e_content|safe }}
                 </main>
                 <footer class="help-text">
-                    <a href="{{ permalink|absolute_uri:request }}" class="mr-2 u-url" title="permalink" rel="bookmark"><span class="mr-0.5">🔗</span>permalink</a>
-                    {% if t_entry.interaction_count %}
-                        <a href="{{ permalink|absolute_uri:request }}?o=1"><span>{{ t_entry.interaction_count }}</span> interaction{{ t_entry.interaction_count|pluralize }}</a>
+                    {% if t_post.tags.names %}
+                    <ul class="inline">
+                        <li class="inline">Tagged with </li>
+                        {% for tag in t_post.tags.names %}
+                            <li class="inline mr-1"><a href="{% url "public:bookmarks" %}?tag={{ tag }}" class="underline">{{ tag }}</a></li>
+                        {% endfor %}
+                    </ul>
                     {% endif %}
                     {% if user.is_authenticated %}
-                        <a href="{{ edit_link }}" class="ml-auto"><span class="mr-0.5">✏️</span>edit️</a>
+                        <a href="{{ edit_link }}"><span class="mr-0.5">✏️</span>edit️</a>
                     {% endif %}
                 </footer>
             </div>
