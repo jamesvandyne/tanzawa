@@ -290,6 +290,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
         help_text="This is will appear above your comment for context.",
         required=False,
     )
+    tags = taggit_forms.TagField(required=False, widget=taggit_forms.TagWidget(attrs={"class": "input-field"}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -299,6 +300,7 @@ class UpdateBookmarkForm(UpdateStatusForm):
         self.fields["summary"].initial = self.t_bookmark.quote
         self.fields["title"].initial = self.t_bookmark.title
         self.fields["u_bookmark_of"].initial = self.t_bookmark.u_bookmark_of
+        self.fields["tags"].initial = self.instance.t_post.tags.all()
 
     def prepare_data(self):
         super().prepare_data()

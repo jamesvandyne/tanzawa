@@ -801,7 +801,7 @@ class TestUpdateBookmarkView:
         # Mock out discovering webmentions
         ronkyuu_mock.return_value = []
 
-        entry = factory.BookmarkEntry()
+        entry = factory.BookmarkEntry(tags=["japan"])
 
         # Who submits a post
         payload = {
@@ -831,6 +831,7 @@ class TestUpdateBookmarkView:
             # ... for everyone to see
             "visibility": "1",
             "t_trip": "",
+            "tags": "japan java",
         }
 
         # Submit and...
@@ -856,6 +857,9 @@ class TestUpdateBookmarkView:
 
         # ... and it is in the specified stream
         assert list(entry.t_post.streams.all()) == [stream]
+
+        # ... and tags
+        assert set(t_post.tags.names()) == {"java", "japan"}
 
         # ... and a bookmark
         bookmark = entry.t_bookmark

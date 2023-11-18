@@ -573,6 +573,7 @@ class UpdateBookmarkView(UpdateEntryView):
                 author_url=self.bookmark.author_url,
                 author_photo=self.bookmark.author_photo,
             ),
+            tags=form.cleaned_data["tags"],
         )
 
         if form.cleaned_data["m_post_status"].key == MPostStatuses.published:
