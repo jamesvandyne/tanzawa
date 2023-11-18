@@ -97,9 +97,9 @@ class AllEntriesFeed(Feed):
         return post_queries.get_public_posts_for_user(user=self.request.user)[:10]
 
     def item_title(self, item: TPost):
-        if item.ref_t_entry.is_note or item.ref_t_entry.is_checkin:
-            return None
-        return item.post_title
+        if item.ref_t_entry.is_article:
+            return item.post_title
+        return None
 
     def item_description(self, item: TPost):
         return item.ref_t_entry.p_summary
