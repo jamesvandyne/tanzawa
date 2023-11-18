@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "webmention",
     "meta",
+    "taggit",
     "core",
     "django_htmx",
     # Data layer
