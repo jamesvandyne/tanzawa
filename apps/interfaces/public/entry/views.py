@@ -9,7 +9,7 @@ from data.plugins import pool
 from data.post import models as post_models
 from data.streams.models import MStream
 
-from . import serializers
+from . import forms, serializers
 
 
 def status_detail(request, uuid):
@@ -56,6 +56,14 @@ class Bookmarks(generic.ListView):
     paginate_by = 5
 
     def get_queryset(self):
+        qs = self._get_base_queryset()
+        form = forms.BookmarksSearchForm(self.request.GET)
+        if form.is_valid():
+            if form.cleaned_data["tag"]:
+                qs = qs.filter(t_post__tags__name__in=form.cleaned_data["tag"])
+        return qs
+
+    def _get_base_queryset(self):
         return (
             entry_models.TEntry.objects.visible_for_user(self.request.user.id)
             .select_related(
@@ -68,13 +76,8 @@ class Bookmarks(generic.ListView):
             .filter(t_post__m_post_status__key=MPostStatuses.published)
             .filter(t_post__m_post_kind__key=MPostKinds.bookmark)
             .exclude(t_post__visibility=post_models.Visibility.UNLISTED)
-            .annotate(
-                interaction_count=Count(
-                    "t_post__ref_t_webmention",
-                    filter=Q(t_post__ref_t_webmention__approval_status=True),
-                )
-            )
             .order_by("-t_post__dt_published")
+            .distinct()
         )
 
     def get_context_data(self, *, object_list=None, **kwargs):
