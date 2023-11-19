@@ -56,7 +56,7 @@ def _create_post_from_activity(
     """
     status = post_queries.get_post_status(MPostStatuses.published)
     post_kind = post_queries.get_post_kind(MPostKinds.note)
-    activity_time = arrow.get(activity_detail["start_date_local"]).to(activity_detail["timezone"]).datetime
+    activity_time = arrow.get(activity_detail["start_date_local"], tzinfo=activity_detail["timezone"]).datetime
     if activity.entry:
         entry = entry_ops.update_entry(
             entry=activity.entry,
