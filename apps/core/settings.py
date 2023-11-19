@@ -141,6 +141,7 @@ TEMPLATES = [
             "libraries": {
                 "indieweb": "interfaces.common.templatetags.indieweb",
                 "plugins": "interfaces.common.templatetags.plugins",
+                "tanzawa": "interfaces.common.templatetags.tanzawa",
             },
         },
     },
