@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "webmention",
     "meta",
+    "taggit",
     "core",
     "django_htmx",
     # Data layer
@@ -140,6 +141,7 @@ TEMPLATES = [
             "libraries": {
                 "indieweb": "interfaces.common.templatetags.indieweb",
                 "plugins": "interfaces.common.templatetags.plugins",
+                "tanzawa": "interfaces.common.templatetags.tanzawa",
             },
         },
     },

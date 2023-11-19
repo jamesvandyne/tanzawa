@@ -12,6 +12,11 @@
         {% include "interfaces/dashboard/entry/bookmark/_bookmark_title.html" with title=form.title.value url=form.u_bookmark_of.value %}
     {% endif %}
     <div class="pt-2">
+        {{ form.tags.label }}
+        <span class="block help-text">{{ form.tags.help_text }}</span>
+        {{ form.tags }}
+    </div>
+    <div class="pt-2">
         {{ form.summary.label }}
         <span class="block help-text">{{ form.summary.help_text }}</span>
         {{ form.summary }}

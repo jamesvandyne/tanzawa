@@ -4,6 +4,7 @@ arrow
 Django
 envparse
 django-meta
+django-taggit
 django-webmention
 djangorestframework
 beautifulsoup4

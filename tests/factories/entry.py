@@ -50,6 +50,14 @@ class BookmarkEntry(StatusEntry):
         self.save()
         return bookmark
 
+    @factory.post_generation
+    def tags(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            self.t_post.tags.add(*extracted)
+
 
 class CheckinEntry(StatusEntry):
     p_name = ""

@@ -35,6 +35,7 @@ def update_entry(
     reply: Reply | None = None,
     bookmark: Bookmark | None = None,
     checkin: Checkin | None = None,
+    tags: list[str] | None = None,
 ) -> entry_models.TEntry:
     """
     Create a new entry with related data.
@@ -53,6 +54,9 @@ def update_entry(
 
     if syndication_urls is not None:
         _update_syndication_urls(entry, syndication_urls)
+
+    if tags is not None:
+        entry.t_post.tags.set(tags, clear=True)
 
     if location:
         _update_location(entry, location)

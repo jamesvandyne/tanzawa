@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Type
 
-from django import template
+from django import http, template
 from django.template import loader
 
 from data.plugins import plugin, pool
@@ -47,20 +47,20 @@ class ExercisePlugin(plugin.Plugin):
         t = context.template.engine.get_template("exercise/navigation.html")
         return t.render(context=context)
 
-    def feed_after_content(self, post: None | Type["post_models.TPost"] = None) -> str:
+    def feed_after_content(self, request: http.HttpRequest, post: None | Type["post_models.TPost"] = None) -> str:
         from .interfaces.public.feeds import serializers
 
         if post is None:
             return ""
 
-        template = loader.get_template("exercise/public/fragments/activity_detail.html")
+        template = loader.get_template("exercise/public/feeds/activity_detail.html")
         try:
             activity = exercise_models.Activity.objects.get(entry_id=post.ref_t_entry.id)
         except Exception:
             return ""
         else:
             activity_detail = serializers.Activity(activity).data
-            return template.render(context={"activity": activity_detail})
+            return template.render(context={"activity": activity_detail}, request=request)
 
 
 def get_plugin() -> plugin.Plugin:

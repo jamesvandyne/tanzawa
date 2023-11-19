@@ -97,15 +97,15 @@ class AllEntriesFeed(Feed):
         return post_queries.get_public_posts_for_user(user=self.request.user)[:10]
 
     def item_title(self, item: TPost):
-        if item.ref_t_entry.is_note or item.ref_t_entry.is_checkin:
-            return None
-        return item.post_title
+        if item.ref_t_entry.is_article:
+            return item.post_title
+        return None
 
     def item_description(self, item: TPost):
         return item.ref_t_entry.p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        content_encoded = feed_content.get_encoded_content(post=item)
+        content_encoded = feed_content.get_encoded_content(post=item, request=self.request)
         return {"content_encoded": content_encoded}
 
     def item_guid(self, obj: TPost) -> str:

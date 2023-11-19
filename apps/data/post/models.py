@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.timezone import now
+from taggit import managers as taggit_managers
 
 from core.constants import VISIBILITY_CHOICES, Visibility
 from core.models import TimestampModel
@@ -92,6 +93,7 @@ class TPost(TimestampModel):
         through="trips.TTripPost",
     )
     objects = TPostManager()
+    tags = taggit_managers.TaggableManager()
 
     class Meta:
         db_table = "t_post"
@@ -111,12 +113,12 @@ class TPost(TimestampModel):
         summary = t_entry.p_summary[:128]
         title = t_entry.p_name or (f"{summary}…" if len(t_entry.p_summary) > 128 else summary)
         if self.m_post_kind.key == MPostKinds.reply:
-            title = f"Response to {t_entry.t_reply.title}"
+            title = f"↩️ {t_entry.t_reply.title}"
         elif self.m_post_kind.key == MPostKinds.bookmark:
             t_bookmark = t_entry.t_bookmark
-            title = f"Bookmark of {t_bookmark.title or t_bookmark.u_bookmark_of}"
+            title = f"🔗 {t_bookmark.title or t_bookmark.u_bookmark_of}"
         elif self.m_post_kind.key == MPostKinds.checkin:
-            title = f"Checkin to {t_entry.t_checkin.name}"
+            title = f"📍 {t_entry.t_checkin.name}"
         return title
 
     def update_publishing_meta(

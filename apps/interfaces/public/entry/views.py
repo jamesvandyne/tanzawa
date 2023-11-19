@@ -1,14 +1,18 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
+from django.views import generic
+from meta import views as meta_views
+from taggit import models as taggit_models
 
 from application import entry as entry_application
 from data.entry import models as entry_models
-from data.indieweb.constants import MPostStatuses
+from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.plugins import pool
 from data.post import models as post_models
 from data.streams.models import MStream
 
-from . import serializers
+from . import forms, serializers
 
 
 def status_detail(request, uuid):
@@ -48,6 +52,54 @@ def status_detail(request, uuid):
         "open_interactions": request.GET.get("o"),
     }
     return render(request, "public/post/post_detail.html", context=context)
+
+
+class Bookmarks(generic.ListView):
+    template_name = "public/entry/bookmarks.html"
+    paginate_by = 5
+
+    def get_queryset(self):
+        qs = self._get_base_queryset()
+        form = forms.BookmarksSearchForm(self.request.GET)
+        if form.is_valid():
+            if form.cleaned_data["tag"]:
+                qs = qs.filter(t_post__tags__name__in=form.cleaned_data["tag"])
+        return qs
+
+    def _get_base_queryset(self):
+        return (
+            entry_models.TEntry.objects.visible_for_user(self.request.user.id)
+            .select_related(
+                "t_post",
+                "t_post__m_post_kind",
+                "t_post__p_author",
+                "t_location",
+                "t_bookmark",
+            )
+            .filter(t_post__m_post_status__key=MPostStatuses.published)
+            .filter(t_post__m_post_kind__key=MPostKinds.bookmark)
+            .exclude(t_post__visibility=post_models.Visibility.UNLISTED)
+            .order_by("-t_post__dt_published")
+            .distinct()
+        )
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context.update(
+            {
+                "selected": ["bookmarks"],
+                "title": "Bookmarks",
+                "tags": taggit_models.Tag.objects.filter(tpost__m_post_kind__key=MPostKinds.bookmark)
+                .annotate(count=Count("tpost"))
+                .order_by("name"),
+                "meta": meta_views.Meta(
+                    url=self.request.build_absolute_uri(),
+                    secure_url=self.request.build_absolute_uri(),
+                    title="Bookmarks",
+                ),
+            }
+        )
+        return context
 
 
 def _get_activities(t_entry: entry_models.TEntry) -> list[dict]:

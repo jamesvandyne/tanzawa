@@ -73,6 +73,7 @@ def create_entry(
     reply: Reply | None = None,
     bookmark: Bookmark | None = None,
     checkin: Checkin | None = None,
+    tags: list[str] | None = None,
 ) -> entry_models.TEntry:
     """
     Create a new entry with related data.
@@ -91,6 +92,9 @@ def create_entry(
 
     if syndication_urls:
         _create_syndication_urls(entry, syndication_urls)
+
+    if tags is not None:
+        entry.t_post.tags.set(tags, clear=True)
 
     if location:
         _create_location(entry, location)

@@ -1,7 +1,7 @@
 import abc
 from typing import TYPE_CHECKING, Optional, Protocol
 
-from django import urls
+from django import http, urls
 from django.conf import settings
 
 if TYPE_CHECKING:
@@ -32,13 +32,13 @@ class FeedHook(Protocol):
         """
         return False
 
-    def feed_before_content(self, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_before_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed before the post.
         """
         return ""
 
-    def feed_after_content(self, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_after_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
         """
         Returns any content that should be displayed after the post.
         """

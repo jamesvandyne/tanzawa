@@ -1,0 +1,7 @@
+{% if t_checkin.url %}
+    📍 <a href="{{ t_checkin.url }}">{{ t_checkin.name }}</a>
+{% else %}
+    📍 {{ t_checkin.name }}
+{% endif %}
+<br/>
+{{ e_content|safe }}
