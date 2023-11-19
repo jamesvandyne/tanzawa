@@ -105,7 +105,7 @@ class AllEntriesFeed(Feed):
         return item.ref_t_entry.p_summary
 
     def item_extra_kwargs(self, item: TPost):
-        content_encoded = feed_content.get_encoded_content(post=item)
+        content_encoded = feed_content.get_encoded_content(post=item, request=self.request)
         return {"content_encoded": content_encoded}
 
     def item_guid(self, obj: TPost) -> str:
