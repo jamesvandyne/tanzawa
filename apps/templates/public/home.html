@@ -114,8 +114,8 @@
                     <div class="mb-2 md:mb-4">
                         <h1>💬️ Latest webmentions</h1>
                         <ol>
-                            {% for webmention in webmentions %}
-                                {% include "indieweb/webmention/webmention.html" with t_webmention=webmention public=True show_post_link=True %}
+                            {% for t_webmention in webmentions %}
+                                {% include "public/fragments/webmention.html"  %}
                             {% endfor %}
                         </ol>
                     </div>

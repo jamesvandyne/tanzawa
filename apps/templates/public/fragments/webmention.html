@@ -1,0 +1,41 @@
+{% load utils indieweb %}
+{% with t_webmention.microformat_data as mention %}
+{% with mention.comment_type|webmention_emojis as emojis %}
+{% with mention.author.name as author_name %}
+    <li {% if not forloop.first %}class="pt-4"{% endif %}>
+        <div class="flex flex-col">
+            <header class="h-card p-author flex items-center">
+                {% if mention.author.photo %}
+                <object data="{{ mention.author.photo }}" type="{{ mention.author.photo|mimetype }}" class="u-image rounded-full h-6 w-6">
+                    <div class="u-image rounded-full h-6 w-6 bg-secondary flex items-center justify-center text-white" title="{{ author_name }}">{{ author_name|default:"Unknown"|first }}</div>
+                </object>
+                 {% else %}
+                    <div class="u-image rounded-full h-6 w-6 bg-secondary flex items-center justify-center text-white" title="{{ author_name }}">{{ author_name|default:"Unknown"|first }}</div>
+                {% endif %}
+                    <div class="p-2 flex flex-col">
+                        {% if mention.author.url %}
+                            <a href="{{ mention.author.url }}">{{ author_name|default:"Unknown" }}</a>
+                         {% else %}
+                            <span>{{ author_name|default:"Unknown" }}</span>
+                        {% endif %}
+                        <a href="{{ t_webmention.t_webmention_response.source }}" class="text-xs">{{ t_webmention.t_webmention_response.source|domain }}</a>
+                    </div>
+            </header>
+            <main class="content">
+                {% with content=mention|get_key:"content-plain"|cut:"\t"|cut:"\n"|urlize %}
+                <p>
+                    {% if emojis %}<span class="mr-2">{{ emojis }}</span>{% endif %}
+                    {{ content|truncatechars_html:280 }}
+                </p>
+                {% endwith %}
+            </main>
+            <footer class="flex text-sm pt-1">
+                <div class="mr-auto">
+                🔗 <a href="{{ t_webmention.t_post.get_absolute_url }}?o=1#interactions" target="_blank" class="ml-auto"><span class="help-text">view post</span></a>
+                </div>
+            </footer>
+        </div>
+    </li>
+{% endwith %}
+{% endwith %}
+{% endwith %}
