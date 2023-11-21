@@ -1,16 +1,12 @@
-from typing import TYPE_CHECKING, Optional, Type
-
 from django import http, template
 from django.template import loader
 
 from data.plugins import plugin, pool
 from data.plugins.plugin import RequestContentType
+from data.post import models as post_models
 
 from .data import exercise_models
 from .interfaces.public import serializers
-
-if TYPE_CHECKING:
-    from data.post import models as post_models
 
 __identifier__ = "blog.tanzawa.plugins.exercise"
 
@@ -53,7 +49,7 @@ class ExercisePlugin(plugin.Plugin):
         t = context.template.engine.get_template("exercise/navigation.html")
         return t.render(context=context)
 
-    def feed_after_content(self, request: http.HttpRequest, post: None | Type["post_models.TPost"] = None) -> str:
+    def feed_after_content(self, request: http.HttpRequest, post: None | post_models.TPost = None) -> str:
         from .interfaces.public.feeds import serializers
 
         if post is None:
@@ -72,7 +68,7 @@ class ExercisePlugin(plugin.Plugin):
         self,
         request: http.HttpRequest,
         request_content_type: RequestContentType = RequestContentType.HTML,
-        post: Optional["post_models.TPost"] = None,
+        post: post_models.TPost | None = None,
     ) -> str:
         if post is None:
             return ""

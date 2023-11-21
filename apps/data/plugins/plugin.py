@@ -1,12 +1,11 @@
 import abc
-from typing import TYPE_CHECKING, Optional, Protocol
+from typing import Protocol
 
 from django import http, urls
 from django.conf import settings
 from django.db.models import TextChoices
 
-if TYPE_CHECKING:
-    from data.post import models as post_models
+from data.post import models as post_models
 
 
 class NavigationProtocol(Protocol):
@@ -33,13 +32,13 @@ class FeedHook(Protocol):
         """
         return False
 
-    def feed_before_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_before_content(self, request: http.HttpRequest, post: post_models.TPost | None = None) -> str:
         """
         Returns any content that should be displayed before the post.
         """
         return ""
 
-    def feed_after_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_after_content(self, request: http.HttpRequest, post: post_models.TPost | None = None) -> str:
         """
         Returns any content that should be displayed after the post.
         """
@@ -62,8 +61,8 @@ class ContentHook(Protocol):
     def render_before_content(
         self,
         request: http.HttpRequest,
-        request_content_type: RequestContentType = RequestContentType.HTML,
-        post: Optional["post_models.TPost"] = None,
+        request_content_type: str = RequestContentType.HTML,
+        post: post_models.TPost | None = None,
     ) -> str:
         """
         Returns any content that should be displayed before the post.
@@ -73,8 +72,8 @@ class ContentHook(Protocol):
     def render_after_content(
         self,
         request: http.HttpRequest,
-        request_content_type: RequestContentType = RequestContentType.HTML,
-        post: Optional["post_models.TPost"] = None,
+        request_content_type: str = RequestContentType.HTML,
+        post: post_models.TPost | None = None,
     ) -> str:
         """
         Returns any content that should be displayed after the post.
