@@ -51,7 +51,7 @@
 
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
-                            {% render_plugin plugin.identifier "NAV.TOP" %}
+                            {% render_navigation plugin.identifier "NAV.TOP" %}
                         {% endif %}
                     {% endfor %}
                     {% if centered_nav %}</div>{% endif %}
@@ -74,7 +74,7 @@
                     <li class="{% if 'bookmarks' in selected %}border-l-4 border-secondary{% endif %} p-1 mb-2"><a href="{% url "public:bookmarks" %}" class="w-full inline-block"><span class="mr-1">🔗️</span><span>Links</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_public_top_nav %}
-                            {% render_plugin plugin.identifier "NAV.TOP.MOBILE" %}
+                            {% render_navigation plugin.identifier "NAV.TOP.MOBILE" %}
                         {% endif %}
                     {% endfor %}
                     {% for stream in streams %}

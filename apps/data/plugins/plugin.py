@@ -1,11 +1,11 @@
 import abc
-from typing import TYPE_CHECKING, Optional, Protocol
+from typing import Protocol
 
 from django import http, urls
 from django.conf import settings
+from django.db.models import TextChoices
 
-if TYPE_CHECKING:
-    from data.post import models as post_models
+from data.post import models as post_models
 
 
 class NavigationProtocol(Protocol):
@@ -28,24 +28,60 @@ class FeedHook(Protocol):
     @property
     def has_feed_hooks(self) -> bool:
         """
-        Plugins which use the the feed hook should return True
+        Plugins which use the feed hook should return True
         """
         return False
 
-    def feed_before_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_before_content(self, request: http.HttpRequest, post: post_models.TPost | None = None) -> str:
         """
         Returns any content that should be displayed before the post.
         """
         return ""
 
-    def feed_after_content(self, request: http.HttpRequest, post: Optional["post_models.TPost"] = None) -> str:
+    def feed_after_content(self, request: http.HttpRequest, post: post_models.TPost | None = None) -> str:
         """
         Returns any content that should be displayed after the post.
         """
         return ""
 
 
-class Plugin(abc.ABC, NavigationProtocol, FeedHook):
+class RequestContentType(TextChoices):
+    HTML = "html"
+    RSS = "rss"
+
+
+class ContentHook(Protocol):
+    @property
+    def has_content_hooks(self) -> bool:
+        """
+        Plugins which use the content hook should return True
+        """
+        return False
+
+    def render_before_content(
+        self,
+        request: http.HttpRequest,
+        request_content_type: str = RequestContentType.HTML,
+        post: post_models.TPost | None = None,
+    ) -> str:
+        """
+        Returns any content that should be displayed before the post.
+        """
+        return ""
+
+    def render_after_content(
+        self,
+        request: http.HttpRequest,
+        request_content_type: str = RequestContentType.HTML,
+        post: post_models.TPost | None = None,
+    ) -> str:
+        """
+        Returns any content that should be displayed after the post.
+        """
+        return ""
+
+
+class Plugin(abc.ABC, NavigationProtocol, FeedHook, ContentHook):
     name: str
     description: str
     # A unique namespaced identifier for the plugin

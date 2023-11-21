@@ -8,7 +8,7 @@ from tanzawa_plugin.exercise.data.exercise import constants, models
 from tanzawa_plugin.exercise.domain.exercise import queries
 
 
-class ActivitySerializer(serializers.Serializer):
+class _RunsTopActivity(serializers.Serializer):
     route_svg = serializers.SerializerMethodField()
 
     def get_route_svg(self, obj: models.Activity) -> str:
@@ -43,10 +43,46 @@ class RunsTop(serializers.Serializer):
     def get_total_time(self, obj) -> float:
         return (queries.total_elapsed_time(self.start_at, self.end_at, self.activity_types) / 60) / 60
 
-    def get_activities(self, obj) -> ActivitySerializer:
+    def get_activities(self, obj) -> _RunsTopActivity:
         activities = (
             queries.get_activties(self.start_at, self.end_at, self.activity_types)
             .select_related("map")
             .order_by("-started_at")
         )
-        return ActivitySerializer(instance=activities, many=True).data
+        return _RunsTopActivity(instance=activities, many=True).data
+
+
+class ActivityPhoto(serializers.Serializer):
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, obj: models.ActivityPhoto) -> str:
+        return obj.t_file.get_absolute_url()
+
+
+class Activity(serializers.Serializer):
+    distance_km = serializers.SerializerMethodField()
+    elapsed_time_minutes = serializers.SerializerMethodField()
+    average_heartrate = serializers.SerializerMethodField()
+    total_elevation_gain = serializers.SerializerMethodField()
+    photos = serializers.SerializerMethodField()
+    route_svg = serializers.SerializerMethodField()
+
+    def get_distance_km(self, obj: models.Activity) -> float:
+        return obj.distance_km
+
+    def get_elapsed_time_minutes(self, obj: models.Activity) -> float:
+        return obj.elapsed_time_minutes
+
+    def get_average_heartrate(self, obj: models.Activity) -> float:
+        return obj.average_heartrate
+
+    def get_total_elevation_gain(self, obj: models.Activity) -> float:
+        return obj.total_elevation_gain
+
+    def get_photos(self, obj: models.Activity) -> dict:
+        return ActivityPhoto(obj.photos, many=True).data
+
+    def get_route_svg(self, obj: models.Activity) -> str:
+        return mark_safe(
+            tanzawa_plugin.exercise.domain.exercise.operations.maybe_create_and_get_svg(obj, 256, 256, css_class="h-80")
+        )

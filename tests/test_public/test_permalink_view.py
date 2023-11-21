@@ -1,5 +1,3 @@
-from unittest import mock
-
 import mf2py
 import pytest
 from django.contrib.gis.geos import Point
@@ -38,9 +36,7 @@ class TestReplyRendering:
             author_photo="",
         )
 
-    @mock.patch("interfaces.public.entry.views._get_activities")
-    def test_microformats_data(self, get_activities, client, t_reply, t_entry, t_post):
-        get_activities.return_value = []
+    def test_microformats_data(self, client, t_reply, t_entry, t_post):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -106,9 +102,7 @@ class TestBookmarkRendering:
             author_photo="",
         )
 
-    @mock.patch("interfaces.public.entry.views._get_activities")
-    def test_microformats_data(self, get_activities, client, t_bookmark, t_entry, t_post):
-        get_activities.return_value = []
+    def test_microformats_data(self, client, t_bookmark, t_entry, t_post):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -193,9 +187,7 @@ class TestArticleRendering:
             ),
         )
 
-    @mock.patch("interfaces.public.entry.views._get_activities")
-    def test_microformats_data(self, get_activities, client, t_entry, t_post, t_syndication, t_location):
-        get_activities.return_value = 0
+    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -255,9 +247,7 @@ class TestNoteRendering:
             e_content="<h1>Content here</h1>",
         )
 
-    @mock.patch("interfaces.public.entry.views._get_activities")
-    def test_microformats_data(self, get_activities, client, t_entry, t_post):
-        get_activities.return_value = []
+    def test_microformats_data(self, client, t_entry, t_post):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -332,11 +322,9 @@ class TestPermalinkView:
             (Visibility.UNLISTED, 200, pytest.lazy_fixture("another_user")),
         ],
     )
-    @mock.patch("interfaces.public.entry.views._get_activities")
     def test_respects_visibility(
-        self, get_activities, client, t_entry, t_post, author, another_user, visibility, status_code, login_user
+        self, client, t_entry, t_post, author, another_user, visibility, status_code, login_user
     ):
-        get_activities.return_value = []
         if login_user:
             client.force_login(login_user)
         response = client.get(t_post.get_absolute_url())

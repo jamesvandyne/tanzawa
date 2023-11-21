@@ -1,0 +1,6 @@
+{% load plugins %}
+{% for plugin in request.plugin_pool.enabled_plugins %}
+    {% if plugin.has_content_hooks %}
+        {% render_after_content plugin.identifier "CONTENT.AFTER" %}
+    {% endif %}
+{% endfor %}
