@@ -47,6 +47,20 @@ class RenderNavigationPlugin(_RenderPlugin):
             return ""
 
 
+class RenderAfterContent(_RenderPlugin):
+    def _render(self, plugin_: plugin_base.Plugin, context: dict) -> str:
+        try:
+            return plugin_.render_after_content(
+                request=context["request"],
+                request_content_type=plugin_base.RequestContentType.HTML,
+                post=context.get("t_post"),
+            )
+        except Exception:
+            # Use a broad exception to prevent a template error in a plugin from breaking Tanzawa
+            logger.exception("Error rendering %s, %s", plugin_, self.render_location)
+            return ""
+
+
 @register.tag(name="render_navigation")
 def do_render_navigation(parser, token):
     try:
@@ -68,4 +82,4 @@ def do_render_after_content(parser, token):
         raise template.TemplateSyntaxError(
             "%r tag requires a plugin identifier and location  arguments" % token.contents.split()[0]
         )
-    return RenderNavigationPlugin(plugin=template.Variable(plugin_identifier), render_location=render_location)
+    return RenderAfterContent(plugin=template.Variable(plugin_identifier), render_location=render_location)

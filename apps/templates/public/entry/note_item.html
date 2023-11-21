@@ -23,6 +23,7 @@
     </header>
     <main class="e-content mb-2 pt-2 content">
         {{ t_entry.e_content|safe }}
+        {% include "public/fragments/plugin_after_content.html" %}
     </main>
     {% include "public/fragments/post_footer.html" %}
 </div>
