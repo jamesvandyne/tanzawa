@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional, Protocol
 
 from django import http, urls
 from django.conf import settings
+from django.db.models import TextChoices
 
 if TYPE_CHECKING:
     from data.post import models as post_models
@@ -28,7 +29,7 @@ class FeedHook(Protocol):
     @property
     def has_feed_hooks(self) -> bool:
         """
-        Plugins which use the the feed hook should return True
+        Plugins which use the feed hook should return True
         """
         return False
 
@@ -45,7 +46,43 @@ class FeedHook(Protocol):
         return ""
 
 
-class Plugin(abc.ABC, NavigationProtocol, FeedHook):
+class RequestContentType(TextChoices):
+    HTML = "html"
+    RSS = "rss"
+
+
+class ContentHook(Protocol):
+    @property
+    def has_content_hooks(self) -> bool:
+        """
+        Plugins which use the content hook should return True
+        """
+        return False
+
+    def render_before_content(
+        self,
+        request: http.HttpRequest,
+        request_content_type: RequestContentType = RequestContentType.HTML,
+        post: Optional["post_models.TPost"] = None,
+    ) -> str:
+        """
+        Returns any content that should be displayed before the post.
+        """
+        return ""
+
+    def render_after_content(
+        self,
+        request: http.HttpRequest,
+        request_content_type: RequestContentType = RequestContentType.HTML,
+        post: Optional["post_models.TPost"] = None,
+    ) -> str:
+        """
+        Returns any content that should be displayed after the post.
+        """
+        return ""
+
+
+class Plugin(abc.ABC, NavigationProtocol, FeedHook, ContentHook):
     name: str
     description: str
     # A unique namespaced identifier for the plugin
