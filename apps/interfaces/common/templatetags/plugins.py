@@ -8,7 +8,7 @@ register = template.Library()
 logger = logging.getLogger(__name__)
 
 
-class RenderPlugin(template.Node):
+class RenderNavigationPlugin(template.Node):
     def __init__(self, *, plugin: template.Variable, render_location: str):
         self.plugin = plugin
         self.render_location = render_location[1:-1]  # trim quotes
@@ -30,8 +30,8 @@ class RenderPlugin(template.Node):
             return ""
 
 
-@register.tag(name="render_plugin")
-def do_render_plugin(parser, token):
+@register.tag(name="render_navigation")
+def do_render_navigation(parser, token):
     try:
         # split_contents() knows not to split quoted strings.
         tag_name, plugin_identifier, render_location = token.split_contents()
@@ -39,4 +39,4 @@ def do_render_plugin(parser, token):
         raise template.TemplateSyntaxError(
             "%r tag requires a plugin identifier and location  arguments" % token.contents.split()[0]
         )
-    return RenderPlugin(plugin=template.Variable(plugin_identifier), render_location=render_location)
+    return RenderNavigationPlugin(plugin=template.Variable(plugin_identifier), render_location=render_location)
