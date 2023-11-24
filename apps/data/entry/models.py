@@ -67,6 +67,9 @@ class TEntry(TimestampModel):
         self.p_summary = p_summary
         self.save()
 
+    def new_bridgy_url(self, url: str) -> None:
+        self.bridgy_publish_url.create(url=url)
+
 
 class TReply(TimestampModel):
     t_entry = models.OneToOneField(TEntry, on_delete=models.CASCADE, related_name="t_reply")
@@ -204,3 +207,15 @@ class TSyndication(TimestampModel):
         unique_together = ["t_entry", "url"]
         verbose_name = "Syndication URL"
         verbose_name_plural = "Syndication URLs"
+
+
+class BridgyPublishUrl(TimestampModel):
+    """
+    Determines which urls should be put into the post DOM so Bridgy can publish.
+    """
+
+    entry = models.ForeignKey(TEntry, on_delete=models.CASCADE, related_name="bridgy_publish_url")
+    url = models.URLField()
+
+    class Meta:
+        unique_together = ["entry", "url"]
