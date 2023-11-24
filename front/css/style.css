@@ -180,3 +180,7 @@ main.content blockquote {
     0% {transform: scale(1);}
     100% {transform: scale(0.9);}
 }
+
+[data-loading] {
+  display: none;
+}

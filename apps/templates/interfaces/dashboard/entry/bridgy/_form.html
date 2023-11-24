@@ -1,0 +1,10 @@
+<div hx-target="this" hx-swap="outerHTML" class="mt-2">
+    {% if is_syndicated %}
+        <a href="{{ syndication_url }}" target="_new" class="outline-button">🐘 View on Mastodon</a>
+    {% else %}
+    <form hx-post="{% url 'send_to_mastodon' t_entry_id %}" class="flex">
+        <button class="outline-button" data-loading-class="hidden"><span id="elephant">🐘</span> Send to Mastodon</button>
+        <button class="outline-button" data-loading-disable data-loading><span id="elephant" class="animate-spin inline-block" >🐘</span> Sending to Mastodon…</button>
+    </form>
+    {% endif %}
+</div>
