@@ -2,7 +2,7 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const adminConfig = {
-  entry: ['./src/application.js', '@hotwired/turbo', 'form-request-submit-polyfill'],
+  entry: ['./src/application.js', 'form-request-submit-polyfill'],
   output: {
     filename: 'app.js',
     path: path.resolve(__dirname, '../static/js/'),
