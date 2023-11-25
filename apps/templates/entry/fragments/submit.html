@@ -23,4 +23,5 @@
 <section>
     <a href="{% url 'public:post_detail' form.instance.t_post.uuid %}" class="ml-auto btn-link" target="_new">View on site</a>
 </section>
+<section hx-trigger="load" hx-get="{% url 'send_to_mastodon' form.instance.pk %}"></section>
 {% endif %}

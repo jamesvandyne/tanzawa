@@ -23,4 +23,7 @@
             {% include "public/fragments/meta_map.html" with t_location=t_entry.t_location %}
         {% endif %}
     {% endif %}
+    {% for url in t_entry.bridgy_publish_url.all %}
+        <a href="{{ url.url }}" class="hidden"></a>
+    {% endfor %}
 </footer>

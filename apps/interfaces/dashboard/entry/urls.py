@@ -38,4 +38,6 @@ urlpatterns = [
     # Bookmark
     path("bookmark/<int:pk>/title", views.BookmarkTitle.as_view(), name="bookmark_title"),
     path("bookmark/<int:pk>/change_title", views.ChangeBookmarkTitle.as_view(), name="change_bookmark_title"),
+    # Bridgy
+    path("entry/<int:pk>/send_to_mastodon", views.SendToBridgy.as_view(), name="send_to_mastodon"),
 ]

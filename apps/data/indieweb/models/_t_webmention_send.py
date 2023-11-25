@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 from core.models import TimestampModel
@@ -8,6 +10,7 @@ class TWebmentionSend(TimestampModel):
     target = models.URLField()
     dt_sent = models.DateTimeField()
     success = models.BooleanField()
+    response_body = models.JSONField(default=dict)
 
     class Meta:
         db_table = "t_webmention_send"
@@ -17,3 +20,11 @@ class TWebmentionSend(TimestampModel):
 
     def __str__(self):
         return self.target
+
+    def set_send_results(
+        self, success: bool, occurred_at: datetime.datetime, response_body: dict | None = None
+    ) -> None:
+        self.dt_sent = occurred_at
+        self.success = success
+        self.response_body = response_body or {}
+        self.save()

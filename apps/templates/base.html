@@ -26,7 +26,7 @@
     <script src="{% static 'js/app.js' %}"></script>
     {% block head %}{% endblock %}
 </head>
-<body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' data-turbolinks="false" hx-ext="loading-states">
     <div class="">
         <header class="max-w mx-auto p-2">
              <nav  data-controller="reveal">
@@ -96,6 +96,7 @@
     </div>
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <script src="{% static 'js/_hyperscript.min.js' %}" defer></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/loading-states.js" defer></script>
     {% django_htmx_script %}
     {% block body_end %}
     {% endblock %}

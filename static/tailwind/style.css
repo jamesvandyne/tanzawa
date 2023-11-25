@@ -1363,6 +1363,10 @@ main.content blockquote {
     100% {transform: scale(0.9);}
 }
 
+[data-loading] {
+  display: none;
+}
+
 .hover\:border-b:hover {
   border-bottom-width: 1px;
 }

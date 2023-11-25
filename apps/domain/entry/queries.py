@@ -1,5 +1,7 @@
 import bs4
 
+from data.entry import constants as entry_constants
+from data.entry import models as entry_models
 from domain.files import utils as file_utils
 from domain.trix import queries as trix_queries
 
@@ -21,3 +23,23 @@ def get_attachment_identifiers_in_content(e_content: str) -> list[str]:
     """
     urls = trix_queries.extract_attachment_urls(e_content)
     return [file_utils.extract_uuid_from_url(url) for url in urls]
+
+
+def is_syndicated_to_mastodon(entry: entry_models.TEntry) -> bool:
+    """
+    Determine if an entry has been sent to Mastodon with Bri.gy.
+    """
+    return _get_mastodon_webmention(entry).exists()
+
+
+def mastodon_syndication_url(entry: entry_models.TEntry) -> str | None:
+    mastodon_wm = _get_mastodon_webmention(entry)
+    for wm in mastodon_wm:
+        return wm.response_body.get("url")
+    return None
+
+
+def _get_mastodon_webmention(entry: entry_models.TEntry):
+    return entry.t_post.ref_t_webmention_send.filter(
+        target=entry_constants.BridgySyndicationUrls.mastodon, success=True
+    )

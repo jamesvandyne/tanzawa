@@ -23,6 +23,7 @@ from application.indieweb import webmentions
 from data.entry import models
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
+from domain.entry import queries as entry_queries
 from interfaces.dashboard.entry import forms
 
 
@@ -800,5 +801,39 @@ class ChangeBookmarkTitle(FormView):
                 "t_entry_id": self.bookmark.t_entry_id,
                 "title": form.cleaned_data["title"],
                 "url": form.cleaned_data["u_bookmark_of"],
+            },
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class SendToBridgy(FormView):
+    template_name = "interfaces/dashboard/entry/bridgy/_form.html"
+    form_class = forms.SendToBridgy
+    entry: models.TEntry
+
+    def setup(self, *args, pk: int, **kwargs):
+        super().setup(*args, **kwargs)
+        self.entry = get_object_or_404(models.TEntry, pk=pk)
+
+    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
+        return super().get_context_data(
+            *args,
+            t_entry_id=self.entry.id,
+            is_syndicated=entry_queries.is_syndicated_to_mastodon(self.entry),
+            syndication_url=entry_queries.mastodon_syndication_url(self.entry),
+            **kwargs,
+        )
+
+    def form_valid(self, form):
+        entry_app.post_to_mastodon(
+            t_entry=self.entry, entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url())
+        )
+        return TemplateResponse(
+            self.request,
+            "interfaces/dashboard/entry/bridgy/_form.html",
+            {
+                "t_entry_id": self.entry.id,
+                "is_syndicated": entry_queries.is_syndicated_to_mastodon(self.entry),
+                "syndication_url": entry_queries.mastodon_syndication_url(self.entry),
             },
         )
