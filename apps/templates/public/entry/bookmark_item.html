@@ -27,6 +27,14 @@
     <main class="e-content mb-2 pt-2 content max-w-prose">
         <blockquote>{{ t_bookmark.quote|linebreaksbr }}</blockquote>
         {{ t_entry.e_content|safe }}
+        {% if t_post.tags.names %}
+            <ol class="inline help-text">
+                <li class="inline">Tagged with </li>
+                {% for tag in t_post.tags.names %}
+                    <li class="inline mr-1"><a href="{% url "public:bookmarks" %}?tag={{ tag }}" class="underline p-category">{{ tag }}</a></li>
+                {% endfor %}
+            </ol>
+        {% endif %}
     </main>
     {% include "public/fragments/post_footer.html" %}
 </div>
