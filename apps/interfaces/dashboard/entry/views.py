@@ -262,7 +262,7 @@ class ExtractLinkedPageMetaView(FormView):
             form=self.success_form(initial=initial, p_author=self.request.user),
             named_forms=self.get_named_forms(),
         )
-        return TurboFrame(self.turbo_frame).template(self.validate_template, context).response(self.request)
+        return TemplateResponse(self.request, self.validate_template, context)
 
     def form_invalid(self, form):
         return render(
