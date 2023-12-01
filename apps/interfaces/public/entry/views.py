@@ -56,7 +56,9 @@ class Bookmarks(generic.ListView):
 
     def get_queryset(self):
         qs = self._get_base_queryset()
-        form = forms.BookmarksSearchForm(self.request.GET)
+        # Ensure all tags are wrapped in quotes to account for tags which are multiple words
+        tag_names = " ".join([f'"{tag_name}"' for tag_name in self.request.GET._getlist("tag", [])])
+        form = forms.BookmarksSearchForm({"tag": tag_names})
         if form.is_valid():
             if form.cleaned_data["tag"]:
                 qs = qs.filter(t_post__tags__name__in=form.cleaned_data["tag"])
