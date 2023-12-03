@@ -1,9 +1,8 @@
-<turbo-frame id="reply-form">
-    <div data-controller="url-submit">
-        <form id="entry" action="{% url 'reply_meta' %}" method="post" data-url-submit-target="form">
-            {% csrf_token %}
-            {{ form.url.label }}
-            {{ form.url }}
-        </form>
-    </div>
-</turbo-frame>
+<div id="reply-form" hx-target="this" hx-swap="outerHTML">
+    <form id="entry" hx-post="{% url 'reply_meta' %}" method="post">
+        {% csrf_token %}
+        {{ form.url.label }}
+        {{ form.url }}
+        <button class="outline-button mt-2">Next</button>
+    </form>
+</div>

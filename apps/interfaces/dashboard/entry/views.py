@@ -15,7 +15,7 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
-from turbo_response import TurboFrame, redirect_303
+from turbo_response import redirect_303
 
 from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
@@ -406,7 +406,7 @@ class CreateReplyView(CreateEntryView):
 
     def form_invalid(self, form, named_forms):
         context = self.get_context_data(form=form)
-        return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)
+        return TemplateResponse(self.request, "entry/reply/_form.html", context)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
