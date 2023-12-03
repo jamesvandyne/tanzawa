@@ -63,7 +63,7 @@ class TestCreateStatusView:
         response = client.post(reverse("status_create"), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry = entry_models.TEntry.objects.last()
@@ -150,7 +150,7 @@ class TestCreateStatusView:
         response = client.post(reverse("status_create"), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry = entry_models.TEntry.objects.last()
@@ -233,7 +233,7 @@ class TestCreateArticleView:
         response = client.post(reverse("article_create"), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry = entry_models.TEntry.objects.last()
@@ -320,7 +320,7 @@ class TestCreateReplyView:
         response = client.post(reverse("reply_create"), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry = entry_models.TEntry.objects.last()
@@ -487,7 +487,7 @@ class TestUpdateStatusView:
         response = client.post(reverse("status_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()
@@ -579,7 +579,7 @@ class TestUpdateStatusView:
         response = client.post(reverse("status_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()
@@ -663,7 +663,7 @@ class TestUpdateArticleView:
         response = client.post(reverse("article_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()
@@ -754,7 +754,7 @@ class TestUpdateReplyView:
         response = client.post(reverse("reply_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()
@@ -926,7 +926,7 @@ class TestUpdateCheckinView:
         response = client.post(reverse("checkin_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()

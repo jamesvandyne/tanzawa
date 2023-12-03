@@ -15,7 +15,6 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
-from turbo_response import redirect_303
 
 from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
@@ -72,7 +71,7 @@ class CreateEntryView(CreateView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def _get_location(self, location_form) -> entry_app.Location | None:
         if location_form.cleaned_data["point"]:
@@ -176,7 +175,7 @@ class UpdateEntryView(UpdateView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
     def get_response(self, context):
         return render(self.request, self.template_name, context=context)
@@ -357,7 +356,7 @@ class UpdateCheckinView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 # Reply CRUD views
@@ -402,7 +401,7 @@ class CreateReplyView(CreateEntryView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def form_invalid(self, form, named_forms):
         context = self.get_context_data(form=form)
@@ -464,7 +463,7 @@ class UpdateReplyView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 # Bookmarks
