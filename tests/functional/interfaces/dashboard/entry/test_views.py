@@ -398,7 +398,7 @@ class TestCreateBookmarkView:
         response = client.post(reverse("bookmark_create"), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry = entry_models.TEntry.objects.last()
@@ -838,7 +838,7 @@ class TestUpdateBookmarkView:
         response = client.post(reverse("bookmark_edit", args=[entry.pk]), payload)
 
         # ... redirect to the edit page
-        assert response.status_code == 303
+        assert response.status_code == 302
 
         # An entry should have been created...
         entry.refresh_from_db()

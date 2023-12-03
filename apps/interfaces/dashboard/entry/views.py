@@ -516,11 +516,11 @@ class CreateBookmarkView(CreateEntryView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
-        return TurboFrame("bookmark-form").template("entry/bookmark/_form.html", context).response(self.request)
+        return TemplateResponse(self.request, "entry/bookmark/_form.html", context)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
@@ -585,7 +585,7 @@ class UpdateBookmarkView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 @login_required
