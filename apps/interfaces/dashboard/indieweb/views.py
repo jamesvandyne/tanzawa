@@ -4,11 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from rest_framework import status
-from turbo_response import TurboFrame
 
 from application.indieweb import webmentions as webmention_app
 from data.indieweb.models import TWebmention
@@ -32,7 +32,7 @@ def review_webmention(request, pk: int, approval: bool):
         "webmentions": webmentions,
         "unread_count": len(webmentions),
     }
-    return TurboFrame("webmentions").template("indieweb/fragments/webmentions.html", context).response(request)
+    return TemplateResponse(request, "indieweb/fragments/webmentions.html", context)
 
 
 @login_required
