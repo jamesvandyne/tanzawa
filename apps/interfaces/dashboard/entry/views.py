@@ -618,11 +618,6 @@ class TEntryListView(ListView):
         if self.m_post_kind_key:
             self.m_post_kind = get_object_or_404(post_models.MPostKind, key=self.m_post_kind_key)
 
-    def get_template_names(self):
-        if self.request.turbo.frame:
-            return "entry/fragments/posts.html"
-        return "entry/posts.html"
-
     def get_queryset(self):
         qs = models.TEntry.objects.all().select_related(
             "t_post",
@@ -647,15 +642,6 @@ class TEntryListView(ListView):
             }
         )
         return context
-
-    def render_to_response(self, context: dict[str, Any], **response_kwargs):
-        if self.request.turbo.frame:
-            return (
-                TurboFrame(self.request.turbo.frame)
-                .template("entry/fragments/posts.html", context)
-                .response(self.request)
-            )
-        return super().render_to_response(context, **response_kwargs)
 
 
 @login_required
