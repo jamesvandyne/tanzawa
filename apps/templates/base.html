@@ -96,7 +96,7 @@
     </div>
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <script src="{% static 'js/_hyperscript.min.js' %}" defer></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/loading-states.js" defer></script>
+    <script src="{% static 'js/ext/loading-states.js' %}" defer></script>
     {% django_htmx_script %}
     {% block body_end %}
     {% endblock %}
