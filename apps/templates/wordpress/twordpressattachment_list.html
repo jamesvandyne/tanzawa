@@ -9,16 +9,16 @@
     <ul>
         {% for t_wordpress_attachment in object_list reversed %}
             <li class="flex mt-2">
-                <turbo-frame id="{{ t_wordpress_attachment.uuid }}" class="flex" src="{% url 'wordpress:import_attachment' t_wordpress_attachment.uuid %}">
+                <div id="{{ t_wordpress_attachment.uuid }}" class="flex" hx-trigger="load" hx-get="{% url 'wordpress:import_attachment' t_wordpress_attachment.uuid %}">
                     {% include "wordpress/_attachment.html" with img_src=t_wordpress_attachment.guid loading="true" %}
-                </turbo-frame>
+                </div>
             </li>
         {% endfor %}
         {% for t_wordpress_attachment in imported reversed %}
             <li class="flex mt-2">
-                <turbo-frame loading="lazy" class="flex">
+                <div hx-trigger="load" class="flex">
                     {% include "wordpress/_attachment.html" with img_src=t_wordpress_attachment.t_file.get_absolute_url %}
-                </turbo-frame>
+                </div>
             </li>
         {% endfor %}
     </ul>
