@@ -1,6 +1,6 @@
 <h2 class="mx-2">{{ page_title }}</h2>
 <p class="mx-2 help-text">Small measurements over time help you see change you do not notice day-to-day.</p>
- <form id="health" action="{% url "plugin_health_admin:add_daily_health" %}" method="POST" class="flex-col mt-2" data-turbo="false">
+ <form id="health" action="{% url "plugin_health_admin:add_daily_health" %}" method="POST" class="flex-col mt-2" >
     {% csrf_token %}
      {{ form.errors }}
     <div class="{% if form.errors %}pt-2{% endif %}">
@@ -38,6 +38,6 @@
         </section>
     </div>
      <div class="mt-2 mx-2">
-        <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border w-full" form="health" data-turbo="false">Save</button>
+        <button class="rounded text-white bg-malachite-800 border-malachite-900 px-3 py-1 border w-full" form="health" >Save</button>
     </div>
 </form>
