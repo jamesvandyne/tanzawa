@@ -228,7 +228,6 @@ class ExtractLinkedPageMetaView(FormView):
     success_form = forms.CreateReplyForm
     invalidate_template: str | None = None
     validate_template: str | None = None
-    turbo_frame = ""
     url_key = ""
 
     def get_context_data(self, **kwargs):
@@ -278,14 +277,12 @@ class ExtractLinkedPageMetaView(FormView):
 class CreateStatusView(CreateEntryView):
     form_class = forms.CreateStatusForm
     template_name = "entry/note/create.html"
-    turbo_template_name = "entry/note/_create.html"
 
 
 class UpdateStatusView(UpdateEntryView):
     form_class = forms.UpdateStatusForm
     template_name = "entry/note/update.html"
     m_post_kind = MPostKinds.note
-    turbo_template_name = "entry/note/_update.html"
 
 
 # Article CRUD views
@@ -417,7 +414,6 @@ class ExtractReplyMetaView(ExtractLinkedPageMetaView):
     invalidate_template = "entry/reply/_linked_page_form.html"
     validate_template = "entry/reply/_form.html"
     url_key = "u_in_reply_to"
-    turbo_frame = "reply-form"
 
 
 class UpdateReplyView(UpdateEntryView):
@@ -532,7 +528,6 @@ class ExtractBookmarkMetaView(ExtractLinkedPageMetaView):
     invalidate_template = "entry/bookmark/_linked_page_form.html"
     validate_template = "entry/bookmark/_form.html"
     url_key = "u_bookmark_of"
-    turbo_frame = "bookmark-form"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -676,7 +671,6 @@ class QuickEntry(CreateStatusView):
     """
 
     template_name = "entry/note/quick.html"
-    turbo_template_name = "entry/note/_quick.html"
     form_class = forms.QuickCreateStatusForm
 
     def get_redirect_url(self, entry):
