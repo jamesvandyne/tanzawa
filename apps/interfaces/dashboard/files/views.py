@@ -34,11 +34,6 @@ class FileDetail(DetailView):
         kwargs["insert"] = self.request.GET.get("insert")
         return super().get_context_data(**kwargs)
 
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.turbo.frame:
-            return self.render_turbo_frame(context, **response_kwargs)
-        return super().render_to_response(context, **response_kwargs)
-
 
 @method_decorator(login_required, name="dispatch")
 class FileDelete(DeleteView):
