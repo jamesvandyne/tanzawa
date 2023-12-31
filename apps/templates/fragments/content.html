@@ -1,8 +1,8 @@
-<turbo-frame id="messages">
+<div id="messages">
     {% if messages %}
         {% include "fragments/messages.html" %}
     {% endif %}
-</turbo-frame>
+</div>
 {% block content_before %}{% endblock %}
 <div id="main-container" class="flex">
     {% block content %}

@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block content %}
-    <turbo-frame id="messages">
+    <div id="messages">
     {% if messages %}
         {% include "fragments/messages.html" %}
     {% endif %}
-    </turbo-frame>
+    </div>
     <nav id="breadcrumbs" class="breadcrumbs pb-2 mb-2 ml-2 md:ml-0">
         <a href="{% url "posts" %}" class="underline">Health</a><span class="ml-2">> Top</span>
     </nav>

@@ -3,10 +3,10 @@
 {% block left_nav %}{% endblock %}
 
 {% block content %}
-    <turbo-frame id="messages">
+    <div id="messages">
     {% if messages %}
         {% include "fragments/messages.html" %}
     {% endif %}
-    </turbo-frame>
+    </div>
     {% include "entry/note/_quick_form.html" %}
 {% endblock %}
