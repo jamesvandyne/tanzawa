@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
- <form id="trip" action="" method="POST" class="flex-col" data-turbo="false">
+ <form id="trip" action="" method="POST" class="flex-col" >
     {% csrf_token %}
      {{ form.errors }}
     <div class="pt-2">

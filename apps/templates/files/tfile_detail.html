@@ -1,36 +1,47 @@
+{% extends "fragments/modal.html" %}
+
+{% block modal_content %}
 {% with object as t_file %}
-{% if not request.turbo.frame %}
-<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded flex">
-{% endif %}
-    <img src="{% url 'public:get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
-    <div class="ml-2 flex flex-col" style="width: 300px">
-        {# actions #}
-        <div class="flex">
-            {% if insert %}
-                <button type="button" class="outline-button text-xs" data-url="{% url 'file_trix_figure' t_file.pk %}" data-action='click->picker#insertIntoPost'>insert into post</button>
-            {% else %}
-            <a class="outline-button text-xs" href="{{ t_file.get_absolute_url }}" target="_new">view on site</a>
-            <a class="text-negroni-800 text-xs ml-auto" href="{% url "file_delete"  t_file.pk %}?page={{ page }}">delete</a>
-            {% endif %}
+<div
+    _="on close
+        trigger closeModal
+      end
+      on keyup[key is 'Escape'] from <body/>
+        trigger closeModal
+      end
+   "
+    >
+    <div class="grid grid-cols-2 gap-2">
+        <div>
+            <img src="{% url 'public:get_media' t_file.uuid %}" class="w-96 object-fill scale-down ">
+            {# actions #}
+            <div>
+                {% if insert %}
+                    <button
+                        type="button" class="outline-button text-xs"
+                        data-url="{% url 'file_trix_figure' t_file.pk %}"
+                        _="on click
+                            fetch `${my [@data-url]}`
+                            set html to `${its}`
+                            js(html) {
+                                document.getElementsByTagName('trix-editor')[0].editor.insertHTML(html);
+                            }
+                            end
+                            trigger closeModal
+                        ">
+                        insert into post
+                    </button>
+                {% else %}
+                    <div class="mt-2 flex">
+                        <a class="outline-button text-xs" href="{{ t_file.get_absolute_url }}" target="_new">view on site</a>
+                        <span class="text-negroni-800 text-xs cursor-pointer ml-auto mt-1" hx-get="{% url "file_delete"  t_file.pk %}?page={{ page }}" hx-target="closest <dialog/>">delete</span>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-        {# related #}
-        <details open class="pt-2">
-            <summary>
-                Posts
-                <div class="inline-block ml-1">
-                    {% with t_file.posts.count as post_count %}
-                    <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="Used in {{ post_count }} post{{ post_count|pluralize }}">{{ post_count }}</div>
-                    {% endwith %}
-                </div>
-                <ul>
-                    {% for t_post in t_file.posts.all %}
-                        <li><a href="{{ t_post.get_absolute_url }}" target="_new">{{ t_post.post_title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </summary>
-        </details>
         {# exif #}
-        <div class="mt-auto">
+        <div>
+            <div>
             {% if t_file.exif %}
                 <div class="hover:underline block">{{ t_file.exif.make }} {{ t_file.exif.model }}</div>
                 <table class="pt-2">
@@ -50,7 +61,7 @@
             {% endif %}
         </div>
         {% if t_file.point %}
-            <div data-controller="meta-map" style="width: 300px" class="inline-block pt-2 md:ml-auto md:pt-0 mt-2">
+            <div data-controller="meta-map" style="width: 280px" class="inline-block pt-2 md:ml-auto md:pt-0 mt-2">
                 <div id="map"
                      class="h-32"
                      data-meta-map-target="map"
@@ -60,8 +71,27 @@
                 ></div>
             </div>
         {% endif %}
+        </div>
     </div>
-{% if not request.turbo.frame %}
-</turbo-frame>
-{% endif %}
+    <div style="width: 300px">
+
+        {# related #}
+        <details open class="pt-2">
+            <summary>
+                Posts
+                <div class="inline-block ml-1">
+                    {% with t_file.posts.count as post_count %}
+                    <div class="rounded-full flex h-6 w-6 bg-negroni-700 items-center justify-center text-white" title="Used in {{ post_count }} post{{ post_count|pluralize }}">{{ post_count }}</div>
+                    {% endwith %}
+                </div>
+                <ul>
+                    {% for t_post in t_file.posts.all %}
+                        <li><a href="{{ t_post.get_absolute_url }}" target="_new">{{ t_post.post_title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </summary>
+        </details>
+    </div>
+</div>
 {% endwith %}
+{% endblock %}

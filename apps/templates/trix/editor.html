@@ -1,20 +1,17 @@
 {{ html }}
-<p
-    data-controller='remote'
-    data-remote-target='wrapper'
-    data-action='keydown@window->remote#closeWithKeyboard'
-    data-remote-url='{% url "file_browser" %}'
->
-    <trix-editor {{ param_str|safe }}></trix-editor>
-</p>
+
+<trix-editor {{ param_str|safe }}></trix-editor>
 
 <template id="trixSelectFileButton">
     <button data-trix-action="selectFile"
             title="Select an existing file"
             tabindex="-1"
             class="trix-button trix-button--icon trix--button--select-file"
-            data-action='click->remote#view'
-            data-target="modal"
+            name="selectFile"
+            hx-get='{% url "file_browser" %}'
+            hx-trigger="click"
+            hx-target="body"
+            hx-swap="beforeend"
     >
     </button>
 </template>
@@ -36,6 +33,7 @@
         // Attachment of the button to the toolBar
         const selectFileButton = getSelectFileButton();
         toolBar.querySelector('.trix-button-group--file-tools').appendChild(selectFileButton);
+        htmx.process(toolBar);
         {% endblock %}
     });
 }());

@@ -1,34 +1,19 @@
-{% if not request.turbo.frame %}
-<turbo-frame id="modal" class="self-center shadow-2xl bg-bianca-500 p-2 rounded overflow-scroll md:w-2/3 " style="max-height: 75%;">
-{% endif %}
-    <h1 class="text-xl">Select a photo to insert.</h1>
-    <div class="flex flex-wrap" data-controller="picker">
-    {% for t_file in object_list %}
-        <div class="max-w-1/4 inline-block overflow-hidden p-2"
-            data-controller='remote'
-            data-remote-target='wrapper'
-            data-action='keydown@window->remote#closeWithKeyboard'
-            data-remote-url='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}&insert=1'
-        >
-            <div data-action='click->remote#view' class="cursor-pointer">
-                {% if "image" in t_file.mime_type or "pdf" in t_file.mime_type  %}
-                    {#  208px ==  13rm #}
-                    <picture>
-                        <source srcset="{% url 'public:get_media' t_file.uuid %}?s=416&f=image/webp 2x" type="image/webp"/>
-                        <img src="{% url 'public:get_media' t_file.uuid %}?s=208&f=image/webp" loading="lazy"  class="h-52 w-52 object-cover"/>
-                    </picture>
-                {% else %}
-                    <div class="h-52 w-52 inline-block flex">
-                        <span class="self-center mx-auto">?</span>
-                    </div>
-                {% endif %}
-            </div>
-            <div class="details">
-            </div>
+{% extends "fragments/modal.html" %}
+{% block modal_content %}
+{% if request.htmx %}
+    <div
+        hx-target="this"
+        _="on close
+            remove me
+          end
+          on close or keyup[key is 'Escape'] from <body/>
+            trigger closeModal
+          end
+        "
+        class="">
+    {% endif %}
+    {% include "files/_browser_gallery.html" %}
+    {% if request.htmx %}
         </div>
-    {% endfor %}
-    </div>
-    {% include "fragments/paging.html"  with turbo="true" %}
-{% if not request.turbo.frame %}
-</turbo-frame>
-{% endif %}
+    {% endif %}
+{% endblock %}

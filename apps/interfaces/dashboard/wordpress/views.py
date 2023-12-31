@@ -7,12 +7,11 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import Http404, HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.defaultfilters import linebreaks_filter, safe
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView
-from turbo_response import TurboFrame, redirect_303
 
 from application.indieweb.location import location_to_pointfield_input
 from data.entry.models import TCheckin, TLocation
@@ -60,7 +59,7 @@ class TWordpressListView(ListView):
         try:
             return super().get(request, *args, **kwargs)
         except Http404:
-            return redirect_303("wordpress:t_wordpress_create")
+            return redirect("wordpress:t_wordpress_create")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -80,7 +79,7 @@ def category_mappings(request, pk):
     if request.method == "POST" and formset.is_valid():
         formset.save()
         messages.success(request, "Updated Category Mapping")
-        return redirect_303("wordpress:t_wordpress_list")
+        return redirect("wordpress:t_wordpress_list")
     context = {
         "t_wordpress": t_wordpress,
         "formset": formset,
@@ -96,7 +95,7 @@ def post_kind_mappings(request, pk):
     if request.method == "POST" and formset.is_valid():
         formset.save()
         messages.success(request, "Updated Post Kind Mapping")
-        return redirect_303("wordpress:t_wordpress_list")
+        return redirect("wordpress:t_wordpress_list")
     context = {
         "t_wordpress": t_wordpress,
         "formset": formset,
@@ -131,16 +130,13 @@ def import_attachment(request, uuid):
         t_attachment.save()
         response = HttpResponse(status=201)
         response["Location"] = request.build_absolute_uri(t_file.get_absolute_url())
-    return (
-        TurboFrame(uuid)
-        .template(
-            "wordpress/_attachment.html",
-            context={
-                "t_wordpress_attachment": t_attachment,
-                "img_src": t_attachment.t_file.get_absolute_url(),
-            },
-        )
-        .response(request)
+    return render(
+        request,
+        "wordpress/_attachment.html",
+        context={
+            "t_wordpress_attachment": t_attachment,
+            "img_src": t_attachment.t_file.get_absolute_url(),
+        },
     )
 
 

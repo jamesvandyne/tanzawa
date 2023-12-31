@@ -1,5 +1,5 @@
 {% if render_location == "ADMIN.NAV.LEFT" %}
-<li class="{% if nav == 'health' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugin_health_admin:health" %}" data-turbo-frame="_top"><span class="mr-1">🏥</span>Health</a></li>
+<li class="{% if nav == 'health' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "plugin_health_admin:health" %}" ><span class="mr-1">🏥</span>Health</a></li>
 {% elif render_location == "ADMIN.NAV.LEFT.MOBILE" %}
     <li class="{% if nav == "health" %}border-l-4 border-secondary{% endif %} p-1 mb-2">
         <a href="{% url "plugin_health_admin:health" %}" class="w-full inline-block">

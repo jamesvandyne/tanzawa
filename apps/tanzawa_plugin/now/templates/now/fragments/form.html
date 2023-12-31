@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block main %}
- <form id="now" action="{% url "plugin_now_admin:update_now" %}" method="POST" class="flex-col" data-turbo="false">
+ <form id="now" action="{% url "plugin_now_admin:update_now" %}" method="POST" class="flex-col" >
     {% csrf_token %}
      {{ form.errors }}
     <div class="{% if form.errors %}pt-2{% endif %}">

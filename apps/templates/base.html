@@ -26,7 +26,7 @@
     <script src="{% static 'js/app.js' %}"></script>
     {% block head %}{% endblock %}
 </head>
-<body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' data-turbolinks="false" hx-ext="loading-states">
+<body class="bg-bianca-500" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-ext="loading-states">
     <div class="">
         <header class="max-w mx-auto p-2">
              <nav  data-controller="reveal">
@@ -47,43 +47,43 @@
                     </div>
                 </div>
                 <ul data-reveal-target="item" class="mb-2 hidden md:hidden mt-2">
-                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "post:dashboard" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "posts" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✏️</span><span>Posts</span></a></li>
-                    <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
-                    <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
-                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
+                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "posts" %}"><span class="mr-1">✏️</span><span>Posts</span></a></li>
+                    <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "trips" %}"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
+                    <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "files" %}"><span class="mr-1">🗄️</span><span>Files</span></a></li>
+                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "plugin_list" %}"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_admin_left_nav %}
                             {% render_navigation plugin.identifier "ADMIN.NAV.LEFT.MOBILE" %}
                         {% endif %}
                     {% endfor %}
-                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
+                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
         </header>
         <div class="md:flex">
             {% block left_nav %}
             <nav id="section-nav" class="min-w-min p-2 flex flex-col hidden md:block">
-                <ul class="mb-2" data-controller="select" data-select-selected-class="selected">
-                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "post:dashboard" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🏡</span><span>Home</span></a></li>
-                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "posts" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✏️</span><span>Posts</span></a></li>
-                    <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "trips" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
-                    <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "files" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🗄️</span><span>Files</span></a></li>
-                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url "plugin_list" %}" data-turbo-frame="_top" data-action="select#click"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
+                <ul class="mb-2">
+                    <li class="{% if nav == 'dashboard' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "post:dashboard" %}"><span class="mr-1">🏡</span><span>Home</span></a></li>
+                    <li class="{% if nav == 'posts' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "posts" %}"><span class="mr-1">✏️</span><span>Posts</span></a></li>
+                    <li class="{% if nav == 'trips' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "trips" %}"><span class="mr-1">✈️️</span><span>Trips</span></a></li>
+                    <li class="{% if nav == 'files' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "files" %}"><span class="mr-1">🗄️</span><span>Files</span></a></li>
+                    <li class="{% if nav == 'plugins' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url "plugin_list" %}"><span class="mr-1">🔌️</span><span>Plugins</span></a></li>
                     {% for plugin in request.plugin_pool.enabled_plugins %}
                         {% if plugin.has_admin_left_nav %}
                             {% render_navigation plugin.identifier "ADMIN.NAV.LEFT" %}
                         {% endif %}
                     {% endfor %}
-                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2" data-select-target="menuItem"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
+                    <li class="{% if nav == 'settings' %}selected{% endif %} w-28 p-1 mb-2"><a href="{% url 'admin:index' %}"><span class="mr-1">⚙️</span><span>Settings</span></a></li>
                 </ul>
             </nav>
             {% if nav == "dashboard" %}
                 <div class="mx-auto mx-2 grid grid-cols-2 gap-2 md:hidden">
-                    <a href="{% url "status_quick" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
-                    <a href="{% url "article_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a>
-                    <a href="{% url "reply_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">📤️</span><span class="hover:underline">New Reply</span></a>
-                    <a href="{% url "bookmark_create" %}" data-turbo-frame="_top" class="primary-button"><span class="mr-1">🔖️</span><span class="hover:underline">New Bookmark</span></a>
+                    <a href="{% url "status_quick" %}" class="primary-button"><span class="mr-1">💬</span><span class="hover:underline">New Status</span></a>
+                    <a href="{% url "article_create" %}" class="primary-button"><span class="mr-1">✏️</span><span class="hover:underline">New Article</span></a>
+                    <a href="{% url "reply_create" %}" class="primary-button"><span class="mr-1">📤️</span><span class="hover:underline">New Reply</span></a>
+                    <a href="{% url "bookmark_create" %}" class="primary-button"><span class="mr-1">🔖️</span><span class="hover:underline">New Bookmark</span></a>
                 </div>
             {% endif %}
             {% endblock %}
@@ -96,7 +96,7 @@
     </div>
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <script src="{% static 'js/_hyperscript.min.js' %}" defer></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/loading-states.js" defer></script>
+    <script src="{% static 'js/ext/loading-states.js' %}" defer></script>
     {% django_htmx_script %}
     {% block body_end %}
     {% endblock %}

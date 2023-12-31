@@ -1,6 +1,6 @@
 {% load static %}
 
-<form id="entry" action="" method="POST" class="flex-col" data-turbo-frame="_top">
+<form id="entry" action="" method="POST" class="flex-col" >
     {{ form.errors }}
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}

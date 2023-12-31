@@ -4,9 +4,9 @@
 {% endblock %}
 
 {% block main %}
-    <turbo-frame id="webmentions">
+    <div id="webmentions" hx-target="this" hx-swap="innerHTML">
     {% include "indieweb/fragments/webmentions.html" %}
-    </turbo-frame>
+    </div>
     <details {% if drafts %}open{% endif %} class="mt-2">
         <summary>Drafts</summary>
         {% include "entry/fragments/post_list.html" with object_list=drafts %}

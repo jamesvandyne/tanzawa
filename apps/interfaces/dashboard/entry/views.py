@@ -15,7 +15,6 @@ from django.views.generic import (
     TemplateView,
     UpdateView,
 )
-from turbo_response import TurboFrame, redirect_303
 
 from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
@@ -72,7 +71,7 @@ class CreateEntryView(CreateView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def _get_location(self, location_form) -> entry_app.Location | None:
         if location_form.cleaned_data["point"]:
@@ -176,7 +175,7 @@ class UpdateEntryView(UpdateView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
     def get_response(self, context):
         return render(self.request, self.template_name, context=context)
@@ -229,7 +228,6 @@ class ExtractLinkedPageMetaView(FormView):
     success_form = forms.CreateReplyForm
     invalidate_template: str | None = None
     validate_template: str | None = None
-    turbo_frame = ""
     url_key = ""
 
     def get_context_data(self, **kwargs):
@@ -262,7 +260,7 @@ class ExtractLinkedPageMetaView(FormView):
             form=self.success_form(initial=initial, p_author=self.request.user),
             named_forms=self.get_named_forms(),
         )
-        return TurboFrame(self.turbo_frame).template(self.validate_template, context).response(self.request)
+        return TemplateResponse(self.request, self.validate_template, context)
 
     def form_invalid(self, form):
         return render(
@@ -279,14 +277,12 @@ class ExtractLinkedPageMetaView(FormView):
 class CreateStatusView(CreateEntryView):
     form_class = forms.CreateStatusForm
     template_name = "entry/note/create.html"
-    turbo_template_name = "entry/note/_create.html"
 
 
 class UpdateStatusView(UpdateEntryView):
     form_class = forms.UpdateStatusForm
     template_name = "entry/note/update.html"
     m_post_kind = MPostKinds.note
-    turbo_template_name = "entry/note/_update.html"
 
 
 # Article CRUD views
@@ -357,7 +353,7 @@ class UpdateCheckinView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 # Reply CRUD views
@@ -402,11 +398,11 @@ class CreateReplyView(CreateEntryView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def form_invalid(self, form, named_forms):
         context = self.get_context_data(form=form)
-        return TurboFrame("reply-form").template("entry/reply/_form.html", context).response(self.request)
+        return TemplateResponse(self.request, "entry/reply/_form.html", context)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
@@ -418,7 +414,6 @@ class ExtractReplyMetaView(ExtractLinkedPageMetaView):
     invalidate_template = "entry/reply/_linked_page_form.html"
     validate_template = "entry/reply/_form.html"
     url_key = "u_in_reply_to"
-    turbo_frame = "reply-form"
 
 
 class UpdateReplyView(UpdateEntryView):
@@ -464,7 +459,7 @@ class UpdateReplyView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 # Bookmarks
@@ -516,11 +511,11 @@ class CreateBookmarkView(CreateEntryView):
             self.request,
             f"Saved {form.cleaned_data['m_post_kind']}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.get_redirect_url(entry=entry))
+        return redirect(self.get_redirect_url(entry=entry))
 
     def form_invalid(self, form):
         context = self.get_context_data(form=form)
-        return TurboFrame("bookmark-form").template("entry/bookmark/_form.html", context).response(self.request)
+        return TemplateResponse(self.request, "entry/bookmark/_form.html", context)
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(**kwargs, submit_form=forms.PublishStatusVisibilityForm())
@@ -533,7 +528,6 @@ class ExtractBookmarkMetaView(ExtractLinkedPageMetaView):
     invalidate_template = "entry/bookmark/_linked_page_form.html"
     validate_template = "entry/bookmark/_form.html"
     url_key = "u_bookmark_of"
-    turbo_frame = "bookmark-form"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -585,7 +579,7 @@ class UpdateBookmarkView(UpdateEntryView):
             self.request,
             f"Saved {form.instance.t_post.m_post_kind.key}. {mark_safe(permalink_a_tag)}",
         )
-        return redirect_303(self.request.build_absolute_uri())
+        return redirect(self.request.build_absolute_uri())
 
 
 @login_required
@@ -618,11 +612,6 @@ class TEntryListView(ListView):
         if self.m_post_kind_key:
             self.m_post_kind = get_object_or_404(post_models.MPostKind, key=self.m_post_kind_key)
 
-    def get_template_names(self):
-        if self.request.turbo.frame:
-            return "entry/fragments/posts.html"
-        return "entry/posts.html"
-
     def get_queryset(self):
         qs = models.TEntry.objects.all().select_related(
             "t_post",
@@ -647,15 +636,6 @@ class TEntryListView(ListView):
             }
         )
         return context
-
-    def render_to_response(self, context: dict[str, Any], **response_kwargs):
-        if self.request.turbo.frame:
-            return (
-                TurboFrame(self.request.turbo.frame)
-                .template("entry/fragments/posts.html", context)
-                .response(self.request)
-            )
-        return super().render_to_response(context, **response_kwargs)
 
 
 @login_required
@@ -691,7 +671,6 @@ class QuickEntry(CreateStatusView):
     """
 
     template_name = "entry/note/quick.html"
-    turbo_template_name = "entry/note/_quick.html"
     form_class = forms.QuickCreateStatusForm
 
     def get_redirect_url(self, entry):

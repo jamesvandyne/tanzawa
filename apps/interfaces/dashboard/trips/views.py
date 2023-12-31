@@ -1,11 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render, resolve_url
+from django.shortcuts import redirect, render, resolve_url
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.views.generic.base import ContextMixin
 from django.views.generic.edit import ProcessFormView, SingleObjectTemplateResponseMixin
-from turbo_response import redirect_303
 
 from data.trips.models import TTrip
 from interfaces.dashboard.trips.forms import TLocationModelForm, TTripModelForm
@@ -44,7 +43,7 @@ class ProcessNamedFormMixin(SingleObjectTemplateResponseMixin, ContextMixin, Pro
             for named_form in named_forms.values():
                 named_form.prepare_data(instance)
                 named_form.save()
-        return redirect_303(resolve_url(self.redirect_url, pk=instance.pk))
+        return redirect(resolve_url(self.redirect_url, pk=instance.pk))
 
     def form_invalid(self, form, named_forms=None):
         context = self.get_context_data(form=form, named_forms=named_forms)
