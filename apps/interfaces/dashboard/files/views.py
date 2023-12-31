@@ -1,19 +1,19 @@
 import json
 
 from bs4 import BeautifulSoup
+from django import http
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView, DetailView, ListView
-from turbo_response.mixins import HttpResponseSeeOther, TurboFrameTemplateResponseMixin
 
 from data.files.models import TFile
 from domain.files import queries as file_queries
 
 
 @method_decorator(login_required, name="dispatch")
-class FilesList(TurboFrameTemplateResponseMixin, ListView):
+class FilesList(ListView):
     template_name = "files/tfiles_list.html"
     paginate_by = 20
 
@@ -25,17 +25,13 @@ class FilesList(TurboFrameTemplateResponseMixin, ListView):
 
 
 @method_decorator(login_required, name="dispatch")
-class FileDetail(TurboFrameTemplateResponseMixin, DetailView):
+class FileDetail(DetailView):
     template_name = "files/tfile_detail.html"
     queryset = TFile.objects.all()
-    turbo_frame_dom_id = "modal"
 
     def get_context_data(self, **kwargs):
         kwargs["page"] = self.request.GET.get("page")
         kwargs["insert"] = self.request.GET.get("insert")
-        if "turbo_frame_target" not in kwargs:
-            target = self.get_turbo_frame_dom_id()
-            kwargs["turbo_frame_target"] = target
         return super().get_context_data(**kwargs)
 
     def render_to_response(self, context, **response_kwargs):
@@ -45,16 +41,10 @@ class FileDetail(TurboFrameTemplateResponseMixin, DetailView):
 
 
 @method_decorator(login_required, name="dispatch")
-class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
+class FileDelete(DeleteView):
     queryset = TFile.objects.all()
     template_name = "files/tfile_delete.html"
-    turbo_frame_dom_id = "modal"
     success_url = reverse_lazy("files")
-
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.turbo.frame:
-            return self.render_turbo_frame(context, **response_kwargs)
-        return super().render_to_response(context, **response_kwargs)
 
     def get_success_url(self):
         return f"{super().get_success_url()}?page={self.request.GET.get('page')}"
@@ -81,25 +71,24 @@ class FileDelete(TurboFrameTemplateResponseMixin, DeleteView):
             t_entry.save()
         self.object.delete()
         success_url = self.get_success_url()
-        return HttpResponseSeeOther(success_url)
+        return http.HttpResponseRedirect(success_url)
 
 
 @method_decorator(login_required, name="dispatch")
-class FileBrowser(TurboFrameTemplateResponseMixin, ListView):
+class FileBrowser(ListView):
     template_name = "files/tfiles_browser.html"
     paginate_by = 20
-    turbo_frame_dom_id = "modal"
+
+    def get_template_names(self) -> list[str]:
+        if self.request.htmx.trigger_name:
+            return [self.template_name]
+        return ["files/_browser_gallery.html"]
 
     def get_queryset(self):
         return TFile.objects.all().order_by("-created_at")
 
     def get_context_data(self, *args, object_list=None, **kwargs):
         return super().get_context_data(*args, object_list=object_list, nav="files")
-
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.turbo.frame:
-            return self.render_turbo_frame(context, **response_kwargs)
-        return super().render_to_response(context, **response_kwargs)
 
 
 @method_decorator(login_required, name="dispatch")

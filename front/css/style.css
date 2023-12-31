@@ -130,6 +130,7 @@ main.content blockquote {
 #modal > .modal-content {
     /* Position visible dialog near the top of the window */
     margin-top:10vh;
+    overflow: scroll;
 
     /* Sizing for visible dialog */
     width:80%;

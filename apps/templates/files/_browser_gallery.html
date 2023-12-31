@@ -1,18 +1,16 @@
-{%  extends "base.html" %}
-
-{% block content %}
-    <div class="grid-flow-col md:grid-flow-row md:grid-cols-4 md:grid-rows-5 gap-4">
+<div>
+    <h1 class="text-xl">Select a photo to insert.</h1>
+    <div class="flex flex-wrap">
     {% for t_file in object_list %}
-        <div class="w-52 inline-block overflow-hidden"
-        >
-            <div 
-                hx-get='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}'
+        <div class="max-w-1/4 inline-block overflow-hidden p-2">
+            <div
+                hx-get='{% url "file_detail" t_file.pk %}?page={{ page_obj.number }}&insert=1'
                 hx-trigger="click"
                 hx-target="body"
-                hx-swap="beforeend" 
+                hx-swap="beforeend"
                 class="cursor-pointer"
             >
-                {% if "image" in t_file.mime_type %}
+                {% if "image" in t_file.mime_type or "pdf" in t_file.mime_type  %}
                     {#  208px ==  13rm #}
                     <picture>
                         <source srcset="{% url 'public:get_media' t_file.uuid %}?s=416&f=image/webp 2x" type="image/webp"/>
@@ -29,5 +27,5 @@
         </div>
     {% endfor %}
     </div>
-    {% include "fragments/paging.html" %}
-{% endblock %}
+    {% include "fragments/paging.html"  with boost="true" %}
+</div>

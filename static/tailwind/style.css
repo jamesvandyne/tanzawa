@@ -485,74 +485,20 @@ video {
   --tw-backdrop-saturate:  ;
   --tw-backdrop-sepia:  ;
 }
-.container {
-  width: 100%;
-}
-@media (min-width: 640px) {
-
-  .container {
-    max-width: 640px;
-  }
-}
-@media (min-width: 768px) {
-
-  .container {
-    max-width: 768px;
-  }
-}
-@media (min-width: 1024px) {
-
-  .container {
-    max-width: 1024px;
-  }
-}
-@media (min-width: 1280px) {
-
-  .container {
-    max-width: 1280px;
-  }
-}
-@media (min-width: 1536px) {
-
-  .container {
-    max-width: 1536px;
-  }
-}
 .visible {
   visibility: visible;
 }
 .static {
   position: static;
 }
-.fixed {
-  position: fixed;
-}
 .absolute {
   position: absolute;
-}
-.left-0 {
-  left: 0px;
-}
-.right-0 {
-  right: 0px;
-}
-.top-0 {
-  top: 0px;
 }
 .z-0 {
   z-index: 0;
 }
-.z-20 {
-  z-index: 20;
-}
 .order-first {
   order: -9999;
-}
-.m-1 {
-  margin: 0.25rem;
-}
-.m-2 {
-  margin: 0.5rem;
 }
 .mx-2 {
   margin-left: 0.5rem;
@@ -619,9 +565,6 @@ video {
 }
 .mt-8 {
   margin-top: 2rem;
-}
-.mt-auto {
-  margin-top: auto;
 }
 .block {
   display: block;
@@ -801,9 +744,6 @@ video {
 .self-center {
   align-self: center;
 }
-.overflow-auto {
-  overflow: auto;
-}
 .overflow-hidden {
   overflow: hidden;
 }
@@ -878,10 +818,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(251 247 239 / var(--tw-bg-opacity));
 }
-.bg-bianca-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(123 121 117 / var(--tw-bg-opacity));
-}
 .bg-malachite-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(200 250 214 / var(--tw-bg-opacity));
@@ -901,9 +837,6 @@ video {
 .bg-secondary {
   --tw-bg-opacity: 1;
   background-color: rgb(120 105 91 / var(--tw-bg-opacity));
-}
-.bg-opacity-25 {
-  --tw-bg-opacity: 0.25;
 }
 .object-cover {
   -o-object-fit: cover;
@@ -1094,11 +1027,6 @@ video {
 .shadow {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-.shadow-2xl {
-  --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 .filter {
@@ -1312,6 +1240,7 @@ main.content blockquote {
 #modal > .modal-content {
     /* Position visible dialog near the top of the window */
     margin-top:10vh;
+    overflow: scroll;
 
     /* Sizing for visible dialog */
     width:80%;
@@ -1464,10 +1393,6 @@ main.content blockquote {
 
   .md\:w-11\/12 {
     width: 91.666667%;
-  }
-
-  .md\:w-2\/3 {
-    width: 66.666667%;
   }
 
   .md\:w-3\/12 {
