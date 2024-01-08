@@ -4,6 +4,7 @@ import uuid
 
 import arrow
 import requests
+from django.conf import settings
 from django.core.files import uploadedfile
 from django.db import transaction
 
@@ -56,7 +57,13 @@ def _create_post_from_activity(
     """
     status = post_queries.get_post_status(MPostStatuses.published)
     post_kind = post_queries.get_post_kind(MPostKinds.note)
-    activity_time = arrow.get(activity_detail["start_date_local"], tzinfo=activity_detail["timezone"]).datetime
+    # Strava timezones are in "(GMT-08:00) America/Los_Angeles" format, which doesn't perfectly
+    # align with Python tzinfo names.
+    try:
+        timezone = activity_detail["timezone"].split(" ")[1]
+    except IndexError:
+        timezone = settings.TIME_ZONE
+    activity_time = arrow.get(activity_detail["start_date_local"], tzinfo=timezone).datetime
     if activity.entry:
         entry = entry_ops.update_entry(
             entry=activity.entry,
