@@ -1,0 +1,5 @@
+{% extends "fragments/modal.html" %}
+
+{% block modal_content %}
+    <img src="{% url 'public:get_media' t_file.uuid %}?s=600" alt="" loading="lazy" class="mx-auto"/>
+{% endblock %}
