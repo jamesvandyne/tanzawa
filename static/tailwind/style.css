@@ -846,6 +846,10 @@ video {
   -o-object-fit: fill;
      object-fit: fill;
 }
+.object-scale-down {
+  -o-object-fit: scale-down;
+     object-fit: scale-down;
+}
 .p-1 {
   padding: 0.25rem;
 }

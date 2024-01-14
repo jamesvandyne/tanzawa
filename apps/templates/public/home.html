@@ -86,7 +86,13 @@
                 <h1>📸 Photos</h1>
                 <div class="mt-2 grid grid-cols-3 gap-2 md:grid-cols-5">
                     {% for photo in photo_gallery %}
-                        <picture>
+                        <picture
+                            hx-get="{% url 'public:get_media_modal' photo.uuid %}"
+                            hx-trigger="click"
+                            hx-target="body"
+                            hx-swap="beforeend"
+                            class="cursor-pointer"
+                        >
                             <source srcset="{% url 'public:get_media' photo.uuid %}?s=256&f=image/webp 2x" type="image/webp"/>
                             <img src="{% url 'public:get_media' photo.uuid %}?s=128&f=image/webp" loading="lazy"  class="h-24 w-24 object-cover"/>
                         </picture>

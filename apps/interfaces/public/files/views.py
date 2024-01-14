@@ -5,7 +5,7 @@ from django.http import (
     HttpResponseNotAllowed,
     JsonResponse,
 )
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 
 from data.files import models as file_models
@@ -53,3 +53,8 @@ def get_media(request, uuid):
         as_attachment=as_attachment,
     )
     return response
+
+
+def get_media_modal(request, uuid):
+    t_file: file_models.TFile = get_object_or_404(file_models.TFile, uuid=uuid)
+    return render(request, "public/files/modal.html", {"t_file": t_file})
