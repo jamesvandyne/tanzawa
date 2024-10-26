@@ -1,6 +1,7 @@
 """
 API Views for interacting with Strava
 """
+
 import logging
 from urllib import parse as url_parse
 

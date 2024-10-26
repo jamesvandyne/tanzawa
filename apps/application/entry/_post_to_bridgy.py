@@ -8,8 +8,7 @@ from data.indieweb import models as indieweb_models
 from data.post import models as post_models
 
 
-class AlreadySentWebmention(Exception):
-    ...
+class AlreadySentWebmention(Exception): ...
 
 
 def post_to_mastodon(t_entry: entry_models.TEntry, entry_absolute_url: str):
