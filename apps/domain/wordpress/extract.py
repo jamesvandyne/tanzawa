@@ -1,7 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import phpserialize
-import pytz
 from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
 from django.utils.timezone import make_aware
@@ -27,7 +26,7 @@ def extract_post_status(soup: BeautifulSoup) -> str:
 def extract_published_date(soup: BeautifulSoup) -> datetime | None:
     try:
         pub_date = datetime.strptime(soup.find("post_date_gmt").text, "%Y-%m-%d %H:%M:%S")
-        return make_aware(pub_date, pytz.utc)
+        return make_aware(pub_date, timezone.utc)
     except ValueError:
         # draft posts
         return None
