@@ -2,6 +2,7 @@
 Mercator calculations used to fix the projection from geo-coordinate to x,y (flat) coordinates.
 Adapted from: https://wiki.openstreetmap.org/wiki/Mercator
 """
+
 import math
 
 EARTH_RADIUS_KM = 6378137.0

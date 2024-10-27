@@ -3,8 +3,7 @@ from domain.files import queries as file_queries
 from domain.images import images as image_ops
 
 
-class UnprocessableFile(Exception):
-    ...
+class UnprocessableFile(Exception): ...
 
 
 def get_file(

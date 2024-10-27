@@ -1,7 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
-import pytz
 from bs4 import BeautifulSoup
 from django.contrib.gis.geos import Point
 
@@ -91,7 +90,7 @@ class TestExtractPublishedDate:
         return extract_published_date
 
     def test_extract_published_date(self, target, post_xml_soup):
-        assert datetime(year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=pytz.utc) == target(
+        assert datetime(year=2020, month=9, day=14, hour=20, minute=30, second=23, tzinfo=timezone.utc) == target(
             post_xml_soup
         )
 
