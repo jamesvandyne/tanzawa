@@ -22,7 +22,7 @@ class SunbottleClient:
         response = requests.get(summary_url, headers=self._get_headers())
         if response.status_code == 200:
             return response.json()
-        raise SunbottleClientError(response.json())
+        raise SunbottleClientError()
 
     def _get_headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self.auth_token}"}
