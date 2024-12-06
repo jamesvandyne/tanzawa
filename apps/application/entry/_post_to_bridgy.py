@@ -11,7 +11,7 @@ from data.post import models as post_models
 class AlreadySentWebmention(Exception): ...
 
 
-def post_to_mastodon(t_entry: entry_models.TEntry, entry_absolute_url: str):
+def post_to_bridgy(t_entry: entry_models.TEntry, entry_absolute_url: str):
     try:
         t_entry.bridgy_publish_url.get(url=entry_constants.BridgySyndicationUrls.mastodon)
     except entry_models.BridgyPublishUrl.DoesNotExist:

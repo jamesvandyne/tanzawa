@@ -804,7 +804,7 @@ class SendToBridgy(FormView):
         )
 
     def form_valid(self, form):
-        entry_app.post_to_mastodon(
+        entry_app.post_to_bridgy(
             t_entry=self.entry, entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url())
         )
         return TemplateResponse(
