@@ -19,6 +19,7 @@ from django.views.generic import (
 from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
 from application.indieweb import webmentions
+from data.entry import constants as entry_constants
 from data.entry import models
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
@@ -805,7 +806,9 @@ class SendToBridgy(FormView):
 
     def form_valid(self, form):
         entry_app.post_to_bridgy(
-            t_entry=self.entry, entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url())
+            t_entry=self.entry,
+            entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url()),
+            target_bridgy_url=entry_constants.BridgySyndicationUrls.mastodon,
         )
         return TemplateResponse(
             self.request,
