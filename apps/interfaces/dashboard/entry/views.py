@@ -798,7 +798,7 @@ class SendToBridgy(FormView):
         return super().get_context_data(
             *args,
             t_entry_id=self.entry.id,
-            is_syndicated=entry_queries.is_syndicated_to_mastodon(self.entry),
+            is_syndicated_to_mastodon=entry_queries.is_syndicated_to_mastodon(self.entry),
             syndication_url=entry_queries.mastodon_syndication_url(self.entry),
             **kwargs,
         )
@@ -812,7 +812,7 @@ class SendToBridgy(FormView):
             "interfaces/dashboard/entry/bridgy/_form.html",
             {
                 "t_entry_id": self.entry.id,
-                "is_syndicated": entry_queries.is_syndicated_to_mastodon(self.entry),
+                "is_syndicated_to_mastodon": entry_queries.is_syndicated_to_mastodon(self.entry),
                 "syndication_url": entry_queries.mastodon_syndication_url(self.entry),
             },
         )
