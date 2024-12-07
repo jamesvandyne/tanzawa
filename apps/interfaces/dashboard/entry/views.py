@@ -789,6 +789,7 @@ class ChangeBookmarkTitle(FormView):
 class SendToBridgy(FormView):
     template_name = "interfaces/dashboard/entry/bridgy/_form.html"
     form_class = forms.SendToBridgy
+    bridgy_url: entry_constants.BridgySyndicationUrls = entry_constants.BridgySyndicationUrls.mastodon
     entry: models.TEntry
 
     def setup(self, *args, pk: int, **kwargs):
@@ -808,7 +809,7 @@ class SendToBridgy(FormView):
         entry_app.post_to_bridgy(
             t_entry=self.entry,
             entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url()),
-            target_bridgy_url=entry_constants.BridgySyndicationUrls.mastodon,
+            target_bridgy_url=self.bridgy_url,
         )
         return TemplateResponse(
             self.request,
