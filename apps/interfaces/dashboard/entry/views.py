@@ -19,6 +19,7 @@ from django.views.generic import (
 from application import entry as entry_app
 from application.indieweb import extract as indieweb_extract
 from application.indieweb import webmentions
+from data.entry import constants as entry_constants
 from data.entry import models
 from data.indieweb.constants import MPostKinds, MPostStatuses
 from data.post import models as post_models
@@ -788,6 +789,7 @@ class ChangeBookmarkTitle(FormView):
 class SendToBridgy(FormView):
     template_name = "interfaces/dashboard/entry/bridgy/_form.html"
     form_class = forms.SendToBridgy
+    bridgy_url: entry_constants.BridgySyndicationUrls = entry_constants.BridgySyndicationUrls.mastodon
     entry: models.TEntry
 
     def setup(self, *args, pk: int, **kwargs):
@@ -798,21 +800,27 @@ class SendToBridgy(FormView):
         return super().get_context_data(
             *args,
             t_entry_id=self.entry.id,
-            is_syndicated=entry_queries.is_syndicated_to_mastodon(self.entry),
-            syndication_url=entry_queries.mastodon_syndication_url(self.entry),
+            is_syndicated_to_mastodon=entry_queries.is_syndicated_to_mastodon(self.entry),
+            is_syndicated_to_bluesky=entry_queries.is_syndicated_to_bluesky(self.entry),
+            mastodon_syndication_url=entry_queries.mastodon_syndication_url(self.entry),
+            bluesky_syndication_url=entry_queries.bluesky_syndication_url(self.entry),
             **kwargs,
         )
 
     def form_valid(self, form):
-        entry_app.post_to_mastodon(
-            t_entry=self.entry, entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url())
+        entry_app.post_to_bridgy(
+            t_entry=self.entry,
+            entry_absolute_url=self.request.build_absolute_uri(self.entry.t_post.get_absolute_url()),
+            target_bridgy_url=self.bridgy_url,
         )
         return TemplateResponse(
             self.request,
             "interfaces/dashboard/entry/bridgy/_form.html",
             {
                 "t_entry_id": self.entry.id,
-                "is_syndicated": entry_queries.is_syndicated_to_mastodon(self.entry),
-                "syndication_url": entry_queries.mastodon_syndication_url(self.entry),
+                "is_syndicated_to_mastodon": entry_queries.is_syndicated_to_mastodon(self.entry),
+                "is_syndicated_to_bluesky": entry_queries.is_syndicated_to_bluesky(self.entry),
+                "mastodon_syndication_url": entry_queries.mastodon_syndication_url(self.entry),
+                "bluesky_syndication_url": entry_queries.bluesky_syndication_url(self.entry),
             },
         )

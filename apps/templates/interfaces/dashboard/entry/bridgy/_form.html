@@ -1,10 +1,18 @@
-<div hx-target="this" hx-swap="outerHTML" class="mt-2">
-    {% if is_syndicated %}
-        <a href="{{ syndication_url }}" target="_new" class="outline-button">🐘 View on Mastodon</a>
+<div hx-target="this" hx-swap="outerHTML" class="mt-2 flex flex-col">
+    {% if is_syndicated_to_mastodon %}
+        <a href="{{ mastodon_syndication_url }}" target="_new" class="outline-button text-center">🐘 View on Mastodon</a>
     {% else %}
-    <form hx-post="{% url 'send_to_mastodon' t_entry_id %}" class="flex">
+    <form hx-post="{% url 'send_to_mastodon' t_entry_id %}" class="flex flex-col">
         <button class="outline-button" data-loading-class="hidden"><span id="elephant">🐘</span> Send to Mastodon</button>
         <button class="outline-button" data-loading-disable data-loading><span id="elephant" class="animate-spin inline-block" >🐘</span> Sending to Mastodon…</button>
+    </form>
+    {% endif %}
+    {% if is_syndicated_to_bluesky %}
+        <a href="{{ bluesky_syndication_url }}" target="_new" class="outline-button mt-2 text-center">🦋 View on Bluesky</a>
+    {% else %}
+    <form hx-post="{% url 'send_to_bluesky' t_entry_id %}" class="flex flex-col mt-2">
+        <button class="outline-button text-center" data-loading-class="hidden"><span id="butterfly">🦋</span> Send to Bluesky</button>
+        <button class="outline-button" data-loading-disable data-loading><span id="butterfly" class="animate-spin inline-block" >🦋</span> Sending to Bluesky…</button>
     </form>
     {% endif %}
 </div>

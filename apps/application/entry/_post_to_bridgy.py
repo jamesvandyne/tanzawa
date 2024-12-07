@@ -11,18 +11,22 @@ from data.post import models as post_models
 class AlreadySentWebmention(Exception): ...
 
 
-def post_to_mastodon(t_entry: entry_models.TEntry, entry_absolute_url: str):
+def post_to_bridgy(
+    t_entry: entry_models.TEntry,
+    entry_absolute_url: str,
+    target_bridgy_url: entry_constants.BridgySyndicationUrls,
+) -> None:
     try:
-        t_entry.bridgy_publish_url.get(url=entry_constants.BridgySyndicationUrls.mastodon)
+        t_entry.bridgy_publish_url.get(url=target_bridgy_url)
     except entry_models.BridgyPublishUrl.DoesNotExist:
-        t_entry.new_bridgy_url(entry_constants.BridgySyndicationUrls.mastodon)
+        t_entry.new_bridgy_url(target_bridgy_url)
 
     try:
         _send_webmention(
             t_entry=t_entry,
             t_post=t_entry.t_post,
             source=entry_absolute_url,
-            target=entry_constants.BridgySyndicationUrls.mastodon,
+            target=target_bridgy_url,
         )
     except AlreadySentWebmention:
         pass
