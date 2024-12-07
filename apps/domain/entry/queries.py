@@ -29,17 +29,15 @@ def is_syndicated_to_mastodon(entry: entry_models.TEntry) -> bool:
     """
     Determine if an entry has been sent to Mastodon with Bri.gy.
     """
-    return _get_mastodon_webmention(entry).exists()
+    return _get_bridgy_webmention(entry, target=entry_constants.BridgySyndicationUrls.mastodon).exists()
 
 
 def mastodon_syndication_url(entry: entry_models.TEntry) -> str | None:
-    mastodon_wm = _get_mastodon_webmention(entry)
+    mastodon_wm = _get_bridgy_webmention(entry, target=entry_constants.BridgySyndicationUrls.mastodon)
     for wm in mastodon_wm:
         return wm.response_body.get("url")
     return None
 
 
-def _get_mastodon_webmention(entry: entry_models.TEntry):
-    return entry.t_post.ref_t_webmention_send.filter(
-        target=entry_constants.BridgySyndicationUrls.mastodon, success=True
-    )
+def _get_bridgy_webmention(entry: entry_models.TEntry, target: entry_constants.BridgySyndicationUrls):
+    return entry.t_post.ref_t_webmention_send.filter(target=target, success=True)
