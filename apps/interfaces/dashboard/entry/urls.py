@@ -45,4 +45,9 @@ urlpatterns = [
         views.SendToBridgy.as_view(bridgy_url=entry_constants.BridgySyndicationUrls.mastodon),
         name="send_to_mastodon",
     ),
+    path(
+        "entry/<int:pk>/send_to_bluesky",
+        views.SendToBridgy.as_view(bridgy_url=entry_constants.BridgySyndicationUrls.bluesky),
+        name="send_to_bluesky",
+    ),
 ]

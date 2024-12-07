@@ -801,7 +801,9 @@ class SendToBridgy(FormView):
             *args,
             t_entry_id=self.entry.id,
             is_syndicated_to_mastodon=entry_queries.is_syndicated_to_mastodon(self.entry),
-            syndication_url=entry_queries.mastodon_syndication_url(self.entry),
+            is_syndicated_to_bluesky=entry_queries.is_syndicated_to_bluesky(self.entry),
+            mastodon_syndication_url=entry_queries.mastodon_syndication_url(self.entry),
+            bluesky_syndication_url=entry_queries.bluesky_syndication_url(self.entry),
             **kwargs,
         )
 
@@ -817,6 +819,8 @@ class SendToBridgy(FormView):
             {
                 "t_entry_id": self.entry.id,
                 "is_syndicated_to_mastodon": entry_queries.is_syndicated_to_mastodon(self.entry),
-                "syndication_url": entry_queries.mastodon_syndication_url(self.entry),
+                "is_syndicated_to_bluesky": entry_queries.is_syndicated_to_bluesky(self.entry),
+                "mastodon_syndication_url": entry_queries.mastodon_syndication_url(self.entry),
+                "bluesky_syndication_url": entry_queries.bluesky_syndication_url(self.entry),
             },
         )
