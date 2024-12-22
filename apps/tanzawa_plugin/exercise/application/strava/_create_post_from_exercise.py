@@ -96,11 +96,11 @@ def _create_post_from_activity(
 
 
 def _get_post_e_content(activity: dict) -> str:
-    return "<br/>".join([activity["name"], activity["description"]])
+    return "<br/>".join([activity["name"], activity["description"] or ""])
 
 
 def _get_summary(activity: dict) -> str:
-    return "\n".join([activity["name"], activity["description"]])
+    return "\n".join([activity["name"], activity["description"] or ""])
 
 
 def _store_photos(activity: exercise_models.Activity, activity_detail: dict) -> list[exercise_models.ActivityPhoto]:
