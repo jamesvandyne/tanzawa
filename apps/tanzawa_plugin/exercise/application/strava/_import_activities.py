@@ -85,12 +85,19 @@ def _strava_activity_to_activity(strava_activity: dict) -> exercise_ops.Activity
         elevation_low=strava_activity["elev_low"],
         activity_type=strava_activity["sport_type"],
         started_at=datetime.datetime.fromisoformat(strava_activity["start_date"]),
-        # Point arguments are defined in x,y order, i.e. longitude / latitude
-        start_point=geos.Point(strava_activity["start_latlng"][1], strava_activity["start_latlng"][0]),
-        end_point=geos.Point(strava_activity["end_latlng"][1], strava_activity["end_latlng"][0]),
+        start_point=_get_point_from_latlng(strava_activity["start_latlng"]),
+        end_point=_get_point_from_latlng(strava_activity["end_latlng"]),
         activity_map=strava_activity_map,
         average_speed=strava_activity["average_speed"],
         max_speed=strava_activity["max_speed"],
         average_heartrate=strava_activity.get("average_heartrate"),
         max_heartrate=strava_activity.get("max_heartrate"),
     )
+
+
+def _get_point_from_latlng(latlng: list[float]) -> geos.Point:
+    try:
+        # Point arguments are defined in x,y order, i.e. longitude / latitude
+        return geos.Point(latlng[1], latlng[0])
+    except IndexError:
+        return geos.Point(0, 0)
