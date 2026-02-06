@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Sum
 from django.utils.safestring import mark_safe
 from rest_framework import serializers
 
@@ -30,26 +31,27 @@ class RunsTop(serializers.Serializer):
         super().__init__(*args, **kwargs)
         self.start_at = start_at
         self.end_at = end_at
+        self._activities = (
+            queries.get_activties(self.start_at, self.end_at, self.activity_types)
+            .select_related("map")
+            .order_by("-started_at")
+        )
+        self._year_stats = self._activities.aggregate(total_distance=Sum("distance"), total_time=Sum("elapsed_time"))
 
     def get_year(self, obj) -> int:
         return self.start_at.year
 
     def get_number_of_runs(self, obj) -> int:
-        return queries.number_of_activities(self.start_at, self.end_at, self.activity_types)
+        return len(self._activities)
 
     def get_total_kms(self, obj) -> float:
-        return queries.total_kms_for_range(self.start_at, self.end_at, self.activity_types)
+        return (self._year_stats["total_distance"] or 0) / 1000
 
     def get_total_time(self, obj) -> float:
-        return (queries.total_elapsed_time(self.start_at, self.end_at, self.activity_types) / 60) / 60
+        return (self._year_stats["total_time"] or 0 / 60) / 60
 
     def get_activities(self, obj) -> _RunsTopActivity:
-        activities = (
-            queries.get_activties(self.start_at, self.end_at, self.activity_types)
-            .select_related("map")
-            .order_by("-started_at")
-        )
-        return _RunsTopActivity(instance=activities, many=True).data
+        return _RunsTopActivity(instance=self._activities, many=True).data
 
 
 class ActivityPhoto(serializers.Serializer):
