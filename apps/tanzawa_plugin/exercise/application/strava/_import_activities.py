@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.contrib.gis import geos
 from django.db import transaction
@@ -67,6 +68,22 @@ def _determine_auth_token(athlete: strava_models.Athlete) -> str:
     return athlete.access_token.token
 
 
+def _get_upload_id(strava_activity: dict) -> str:
+    try:
+        # Manual uploads do not have an upload id, so generate a random one.
+        return strava_activity["upload_id_str"]
+    except KeyError:
+        return str(uuid.uuid4())
+
+
+def _get_value_or_float(strava_activity: dict, key: str) -> float:
+    try:
+        # Manual uploads do not have an upload id, so generate a random one.
+        return strava_activity[key]
+    except KeyError:
+        return 0.0
+
+
 def _strava_activity_to_activity(strava_activity: dict) -> exercise_ops.Activity:
     strava_activity_map = None
     if activity_map := strava_activity.get("map"):
@@ -76,13 +93,13 @@ def _strava_activity_to_activity(strava_activity: dict) -> exercise_ops.Activity
     return exercise_ops.Activity(
         name=strava_activity["name"],
         vendor_id=strava_activity["id"],
-        upload_id=strava_activity["upload_id_str"],
+        upload_id=_get_upload_id(strava_activity),
         distance=strava_activity["distance"],
         moving_time=strava_activity["moving_time"],
         elapsed_time=strava_activity["elapsed_time"],
         total_elevation_gain=strava_activity["total_elevation_gain"],
-        elevation_high=strava_activity["elev_high"],
-        elevation_low=strava_activity["elev_low"],
+        elevation_high=_get_value_or_float(strava_activity, "elev_high"),
+        elevation_low=_get_value_or_float(strava_activity, "elev_low"),
         activity_type=strava_activity["sport_type"],
         started_at=datetime.datetime.fromisoformat(strava_activity["start_date"]),
         start_point=_get_point_from_latlng(strava_activity["start_latlng"]),
