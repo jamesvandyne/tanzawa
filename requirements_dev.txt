@@ -4,7 +4,7 @@ tox
 pytest
 pytest-django
 pytest-cov
-pytest-freezegun
+pytest-freezegun==0.4.1
 pytest-lazy-fixture
 model-bakery
 mypy

@@ -1,49 +1,47 @@
-import pytest
-from django.core.management import call_command
-from django.db import connection
+# Test configuration
+import faker
 from model_bakery import baker
+import pytest
 
-from data.indieweb.constants import MPostStatuses
+fake = faker.Faker()
 
 
 @pytest.fixture
 def client():
     from rest_framework.test import APIClient
-
     return APIClient()
 
 
 @pytest.fixture
 def m_post_kinds():
     from data.post.models import MPostKind
-
     return MPostKind.objects.all()
 
 
 @pytest.fixture
 def m_post_kind(m_post_kinds):
-    return m_post_kinds[0]  # note
+    return m_post_kinds[0]
 
 
 @pytest.fixture
 def published_status():
     from data.post.models import MPostStatus
-
+    from data.indieweb.constants import MPostStatuses
     return MPostStatus.objects.get(key=MPostStatuses.published)
 
 
 @pytest.fixture
 def draft_status():
     from data.post.models import MPostStatus
-
+    from data.indieweb.constants import MPostStatuses
     return MPostStatus.objects.get(key=MPostStatuses.draft)
 
 
 @pytest.fixture
 def user():
     return baker.make(
-        "User",
-        username="jamesvandyne",
+        "auth.User",
+        username=fake.pystr(),
         first_name="James",
         last_name="Van Dyne",
         email="james@example.test",
@@ -53,7 +51,6 @@ def user():
 @pytest.fixture
 def t_post(m_post_kind, published_status, user):
     from datetime import datetime
-
     return baker.make(
         "post.TPost",
         m_post_status=published_status,
@@ -67,17 +64,14 @@ def t_post(m_post_kind, published_status, user):
 @pytest.fixture
 def factory():
     from tests import factories
-
     return factories
 
 
 @pytest.fixture(scope="session")
 def django_db_setup(django_db_blocker):
     with django_db_blocker.unblock():
+        from django.db import connection
         with connection.cursor() as c:
-            # Spatalite5 and sqlite 3.36 are incompatible with each other.
-            # Force creation of the spatial metadata before running migrations.
-            # This should be a "temporary" fix so tests can run on CI.
-            # refs: https://code.djangoproject.com/ticket/32935
             c.execute("SELECT InitSpatialMetaData(1);")
+        from django.core.management import call_command
         call_command("migrate", interactive=False)

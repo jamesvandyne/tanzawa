@@ -24,4 +24,4 @@ class TestCommentByEmail:
         feed_content = response.content.decode("utf-8")
 
         assert plugin.has_feed_hooks is True
-        assert f"mailto:{ post.p_author.email }" in feed_content
+        assert f"mailto:{post.p_author.email}" in feed_content
