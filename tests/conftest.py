@@ -1,7 +1,7 @@
 # Test configuration
 import faker
-from model_bakery import baker
 import pytest
+from model_bakery import baker
 
 fake = faker.Faker()
 
@@ -9,12 +9,14 @@ fake = faker.Faker()
 @pytest.fixture
 def client():
     from rest_framework.test import APIClient
+
     return APIClient()
 
 
 @pytest.fixture
 def m_post_kinds():
     from data.post.models import MPostKind
+
     return MPostKind.objects.all()
 
 
@@ -25,15 +27,17 @@ def m_post_kind(m_post_kinds):
 
 @pytest.fixture
 def published_status():
-    from data.post.models import MPostStatus
     from data.indieweb.constants import MPostStatuses
+    from data.post.models import MPostStatus
+
     return MPostStatus.objects.get(key=MPostStatuses.published)
 
 
 @pytest.fixture
 def draft_status():
-    from data.post.models import MPostStatus
     from data.indieweb.constants import MPostStatuses
+    from data.post.models import MPostStatus
+
     return MPostStatus.objects.get(key=MPostStatuses.draft)
 
 
@@ -51,6 +55,7 @@ def user():
 @pytest.fixture
 def t_post(m_post_kind, published_status, user):
     from datetime import datetime
+
     return baker.make(
         "post.TPost",
         m_post_status=published_status,
@@ -64,6 +69,7 @@ def t_post(m_post_kind, published_status, user):
 @pytest.fixture
 def factory():
     from tests import factories
+
     return factories
 
 
@@ -71,7 +77,9 @@ def factory():
 def django_db_setup(django_db_blocker):
     with django_db_blocker.unblock():
         from django.db import connection
+
         with connection.cursor() as c:
             c.execute("SELECT InitSpatialMetaData(1);")
         from django.core.management import call_command
+
         call_command("migrate", interactive=False)

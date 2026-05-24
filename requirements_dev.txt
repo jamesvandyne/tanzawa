@@ -4,7 +4,7 @@ tox
 pytest
 pytest-django
 pytest-cov
-pytest-freezegun==0.4.1
+pytest-freezegun
 pytest-lazy-fixture
 model-bakery
 mypy
@@ -18,3 +18,4 @@ django-debug-toolbar
 mkdocs
 isort
 factory_boy
+setuptools
