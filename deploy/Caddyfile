@@ -1,10 +1,28 @@
 # Tanzawa reverse proxy.
 #
-# Local development: keep `:80` — site is reachable at http://localhost:${HTTP_PORT}.
-# Production: replace `:80` with your domain name (e.g. `blog.example.com`).
-#             Caddy will automatically obtain and renew a Let's Encrypt cert.
+# The site label below is read from the CADDY_SITE_ADDRESS env var passed in
+# by docker-compose.yml (which reads it from .env).
+#
+#   Local development:   CADDY_SITE_ADDRESS=:80
+#                        → site reachable at http://localhost:${HTTP_PORT}
+#
+#   Production HTTPS:    CADDY_SITE_ADDRESS=blog.example.com
+#                        → Caddy automatically obtains a Let's Encrypt cert
+#                          (ACME HTTP-01 challenge on port 80, requires DNS
+#                          A record pointing to this server + ports 80 and
+#                          443 reachable from the public internet).
+#                        → HTTP traffic is auto-redirected to HTTPS.
+#
+# To receive Let's Encrypt renewal notifications, uncomment the global block
+# below and put your email in it. (We can't make this env-driven because
+# Caddyfile syntax has no way to omit the `email` directive when the var is
+# empty — empty `email ` is a parse error.)
+#
+#     {
+#         email you@example.com
+#     }
 
-:80 {
+{$CADDY_SITE_ADDRESS::80} {
 	# Sensible defaults — adjust per deployment.
 	encode gzip zstd
 
@@ -20,12 +38,10 @@
 		file_server
 	}
 
-	# Everything else proxies to Django/uWSGI.
-	reverse_proxy app:8000 {
-		header_up X-Forwarded-Proto {scheme}
-		header_up X-Forwarded-Host {host}
-		header_up X-Real-IP {remote_host}
-	}
+	# Everything else proxies to Django/uWSGI. Caddy automatically sets
+	# X-Forwarded-For, X-Forwarded-Proto, X-Forwarded-Host, and preserves
+	# the original Host header by default — no explicit header_up needed.
+	reverse_proxy app:8000
 
 	# Cap upload size at 25 MB — matches the typical Micropub media limit.
 	# Raise if you publish large image/video posts.

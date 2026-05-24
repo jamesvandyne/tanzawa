@@ -51,21 +51,60 @@ If you prefer to create the superuser manually instead, leave the
 docker compose exec app python apps/manage.py createsuperuser
 ```
 
-## Production deployment
+## Production deployment with automatic HTTPS
 
-1. Point your domain's A record at the server.
-2. Edit `.env`:
+Caddy obtains and renews a Let's Encrypt certificate automatically — there's
+no `certbot`, no nginx-config, no manual cert step. Just point DNS and edit
+`.env`.
+
+1. **DNS**: create an A record (and optionally AAAA) pointing your domain to
+   the server's public IP. Verify with `dig +short yourdomain.com`.
+2. **Firewall**: ensure TCP ports **80** and **443** are reachable from the
+   public internet. ACME HTTP-01 challenge uses port 80; HTTPS traffic uses
+   443. (Port 80 stays open in production for the HTTP→HTTPS redirect and
+   for cert renewals.)
+3. **Edit `.env`**:
    ```
+   CADDY_SITE_ADDRESS=yourdomain.com
+   HTTP_PORT=80
+   HTTPS_PORT=443
+
    ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
    DOMAIN_NAME=yourdomain.com
    PROTOCOL=https
    SESSION_COOKIE_SECURE=True
    CSRF_COOKIE_SECURE=True
-   HTTP_PORT=80
-   HTTPS_PORT=443
    ```
-3. Edit `Caddyfile`: replace `:80` with your domain (e.g. `yourdomain.com`). Caddy will obtain a Let's Encrypt cert automatically on first request.
-4. `docker compose up -d --build`.
+4. *(Optional)* For Let's Encrypt renewal notifications, uncomment the
+   global block at the top of `Caddyfile` and replace the placeholder with
+   your email address.
+5. `docker compose pull && docker compose up -d`.
+
+On first request Caddy logs `obtaining certificate` → `certificate obtained
+successfully` (visible via `docker compose logs caddy`). The cert + ACME
+account key persist in the `caddy-data` named volume — **don't wipe that
+volume** unless you want to re-issue (Let's Encrypt rate-limits to 5 certs
+per domain per week).
+
+### Multiple domains / www redirect
+
+Caddyfile supports multiple site labels — to also serve `www.yourdomain.com`,
+edit `Caddyfile` and replace the single site block with two:
+
+```caddy
+yourdomain.com, www.yourdomain.com {
+  encode gzip zstd
+  ...rest unchanged...
+}
+```
+
+Caddy obtains a cert covering both names. Or to redirect www → apex:
+
+```caddy
+www.yourdomain.com {
+  redir https://yourdomain.com{uri} permanent
+}
+```
 
 ## Operating
 

@@ -4,10 +4,14 @@ services:
     # linux/arm64 are published by .github/workflows/publish-docker.yml).
     #   docker compose pull && docker compose up -d
     #
+    # The image path is parameterized via TANZAWA_IMAGE so this file is
+    # fork-agnostic. Default targets the upstream registry; override in .env:
+    #   TANZAWA_IMAGE=ghcr.io/<your-fork>/tanzawa:latest
+    #
     # Developers who want to build locally from source instead:
     #   docker compose up -d --build
     # (`build:` below is the fallback when the image isn't present locally.)
-    image: ghcr.io/rmdes/tanzawa:latest
+    image: ${TANZAWA_IMAGE:-ghcr.io/jamesvandyne/tanzawa:latest}
     build:
       context: ..
       dockerfile: deploy/Dockerfile
@@ -32,14 +36,20 @@ services:
     restart: unless-stopped
     depends_on:
       - app
+    # Caddyfile reads CADDY_SITE_ADDRESS + ACME_EMAIL from this env file.
+    # See .env.example for the localhost and HTTPS-domain setups.
+    env_file: .env
     ports:
-      # Localhost: ${HTTP_PORT:-8080} → 80. Production: change to "80:80" and add "443:443".
+      # Localhost: HTTP_PORT=8080 → 80 (no HTTPS).
+      # Production: HTTP_PORT=80, HTTPS_PORT=443 — Caddy gets an LE cert automatically.
       - "${HTTP_PORT:-8080}:80"
       - "${HTTPS_PORT:-8443}:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - tanzawa-static:/srv/static:ro
       - tanzawa-data:/srv/data:ro
+      # caddy-data MUST persist — it holds the issued TLS certificate and
+      # ACME account key. Losing this volume = re-issuing certs (rate-limited).
       - caddy-data:/data
       - caddy-config:/config
 
