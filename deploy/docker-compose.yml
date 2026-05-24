@@ -1,0 +1,50 @@
+services:
+  app:
+    # Operators pull the prebuilt multi-arch image from GHCR (linux/amd64 and
+    # linux/arm64 are published by .github/workflows/publish-docker.yml).
+    #   docker compose pull && docker compose up -d
+    #
+    # Developers who want to build locally from source instead:
+    #   docker compose up -d --build
+    # (`build:` below is the fallback when the image isn't present locally.)
+    image: ghcr.io/rmdes/tanzawa:latest
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      # Persistent state: SQLite DB + uploaded media.
+      - tanzawa-data:/data
+      # Collected static files, shared read-only with Caddy.
+      - tanzawa-static:/app/staticfiles
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/auth/login/", "-o", "/dev/null"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      # Localhost: ${HTTP_PORT:-8080} → 80. Production: change to "80:80" and add "443:443".
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - tanzawa-static:/srv/static:ro
+      - tanzawa-data:/srv/data:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  tanzawa-data:
+  tanzawa-static:
+  caddy-data:
+  caddy-config:

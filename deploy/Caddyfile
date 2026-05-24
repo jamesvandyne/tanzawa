@@ -1,0 +1,35 @@
+# Tanzawa reverse proxy.
+#
+# Local development: keep `:80` — site is reachable at http://localhost:${HTTP_PORT}.
+# Production: replace `:80` with your domain name (e.g. `blog.example.com`).
+#             Caddy will automatically obtain and renew a Let's Encrypt cert.
+
+:80 {
+	# Sensible defaults — adjust per deployment.
+	encode gzip zstd
+
+	# Static assets — served directly from the shared volume (no Django round-trip).
+	handle_path /static/* {
+		root * /srv/static
+		file_server
+	}
+
+	# User-uploaded media (Micropub uploads, post images).
+	handle_path /media/* {
+		root * /srv/data/media
+		file_server
+	}
+
+	# Everything else proxies to Django/uWSGI.
+	reverse_proxy app:8000 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+		header_up X-Real-IP {remote_host}
+	}
+
+	# Cap upload size at 25 MB — matches the typical Micropub media limit.
+	# Raise if you publish large image/video posts.
+	request_body {
+		max_size 25MB
+	}
+}
