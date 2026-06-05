@@ -2,13 +2,14 @@ import mf2py
 import pytest
 from django.contrib.gis.geos import Point
 from model_bakery import baker
+from pytest_lazy_fixtures import lf as lazy_fixture
 
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestReplyRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -74,7 +75,7 @@ class TestReplyRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestBookmarkRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -149,7 +150,7 @@ class TestBookmarkRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestArticleRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -231,7 +232,7 @@ class TestArticleRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestNoteRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -277,7 +278,7 @@ class TestNoteRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestPermalinkView:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -314,12 +315,12 @@ class TestPermalinkView:
             (Visibility.PUBLIC, 200, None),
             (Visibility.PRIVATE, 404, None),
             (Visibility.UNLISTED, 200, None),
-            (Visibility.PUBLIC, 200, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, 200, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, 200, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, 200, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, 404, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, 200, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, 200, lazy_fixture("author")),
+            (Visibility.PRIVATE, 200, lazy_fixture("author")),
+            (Visibility.UNLISTED, 200, lazy_fixture("author")),
+            (Visibility.PUBLIC, 200, lazy_fixture("another_user")),
+            (Visibility.PRIVATE, 404, lazy_fixture("another_user")),
+            (Visibility.UNLISTED, 200, lazy_fixture("another_user")),
         ],
     )
     def test_respects_visibility(

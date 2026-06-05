@@ -1,13 +1,14 @@
 import pytest
 from django.urls import reverse
 from model_bakery import baker
+from pytest_lazy_fixtures import lf as lazy_fixture
 
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestStreamFeedView:
     @pytest.fixture
     def target_url(self):
@@ -49,25 +50,25 @@ class TestStreamFeedView:
     @pytest.mark.parametrize(
         "visibility,publish_status,should_show,login_user",
         [
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, None),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, None),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, None),
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, pytest.lazy_fixture("published_status"), True, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("published_status"), False, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, lazy_fixture("published_status"), True, None),
+            (Visibility.PRIVATE, lazy_fixture("published_status"), False, None),
+            (Visibility.UNLISTED, lazy_fixture("published_status"), False, None),
+            (Visibility.PUBLIC, lazy_fixture("published_status"), True, lazy_fixture("author")),
+            (Visibility.PRIVATE, lazy_fixture("published_status"), True, lazy_fixture("author")),
+            (Visibility.UNLISTED, lazy_fixture("published_status"), False, lazy_fixture("author")),
+            (Visibility.PUBLIC, lazy_fixture("published_status"), True, lazy_fixture("another_user")),
+            (Visibility.PRIVATE, lazy_fixture("published_status"), False, lazy_fixture("another_user")),
+            (Visibility.UNLISTED, lazy_fixture("published_status"), False, lazy_fixture("another_user")),
             # Draft Status
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, None),
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, pytest.lazy_fixture("draft_status"), False, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, lazy_fixture("draft_status"), False, None),
+            (Visibility.PRIVATE, lazy_fixture("draft_status"), False, None),
+            (Visibility.UNLISTED, lazy_fixture("draft_status"), False, None),
+            (Visibility.PUBLIC, lazy_fixture("draft_status"), False, lazy_fixture("author")),
+            (Visibility.PRIVATE, lazy_fixture("draft_status"), False, lazy_fixture("author")),
+            (Visibility.UNLISTED, lazy_fixture("draft_status"), False, lazy_fixture("author")),
+            (Visibility.PUBLIC, lazy_fixture("draft_status"), False, lazy_fixture("another_user")),
+            (Visibility.PRIVATE, lazy_fixture("draft_status"), False, lazy_fixture("another_user")),
+            (Visibility.UNLISTED, lazy_fixture("draft_status"), False, lazy_fixture("another_user")),
         ],
     )
     def test_respects_visibility(
