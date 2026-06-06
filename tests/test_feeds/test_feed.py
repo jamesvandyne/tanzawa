@@ -5,7 +5,7 @@ from core.constants import Visibility
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestFeedView:
     @pytest.fixture
     def target_url(self):

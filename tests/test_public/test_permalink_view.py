@@ -2,13 +2,14 @@ import mf2py
 import pytest
 from django.contrib.gis.geos import Point
 from model_bakery import baker
+from pytest_lazy_fixtures import lf as lazy_fixture
 
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestReplyRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -36,7 +37,7 @@ class TestReplyRendering:
             author_photo="",
         )
 
-    def test_microformats_data(self, client, t_reply, t_entry, t_post):
+    def test_microformats_data(self, client, t_reply, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -55,8 +56,8 @@ class TestReplyRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -74,7 +75,7 @@ class TestReplyRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestBookmarkRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -102,7 +103,7 @@ class TestBookmarkRendering:
             author_photo="",
         )
 
-    def test_microformats_data(self, client, t_bookmark, t_entry, t_post):
+    def test_microformats_data(self, client, t_bookmark, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -130,8 +131,8 @@ class TestBookmarkRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -149,7 +150,7 @@ class TestBookmarkRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestArticleRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -187,7 +188,7 @@ class TestArticleRendering:
             ),
         )
 
-    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location):
+    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -218,8 +219,8 @@ class TestArticleRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -231,7 +232,7 @@ class TestArticleRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestNoteRendering:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -247,7 +248,7 @@ class TestNoteRendering:
             e_content="<h1>Content here</h1>",
         )
 
-    def test_microformats_data(self, client, t_entry, t_post):
+    def test_microformats_data(self, client, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -264,8 +265,8 @@ class TestNoteRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -277,7 +278,7 @@ class TestNoteRendering:
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestPermalinkView:
     @pytest.fixture
     def m_post_kind(self, m_post_kinds):
@@ -314,12 +315,12 @@ class TestPermalinkView:
             (Visibility.PUBLIC, 200, None),
             (Visibility.PRIVATE, 404, None),
             (Visibility.UNLISTED, 200, None),
-            (Visibility.PUBLIC, 200, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, 200, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, 200, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, 200, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, 404, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, 200, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, 200, lazy_fixture("author")),
+            (Visibility.PRIVATE, 200, lazy_fixture("author")),
+            (Visibility.UNLISTED, 200, lazy_fixture("author")),
+            (Visibility.PUBLIC, 200, lazy_fixture("another_user")),
+            (Visibility.PRIVATE, 404, lazy_fixture("another_user")),
+            (Visibility.UNLISTED, 200, lazy_fixture("another_user")),
         ],
     )
     def test_respects_visibility(
