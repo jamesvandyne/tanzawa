@@ -48,7 +48,7 @@ class RunsTop(serializers.Serializer):
         return (self._year_stats["total_distance"] or 0) / 1000
 
     def get_total_time(self, obj) -> float:
-        return (self._year_stats["total_time"] or 0 / 60) / 60
+        return ((self._year_stats["total_time"] or 0) / 60) / 60
 
     def get_activities(self, obj) -> _RunsTopActivity:
         return _RunsTopActivity(instance=self._activities, many=True).data

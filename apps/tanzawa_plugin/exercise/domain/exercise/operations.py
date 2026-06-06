@@ -115,12 +115,18 @@ def maybe_create_and_get_svg(
     Get a svg for a given activity.
     """
     if map := activity.map:
-        if map.svg:
+        # Only render stored SVG for activities gps data so that
+        # display of activities without a map can be iterated on.
+        if map.svg and map.summary_polyline:
             return map.svg.replace("h-size", css_class)
-        svg_data = _get_svg(activity, width, height)
-        svg = render_to_string("exercise/activity/route.svg", {"svg": svg_data, "css_class": "h-size"})
-        map.set_svg(svg)
-        return map.svg.replace("h-size", css_class)
+        if svg_data := _get_svg(activity, width, height):
+            svg = render_to_string("exercise/activity/route.svg", {"svg": svg_data, "css_class": "h-size"})
+            map.set_svg(svg)
+            return map.svg.replace("h-size", css_class)
+        else:
+            svg = render_to_string("exercise/activity/no_route.svg", {"css_class": "h-size"})
+            svg.replace("h-size", css_class)
+            return svg
     return ""
 
 
