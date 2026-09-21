@@ -18,3 +18,4 @@ django-debug-toolbar
 mkdocs
 isort
 factory_boy
+setuptools
