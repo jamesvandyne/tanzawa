@@ -36,7 +36,7 @@ class TestReplyRendering:
             author_photo="",
         )
 
-    def test_microformats_data(self, client, t_reply, t_entry, t_post):
+    def test_microformats_data(self, client, t_reply, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -55,8 +55,8 @@ class TestReplyRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -102,7 +102,7 @@ class TestBookmarkRendering:
             author_photo="",
         )
 
-    def test_microformats_data(self, client, t_bookmark, t_entry, t_post):
+    def test_microformats_data(self, client, t_bookmark, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -130,8 +130,8 @@ class TestBookmarkRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -187,7 +187,7 @@ class TestArticleRendering:
             ),
         )
 
-    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location):
+    def test_microformats_data(self, client, t_entry, t_post, t_syndication, t_location, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -218,8 +218,8 @@ class TestArticleRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
@@ -247,7 +247,7 @@ class TestNoteRendering:
             e_content="<h1>Content here</h1>",
         )
 
-    def test_microformats_data(self, client, t_entry, t_post):
+    def test_microformats_data(self, client, t_entry, t_post, user):
         response = client.get(t_post.get_absolute_url())
         assert response.status_code == 200
         parsed = mf2py.parse(doc=response.content.decode("utf8"))
@@ -264,8 +264,8 @@ class TestNoteRendering:
                                 "https://www.gravatar.com/avatar/18780d317432b028f57e31756e34d181?d=mm&r=g&s=80 2x"
                             ],
                             "name": ["James"],
-                            "url": ["http://testserver/author/jamesvandyne/"],
-                            "uid": ["http://testserver/author/jamesvandyne/"],
+                            "url": [f"http://testserver/author/{user.username}/"],
+                            "uid": [f"http://testserver/author/{user.username}/"],
                         },
                         "value": "James",
                     }
