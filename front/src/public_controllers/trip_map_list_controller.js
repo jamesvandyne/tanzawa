@@ -7,10 +7,10 @@ export default class extends Controller {
     }
 
     connect() {
-        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             {
-
-            });
+                attribution: '&copy; OpenStreetMap contributors',
+                referrerPolicy: 'strict-origin-when-cross-origin'});
         const bounds = new L.LatLngBounds();
         this.map = L.map(this.mapTarget.id,
             {

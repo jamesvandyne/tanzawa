@@ -11,10 +11,12 @@ export default class extends Controller {
         const defaultLon = this.mapTarget.dataset.defaultLon;
         const defaultZoom = this.mapTarget.dataset.defaultZoom;
         const latlng = [defaultLat, defaultLon];
-        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             {
-                     minZoom: 0,
-                     maxZoom: 20});
+                      minZoom: 0,
+                      maxZoom: 20,
+                      attribution: '&copy; OpenStreetMap contributors',
+                      referrerPolicy: 'strict-origin-when-cross-origin'});
         this.map = L.map(
             this.mapTarget.id,
             {
