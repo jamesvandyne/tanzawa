@@ -846,10 +846,6 @@ video {
   -o-object-fit: fill;
      object-fit: fill;
 }
-.object-scale-down {
-  -o-object-fit: scale-down;
-     object-fit: scale-down;
-}
 .p-1 {
   padding: 0.25rem;
 }
@@ -978,9 +974,6 @@ video {
 }
 .font-bold {
   font-weight: 700;
-}
-.uppercase {
-  text-transform: uppercase;
 }
 .italic {
   font-style: italic;

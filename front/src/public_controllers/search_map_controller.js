@@ -11,10 +11,12 @@ export default class extends Controller {
             return;
         }
 
-        const osm = L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             {
-                minZoom: 0,
-                maxZoom: 20
+                  minZoom: 0,
+                  maxZoom: 20,
+                  attribution: '&copy; OpenStreetMap contributors',
+                  referrerPolicy: 'strict-origin-when-cross-origin'
             });
         const bounds = new L.LatLngBounds();
         this.map = L.map(this.mapTarget.id);
