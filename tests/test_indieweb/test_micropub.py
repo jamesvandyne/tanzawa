@@ -87,7 +87,7 @@ class TestMicropub:
         assert response.status_code == 400
         assert response.json() == {"message": "Scope permission denied"}
 
-    @pytest.mark.freeze_time("2021-02-13 12:30:59")
+    @pytest.mark.time_machine("2021-02-13 12:30:59")
     def test_handles_embeded_base64_images(
         self,
         target,

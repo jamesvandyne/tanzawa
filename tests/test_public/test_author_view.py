@@ -1,13 +1,14 @@
 import pytest
 from django.urls import reverse
 from model_bakery import baker
+from pytest_lazy_fixtures import lf as lazy_fixture
 
 from core.constants import Visibility
 from data.indieweb.constants import MPostKinds
 
 
 @pytest.mark.django_db
-@pytest.mark.freeze_time("2020-09-28 12:59:30")
+@pytest.mark.time_machine("2020-09-28 12:59:30")
 class TestAuthorView:
     @pytest.fixture
     def target_url(self, author):
@@ -51,12 +52,12 @@ class TestAuthorView:
             (Visibility.PUBLIC, True, None),
             (Visibility.PRIVATE, False, None),
             (Visibility.UNLISTED, False, None),
-            (Visibility.PUBLIC, True, pytest.lazy_fixture("author")),
-            (Visibility.PRIVATE, True, pytest.lazy_fixture("author")),
-            (Visibility.UNLISTED, False, pytest.lazy_fixture("author")),
-            (Visibility.PUBLIC, True, pytest.lazy_fixture("another_user")),
-            (Visibility.PRIVATE, False, pytest.lazy_fixture("another_user")),
-            (Visibility.UNLISTED, False, pytest.lazy_fixture("another_user")),
+            (Visibility.PUBLIC, True, lazy_fixture("author")),
+            (Visibility.PRIVATE, True, lazy_fixture("author")),
+            (Visibility.UNLISTED, False, lazy_fixture("author")),
+            (Visibility.PUBLIC, True, lazy_fixture("another_user")),
+            (Visibility.PRIVATE, False, lazy_fixture("another_user")),
+            (Visibility.UNLISTED, False, lazy_fixture("another_user")),
         ],
     )
     def test_respects_visibility(
