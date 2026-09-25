@@ -10,7 +10,7 @@ In order for your Plugin to be seen by Tanzawa, it must have:
 1. A `Plugin` class that inherits from `data.plugins.plugin.Plugin`. This is the interface between Tanzawa and a plugin.
 2. A `tanzawa_plugin.py` or `tanzawa_plugin` python package that instantiates the plugin and registers it with the Tanzawa Plugin Pool.  
 
-If your application lives outside of Tanzawa itself, you must install it manually by adding the package name to the `PLUGINS` environment variable.
+If your plugin lives outside of Tanzawa itself, you'll need to add it to `INSTALLED_APPS` manually in `apps/core/settings.py` — the plugin auto-discovery (`apps/core/settings.py:97-99`) only scans the in-tree `apps/tanzawa_plugin/` directory.
 
 
 ## Plugin Interface
@@ -175,24 +175,26 @@ urlpatterns = [
 ```
 
 ## Migrations
- 
-Tanzawa will automatically run migrations on two occasions:
- 
-1. When the plugin is activated.
-2. When the server starts (to allow for automatic upgrades of the DB schema in the future).
- 
-To disable automatically migrating when starting the server, set
-`PLUGINS_RUN_MIGRATIONS_STARTUP` to `False` in your `.env` file.
- 
-### Creating Migrations
- 
- If your plugin is not enabled, first enable the plugin.
- 
- ```
-$ python3 apps/manage.py enable_plugin blog.tanzawa.plugins.nowpage
-```
 
-Once the plugin is enabled you can make migrations as usual.
+Plugin apps are auto-added to `INSTALLED_APPS` at startup (see
+`apps/core/settings.py:97-99` — every subdirectory of `tanzawa_plugin/`
+containing an `__init__.py` is included regardless of whether the plugin is
+enabled). This means plugin migrations are picked up by any normal
+`manage.py migrate` run, like a built-in Django app's migrations.
+
+The `enable_plugin` management command only toggles the `MPlugin.enabled`
+flag in the database (see `apps/data/plugins/pool.py`); it does not run
+migrations itself. The full upgrade flow when adding a new plugin or
+pulling new migration files is:
+
+1. `python3 apps/manage.py migrate` — applies any new migrations.
+2. `python3 apps/manage.py enable_plugin <identifier>` — marks the plugin
+   active so its URLs and hooks become available.
+
+### Creating Migrations
+
+`makemigrations` works without needing to enable the plugin first, because
+the app is already in `INSTALLED_APPS`:
 
 ```
 $ python3 apps/manage.py makemigrations now
