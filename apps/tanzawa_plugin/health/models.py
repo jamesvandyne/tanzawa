@@ -17,6 +17,7 @@ class Weight(TimestampModel):
     measured_at = models.DateTimeField(unique_for_date=True)
 
     class Meta:
+        app_label = "health"
         verbose_name = "Weight"
         verbose_name_plural = "Weight"
 
@@ -33,6 +34,7 @@ class Mood(TimestampModel):
     measured_at = models.DateTimeField(unique_for_date=True)
 
     class Meta:
+        app_label = "health"
         verbose_name = "Mood"
         verbose_name_plural = "Mood"
 
