@@ -1,10 +1,10 @@
 arrow==1.2.3
-asgiref==3.8.1
+asgiref==3.9.1
 Django==6.1.2
-sqlparse==0.4.1
+sqlparse==0.5.0
 django-webmention==3.0.0
 django-taggit==5.0.1
-djangorestframework==3.15.2
+djangorestframework==3.16.0
 beautifulsoup4==4.11.1
 exif==1.4.2
 Pillow==10.0.1
@@ -33,3 +33,4 @@ polyline==1.4.0
 cairosvg==2.5.2
 PyMuPDF==1.27.2.3
 time_machine==3.2.0
+pytest_lazy_fixtures==1.2.0
