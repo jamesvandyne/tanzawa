@@ -8,6 +8,7 @@ class TNow(TimestampModel):
     files = models.ManyToManyField("files.TFile", through="TFileNow")
 
     class Meta:
+        app_label = "now"
         verbose_name = "Now"
         verbose_name_plural = "Now"
 
@@ -21,5 +22,6 @@ class TFileNow(TimestampModel):
     t_now = models.ForeignKey(TNow, on_delete=models.CASCADE)
 
     class Meta:
+        app_label = "now"
         verbose_name = "File-Now"
         verbose_name_plural = "File-Now"
