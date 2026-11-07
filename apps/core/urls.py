@@ -20,14 +20,13 @@ plugin_urls = [path("", include(plugin_urls)) for plugin_urls in pool.plugin_poo
 admin_plugin_urls = [path("", include(admin_urls)) for admin_urls in pool.plugin_pool.admin_urls()]
 urlpatterns.extend(admin_plugin_urls)
 # Explicitly add health admin namespace for reverse lookups
-urlpatterns.append(path("", include(("tanzawa_plugin.health.admin_urls", "plugin_health_admin"), namespace="plugin_health_admin"))),
+urlpatterns.append(path("", include(("tanzawa_plugin.health.admin_urls", "plugin_health_admin"), namespace="plugin_health_admin")))
 urlpatterns.extend(plugin_urls)
 
 
 # Public urls are last so "slug-like" urls in plugins are not matched to the stream-list view.
 urlpatterns.append(
-    path("", include(("interfaces.public.urls", "public")), namespace="public")),
-)
+    path("", include(("interfaces.public.urls", "public"), namespace="public"))
 
 
 handler404 = views.handle404
